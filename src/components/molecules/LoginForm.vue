@@ -42,7 +42,7 @@ const password = ref('');
 const passwordHasError = ref(false);
 const passwordHasErrorMessage = ref('');
 const isLoading = ref(false);
-const message = ref(null); // Para mostrar mensajes de error
+const message = ref(null);
 
 const handleSubmit = async () => {
   isLoading.value = true;
@@ -52,58 +52,43 @@ const handleSubmit = async () => {
     const result = await login(email.value, password.value);
     isLoading.value = false;
     if (result!== true) {
-      setError(result.code);
+      setError(result.code, result.message);
     } else {
       router.push("/");
     }
   }else{
-    setError('form-not-validated');
+    setError('form-not-validated','Campo requerido.');
   }
 };
 
-const setError = (code) => {
+const setError = (code, message) => {
       emailHasError.value = false; 
       passwordHasError.value = false; 
       emailHasErrorMessage.value = '';
       passwordHasErrorMessage.value = '';
     if(code === 'auth/invalid-email' || code === 'auth/missing-email' || code === 'auth/user-not-found'){
       emailHasError.value = true;  
-      emailHasErrorMessage.value = AUTH_ERRORS_MESSAGES[code];
+      emailHasErrorMessage.value = message;
     } 
     if(code === 'auth/wrong-password' || code === 'auth/weak-password'){
       passwordHasError.value = true;
-      passwordHasErrorMessage.value = AUTH_ERRORS_MESSAGES[code];
+      passwordHasErrorMessage.value = message;
     }
     if(code === 'auth/internal-error' || code === 'auth/admin-restricted-operation' || code === 'form-not-validated'){
       if(!email.value) emailHasError.value = true; 
       if(!password.value) passwordHasError.value = true; 
-      emailHasErrorMessage.value = AUTH_ERRORS_MESSAGES[code];
-      passwordHasErrorMessage.value = AUTH_ERRORS_MESSAGES[code];
+      emailHasErrorMessage.value = message;
+      passwordHasErrorMessage.value = message;
     } 
+    isLoading.value = false;
 };
 
 const validateForm = () => {
-  // primero valido la existencia de los campos. Caso null, o string retornara true
   emailHasError.value =!email.value;  
   passwordHasError.value =!password.value; 
   if(emailHasError.value || passwordHasError.value){
-    isLoading.value = false;
-    // if(emailHasError.value) emailHasErrorMessage.value = 'El correo es requerido.';  
-    // if(passwordHasError.value) passwordHasErrorMessage.value = 'La contraseña es requerida.'; 
     return false
   }
   return true
 };
-
-const AUTH_ERRORS_MESSAGES = {
-    'auth/invalid-email': 'El email no tiene un formato correcto.',
-    'auth/internal-error': 'Verifique los datos y vuelta a intentarlo',
-    'auth/admin-restricted-operation': 'Verifique los datos y vuelta a intentarlo',
-    'auth/user-not-found': 'El usuario no existe.',
-    'auth/wrong-password': 'La contraseña es incorrecta.',
-    'auth/missing-email': 'Debe ingresar el email, es obligatorio.',
-    'auth/weak-password': 'Contraseña débil, debe tener al menos 6 caracteres.',
-    'form-not-validated': 'Campo requerido.',
-}
-
 </script>
