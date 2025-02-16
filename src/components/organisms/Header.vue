@@ -1,83 +1,131 @@
 <template>
-  <header class="bg-gray-800 text-white p-4">
-    <div class="container mx-auto flex justify-between items-center">
-      <div class="flex items-center">
-        <img src="../../assets/logo.png" alt="Logo de mi red social" class="h-10 mr-4"> 
-        <h1 class="text-1xl font-bold">Mi Red Social</h1>
-      </div>
-    <nav class="text-white p-4">
-   <div class="container mx-auto flex justify-between items-center">
-      <div class="hidden md:flex space-x-4">
-        <router-link to="/" class="hover:text-gray-300"><i class="fa-solid fa-house"></i>Inicio</router-link>
-        <router-link to="/perfil" class="hover:text-gray-300">Perfil</router-link>
-        <router-link to="/sociales" class="hover:text-gray-300">Sociales</router-link>
-        <router-link to="/explorar" class="hover:text-gray-300">Explorar</router-link>
-        <router-link to="/mensajes" class="hover:text-gray-300">Mensajes</router-link>
-        <router-link to="/perfil" class="hover:text-gray-300">Perfil</router-link>
-        <router-link to="/mensajes" class="hover:text-gray-300">Panel de Administrador        </router-link>
-        <router-link to="/faqs" class="hover:text-gray-300">FAQs</router-link>
+  <header class="bg-voir text-white p-4 relative">
+    <div class="container mx-auto flex flex-wrap justify-between items-center">
+      <div class="flex items-center mb-2 md:mb-0">
+        <img src="../../assets/icons/logoVoir.png" alt="Logo de mi red social" class="h-10 mr-4">
+        <h1 class="text-xl font-bold">Voir</h1>
       </div>
 
-      <div class="relative">
-        <button class="flex items-center" @click="showUserTab = !showUserTab">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A9.767 9.767 0 0116 11.174c0-4.817 3.687-8.405 8.232-8.405 7.107 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74m-9.793 3.443A12.493 12.493 0 012.827 7.54c0-4.661 3.744-8.405 8.233-8.405 7.105 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74m-9.793 3.443A12.493 12.493 0 012.827 7.54c0-4.661 3.744-8.405 8.233-8.405 7.105 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74m-9.793 3.443A12.493 12.493 0 012.827 7.54c0-4.661 3.744-8.405 8.233-8.405 7.105 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74" />
-          </svg>
-          <span class="relative">
-            <span v-if="showUserTab" class="absolute top-0 right-0 bg-red-500 rounded-full h-4 w-4 flex items-center justify-center">
-              3
-            </span>
-          </span>
-        </button>
-        <transition name="fade">
-          <div v-show="showUserTab" class="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md">
-            <ul>
-              <li v-for="notification in notifications" :key="notification.id" class="block px-4 py-2 text-black hover:bg-gray-100">
-                {{ notification.message }}
-              </li>
-            </ul>
-          </div>
-        </transition>
-      </div>
-
-      <div class="relative">
-        <button class="flex items-center" @click="showNotificationsTab = !showNotificationsTab">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A9.767 9.767 0 0116 11.174c0-4.817 3.687-8.405 8.232-8.405 7.107 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74m-9.793 3.443A12.493 12.493 0 012.827 7.54c0-4.661 3.744-8.405 8.233-8.405 7.105 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74m-9.793 3.443A12.493 12.493 0 012.827 7.54c0-4.661 3.744-8.405 8.233-8.405 7.105 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74m-9.793 3.443A12.493 12.493 0 012.827 7.54c0-4.661 3.744-8.405 8.233-8.405 7.105 0 12.36 5.591 12.36 12.216 0 1.044-.278 2.015-.768 2.74" />
-          </svg>
-          <span class="relative">
-            <span v-if="showNotificationsTab" class="absolute top-0 right-0 bg-red-500 rounded-full h-4 w-4 flex items-center justify-center">
-              3
-            </span>
-          </span>
-        </button>
-        <transition name="fade">
-          <div v-show="showNotificationsTab" class="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md">
-            <ul>
-              <li v-for="notification in notifications" :key="notification.id" class="block px-4 py-2 text-black hover:bg-gray-100">
-                {{ notification.message }}
-              </li>
-            </ul>
-          </div>
-        </transition>
-      </div>
-
-      <div class="relative">
+      <!-- justify-center md:justify-end items-center w-full md:w-auto -->
+      <nav class="flex flex-nowrap"> 
+        <div class="hidden md:flex space-x-4 mb-2 md:mb-0 mr-4">
+          <router-link to="/" class="text-gray-100 text-gray-100 hover:text-gray-300">
+            <i class="fa-solid fa-house mr-1"></i>Inicio
+          </router-link>
+          <!-- <router-link v-if="auth.isAuthenticated" to="/sociales" class="text-gray-100 hover:text-gray-300">Sociales</router-link> -->
+          <router-link v-if="auth.isAuthenticated" to="/explorar" class="text-gray-100 hover:text-gray-300">Explorar</router-link>
+          <router-link to="/faqs" class="text-gray-100 hover:text-gray-300">FAQs</router-link>
+          <router-link v-if="!auth.isAuthenticated" to="login" class="text-gray-100 hover:text-gray-300">
+              Iniciar Sesión
+          </router-link>
         </div>
+
+        <div class="flex items-center space-x-4">
+          <NotificationDropdown v-if="auth.isAuthenticated" :notifications="userNotifications" :is-open="isNotificationsMenuOpen" @toggle="toggleNotificationsMenu" />
+          <MessagesDropdown v-if="auth.isAuthenticated" :notifications="messagesNotifications" :is-open="isMessageMenuOpen" @toggle="toggleMessagesMenu" />
+          <UserDropdown  v-if="auth.isAuthenticated" :is-open="isUserMenuOpen" @toggle="toggleUserMenu" />
+
+          <button @click="toggleMobileMenu" class="md:hidden">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </nav>
     </div>
-  </nav>
-    </div>
+
+    <transition name="fade">
+      <div v-if="isMobileMenuOpen" class="bg-gray-800 text-white p-4 absolute top-full left-0 w-full z-10">
+        <div class="flex flex-col space-y-2">
+          <router-link to="/" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Inicio</router-link>
+          <router-link to="/explorar" v-if="auth.isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Explorar</router-link>
+          <!-- <router-link to="/sociales" v-if="auth.isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Sociales</router-link> -->
+          <router-link to="/profile" v-if="auth.isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Perfil</router-link>
+          <router-link to="/faqs" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">FAQs</router-link>
+        </div>
+      </div>
+    </transition>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
+import UserDropdown from '../molecules/UserDropdown.vue'; // Componente para el dropdown de usuario
+import NotificationDropdown from '../molecules/NotificationDropdown.vue'; // Componente para el dropdown de notificaciones
+import MessagesDropdown from '../molecules/MessagesDropdown.vue'; // Componente para el dropdown de mensajes
+import { useAuthState } from '../../api/auth/authState';
 
-const showNotificationsTab = ref(false)
-const showUserTab = ref(false)
-const notifications = ref([
-        { id: 1, message: 'Tienes un nuevo mensaje' },
-        { id: 2, message: 'Alguien te ha seguido' },
-      ])
+const auth = useAuthState();
+const isNotificationsMenuOpen = ref(false);
+const isMessageMenuOpen = ref(false);
+const isUserMenuOpen = ref(false);
+const isMobileMenuOpen = ref(false);
+const isAdmin = ref(true); // Valor dinámico según el rol del usuario
 
-</script> 
+const userNotifications = ref([
+  { id: 1, message: 'Comentaron tu publicacion @nombrePublicacion blah blah' },
+  { id: 2, message: 'Alguien te ha seguido' },
+]);
+
+const messagesNotifications = ref([
+  { id: 1, message: 'Como estas amigo ?' },
+  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 3, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 4, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 5, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 6, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 7, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 8, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 9, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 10, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 11, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 12, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 13, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 14, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 15, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 16, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 17, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 18, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 19, message: 'Seguis teniendo a ese gatito ?' },
+]);
+
+function toggleNotificationsMenu() {
+  isNotificationsMenuOpen.value =!isNotificationsMenuOpen.value;
+  isMessageMenuOpen.value = false;
+  isUserMenuOpen.value = false;
+  isMobileMenuOpen.value = false;
+}
+
+function toggleMessagesMenu() {
+  isMessageMenuOpen.value =!isMessageMenuOpen.value;
+  isNotificationsMenuOpen.value = false;
+  isUserMenuOpen.value = false;
+  isMobileMenuOpen.value = false;
+}
+
+function toggleUserMenu() {
+  isUserMenuOpen.value =!isUserMenuOpen.value;
+  isNotificationsMenuOpen.value = false;
+  isMessageMenuOpen.value = false;
+  isMobileMenuOpen.value = false;
+}
+
+
+function toggleMobileMenu() {
+  isUserMenuOpen.value = false;
+  isNotificationsMenuOpen.value = false;
+  isMessageMenuOpen.value = false;
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+}
+
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>  

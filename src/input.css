@@ -1,0 +1,9 @@
+/* styles/input.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.input-base {
+    @apply px-3 h-11 w-full text-gray-500 placeholder-gray-500 bg-gray-50 bg-opacity-40 border rounded-lg shadow-sm outline-none ring ring-transparent focus:ring-gray-500;
+}.input-error {
+    @apply border-red-500 focus:border-red-500 ring-red-500;
+}
