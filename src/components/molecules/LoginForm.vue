@@ -28,12 +28,12 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from "vue-router";
-import { login } from "../../api/auth/auth.js";
 import TextInput from '../atoms/TextInput.vue';
 import PasswordInput from '../atoms/PasswordInput.vue';
-import { useAuthState } from '../../api/auth/authState.js';
+import { useAuth } from '../../api/auth/auth';
 
-const auth = useAuthState();
+const { user, isAuthenticated, loading, error, login, logout, register, updateProfile } = useAuth();
+
 const router = useRouter();
 const email = ref('');
 const emailHasError = ref(false);
