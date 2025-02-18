@@ -28,12 +28,11 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from "vue-router";
+import TextInput from '../atoms/TextInput.vue';
+import PasswordInput from '../atoms/PasswordInput.vue';
 import { useAuth } from '../../api/auth/auth';
 
 const { user, isAuthenticated, loading, error, login, logout, register, updateProfile } = useAuth();
-
-import TextInput from '../atoms/TextInput.vue';
-import PasswordInput from '../atoms/PasswordInput.vue';
 
 const router = useRouter();
 const isLoading = ref(false);
