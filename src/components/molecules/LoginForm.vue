@@ -52,7 +52,9 @@ const handleSubmit = async () => {
     const result = await login(email.value, password.value);
     isLoading.value = false;
     if (result!== true) {
-      setError(result.code, result.message);
+      if (error.value.code) {
+        setError(error.value.code, error.value.message);
+      }
     } else {
       router.push("/");
     }
