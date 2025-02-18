@@ -4,8 +4,8 @@
     <p class="text-gray-500 mb-8 text-left">¡Bienvenido! Por favor, ingresa tus datos.</p>
 
     <form @submit.prevent="handleSubmit">
-      <TextInput v-model="email" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico" :hasError= emailHasError :hasErrorMessage= emailHasErrorMessage />
-      <PasswordInput v-model="password" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña" :hasError= passwordHasError :hasErrorMessage= passwordHasErrorMessage />
+      <TextInput v-model:value="form.email.value" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/> 
+      <PasswordInput v-model:value="form.password.value" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña"/> 
 
       <div class="text-right mb-8">
         <router-link to="/forgot-password" class="inline-block text-sm font-semibold text-yellowGreen-700 hover:text-yellowGreen-600">¿Olvidaste tu contraseña?</router-link>
@@ -16,8 +16,8 @@
         <span v-if="isLoading">Cargando...</span>
         <span v-else>Iniciar Sesión</span>
       </button>
-
     </form>
+
     <div class="text-center mt-6 text-gray-700">
       ¿No tienes una cuenta?
       <router-link to="/register" class="text-voir hover:text-voir-darker font-semibold ml-1">Regístrate</router-link>
@@ -28,31 +28,42 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from "vue-router";
-import { login } from "../../api/auth/auth.js";
+import { useAuth } from '../../api/auth/auth';
+
+const { user, isAuthenticated, loading, error, login, logout, register, updateProfile } = useAuth();
+
 import TextInput from '../atoms/TextInput.vue';
 import PasswordInput from '../atoms/PasswordInput.vue';
-import { useAuthState } from '../../api/auth/authState.js';
 
-const auth = useAuthState();
 const router = useRouter();
-const email = ref('');
-const emailHasError = ref(false);
-const emailHasErrorMessage = ref('');
-const password = ref('');
-const passwordHasError = ref(false);
-const passwordHasErrorMessage = ref('');
 const isLoading = ref(false);
-const message = ref(null);
+
+const form = ref({
+  email: {
+    value: '',
+    hasError: false,
+    errorMessage: '',
+  },
+  password: {
+    value: '',
+    hasError: false,
+    errorMessage: '',
+  },
+});
 
 const handleSubmit = async () => {
   isLoading.value = true;
-  message.value = null;
   const validated = validateForm();
+  alert(validated)
+  debugger
   if(validated){
-    const result = await login(email.value, password.value);
     isLoading.value = false;
+    const result = await login(form.value.email.value, form.value.password.value);
+    
     if (result!== true) {
-      setError(result.code, result.message);
+      if (error.value.code) {
+        setError(error.value.code, error.value.message);
+      }
     } else {
       router.push("/");
     }
@@ -62,31 +73,38 @@ const handleSubmit = async () => {
 };
 
 const setError = (code, message) => {
-      emailHasError.value = false; 
-      passwordHasError.value = false; 
-      emailHasErrorMessage.value = '';
-      passwordHasErrorMessage.value = '';
+  debugger
+    form.value.email.hasError = false; 
+    form.value.password.hasError = false; 
+    form.value.email.errorMessage = '';
+    form.value.password.errorMessage = '';
     if(code === 'auth/invalid-email' || code === 'auth/missing-email' || code === 'auth/user-not-found'){
-      emailHasError.value = true;  
-      emailHasErrorMessage.value = message;
+      form.value.email.hasError = true;  
+      form.value.email.errorMessage = message;
     } 
     if(code === 'auth/wrong-password' || code === 'auth/weak-password'){
-      passwordHasError.value = true;
-      passwordHasErrorMessage.value = message;
+      form.value.password.hasError = true;
+      form.value.password.errorMessage = message;
     }
     if(code === 'auth/internal-error' || code === 'auth/admin-restricted-operation' || code === 'form-not-validated'){
-      if(!email.value) emailHasError.value = true; 
-      if(!password.value) passwordHasError.value = true; 
-      emailHasErrorMessage.value = message;
-      passwordHasErrorMessage.value = message;
+      if(!form.value.email.value) form.value.email.hasError = true; 
+      if(!form.value.password.value) form.value.password.hasError = true; 
+      form.value.email.errorMessage = message;
+      form.value.password.errorMessage = message;
     } 
+    form.value.email.value = 'pene'
+    console.log(  form.value.email)
+    console.log(  form.value.password)
+
     isLoading.value = false;
 };
 
 const validateForm = () => {
-  emailHasError.value =!email.value;  
-  passwordHasError.value =!password.value; 
-  if(emailHasError.value || passwordHasError.value){
+  form.value.email.hasError =!form.value.email.value;  
+  form.value.password.hasError =!form.value.password.value; 
+  console.log(form.value.email.hasError)
+  console.log(form.value.password.hasError)
+  if(form.value.email.hasError || form.value.password.hasError){
     return false
   }
   return true
