@@ -9,21 +9,21 @@
       <!-- justify-center md:justify-end items-center w-full md:w-auto -->
       <nav class="flex flex-nowrap"> 
         <div class="hidden md:flex space-x-4 mb-2 md:mb-0 mr-4">
-          <router-link to="/" class="text-gray-100 text-gray-100 hover:text-gray-300">
+          <router-link to="/" class="text-gray-100 hover:text-gray-300">
             <i class="fa-solid fa-house mr-1"></i>Inicio
           </router-link>
-          <!-- <router-link v-if="auth.isAuthenticated" to="/sociales" class="text-gray-100 hover:text-gray-300">Sociales</router-link> -->
-          <router-link v-if="auth.isAuthenticated" to="/explorar" class="text-gray-100 hover:text-gray-300">Explorar</router-link>
+          <!-- <router-link v-if="isAuthenticated" to="/sociales" class="text-gray-100 hover:text-gray-300">Sociales</router-link> -->
+          <router-link v-if="isAuthenticated" to="/explorar" class="text-gray-100 hover:text-gray-300">Explorar</router-link>
           <router-link to="/faqs" class="text-gray-100 hover:text-gray-300">FAQs</router-link>
-          <router-link v-if="!auth.isAuthenticated" to="login" class="text-gray-100 hover:text-gray-300">
+          <router-link v-if="!isAuthenticated" to="login" class="text-gray-100 hover:text-gray-300">
               Iniciar Sesión
           </router-link>
         </div>
 
         <div class="flex items-center space-x-4">
-          <NotificationDropdown v-if="auth.isAuthenticated" :notifications="userNotifications" :is-open="isNotificationsMenuOpen" @toggle="toggleNotificationsMenu" />
-          <MessagesDropdown v-if="auth.isAuthenticated" :notifications="messagesNotifications" :is-open="isMessageMenuOpen" @toggle="toggleMessagesMenu" />
-          <UserDropdown  v-if="auth.isAuthenticated" :is-open="isUserMenuOpen" @toggle="toggleUserMenu" />
+          <NotificationDropdown v-if="isAuthenticated" :notifications="userNotifications" :is-open="isNotificationsMenuOpen" @toggle="toggleNotificationsMenu" />
+          <MessagesDropdown v-if="isAuthenticated" :notifications="messagesNotifications" :is-open="isMessageMenuOpen" @toggle="toggleMessagesMenu" />
+          <UserDropdown  v-if="isAuthenticated" :is-open="isUserMenuOpen" @toggle="toggleUserMenu" />
 
           <button @click="toggleMobileMenu" class="md:hidden">
             <i class="fa-solid fa-bars"></i>
@@ -36,9 +36,9 @@
       <div v-if="isMobileMenuOpen" class="bg-gray-800 text-white p-4 absolute top-full left-0 w-full z-10">
         <div class="flex flex-col space-y-2">
           <router-link to="/" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Inicio</router-link>
-          <router-link to="/explorar" v-if="auth.isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Explorar</router-link>
-          <!-- <router-link to="/sociales" v-if="auth.isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Sociales</router-link> -->
-          <router-link to="/profile" v-if="auth.isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Perfil</router-link>
+          <router-link to="/explorar" v-if="isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Explorar</router-link>
+          <!-- <router-link to="/sociales" v-if="isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Sociales</router-link> -->
+          <router-link to="/profile" v-if="isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Perfil</router-link>
           <router-link to="/faqs" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">FAQs</router-link>
         </div>
       </div>
@@ -51,9 +51,11 @@ import { ref } from 'vue';
 import UserDropdown from '../molecules/UserDropdown.vue'; // Componente para el dropdown de usuario
 import NotificationDropdown from '../molecules/NotificationDropdown.vue'; // Componente para el dropdown de notificaciones
 import MessagesDropdown from '../molecules/MessagesDropdown.vue'; // Componente para el dropdown de mensajes
-import { useAuthState } from '../../api/auth/authState';
 
-const auth = useAuthState();
+import { useAuth } from '../../api/auth/auth';
+
+const { user, isAuthenticated, loading, error, login, logout, register, updateProfile } = useAuth();
+
 const isNotificationsMenuOpen = ref(false);
 const isMessageMenuOpen = ref(false);
 const isUserMenuOpen = ref(false);

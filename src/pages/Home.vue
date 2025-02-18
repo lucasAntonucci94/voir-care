@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useAuth } from '../api/auth/auth';
+
+const { user } = useAuth();
+
 const posts = ref([
         { id: 1, title: 'Mi primer post', content: '¡Hola mundo!' },
         // ... más publicaciones
@@ -12,6 +16,8 @@ const posts = ref([
       <h1 class="text-3xl font-bold">Bienvenido a Mi Red Social</h1>
       <p class="text-lg">Conecta con amigos y comparte tus momentos.</p>
     </div>
+
+    <p class="text-lg text-white text-center mb-4">{{ user?.displayName ?? '' }}</p>
 
     <div class="mx-auto max-w-md overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md md:max-w-2xl">
       <div class="md:flex">

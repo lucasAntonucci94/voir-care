@@ -5,20 +5,20 @@
 
       <form @submit.prevent="handleSubmit">
         
-      <TextInput v-model="name" label="Nombre" type="text" id="name" placeholder="Ingresa tu nombre"  />
-      <TextInput v-model="email" label="Correo Electrónico"  type="email" id="email" placeholder="Ingresa tu correo electrónico" />
-      <PasswordInput v-model="password" label="Contraseña" id="password" placeholder="Ingresa tu contraseña" />
-      <PasswordInput v-model="confirmPassword" label="Confirmar Contraseña" id="confirmpassword" placeholder="Ingresa nuevamente tu contraseña" />
+      <TextInput v-model="name" label="Nombre" type="text" id="name" placeholder="Ingresa tu nombre" :hasError= nameHasError :hasErrorMessage= nameHasErrorMessage />
+      <TextInput v-model="email" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico" :hasError= emailHasError :hasErrorMessage= emailHasErrorMessage />
+      <PasswordInput v-model="password" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña" :hasError= passwordHasError :hasErrorMessage= passwordHasErrorMessage />
+      <PasswordInput v-model="confirmPassword" label="Confirmar Contraseña" id="confirmpassword" placeholder="Ingresa nuevamente tu contraseña" :hasError= confirmPasswordHasError :hasErrorMessage= confirmPasswordHasErrorMessage />
       
       <button type="submit":disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-voir to-cyan-800 rounded-lg transition-all duration-300 focus:outline-none">
         <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full rounded-lg bg-cyanGreen-900 opacity-50 animate-pulse"></div>
         <span v-if="isLoading">Registrando...</span>
         <span v-else>Registrar</span>
       </button>
-      
+<!--       
       <div v-if="errorMessage" class="text-center mt-4 text-red-500">
         {{ errorMessage }}
-      </div>
+      </div> -->
       
       <div class="text-center mt-4 text-gray-700">
         ¿Ya tienes una cuenta? <router-link to="/login" class="text-voir hover:text-voir-darker font-semibold ml-1">Iniciar Sesión</router-link>
@@ -32,42 +32,83 @@ import { ref } from 'vue';
 import TextInput from '../atoms/TextInput.vue';
 import PasswordInput from '../atoms/PasswordInput.vue';
 import { useRouter } from "vue-router";
-import { doRegister } from "../../api/auth/auth.js"; // Import your register function
+
+import { useAuth } from "../../api/auth/auth.js";
+const { user, isAuthenticated, loading, error, login, logout, doRegister, doUUpdateProfile } = useAuth();
 
 const router = useRouter();
 const isLoading = ref(false);
 const name = ref('');
+const nameHasError = ref(false);
+const nameHasErrorMessage = ref('');
 const email = ref('');
+const emailHasError = ref(false);
+const emailHasErrorMessage = ref('');
 const password = ref('');
+const passwordHasError = ref(false);
+const passwordHasErrorMessage = ref('');
 const confirmPassword = ref('');
+const confirmPasswordHasError = ref(false);
+const confirmPasswordHasErrorMessage = ref('');
 const errorMessage = ref(null);
 
 const handleSubmit = async () => {
   debugger
-  errorMessage.value = null; // Clear any previous errors
   isLoading.value = true;
-
-  if (password.value !== confirmPassword.value) {
-    errorMessage.value = "Las contraseñas no coinciden.";
+  // message.value = null;
+  const validated = validateForm();
+  if(validated){
+    const result = await doRegister(email.value, password.value);
     isLoading.value = false;
-    return;
-  }
-  try {
-    // const result = await doRegister(name.value, email.value, password.value);
-    if(email.value !== undefined && email.value !== "" && password.value !== undefined && email.value !== ""){
-      const result = await doRegister(email.value, password.value);
-      if (result) { 
-      // if (result.success) {
-        router.push('/login');
-      } else {
-        errorMessage.value = result.message || "Error al registrar usuario."; // Display error message from API or a generic message
+    if (result!== true) {
+      if (error.value.code) {
+        setError(error.value.code, error.value.message);
       }
-    } 
-  } catch (error) {
-    console.error("Error during registration:", error);
-    errorMessage.value = "Un error ocurrió durante el registro.";
-  } finally {
-    isLoading.value = false;
+    } else {
+      router.push("/");
+    }
+  }else{
+    setError('form-not-validated','Campo requerido.');
   }
+};
+
+const setError = (code, message) => {
+      emailHasError.value = false; 
+      passwordHasError.value = false; 
+      emailHasErrorMessage.value = '';
+      passwordHasErrorMessage.value = '';
+    if(code === 'auth/invalid-email' || code === 'auth/missing-email' || code === 'auth/user-not-found'){
+      emailHasError.value = true;  
+      emailHasErrorMessage.value = message;
+    } 
+    if(code === 'auth/wrong-password' || code === 'auth/weak-password'){
+      passwordHasError.value = true;
+      passwordHasErrorMessage.value = message;
+    }
+    if(code === 'auth/internal-error' || code === 'auth/admin-restricted-operation' || code === 'form-not-validated'){
+      if(!name.value) nameHasError.value = true; 
+      if(!email.value) emailHasError.value = true; 
+      if(!password.value) passwordHasError.value = true; 
+      if(!confirmPassword.value) confirmPasswordHasError.value = true; 
+      nameHasErrorMessage.value = message;
+      emailHasErrorMessage.value = message;
+      passwordHasErrorMessage.value = message;
+      confirmPasswordHasErrorMessage.value = message;
+    } 
+    isLoading.value = false;
+};
+
+const validateForm = () => {
+  emailHasError.value =!email.value;  
+  passwordHasError.value =!password.value; 
+  
+  if (password.value !== confirmPassword.value) {
+    confirmPasswordHasError.value = true;
+  }
+
+  if(emailHasError.value || passwordHasError.value){
+    return false
+  }
+  return true
 };
 </script>
