@@ -5,15 +5,15 @@
     </label>
     <div class="relative flex items-center">  
       <input
-      :id="id"
-      :type="passwordType"
-        v-model="inputValue"
-        :placeholder="'Ingrese '+label"
+        :id="id"
+        :type="passwordType"
+        :value="modelValue.value"
         @input="updateValue"
+        :placeholder="placeholder != null ? placeholder : 'Ingrese ' + label"
         :class="[
-              'px-3 h-11 w-full text-gray-500 placeholder-gray-500 bg-gray-50 bg-opacity-40 border rounded-lg shadow-sm outline-none ring ring-transparent focus:ring-gray-500',
-              hasError? 'border-red-500 focus:border-red-500 ring-red-500': 'border-gray-200 focus:border-gray-500',
-          ]"
+          'px-3 h-11 w-full text-gray-500 placeholder-gray-500 bg-gray-50 bg-opacity-40 border rounded-lg shadow-sm outline-none ring ring-transparent focus:ring-gray-500',
+          modelValue.hasError ? 'border-red-500 focus:border-red-500 ring-red-500' : 'border-gray-200 focus:border-gray-500',
+        ]"
       />
       <button
         type="button"
@@ -23,8 +23,8 @@
         <i :class="passwordVisible? 'fas fa-eye pr-3': 'fas fa-eye-slash pr-3'"></i>
       </button>
     </div>
-    <div v-if="hasError" class="text-red-500 text-sm mt-1">
-      <slot name="error-message">{{hasErrorMessage ?? 'Este campo es obligatorio.'}}</slot>
+    <div v-if="modelValue.hasError" class="text-red-500 text-sm mt-1">
+      <slot name="error-message">{{ modelValue.errorMessage ?? 'Este campo es obligatorio.' }}</slot>
     </div>
   </div>
 </template>
@@ -43,8 +43,8 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 const inputValue = ref(props.modelValue);
 
-const updateValue = () => {
-  emit('update:modelValue', inputValue.value);
+const updateValue = (event) => {
+  emit('update:modelValue', { ...props.modelValue, value: event.target.value });
 };
 
 const id = computed(() => `input-${Math.random().toString(36).substring(7)}`);
