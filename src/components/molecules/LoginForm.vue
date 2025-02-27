@@ -4,14 +4,14 @@
     <p class="text-gray-500 mb-8 text-left">¡Bienvenido! Por favor, ingresa tus datos.</p>
 
     <form @submit.prevent="handleSubmit">
-      <TextInput v-model:value="form.email.value" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/> 
-      <PasswordInput v-model:value="form.password.value" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña"/> 
+      <TextInput v-model="form.email" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/>
+      <PasswordInput v-model="form.password" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña"/>
 
       <div class="text-right mb-8">
         <router-link to="/forgot-password" class="inline-block text-sm font-semibold text-yellowGreen-700 hover:text-yellowGreen-600">¿Olvidaste tu contraseña?</router-link>
       </div>
 
-      <button type="submit":disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-voir to-cyan-800 rounded-lg transition-all duration-300 border hover:text-gray-200 hover:border-green-700">
+      <button type="submit" :disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-voir to-cyan-800 rounded-lg transition-all duration-300 border hover:text-gray-200 hover:border-green-700">
         <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full rounded-lg bg-cyanGreen-900 opacity-50 animate-pulse"></div>
         <span v-if="isLoading">Cargando...</span>
         <span v-else>Iniciar Sesión</span>
@@ -52,9 +52,8 @@ const form = ref({
 
 const handleSubmit = async () => {
   isLoading.value = true;
+
   const validated = validateForm();
-  alert(validated)
-  debugger
   if(validated){
     isLoading.value = false;
     const result = await login(form.value.email.value, form.value.password.value);
@@ -72,7 +71,6 @@ const handleSubmit = async () => {
 };
 
 const setError = (code, message) => {
-  debugger
     form.value.email.hasError = false; 
     form.value.password.hasError = false; 
     form.value.email.errorMessage = '';
@@ -91,18 +89,13 @@ const setError = (code, message) => {
       form.value.email.errorMessage = message;
       form.value.password.errorMessage = message;
     } 
-    form.value.email.value = 'pene'
-    console.log(  form.value.email)
-    console.log(  form.value.password)
-
+  
     isLoading.value = false;
 };
 
 const validateForm = () => {
   form.value.email.hasError =!form.value.email.value;  
   form.value.password.hasError =!form.value.password.value; 
-  console.log(form.value.email.hasError)
-  console.log(form.value.password.hasError)
   if(form.value.email.hasError || form.value.password.hasError){
     return false
   }
