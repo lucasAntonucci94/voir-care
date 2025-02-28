@@ -5,8 +5,8 @@
     <p class="text-gray-500 mb-8 text-left">¡Bienvenido! Por favor, ingresa tus datos.</p>
 
     <form @submit.prevent="handleSubmit">
-      <TextInput v-model="email.field.value" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/>
-      <PasswordInput v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
+      <InputText v-model="email.field.value" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/>
+      <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
 
       <div class="text-right mb-8">
         <router-link to="/forgot-password" class="inline-block text-sm font-semibold text-yellowGreen-700 hover:text-yellowGreen-600">¿Olvidaste tu contraseña?</router-link>
@@ -29,8 +29,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import TextInput from '../atoms/TextInput.vue';
-import PasswordInput from '../atoms/PasswordInput.vue';
+import InputText from '../atoms/InputText.vue';
+import InputPassword from '../atoms/InputPassword.vue';
 import { useAuth } from '../../api/auth/auth';
 import { useFormField } from '../../composable/useFormField';
 
