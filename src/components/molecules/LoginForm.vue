@@ -1,11 +1,12 @@
+<!-- LoginForm.vue -->
 <template>
   <div class="md:min-w-md p-8 mb-8 mx-auto bg-white border border-gray-200 rounded-2xl shadow-lg">
     <h3 class="font-heading tracking-tight text-4xl font-bold text-voir-darker mb-3 text-left">Iniciar Sesión</h3>
     <p class="text-gray-500 mb-8 text-left">¡Bienvenido! Por favor, ingresa tus datos.</p>
 
     <form @submit.prevent="handleSubmit">
-      <TextInput v-model="form.email" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/>
-      <PasswordInput v-model="form.password" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña"/>
+      <TextInput v-model="email.field.value" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/>
+      <PasswordInput v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
 
       <div class="text-right mb-8">
         <router-link to="/forgot-password" class="inline-block text-sm font-semibold text-yellowGreen-700 hover:text-yellowGreen-600">¿Olvidaste tu contraseña?</router-link>
@@ -27,78 +28,73 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from "vue-router";
+import { useRouter } from 'vue-router';
 import TextInput from '../atoms/TextInput.vue';
 import PasswordInput from '../atoms/PasswordInput.vue';
 import { useAuth } from '../../api/auth/auth';
+import { useFormField } from '../../composable/useFormField';
 
-const { user, isAuthenticated, loading, error, login, logout, register, updateProfile } = useAuth();
-
+const { login, error } = useAuth();
 const router = useRouter();
 const isLoading = ref(false);
 
-const form = ref({
-  email: {
-    value: '',
-    hasError: false,
-    errorMessage: '',
-  },
-  password: {
-    value: '',
-    hasError: false,
-    errorMessage: '',
-  },
-});
+// Usamos el composable para cada campo
+const email = useFormField('');
+const password = useFormField('');
+
+// Reglas de validación frontend
+const emailRules = [
+  (v) => !!v || 'El correo es obligatorio',
+  (v) => /.+@.+\..+/.test(v) || 'El correo no es válido',
+];
+const passwordRules = [
+  (v) => !!v || 'La contraseña es obligatoria',
+];
 
 const handleSubmit = async () => {
   isLoading.value = true;
 
-  const validated = validateForm();
-  if(validated){
+  // Validación temprana de los campos
+  const isValid = email.validate(emailRules) && password.validate(passwordRules);
+  if (!isValid) {
     isLoading.value = false;
-    const result = await login(form.value.email.value, form.value.password.value);
-    
-    if (result!== true) {
-      if (error.value.code) {
-        setError(error.value.code, error.value.message);
-      }
-    } else {
-      router.push("/");
-    }
-  }else{
-    setError('form-not-validated','Campo requerido.');
+    return;
   }
+
+  // Petición a Firebase
+  const result = await login(email.field.value.value, password.field.value.value);
+  if (result !== true && error.value?.code) {
+    setErrorFromFirebase(error.value.code, error.value.message);
+  } else {
+    router.push('/');
+  }
+
+  isLoading.value = false;
 };
 
-const setError = (code, message) => {
-    form.value.email.hasError = false; 
-    form.value.password.hasError = false; 
-    form.value.email.errorMessage = '';
-    form.value.password.errorMessage = '';
-    if(code === 'auth/invalid-email' || code === 'auth/missing-email' || code === 'auth/user-not-found'){
-      form.value.email.hasError = true;  
-      form.value.email.errorMessage = message;
-    } 
-    if(code === 'auth/wrong-password' || code === 'auth/weak-password'){
-      form.value.password.hasError = true;
-      form.value.password.errorMessage = message;
-    }
-    if(code === 'auth/internal-error' || code === 'auth/admin-restricted-operation' || code === 'form-not-validated'){
-      if(!form.value.email.value) form.value.email.hasError = true; 
-      if(!form.value.password.value) form.value.password.hasError = true; 
-      form.value.email.errorMessage = message;
-      form.value.password.errorMessage = message;
-    } 
-  
-    isLoading.value = false;
-};
+// Manejo de errores de Firebase
+const setErrorFromFirebase = (code, message) => {
+  email.clearError();
+  password.clearError();
 
-const validateForm = () => {
-  form.value.email.hasError =!form.value.email.value;  
-  form.value.password.hasError =!form.value.password.value; 
-  if(form.value.email.hasError || form.value.password.hasError){
-    return false
+  switch (code) {
+    case 'auth/invalid-email':
+    case 'auth/missing-email':
+    case 'auth/user-not-found':
+      email.setError(code, message);
+      break;
+    case 'auth/wrong-password':
+    case 'auth/weak-password':
+      password.setError(code, message);
+      break;
+    case 'auth/internal-error':
+    case 'auth/admin-restricted-operation':
+      email.setError(code, 'Error interno, revisa tus datos');
+      password.setError(code, 'Error interno, revisa tus datos');
+      break;
+    default:
+      email.setError(code, 'Error desconocido, contacte con soporte.');
+      password.setError(code, 'Error desconocido, contacte con soporte.');
   }
-  return true
 };
 </script>
