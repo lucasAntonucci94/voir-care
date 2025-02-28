@@ -5,10 +5,10 @@
 
       <form @submit.prevent="handleSubmit">
         
-      <TextInput v-model="name" label="Nombre" type="text" id="name" placeholder="Ingresa tu nombre" :hasError= nameHasError :hasErrorMessage= nameHasErrorMessage />
-      <TextInput v-model="email" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico" :hasError= emailHasError :hasErrorMessage= emailHasErrorMessage />
-      <PasswordInput v-model="password" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña" :hasError= passwordHasError :hasErrorMessage= passwordHasErrorMessage />
-      <PasswordInput v-model="confirmPassword" label="Confirmar Contraseña" id="confirmpassword" placeholder="Ingresa nuevamente tu contraseña" :hasError= confirmPasswordHasError :hasErrorMessage= confirmPasswordHasErrorMessage />
+      <InputText v-model="name" label="Nombre" type="text" id="name" placeholder="Ingresa tu nombre" :hasError= nameHasError :hasErrorMessage= nameHasErrorMessage />
+      <InputText v-model="email" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico" :hasError= emailHasError :hasErrorMessage= emailHasErrorMessage />
+      <InputPassword v-model="password" label="Contraseña" type="text" id="password" placeholder="Ingresa tu contraseña" :hasError= passwordHasError :hasErrorMessage= passwordHasErrorMessage />
+      <InputPassword v-model="confirmPassword" label="Confirmar Contraseña" id="confirmpassword" placeholder="Ingresa nuevamente tu contraseña" :hasError= confirmPasswordHasError :hasErrorMessage= confirmPasswordHasErrorMessage />
       
       <button type="submit":disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-voir to-cyan-800 rounded-lg transition-all duration-300 focus:outline-none">
         <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full rounded-lg bg-cyanGreen-900 opacity-50 animate-pulse"></div>
@@ -29,8 +29,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import TextInput from '../atoms/TextInput.vue';
-import PasswordInput from '../atoms/PasswordInput.vue';
+import InputText from '../atoms/InputText.vue';
+import InputPassword from '../atoms/InputPassword.vue';
 import { useRouter } from "vue-router";
 
 import { useAuth } from "../../api/auth/auth.js";
