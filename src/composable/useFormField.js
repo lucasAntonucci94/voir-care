@@ -1,7 +1,8 @@
 // composables/useFormField.js
+import * as yup from 'yup';
 import { ref } from 'vue';
 
-export function useFormField(initialValue = '') {
+export function useFormField(initialValue = '', schema = null) {
   const field = ref({
     value: initialValue,
     hasError: false,
@@ -12,20 +13,34 @@ export function useFormField(initialValue = '') {
   const validate = (rules = []) => {
     field.value.hasError = false;
     field.value.errorMessage = '';
-
-    for (const rule of rules) {
-      const result = rule(field.value.value);
-      if (result !== true) {
+    
+    if(schema){
+      //Valido por schema
+      try {
+        schema.validateSync(field.value.value, { abortEarly: true });
+        return true;
+      } catch (error) {
         field.value.hasError = true;
-        field.value.errorMessage = result;
+        field.value.errorMessage = error.message;
         return false;
       }
+    }else{
+      //Valido por reglas
+      for (const rule of rules) {
+        const result = rule(field.value.value);
+        if (result !== true) {
+          field.value.hasError = true;
+          field.value.errorMessage = result;
+          return false;
+        }
+      }
     }
+
     return true;
   };
 
   // Manejo de errores desde el backend (como Firebase)
-  const setError = (code, message) => {
+  const setError = (message) => {
     field.value.hasError = true;
     field.value.errorMessage = message;
   };

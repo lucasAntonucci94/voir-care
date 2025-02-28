@@ -40,6 +40,9 @@
           <!-- <router-link to="/sociales" v-if="isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Sociales</router-link> -->
           <router-link to="/profile" v-if="isAuthenticated" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Perfil</router-link>
           <router-link to="/faqs" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">FAQs</router-link>
+          <router-link v-if="!isAuthenticated" to="login" class="text-gray-100 hover:text-gray-300">
+              Iniciar Sesión
+          </router-link>
         </div>
       </div>
     </transition>
