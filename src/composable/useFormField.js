@@ -24,15 +24,15 @@ export function useFormField(initialValue = '', schema = null) {
         field.value.errorMessage = error.message;
         return false;
       }
-    }else{
-      //Valido por reglas
-      for (const rule of rules) {
-        const result = rule(field.value.value);
-        if (result !== true) {
-          field.value.hasError = true;
-          field.value.errorMessage = result;
-          return false;
-        }
+    }
+    
+    //Valido por reglas
+    for (const rule of rules) {
+      const result = rule(field.value.value);
+      if (result !== true) {
+        field.value.hasError = true;
+        field.value.errorMessage = result;
+        return false;
       }
     }
 

@@ -44,23 +44,26 @@ const loginSchema = yup.object({
     .string()
     .required('La contraseña es obligatoria'),
 });
-// Reglas de validación frontend
-const emailRules = [
-  (v) => !!v || 'El correo es obligatorio',
-  (v) => /.+@.+\..+/.test(v) || 'El correo no es válido',
-];
-const passwordRules = [
-  (v) => !!v || 'La contraseña es obligatoria',
-];
+// // Reglas de validación frontend
+// const emailRules = [
+//   (v) => !!v || 'El correo es obligatorio',
+//   (v) => /.+@.+\..+/.test(v) || 'El correo no es válido',
+// ];
+// const passwordRules = [
+//   (v) => !!v || 'La contraseña es obligatoria',
+// ];
 // Usamos el composable para cada campo
 const email = useFormField('', loginSchema.fields.email);
 const password = useFormField('', loginSchema.fields.password);
 const handleSubmit = async () => {
   isLoading.value = true;
 
-  // Validación temprana de los campos
-  const isValid = email.validate(emailRules) && password.validate(passwordRules);
-  if (!isValid) {
+   // Validamos todos los campos de forma independiente
+  const emailValid = email.validate();
+  const passwordValid = password.validate();
+  
+  // Solo continuamos si todos son válidos
+  if (!emailValid || !passwordValid) {
     isLoading.value = false;
     return;
   }
