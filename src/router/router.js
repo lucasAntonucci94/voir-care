@@ -6,6 +6,7 @@ import Login from '../pages/Login.vue';
 import Register from '../pages/Register.vue';
 import Faqs from '../pages/Faqs.vue';
 import Explore from '../pages/Explore.vue';
+import LandingPage from '../pages/LandingPage.vue';
 
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
         path: '',
         name: 'home',
         component: Home,
+      },
+      {
+        path: '/landingPage',
+        name: 'landingPage',
+        component: LandingPage,
       },
       {
         path: '/login',

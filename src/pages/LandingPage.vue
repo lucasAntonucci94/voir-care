@@ -89,22 +89,38 @@ onUnmounted(() => {
   </div>
 </section>
   <!-- Características Destacadas -->
-  <!-- <section class="bg-white pt-34 py-30 -mt-14 font-poppins">
+  <section class="bg-white pt-34 py-30 -mt-14 font-poppins">
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-4xl font-bold text-gray-800 mb-10 ">Características Destacadas</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-2xl mx-auto ">
         <div v-for="(feature, index) in features" :key="index" class="feature-item flex items-center p-2.5 bg-gray-100 rounded text-gray-600 text-base">
           <img src="../assets/icons/logoVoir.png" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" />
+          <!-- <img :src="`https://via.placeholder.com/40?text=Logo${index + 1}`" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" /> -->
            <p>
              {{ feature }}
            </p>
         </div>
       </div>
     </div>
-  </section> -->
+  </section>
 
-  
-<!-- Destacadas -->
+  <!-- Misión y Visión -->
+  <section class="bg-gray-100 py-16 font-abril">
+    <div class="container mx-auto px-4 font-poppins">
+      <h2 class="text-4xl font-bold text-gray-800 text-center mb-10">Nuestra Misión y Visión</h2>
+      <div class="flex flex-col md:flex-row gap-10">
+        <div class="mission flex-1 p-5 bg-gray-100 rounded-lg">
+          <h3 class="text-2xl text-gray-800 mb-4">Misión</h3>
+          <p class="text-gray-600 text-base">Promover el bienestar animal y conectar a las personas con servicios y recursos esenciales para brindar un mejor cuidado a sus mascotas.</p>
+        </div>
+        <div class="vision flex-1 p-5 bg-gray-100 rounded-lg">
+          <h3 class="text-2xl text-gray-800 mb-4">Visión</h3>
+          <p class="text-gray-600 text-base">Ser la principal plataforma global donde los amantes de los animales encuentren apoyo, educación y una comunidad vibrante para mejorar la vida de sus mascotas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- Servicios Geolocalizados -->
 <section class="bg-gradient-to-tr from-[#02bcae] via-[#02bcae] to-black py-16 relative md:h-[50vh] font-poppins">
     <div class="container mx-auto px-4">
       <h2 class="text-4xl font-bold text-white text-center mb-10 md:mb-0">Servicios Geolocalizados</h2>
@@ -120,9 +136,32 @@ onUnmounted(() => {
     <!-- Simulación de fondo con corte -->
     <div class="absolute inset-0 bg-gradient-to-b from-[#2c3e50] to-transparent opacity-50 -z-10"></div>
   </section>
-
+<!-- Comunicación Privada -->
+<section class="bg-gray-100 pb-16 pt-16 sm:pt-30 md:pt-80 lg:pt-85">
+    <div class="container mx-auto px-4 lg:px-40 xl:px-60">
+      <div class="flex flex-col md:flex-row gap-20">
+        <!-- Columna Izquierda -->
+        <div class="w-full md:w-1/2 flex flex-col items-start gap-4">
+          <p class="text-xs font-semibold text-[#02bcae] font-poppins uppercase">Comunicación Privada</p>
+          <h2 class="text-5xl font-bold text-gray-800 font-abril pb-2">Chat Seguro y Directo</h2>
+          <p class="text-base text-gray-800 font-poppins pb-2">
+            La integración de un chat privado en nuestra plataforma permite a los usuarios comunicarse directamente con proveedores de servicios y otros miembros de la comunidad. Esta herramienta no solo facilita las transacciones, sino que también fomenta conexiones personales y seguras, mejorando la experiencia de usuario al permitir interacciones fluidas y personalizadas.
+          </p>
+          <a href="#" class="inline-block px-6 py-2 bg-[#2c3e50] text-white font-semibold rounded-[25px] hover:bg-blue-700 transition-colors">
+            Iniciar Chat
+          </a>
+        </div>
+        <!-- Columna Derecha -->
+        <div class="w-full md:w-1/2 flex items-start">
+          <p class="text-base text-gray-800 font-poppins">
+            El chat privado es esencial para coordinar servicios, discutir detalles de adopción o simplemente conectar con otros amantes de los animales. Al ofrecer un canal de comunicación seguro y directo, nuestra plataforma asegura que las interacciones sean confiables y efectivas, promoviendo un ambiente de confianza y colaboración.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 <!-- Concienciación Activa -->
-<section class="bg-white py-116 overflow-hidden">
+<section class="bg-white py-16 overflow-hidden">
     <div class="container mx-auto px-4 w-[90vw]">
       <h2 class="text-4xl font-bold text-gray-800 text-center mb-10 font-poppins">Concienciación Activa</h2>
       <div class="relative">
