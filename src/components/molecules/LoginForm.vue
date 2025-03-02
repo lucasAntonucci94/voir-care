@@ -73,7 +73,7 @@ const handleSubmit = async () => {
   if (result !== true && error.value?.code) {
     setErrorFromFirebase(error.value.code, error.value.message);
   } else {
-    router.push('/');
+    router.push('/feed');
   }
 
   isLoading.value = false;

@@ -5,14 +5,12 @@
         <img src="../../assets/icons/logoVoir.png" alt="Logo de mi red social" class="h-10 mr-4">
         <h1 class="text-xl font-bold">Voir</h1>
       </div>
-
-      <!-- justify-center md:justify-end items-center w-full md:w-auto -->
       <nav class="flex flex-nowrap"> 
         <div class="hidden md:flex space-x-4 mb-2 md:mb-0 mr-4">
-          <router-link v-if="!isAuthenticated" to="/landingpage" class="text-gray-100 hover:text-gray-300">
+          <router-link v-if="!isAuthenticated" to="/" class="text-gray-100 hover:text-gray-300">
             <i class="fa-solid fa-house mr-1"></i>Inicio
           </router-link>
-          <router-link v-if="isAuthenticated" to="/" class="text-gray-100 hover:text-gray-300">
+          <router-link v-if="isAuthenticated" to="/feed" class="text-gray-100 hover:text-gray-300">
             <i class="fa-solid fa-house mr-1"></i>Inicio
           </router-link>
           <!-- <router-link v-if="isAuthenticated" to="/sociales" class="text-gray-100 hover:text-gray-300">Sociales</router-link> -->
