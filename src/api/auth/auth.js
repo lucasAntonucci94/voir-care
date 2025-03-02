@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref } from 'vue';
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -6,21 +6,24 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-} from "firebase/auth";
-// import { doc, onSnapshot, updateDoc } from "firebase/firestore";
-// import { db } from "@/firebase"; // Asegúrate de importar tu instancia de Firestore
+} from 'firebase/auth';
+// import { doc, getDoc, updateDoc } from 'firebase/firestore'; // Importamos Firestore
+// import { db } from '../../firebase'; // Asegúrate de importar tu instancia de Firestore
+import { useStorage } from '../../composable/useStorage'; // Composable de storage
+import { useUsers } from '../../composable/useUsers'; // Composable de storage
 
 const auth = getAuth();
+const { getFileUrl } = useStorage();
+const { getUserProfileByEmail } = useUsers();
 
 const AUTH_ERRORS_MESSAGES = {
-  "auth/invalid-email": "El email no tiene un formato correcto.",
-  "auth/internal-error": "Verifique los datos y vuelva a intentarlo",
-  "auth/admin-restricted-operation":
-  "Verifique los datos y vuelva a intentarlo",
-  "auth/user-not-found": "El usuario no existe.",
-  "auth/wrong-password": "La contraseña es incorrecta.",
-  "auth/missing-email": "Debe ingresar el email, es obligatorio.",
-  "auth/weak-password": "Contraseña débil, debe tener al menos 6 caracteres.",
+  'auth/invalid-email': 'El email no tiene un formato correcto.',
+  'auth/internal-error': 'Verifique los datos y vuelva a intentarlo',
+  'auth/admin-restricted-operation': 'Verifique los datos y vuelva a intentarlo',
+  'auth/user-not-found': 'El usuario no existe.',
+  'auth/wrong-password': 'La contraseña es incorrecta.',
+  'auth/missing-email': 'Debe ingresar el email, es obligatorio.',
+  'auth/weak-password': 'Contraseña débil, debe tener al menos 6 caracteres.',
 };
 
 const user = ref(null);
@@ -28,29 +31,18 @@ const isAuthenticated = ref(false);
 const loading = ref(false);
 const error = ref(null);
 
-onAuthStateChanged(auth, (firebaseUser) => {
-    user.value = firebaseUser;
-    isAuthenticated.value = !!firebaseUser;
-    console.log(firebaseUser)
-//   if (firebaseUser) {
-//     const userDocRef = doc(db, "users", firebaseUser.uid);
-//     onSnapshot(
-//       userDocRef,
-//       (doc) => {
-//         if (doc.exists()) {
-//           user.value = { ...firebaseUser, ...doc.data() };
-//         }
-//       },
-//       (error) => {
-//         console.error("Error al obtener el documento del usuario:", error);
-//       }
-//     );
-//   } else {
-//     user.value = null;
-//   }
+onAuthStateChanged(auth, async (firebaseUser) => {
+  if (firebaseUser) {
+    user.value = firebaseUser; // Establecemos inicialmente el usuario de auth
+    isAuthenticated.value = true;
+    await loadProfileInfo(); // Cargamos datos adicionales
+  } else {
+    user.value = null;
+    isAuthenticated.value = false;
+  }
 });
 
-const login = async (email, password) => {
+async function login(email, password) {
   loading.value = true;
   error.value = null;
   try {
@@ -65,9 +57,9 @@ const login = async (email, password) => {
   } finally {
     loading.value = false;
   }
-};
+}
 
-const logout = async () => {
+async function logout() {
   loading.value = true;
   error.value = null;
   try {
@@ -77,18 +69,14 @@ const logout = async () => {
   } finally {
     loading.value = false;
   }
-};
+}
 
-const doRegister = async (email, password) => {
+async function doRegister(email, password) {
   loading.value = true;
   error.value = null;
-
   try {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    // Aquí puedes añadir la lógica para crear el usuario en Firestore
-    // await setDoc(doc(db, "users", user.uid), {
-    //   // ... datos del usuario
-    // });
+    const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
+    // Aquí podrías inicializar datos en Firestore si lo deseas
     return true;
   } catch (err) {
     error.value = {
@@ -99,18 +87,14 @@ const doRegister = async (email, password) => {
   } finally {
     loading.value = false;
   }
-};
+}
 
-const doUpdateProfile = async (profileData) => {
+async function doUpdateProfile(profileData) {
   loading.value = true;
   error.value = null;
-
   try {
     await updateProfile(auth.currentUser, profileData);
-
-    // Actualiza los datos en Firestore
-    await updateDoc(doc(db, "users", user.value.uid), profileData);
-
+    await updateDoc(doc(db, 'users', user.value.uid), profileData);
     return { success: true };
   } catch (err) {
     error.value = err;
@@ -118,7 +102,40 @@ const doUpdateProfile = async (profileData) => {
   } finally {
     loading.value = false;
   }
-};
+}
+/**
+ * Carga la información completa del perfil del usuario desde Storage y Firestore.
+ * Actualiza el ref 'user' con datos combinados de auth, storage y Firestore.
+ */
+async function loadProfileInfo() {
+  if (!user.value) return; // Si no hay usuario, no hacemos nada
+
+  try {
+    // Promesa para obtener la URL de la imagen desde Storage
+    const photoURLFilePromise = user.value.photoURL
+      ? getFileUrl(user.value.photoURL)
+      : Promise.resolve(null);
+
+    // Promesa para obtener datos adicionales desde Firestore usando useUsers
+    const userProfilePromise = getUserProfileByEmail(user.value.email);
+
+    // Esperamos ambas promesas
+    const [photoURLFile, userProfile] = await Promise.all([
+      photoURLFilePromise,
+      userProfilePromise,
+    ]);
+    debugger
+    // Combinamos todos los datos en user.value
+    user.value = {
+      ...user.value, // Datos de Firebase Auth
+      photoURLFile,  // URL de la imagen desde Storage
+      ...userProfile, // Datos adicionales de Firestore desde useUsers
+    };
+  } catch (err) {
+    console.error('Error al cargar el perfil del usuario:', err);
+    error.value = err; // Guardamos el error para manejarlo si es necesario
+  }
+}
 
 export function useAuth() {
   return {
