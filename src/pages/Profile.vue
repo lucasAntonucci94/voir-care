@@ -4,7 +4,7 @@
     <!-- Banner -->
     <div class="relative w-full h-48 md:h-64 overflow-hidden">
       <img :src="bannerUrl" alt="Banner" class="w-full h-full object-cover">
-      <div class="absolute inset-0 bg-black  opacity-50 flex items-end">
+      <div class="absolute inset-0 bg-black  opacity-50 flex items-end px-4 md:px-15 lg:px-32">
         <button 
           v-if="!isEditingBanner" 
           @click="toggleEditBanner" 
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Perfil -->
-    <div class="container mx-auto px-4 -mt-12 md:-mt-16 relative">
+    <div class="container mx-auto px-4 md:px-15 lg:px-35 -mt-12 md:-mt-16 relative">
       <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
         <img 
           :src="user?.photoURLFile || 'https://via.placeholder.com/80'" 
@@ -66,7 +66,7 @@
     </div>
 
     <!-- Contenido del perfil -->
-    <div class="container mx-auto px-4 mt-6">
+    <div class="container mx-auto px-4 md:px-15 lg:px-35 mt-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Publicaciones -->
         <div class="md:col-span-2">
