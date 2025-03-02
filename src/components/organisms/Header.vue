@@ -1,8 +1,10 @@
+<!-- Header.vue -->
 <template>
   <header class="bg-voir text-white p-4 relative">
     <div class="container mx-auto flex flex-wrap justify-between items-center">
       <div class="flex items-center mb-2 md:mb-0">
-        <button class="md:hidden mr-4" @click="$emit('toggle-sidebar')">
+        <!-- Botón hamburguesa solo visible en móvil y en la ruta /feed -->
+        <button v-if="$route.path === '/feed' && isAuthenticated" class="md:hidden mr-4" @click="emit('toggle-sidebar')">
           <i class="fa-solid fa-arrow-right"></i>
         </button>
         <img src="../../assets/icons/logoVoir.png" alt="Logo de mi red social" class="h-10 mr-4">
@@ -46,15 +48,13 @@
 
 <script setup>
 import { ref } from 'vue';
-import UserDropdown from '../molecules/UserDropdown.vue';
-import NotificationDropdown from '../molecules/NotificationDropdown.vue';
-import MessagesDropdown from '../molecules/MessagesDropdown.vue';
+import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/auth';
+import UserDropdown from '../molecules/UserDropdown.vue';
+import MessagesDropdown from '../molecules/MessagesDropdown.vue';
+import NotificationDropdown from '../molecules/NotificationDropdown.vue';
 
-// Props y Emits
-defineProps(['showSidebar']);
-defineEmits(['toggle-sidebar']);
-
+const route = useRoute();
 // Estado y lógica
 const { user, isAuthenticated } = useAuth();
 const isNotificationsMenuOpen = ref(false);
@@ -62,6 +62,11 @@ const isMessageMenuOpen = ref(false);
 const isUserMenuOpen = ref(false);
 const isMobileMenuOpen = ref(false);
 const isAdmin = ref(true); // Valor dinámico según el rol del usuario
+
+// Props y Emits
+defineProps(['showSidebar']);
+const emit = defineEmits(['toggle-sidebar']);
+
 
 const userNotifications = ref([
   { id: 1, message: 'Comentaron tu publicacion @nombrePublicacion blah blah' },

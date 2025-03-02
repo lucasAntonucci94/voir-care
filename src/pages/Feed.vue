@@ -1,14 +1,21 @@
+<!-- Feed.vue -->
 <template>
-  <main class="py-10 bg-gray-50 min-h-screen font-poppins">
-    <div class="container mx-auto px-4">
-      <CreatePostModal @post-created="addPost" />
-      <section class="space-y-6 flex flex-col items-center">
-        <PostCard v-for="post in posts" :key="post.id" :post="post" @delete="deletePost" />
-        <p v-if="!posts.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
-      </section>
-      <HighlightsCarousel :highlights="highlights" />
-    </div>
-  </main>
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <Sidebar :show="showSidebar" @toggle="emit('toggle-sidebar')" />
+
+    <!-- Contenido principal del Feed -->
+    <main class="flex-grow py-10 bg-gray-50 min-h-screen font-poppins overflow-y-auto">
+      <div class="container mx-auto px-4">
+        <CreatePostModal @post-created="addPost" />
+        <section class="space-y-6 flex flex-col items-center">
+          <PostCard v-for="post in posts" :key="post.id" :post="post" @delete="deletePost" />
+          <p v-if="!posts.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
+        </section>
+        <HighlightsCarousel :highlights="highlights" />
+      </div>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -16,7 +23,13 @@ import { ref } from 'vue';
 import CreatePostModal from '../components/organisms/CreatePostModal.vue';
 import PostCard from '../components/organisms/PostCard.vue';
 import HighlightsCarousel from '../components/organisms/HighlightsCarousel.vue';
+import Sidebar from '../components/organisms/Sidebar.vue';
 
+// Props y Emits
+defineProps(['showSidebar']);
+const emit = defineEmits(['toggle-sidebar']);
+
+// Datos de posts y highlights
 const posts = ref([
   {
     id: 1,
@@ -47,8 +60,8 @@ const highlights = ref([
   { id: 11, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
 ]);
 
+// Funciones para manejar posts
 function addPost(newPostData) {
-  debugger
   posts.value.unshift({
     ...newPostData,
     id: posts.value.length + 1,
@@ -60,7 +73,6 @@ function addPost(newPostData) {
 }
 
 function deletePost(postId) {
-  debugger
   posts.value = posts.value.filter(p => p.id !== postId);
 }
 </script>
