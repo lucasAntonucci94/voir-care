@@ -32,6 +32,13 @@
         <div class="text-center md:text-left  text-gray-800 md:text-white">
           <h1 class="text-xl md:text-2xl font-bold">{{ user?.displayName || 'Usuario' }}</h1>
           <p class="text-sm">{{ connections.length }} conexiones</p>
+          <div class="mt-1 flex -space-x-2">
+              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80">
+              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80">
+              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2.25&amp;w=256&amp;h=256&amp;q=80">
+              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80">
+              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"></div><div class="mt-3 text-sm font-medium">
+          </div>
         </div>
       </div>
 
