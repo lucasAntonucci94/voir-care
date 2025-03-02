@@ -1,9 +1,9 @@
 <template>
-  <div class="h-screen">
-    <Header />
-    <div class="flex">
-      <!-- <Sidebar /> -->
-      <main class="flex-grow">
+  <div class="h-screen flex flex-col">
+    <Header :show-sidebar="showSidebar" @toggle-sidebar="showSidebar = !showSidebar" />
+    <div class="flex flex-1 overflow-hidden">
+      <Sidebar :show="showSidebar" @toggle="showSidebar = !showSidebar" />
+      <main class="flex-grow overflow-y-auto">
         <router-view />
       </main>
     </div>
@@ -11,17 +11,11 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue'
-import Header from '../organisms/Header.vue'
-import Footer from '../organisms/Footer.vue'
+<script setup>
+import { ref } from 'vue';
+import Header from '../../components/organisms/Header.vue';
+import Footer from '../../components/organisms/Footer.vue';
+import Sidebar from '../../components/organisms/Sidebar.vue';
 
-
-export default defineComponent({
-  name: 'MainLayout',
-  components: {
-    Header,
-    Footer,
-  }
-})
+const showSidebar = ref(false);
 </script>
