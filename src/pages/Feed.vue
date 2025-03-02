@@ -119,7 +119,7 @@ const reportPost = (post) => {
 
 <template>
   <!-- Main Content -->
-  <main class="pt-16 pb-10 bg-gray-50 min-h-screen font-poppins">
+  <main class="pt-10 pb-10 bg-gray-50 min-h-screen font-poppins">
     <div class="container mx-auto px-4">
       <!-- Botón/Input para Crear Publicación -->
       <section class="flex justify-center mb-6">
