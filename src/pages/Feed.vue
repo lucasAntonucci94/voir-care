@@ -2,8 +2,7 @@
 <template>
   <div class="flex flex-1 overflow-hidden">
     <!-- Sidebar -->
-    <Sidebar :show="showSidebar" @toggle="emit('toggle-sidebar')" />
-
+    <Sidebar :show="sidebarStore.showSidebar" @toggle="sidebarStore.toggleSidebar" />
     <!-- Contenido principal del Feed -->
     <main class="flex-grow py-10 bg-gray-50 min-h-screen font-poppins overflow-y-auto">
       <div class="container mx-auto px-4">
@@ -24,19 +23,17 @@ import CreatePostModal from '../components/organisms/CreatePostModal.vue';
 import PostCard from '../components/organisms/PostCard.vue';
 import HighlightsCarousel from '../components/organisms/HighlightsCarousel.vue';
 import Sidebar from '../components/organisms/Sidebar.vue';
+import { useSidebarStore } from '../stores/sidebar'; // Importar el store
 
-// Props y Emits
-defineProps(['showSidebar']);
-const emit = defineEmits(['toggle-sidebar']);
+const sidebarStore = useSidebarStore(); // Inicializar el store
 
-// Datos de posts y highlights
 const posts = ref([
   {
     id: 1,
-    user: { id: '1', name: 'Juan Pérez', avatar: 'https://via.placeholder.com/40' },
+    user: { id: '1', name: 'Juan Pérez', avatar: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
     title: 'Evento de Adopción',
     description: 'Este sábado en el parque.',
-    media: 'https://via.placeholder.com/300',
+    media: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4',
     mediaType: 'image',
     categories: ['Eventos'],
     timestamp: new Date(),
@@ -60,7 +57,6 @@ const highlights = ref([
   { id: 11, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
 ]);
 
-// Funciones para manejar posts
 function addPost(newPostData) {
   posts.value.unshift({
     ...newPostData,

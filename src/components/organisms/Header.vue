@@ -4,7 +4,7 @@
     <div class="container mx-auto flex flex-wrap justify-between items-center">
       <div class="flex items-center mb-2 md:mb-0">
         <!-- Botón hamburguesa solo visible en móvil y en la ruta /feed -->
-        <button v-if="$route.path === '/feed' && isAuthenticated" class="md:hidden mr-4" @click="emit('toggle-sidebar')">
+        <button v-if="$route.path === '/feed' && isAuthenticated" class="md:hidden mr-4" @click="sidebarStore.toggleSidebar">
           <i class="fa-solid fa-arrow-right"></i>
         </button>
         <img src="../../assets/icons/logoVoir.png" alt="Logo de mi red social" class="h-10 mr-4">
@@ -50,23 +50,19 @@
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/auth';
+import { useSidebarStore } from '../../stores/sidebar'; // Importar el store
 import UserDropdown from '../molecules/UserDropdown.vue';
 import MessagesDropdown from '../molecules/MessagesDropdown.vue';
 import NotificationDropdown from '../molecules/NotificationDropdown.vue';
 
 const route = useRoute();
-// Estado y lógica
 const { user, isAuthenticated } = useAuth();
+const sidebarStore = useSidebarStore(); // Inicializar el store
+
 const isNotificationsMenuOpen = ref(false);
 const isMessageMenuOpen = ref(false);
 const isUserMenuOpen = ref(false);
 const isMobileMenuOpen = ref(false);
-const isAdmin = ref(true); // Valor dinámico según el rol del usuario
-
-// Props y Emits
-defineProps(['showSidebar']);
-const emit = defineEmits(['toggle-sidebar']);
-
 
 const userNotifications = ref([
   { id: 1, message: 'Comentaron tu publicacion @nombrePublicacion blah blah' },
@@ -76,24 +72,9 @@ const userNotifications = ref([
 const messagesNotifications = ref([
   { id: 1, message: 'Como estas amigo ?' },
   { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 3, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 4, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 5, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 6, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 7, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 8, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 9, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 10, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 11, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 12, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 13, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 14, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 15, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 16, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 17, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 18, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 19, message: 'Seguis teniendo a ese gatito ?' },
+  // ... resto de mensajes
 ]);
+
 function toggleNotificationsMenu() {
   isNotificationsMenuOpen.value = !isNotificationsMenuOpen.value;
   isMessageMenuOpen.value = false;
