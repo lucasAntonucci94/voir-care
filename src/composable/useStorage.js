@@ -12,6 +12,7 @@ export function useStorage() {
    * @returns {Promise<void>}
    */
   async function uploadFile(filepath, file, metadata = {}) {
+    debugger
     const imageRef = storageRef(storage, filepath);
     return await uploadString(imageRef, file, 'data_url', metadata);
   }
@@ -22,7 +23,6 @@ export function useStorage() {
    * @returns {Promise<string>} - URL de descarga del archivo
    */
   async function getFileUrl(filepath) {
-    debugger
     const imageRef = storageRef(storage, filepath);
     return await getDownloadURL(imageRef);
   }
