@@ -3,13 +3,12 @@
   <div class="flex flex-1 overflow-hidden">
     <!-- Sidebar -->
     <Sidebar :show="sidebarStore.showSidebar" @toggle="sidebarStore.toggleSidebar" />
-
     <!-- Contenido principal del Feed -->
     <main class="flex-grow py-10 bg-gray-50 min-h-screen font-poppins overflow-y-auto">
       <div class="container mx-auto px-4">
+        <!-- Reels o Highlights -->
         <HighlightsCarousel :highlights="highlights" />
-
-        <CreatePostModal @post-created="postsStore.addPost" />
+        <CreatePostModal />
         <section class="space-y-6 flex flex-col items-center">
           <template v-if="postsStore.isLoading">
             <p class="text-center text-gray-500">Cargando publicaciones...</p>
@@ -19,14 +18,10 @@
               v-for="post in postsStore.posts.value"
               :key="post.idDoc"
               :post="post"
-              @delete="postsStore.deletePost(post.idDoc)"
             />
             <p v-if="postsStore?.posts?.value?.length === 0" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </template>
         </section>
-        <!-- <p>Length: {{ postsStore.posts?.value?.length }}</p>
-        <p>Is Loading: {{ postsStore?.isLoading }}</p>
-        <p>Posts: {{ postsStore.posts?.value }}</p> -->
       </div>
     </main>
   </div>
@@ -58,17 +53,17 @@ const sidebarStore = useSidebarStore();
 // );
 // Highlights (datos estáticos por ahora)
 const highlights = [
-  { id: 1, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 2, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 3, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 4, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 5, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 6, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 7, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 8, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 9, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 10, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
-  { id: 11, title: 'Reel: Adopción', thumbnail: 'https://via.placeholder.com/150' },
+  { id: 1, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 2, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 3, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 4, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 5, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 6, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 7, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 8, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 9, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 10, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+  { id: 11, title: 'Reel: Adopción', thumbnail: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
 ];
 
 // Ciclo de vida
