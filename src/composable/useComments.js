@@ -35,6 +35,7 @@ export function useComments(postId) {
    * @returns {Promise<void>}
    */
   async function deleteComment(idDoc) {
+    debugger
     try {
       const docRef = doc(db, 'comments', idDoc);
       await deleteDoc(docRef);
