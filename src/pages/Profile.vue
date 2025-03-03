@@ -113,7 +113,6 @@ const isEditingBanner = ref(false);
 
 // Simulación de carga de publicaciones y conexiones basadas en user.value
 onMounted(() => {
-  debugger
   if (user.value?.uid) {
     // Cargar publicaciones propias (simulado, filtrado por uid del usuario autenticado)
     posts.value = [

@@ -13,6 +13,7 @@ export function usePosts() {
    * @returns {Promise<void>}
    */
   async function savePost({ user, title, body, categories, imageBase64 }) {
+    debugger
     try {
       user.isAdmin = false; // Valor por defecto, ajustar según lógica
       const data = {
@@ -25,7 +26,7 @@ export function usePosts() {
         imagePathFile: null,
         imageUrlFile: null,
       };
-
+      debugger
       if (imageBase64) {
         const filePath = `post/${user.email}/${data.id}.jpg`;
         await uploadFile(filePath, imageBase64);

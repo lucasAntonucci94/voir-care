@@ -124,7 +124,6 @@ async function loadProfileInfo() {
       photoURLFilePromise,
       userProfilePromise,
     ]);
-    debugger
     // Combinamos todos los datos en user.value
     user.value = {
       ...user.value, // Datos de Firebase Auth

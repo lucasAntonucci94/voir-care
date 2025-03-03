@@ -1,74 +1,3 @@
-<script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useAuth } from '../api/auth/auth';
-
-const { user } = useAuth();
-
-const posts = ref([
-  { id: 1, title: 'Mi primer post', content: '¡Hola mundo!' },
-  // ... más publicaciones
-]);
-
-const features = [
-  'Red Social Personalizada',
-  'Servicios Geolocalizados',
-  'Comunidad Activa',
-  'Educación en un Solo Lugar',
-  'Eventos y Talleres',
-  'Interacción Personal',
-  'Perfiles Personalizados',
-  'Alertas de Servicios',
-  'Adopciones Responsables',
-  'Contenido Educativo',
-  'Conexión con Refugios',
-  'Experiencia Completa',
-];
-
-const services = [
-  { name: 'Veterinarias cercanas', description: 'Encuentra clínicas veterinarias eficientes cerca de tu ubicación.' },
-  { name: 'Paseadores', description: 'Conecta con paseadores de confianza en tu área.' },
-  { name: 'Refugios', description: 'Descubre refugios cercanos y oportunidades de adopción.' },
-];
-const awarenessEvents = ref([
-  { title: 'Taller de Bienestar Animal', date: '15 de Noviembre, 2023' },
-  { title: 'Charla sobre Adopción Responsable', date: '22 de Noviembre, 2023' },
-  { title: 'Jornada de Educación', date: '20 de Noviembre, 2023' },
-  { title: 'Seminario de Cuidado de Mascotas', date: '6 de Diciembre, 2023' },
-  { title: 'Jornada de Refugios', date: '10 de Diciembre, 2023' },
-  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
-  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
-  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
-  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
-]);
-
-const scrollContainer = ref(null);
-let scrollInterval = null;
-
-const scroll = (direction) => {
-  if (scrollContainer.value) {
-    const scrollAmount = 300; // Ajusta según el ancho de las tarjetas
-    scrollContainer.value.scrollLeft += direction * scrollAmount;
-  }
-};
-
-// Desplazamiento automático (opcional)
-onMounted(() => {
-  if (scrollContainer.value) {
-    scrollContainer.value.addEventListener('wheel', (evt) => {
-      evt.preventDefault();
-      const scrollAmount = evt.deltaY * 0.5;
-      scrollContainer.value.scrollLeft += scrollAmount;
-    });
-
-    // Opcional: Desplazamiento automático
-    scrollInterval = setInterval(() => scroll(1), 5000); // Cambia cada 5 segundos
-  }
-});
-
-onUnmounted(() => {
-  if (scrollInterval) clearInterval(scrollInterval);
-});
-</script>
 
 <template>
   <!-- Hero Section -->
@@ -137,7 +66,7 @@ onUnmounted(() => {
     <div class="absolute inset-0 bg-gradient-to-b from-[#2c3e50] to-transparent opacity-50 -z-10"></div>
   </section>
 <!-- Comunicación Privada -->
-<section class="bg-gray-100 pb-16 pt-16 sm:pt-30 md:pt-80 lg:pt-85">
+<section class="bg-gray-100 pb-15 pt-15 sm:pt-20 sm:pb-20 md:pt-80 md:pb-30 lg:pt-85 lg:pb-20 xl:pt-75 xl:pb-40 font-poppins">
     <div class="container mx-auto px-4 lg:px-40 xl:px-60">
       <div class="flex flex-col md:flex-row gap-20">
         <!-- Columna Izquierda -->
@@ -161,7 +90,7 @@ onUnmounted(() => {
     </div>
   </section>
 <!-- Concienciación Activa -->
-<section class="bg-white py-16 overflow-hidden">
+<!-- <section class="bg-white py-16 overflow-hidden">
     <div class="container mx-auto px-4 w-[90vw]">
       <h2 class="text-4xl font-bold text-gray-800 text-center mb-10 font-poppins">Concienciación Activa</h2>
       <div class="relative">
@@ -183,7 +112,6 @@ onUnmounted(() => {
             </a>
           </div>
         </div>
-        <!-- Flechas de navegación -->
         <button
           class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md z-10"
           @click="scroll(-1)"
@@ -202,7 +130,9 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
-  </section>
+  </section> -->
+
+  <CarouselAwareness title="Eventos Próximos" :events="awarenessEvents" :auto-scroll="false" />
 
   <!-- Footer -->
   <footer class="bg-gray-800 text-white py-10">
@@ -231,6 +161,78 @@ onUnmounted(() => {
     </div>
   </footer>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
+import { useAuth } from '../api/auth/auth';
+import CarouselAwareness from '../components/organisms/CarrouselAwareness.vue';
+const { user } = useAuth();
+
+const posts = ref([
+  { id: 1, title: 'Mi primer post', content: '¡Hola mundo!' },
+  // ... más publicaciones
+]);
+
+const features = [
+  'Red Social Personalizada',
+  'Servicios Geolocalizados',
+  'Comunidad Activa',
+  'Educación en un Solo Lugar',
+  'Eventos y Talleres',
+  'Interacción Personal',
+  'Perfiles Personalizados',
+  'Alertas de Servicios',
+  'Adopciones Responsables',
+  'Contenido Educativo',
+  'Conexión con Refugios',
+  'Experiencia Completa',
+];
+
+const services = [
+  { name: 'Veterinarias cercanas', description: 'Encuentra clínicas veterinarias eficientes cerca de tu ubicación.' },
+  { name: 'Paseadores', description: 'Conecta con paseadores de confianza en tu área.' },
+  { name: 'Refugios', description: 'Descubre refugios cercanos y oportunidades de adopción.' },
+];
+const awarenessEvents = ref([
+  { title: 'Taller de Bienestar Animal', date: '15 de Noviembre, 2023' },
+  { title: 'Charla sobre Adopción Responsable', date: '22 de Noviembre, 2023' },
+  { title: 'Jornada de Educación', date: '20 de Noviembre, 2023' },
+  { title: 'Seminario de Cuidado de Mascotas', date: '6 de Diciembre, 2023' },
+  { title: 'Jornada de Refugios', date: '10 de Diciembre, 2023' },
+  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
+  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
+  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
+  { title: 'Taller de Adopción', date: '18 de Diciembre, 2023' },
+]);
+
+const scrollContainer = ref(null);
+let scrollInterval = null;
+
+const scroll = (direction) => {
+  if (scrollContainer.value) {
+    const scrollAmount = 300; // Ajusta según el ancho de las tarjetas
+    scrollContainer.value.scrollLeft += direction * scrollAmount;
+  }
+};
+
+// Desplazamiento automático (opcional)
+onMounted(() => {
+  if (scrollContainer.value) {
+    scrollContainer.value.addEventListener('wheel', (evt) => {
+      evt.preventDefault();
+      const scrollAmount = evt.deltaY * 0.5;
+      scrollContainer.value.scrollLeft += scrollAmount;
+    });
+
+    // Opcional: Desplazamiento automático
+    scrollInterval = setInterval(() => scroll(1), 5000); // Cambia cada 5 segundos
+  }
+});
+
+onUnmounted(() => {
+  if (scrollInterval) clearInterval(scrollInterval);
+});
+</script>
 
 <style scoped>
 /* Estilos personalizados mínimos */
