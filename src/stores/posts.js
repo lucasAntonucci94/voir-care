@@ -6,7 +6,7 @@ import { usePosts } from '../composable/usePosts'; // Ruta correcta
 export const usePostsStore = defineStore('posts', {
   state: () => {
     const posts = ref([]); // Definimos el ref fuera del state
-    const isLoading = ref(false); // Definimos el ref fuera del state
+    const isLoading = ref(true); // Definimos el ref fuera del state
 
     return {
       posts, // Retornamos como ref
@@ -21,8 +21,7 @@ export const usePostsStore = defineStore('posts', {
       this.unsubscribe = subscribeToIncomingPosts((updatedPosts) => {
         console.log('Posts recibidos desde Firebase:', updatedPosts);
         this.posts.value = updatedPosts; // Asignamos al .value del ref
-        // debugger
-        // this.isLoading.value = false; // Asignamos al .value del ref
+        this.isLoading = false;
         console.log('Posts actualizados en el store:', this.posts.value);
       });
     },
@@ -35,7 +34,6 @@ export const usePostsStore = defineStore('posts', {
     },
     // Añadir un nuevo post
     async addPost(newPostData) {
-      debugger
       console.log('Añadiendo nuevo post:', newPostData);
       const { savePost } = usePosts();
       // Preparar los datos para Firebase
@@ -46,7 +44,6 @@ export const usePostsStore = defineStore('posts', {
         categories: newPostData.categories || [],
         imageBase64: newPostData.media, // El archivo en crudo (File object)
       };
-      debugger
       postData.user.email = 'lucas.e.antonucci@gmail.com'
       try {
         await savePost(postData);

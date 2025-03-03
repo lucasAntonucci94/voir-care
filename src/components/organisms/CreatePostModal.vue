@@ -5,71 +5,86 @@
       type="text" 
       placeholder="¿Qué tienes en mente?" 
       @click="showModal = true" 
-      class="w-full max-w-md p-3 rounded-full bg-white border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#02bcae] cursor-pointer" 
+      class="w-full max-w-xl p-4 rounded-full bg-white border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-[#02bcae] cursor-pointer text-gray-700 placeholder-gray-400 transition-all duration-200 hover:shadow-lg" 
       readonly 
     />
   </section>
-  <div v-if="showModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-30">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-lg">
-      <h2 class="text-xl font-bold text-[#2c3e50] mb-4">Nueva Publicación</h2>
-      <form @submit.prevent="createPost" class="space-y-4">
-        <input 
-          v-model="newPost.title" 
-          type="text" 
-          placeholder="Título" 
-          class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae]" 
-          required 
-        />
-        <textarea 
-          v-model="newPost.description" 
-          placeholder="Descripción" 
-          class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] resize-y" 
-          rows="3" 
-          required 
-        ></textarea>
-        <input 
-          type="file" 
-          accept="image/*,video/*" 
-          @change="handleMediaUpload" 
-          class="w-full p-2 border rounded-lg text-sm text-gray-600" 
-        />
-        <!-- <div v-if="newPost?.media" class="mt-2">
+  <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 transition-opacity duration-300">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">Crear Nueva Publicación</h2>
+      <form @submit.prevent="createPost" class="space-y-6">
+        <!-- Título -->
+        <div>
+          <input 
+            v-model="newPost.title" 
+            type="text" 
+            placeholder="Título de tu publicación" 
+            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200" 
+            required 
+          />
+        </div>
+        <!-- Descripción -->
+        <div>
+          <textarea 
+            v-model="newPost.description" 
+            placeholder="¿Qué quieres compartir?" 
+            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200" 
+            required 
+          ></textarea>
+        </div>
+        <!-- Input de archivo -->
+        <div class="relative">
+          <input 
+            type="file" 
+            accept="image/*,video/*" 
+            @change="handleMediaUpload" 
+            class="w-full p-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#02bcae] file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50" 
+          />
+        </div>
+        <!-- Previsualización -->
+        <div v-if="newPost?.media" class="mt-2">
           <img 
             v-if="newPost?.mediaType === 'image'" 
-            :src="newPost?.media != null ? URL.createObjectURL(newPost?.media) : null" 
+            :src="newPost.media" 
             alt="Preview" 
-            class="w-full h-32 object-cover rounded-lg" 
+            class="w-full h-48 object-cover rounded-lg shadow-sm" 
           />
           <video 
-            v-else-if="newPost.mediaType === 'video'" 
-            :src="newPost?.media != null ? URL.createObjectURL(newPost?.media) : null" 
+            v-else-if="newPost?.mediaType === 'video'" 
+            :src="newPost.media" 
             controls 
-            class="w-full h-32 rounded-lg"
+            class="w-full h-48 rounded-lg shadow-sm"
           ></video>
-        </div> -->
-        <div class="flex flex-wrap gap-2">
-          <label v-for="category in categories" :key="category" class="flex items-center gap-1 text-sm">
+        </div>
+        <!-- Categorías -->
+        <div class="flex flex-wrap gap-3">
+          <label 
+            v-for="category in categories" 
+            :key="category.id" 
+            class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+          >
             <input 
-              :id="'filter_' + category.id"
+              :id="'filter_' + category.id" 
               type="checkbox" 
               v-model="newPost.categories" 
               :value="category" 
-              class="h-4 w-4 text-[#02bcae] focus:ring-[#02bcae]" 
+              class="h-4 w-4 text-[#02bcae] border-gray-300 rounded focus:ring-[#02bcae] focus:ring-opacity-50 cursor-pointer" 
             />
-            {{ category.name }}
+            <span class="font-medium">{{ category.name }}</span>
           </label>
         </div>
-        <div class="flex justify-end gap-2">
+        <!-- Botones -->
+        <div class="flex justify-end gap-3">
           <button 
             type="button" 
             @click="showModal = false" 
-            class="px-4 py-2 text-gray-600 hover:text-[#2c3e50]"
+            class="px-5 py-2 text-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
           >
             Cancelar
           </button>
           <button 
             type="submit" 
-            class="px-4 py-2 bg-[#02bcae] text-white rounded-lg hover:bg-teal-600 transition-colors"
+            class="px-5 py-2 bg-[#02bcae] text-white font-medium rounded-lg hover:bg-teal-600 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             Publicar
           </button>
@@ -82,19 +97,16 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuth } from '../../api/auth/auth';
-import { usePostsStore } from '../../stores/posts'; // Asegúrate de la ruta correcta
+import { usePostsStore } from '../../stores/posts';
+import { useCategories } from '../../composable/useCategories'; // Ajusta según tu estructura
 
-import { useCategories } from './../../composable/useCategories';
-
-// Stores y estado
 const { categories } = useCategories();
-
 const { user } = useAuth();
-const postsStore = usePostsStore(); // Instancia del store
+const postsStore = usePostsStore();
 const showModal = ref(false);
 
 const newPost = ref({
-  user: null, // Se asignará al montar o al crear
+  user: null,
   title: '',
   description: '',
   media: null,
@@ -102,29 +114,22 @@ const newPost = ref({
   categories: [],
 });
 
-const categoriesList = ['General', 'Eventos', 'Educación', 'Adopciones'];
-
 function handleMediaUpload(event) {
-  debugger
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
-      debugger
-      newPost.value.media = reader.result; // Asignamos el Base64
+      newPost.value.media = reader.result;
       newPost.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
     };
     reader.onerror = (error) => {
       console.error('Error al leer el archivo:', error);
     };
-    reader.readAsDataURL(file); // Leemos como Base64
+    reader.readAsDataURL(file);
   }
 }
 
-// Crear el post y enviarlo a Firebase
 async function createPost() {
-  console.log(user)
-debugger
   if (!newPost.value.title || !newPost.value.description) {
     console.error('Título y descripción son obligatorios');
     return;
@@ -135,10 +140,9 @@ debugger
     return;
   }
 
-  // Preparar los datos del post
   const postData = {
     user: {
-      id: user.value.uid || user.value.id, // uid si usas Firebase Auth
+      id: user.value.uid || user.value.id,
       displayName: user.value.displayName || 'Usuario Anónimo',
       firstName: user.value.firstName || 'Usuario Anónimo',
       lastName: user.value.lastName || 'Usuario Anónimo',
@@ -148,18 +152,17 @@ debugger
     },
     title: newPost.value.title,
     description: newPost.value.description,
-    media: newPost.value.media, // Archivo crudo para subir a Storage
+    media: newPost.value.media,
     mediaType: newPost.value.mediaType,
     categories: newPost.value.categories,
-    timestamp: new Date(), // Esto se sobrescribirá con serverTimestamp() en savePost
-    likes: 0, // Campo adicional
-    comments: [], // Campo adicional (array de comentarios)
-    shares: 0, // Campo adicional
+    timestamp: new Date(),
+    likes: 0,
+    comments: [],
+    shares: 0,
   };
 
   try {
     await postsStore.addPost(postData);
-    // Resetea el formulario
     newPost.value = {
       user: null,
       title: '',
@@ -171,7 +174,6 @@ debugger
     showModal.value = false;
   } catch (error) {
     console.error('Error al crear el post:', error);
-    //TO DO mensajito de error
   }
 }
 </script>

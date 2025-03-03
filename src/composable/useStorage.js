@@ -12,7 +12,6 @@ export function useStorage() {
    * @returns {Promise<void>}
    */
   async function uploadFile(filepath, file, metadata = {}) {
-    debugger
     const imageRef = storageRef(storage, filepath);
     return await uploadString(imageRef, file, 'data_url', metadata);
   }

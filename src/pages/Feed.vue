@@ -3,13 +3,12 @@
   <div class="flex flex-1 overflow-hidden">
     <!-- Sidebar -->
     <Sidebar :show="sidebarStore.showSidebar" @toggle="sidebarStore.toggleSidebar" />
-
     <!-- Contenido principal del Feed -->
     <main class="flex-grow py-10 bg-gray-50 min-h-screen font-poppins overflow-y-auto">
       <div class="container mx-auto px-4">
+        <!-- Reels o Highlights -->
         <HighlightsCarousel :highlights="highlights" />
-
-        <CreatePostModal @post-created="postsStore.addPost" />
+        <CreatePostModal />
         <section class="space-y-6 flex flex-col items-center">
           <template v-if="postsStore.isLoading">
             <p class="text-center text-gray-500">Cargando publicaciones...</p>
@@ -19,14 +18,10 @@
               v-for="post in postsStore.posts.value"
               :key="post.idDoc"
               :post="post"
-              @delete="postsStore.deletePost(post.idDoc)"
             />
             <p v-if="postsStore?.posts?.value?.length === 0" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </template>
         </section>
-        <!-- <p>Length: {{ postsStore.posts?.value?.length }}</p>
-        <p>Is Loading: {{ postsStore?.isLoading }}</p>
-        <p>Posts: {{ postsStore.posts?.value }}</p> -->
       </div>
     </main>
   </div>
