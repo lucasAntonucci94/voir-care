@@ -24,7 +24,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-2xl mx-auto ">
         <div v-for="(feature, index) in features" :key="index" class="feature-item flex items-center p-2.5 bg-gray-100 rounded text-gray-600 text-base">
           <img src="../assets/icons/logoVoir.png" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" />
-          <!-- <img :src="`https://via.placeholder.com/40?text=Logo${index + 1}`" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" /> -->
+          <!-- <img :src="`https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4?text=Logo${index + 1}`" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" /> -->
            <p>
              {{ feature }}
            </p>

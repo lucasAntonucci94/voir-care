@@ -7,8 +7,14 @@
         <button v-if="$route.path === '/feed' && isAuthenticated" class="md:hidden mr-4" @click="sidebarStore.toggleSidebar">
           <i class="fa-solid fa-arrow-right"></i>
         </button>
-        <img src="../../assets/icons/logoVoir.png" alt="Logo de mi red social" class="h-10 mr-4">
-        <h1 class="text-xl font-bold">Voir</h1>
+        <router-link v-if="isAuthenticated" to="/feed" class="flex items-center">
+          <img src="../../assets/icons/logoVoir.png" alt="Logo de mi red social" class="h-10 mr-4">
+          <h1 class="text-xl font-bold">Voir</h1>
+        </router-link>
+        <router-link v-else to="/" class="flex items-center">
+          <img src="../../assets/icons/logoVoir.png" alt="Logo de mi red social" class="h-10 mr-4">
+          <h1 class="text-xl font-bold">Voir</h1>
+        </router-link>
       </div>
       <nav class="flex flex-nowrap">
         <div class="hidden md:flex space-x-4 mb-2 md:mb-0 mr-4">
