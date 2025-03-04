@@ -43,6 +43,9 @@ export function formatTimestamp(date) {
     // Formato relativo para posts recientes
     if (diffDays < 1) {
         if (diffHours < 1) {
+            if(diffMinutes < 1) {
+                return 'hace unos segundos';
+            }
             return `hace ${diffMinutes} minuto${diffMinutes !== 1 ? 's' : ''}`;
         }
         return `hace ${diffHours} hora${diffHours !== 1 ? 's' : ''}`;
