@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedChatId" class="w-full md:w-2/3 bg-gray-100 rounded-xl shadow-xl p-5 flex flex-col h-full border border-gray-200" style="max-height: 80vh; position: relative;">
+    <div v-if="selectedChatId" class="w-full md:w-2/3 bg-gray-100 rounded-xl shadow-xl p-5 flex flex-col h-full border border-gray-200" style="min-height: calc(100vh - 120px); max-height: 80vh; position: relative;">
       <h2 class="text-xl font-semibold text-gray-900 mb-5 bg-gray-200 p-3 rounded-lg flex items-center">
         <span class="mr-2">💬</span>
         Chat con {{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}
@@ -99,7 +99,7 @@
           unsubscribeMessages.value();
           unsubscribeMessages.value = null;
         }
-  
+        debugger
         if (newChatId) {
           loadingMessages.value = true;
           const otherUser = getOtherUserEmail();
@@ -144,7 +144,7 @@
   
   const getOtherUserEmail = () => {
     const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === props.selectedChatId);
-    return selectedChat ? Object.keys(selectedChat.user).find(u => u !== user?.email) : null;
+    return selectedChat ? Object.keys(selectedChat.user).find(u => u !== user?.value.email) : null;
   };
   
   const openDeleteModal = (messageId) => {
