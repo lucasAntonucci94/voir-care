@@ -1,12 +1,12 @@
 <template>
-    <div class="container mx-auto p-4 flex flex-col md:flex-row bg-gray-50">
+    <div class="w-full p-6 flex flex-col md:flex-row bg-gray-50" style="min-height: calc(100vh - 120px);">
       <!-- Lista de chats (lado izquierdo) -->
-      <div class="w-full md:w-1/3 bg-white rounded-xl shadow-lg p-5 mb-4 md:mb-0 md:mr-4 overflow-y-auto" style="max-height: 80vh;">
+      <div class="w-full md:w-1/3 bg-white rounded-2xl shadow-lg p-5 mb-5 md:mb-0 md:mr-5 overflow-y-auto" style="max-height: 80vh;">
         <h2 class="text-xl font-semibold text-gray-800 mb-5 border-b border-gray-200 pb-2">Chats</h2>
         <div v-if="privateChatsStore.loading" class="flex justify-center">
           <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#02bcae]"></div>
         </div>
-        <div v-else-if="privateChatsStore.chats.value.length === 0" class="text-center text-gray-500 italic py-4">
+        <div v-else-if="privateChatsStore.chats.value.length === 0" class="text-center text-gray-500 italic py-4 min-h-[200px] flex items-center justify-center">
           No tienes chats con mensajes.
         </div>
         <div v-else class="space-y-3">
@@ -32,7 +32,7 @@
                 </h3>
                 <span class="text-xs text-gray-400">{{ formatDate(chat.created_at) }}</span>
               </div>
-              <p class="text-xs text-gray-600 truncate">
+              <p class="text-sm text-gray-600 truncate">
                 {{ chat.message?.message || 'Sin previsualización' }}
               </p>
             </div>
@@ -49,7 +49,7 @@
       </div>
   
       <!-- Detalle del chat (lado derecho) - Componente hijo -->
-      <ChatMessagesList :selectedChatId="privateChatsStore.selectedChatId" />
+      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" />
     </div>
   </template>
   
