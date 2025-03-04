@@ -1,20 +1,20 @@
 <template>
-    <div v-if="selectedChatId" class="p-3 bg-white border-t border-gray-100">
-      <form @submit.prevent="sendMessage" class="flex items-center space-x-3">
+    <div v-if="selectedChatId" class="p-4 bg-gray-100 border-t border-gray-200">
+      <form @submit.prevent="sendMessage" class="flex items-center space-x-4">
         <input
           v-model="messageText"
           type="text"
           placeholder="Escribe un mensaje..."
-          class="flex-1 p-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#02bcae] transition-all duration-200"
+          class="flex-1 p-3 rounded-2xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-[#02bcae] hover:border-[#02bcae] transition-all duration-200"
           :disabled="loading"
         />
         <button
           type="submit"
           :disabled="messageText.trim().length === 0 || loading"
-          class="px-4 py-2 bg-[#02bcae] text-white rounded-xl hover:bg-[#019a8e] transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          class="px-5 py-2.5 bg-[#02bcae] text-white rounded-2xl shadow-md hover:bg-[#019a8e] hover:shadow-lg transition-colors duration-200 transition-shadow duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           <span v-if="!loading">Enviar</span>
-          <div v-else class="animate-spin h-5 w-5 border-t-2 border-b-2 border-white rounded-full"></div>
+          <div v-else class="animate-spin h-5 w-5 border-4 border-t-4 border-b-4 border-white rounded-full"></div>
         </button>
       </form>
     </div>
