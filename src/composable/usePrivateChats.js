@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import {
   getFirestore,
   addDoc,
@@ -14,17 +14,16 @@ import {
 } from 'firebase/firestore';
 
 const db = getFirestore();
-const chatRef = collection(db, 'chat-global');
 const privateChatRef = collection(db, 'chats-private');
 
 // Cache reactivo para referencias de chats privados
 const privateRefCache = ref([]);
 
 /**
- * Encapsula la lógica de chats globales y privados
+ * Encapsula la lógica de chats privados
  * @returns {Object} - Métodos y propiedades públicas del composable
  */
-export function useChats() {
+export function usePrivateChats() {
   // Funciones internas
   async function createPrivateChatRef(from, to) {
     const users = { [from]: true, [to]: true };
@@ -47,14 +46,15 @@ export function useChats() {
     const queryChat = query(privateChatRef, where('users', '==', users), limit(1));
     const snap = await getDocs(queryChat);
 
-    if (snap.empty) {
-      return await createPrivateChatRef(from, to);
+    if(snap.empty) {
+        return await createPrivateChatRef(from, to);
     }
 
     const id = snap.docs[0].id;
     const chatRef = collection(db, `/chats-private/${id}/messages`);
 
     addRefToCache(users, chatRef);
+
     return chatRef;
   }
 
@@ -63,31 +63,12 @@ export function useChats() {
   }
 
   function getCachedRef(from, to) {
-    return (
-      privateRefCache.value.find(
-        (refData) => refData.users[from] && refData.users[to]
-      )?.ref || null
-    );
+    return privateRefCache.value.find(
+      (refData) => refData.users[from] && refData.users[to]
+    )?.ref || null;
   }
 
   // Funciones públicas
-  async function saveMessage({ user, message }) {
-    const data = { user, message, timestamp: serverTimestamp() };
-    try {
-      return await addDoc(chatRef, data);
-    } catch (err) {
-      console.error('Error al grabar el mensaje:', err);
-    }
-  }
-
-  function subscribeToIncomingMessages(callback) {
-    const q = query(chatRef, orderBy('timestamp'));
-    return onSnapshot(q, (snapshot) => {
-      const messages = snapshot.docs.map((doc) => doc.data());
-      callback(messages);
-    });
-  }
-
   async function savePrivateMessage(from, to, message) {
     const currentChatRef = await getPrivateChatRef(from, to);
     await addDoc(currentChatRef, {
@@ -111,44 +92,103 @@ export function useChats() {
     const queryMessages = query(ref, orderBy('created_at'));
     return new Promise((resolve) => {
       onSnapshot(queryMessages, (snapshot) => {
-        const docs = snapshot.docs.map((item) => item.data());
-        resolve(docs);
+        resolve(!snapshot.empty);
       });
     });
   }
 
   async function getChatsByEmail(email) {
-    const chats = [];
     const fieldPath = new FieldPath('users', email);
     try {
       const q = query(
         privateChatRef,
         where(fieldPath, '==', true),
-        orderBy('created_at', 'desc')
+        orderBy('created_at', 'desc'),
+        limit(1)
       );
       const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        const chat = doc.data();
-        chats.push({
-          idDoc: doc.id,
-          user: chat.users,
-          created_at: chat.created_at,
-        });
-      });
+
+      if (querySnapshot.empty) {
+        return null;
+      }
+
+      const doc = querySnapshot.docs[0];
+      const chatData = doc.data();
+      const chatId = doc.id;
+
+      const messagesQuery = query(
+        collection(privateChatRef, chatId, 'messages'),
+        orderBy('created_at', 'desc'),
+        limit(1)
+      );
+      const messagesSnapshot = await getDocs(messagesQuery);
+
+      if (!messagesSnapshot.empty) {
+        const latestMessage = messagesSnapshot.docs[0].data();
+        return {
+          idDoc: chatId,
+          user: chatData.users,
+          created_at: chatData.created_at,
+          message: latestMessage,
+        };
+      }
+
+      return null;
     } catch (err) {
-      console.error('Error al obtener chats:', err);
+      console.error('Error al obtener el último chat:', err);
+      return null;
     }
-    return chats;
   }
 
-  // Retornar las funciones públicas
+  function subscribeToPrivateChats(email, callback) {
+    const fieldPath = new FieldPath('users', email);
+    const q = query(
+      privateChatRef,
+      where(fieldPath, '==', true),
+      orderBy('created_at', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      const updatedChats = [];
+      for (const doc of snapshot.docs) {
+        const chatData = doc.data();
+        const chatId = doc.id;
+
+        const messagesQuery = query(
+          collection(privateChatRef, chatId, 'messages'),
+          orderBy('created_at', 'desc'),
+          limit(1)
+        );
+        const messagesSnapshot = await getDocs(messagesQuery);
+
+        if (!messagesSnapshot.empty) {
+          const latestMessage = messagesSnapshot.docs[0].data();
+          updatedChats.push({
+            idDoc: chatId,
+            user: chatData.users,
+            created_at: chatData.created_at,
+            message: latestMessage,
+          });
+        }
+      }
+      callback(updatedChats);
+    }, (err) => {
+      console.error('Error subscribing to private chats:', err);
+    });
+
+    onUnmounted(() => {
+      unsubscribe();
+    });
+
+    return unsubscribe;
+  }
+
   return {
-    saveMessage,
-    subscribeToIncomingMessages,
     savePrivateMessage,
     subscribeToIncomingPrivateMessages,
     hasPrivateMessages,
     getChatsByEmail,
-    privateRefCache, // Opcional: exponer el caché si necesitas inspeccionarlo
+    subscribeToPrivateChats,
+    privateRefCache,
   };
 }
