@@ -7,6 +7,7 @@ import Register from '../pages/Register.vue';
 import Faqs from '../pages/Faqs.vue';
 import Explore from '../pages/Explore.vue';
 import LandingPage from '../pages/LandingPage.vue';
+import ChatView from '../pages/ChatView.vue';
 
 const routes = [
   {
@@ -47,6 +48,11 @@ const routes = [
         path: '/explorar',
         name: 'explorar',
         component: Explore,
+      },
+      {
+        path: '/chats',
+        name: 'chats',
+        component: ChatView,
       },
     ],
   },
