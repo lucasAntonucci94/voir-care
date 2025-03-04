@@ -16,12 +16,12 @@
           :key="msg.id"
           class="p-3 rounded-2xl max-w-[70%] break-words relative"
           :class="{
-            'bg-gray-200 ml-auto': msg?.user !== user?.email,
-            'bg-[#d9f0ed] mr-auto': msg?.user === user?.email
+            'bg-gray-200 mr-auto': msg?.user !== user?.email,
+            'bg-[#d9f0ed] ml-auto': msg?.user === user?.email
           }"
         >
           <div class="relative">
-            <p class="text-sm text-gray-950">{{ msg?.message }}</p>
+            <p class="text-sm text-gray-950 pr-14">{{ msg?.message }}</p>
             <span class="text-xs text-gray-600 block mt-1">{{ msg?.user }} - {{ formatDate(msg.created_at) }}</span>
             <button
               v-if="msg?.user === user?.email"
