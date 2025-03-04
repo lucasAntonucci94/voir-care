@@ -20,7 +20,6 @@
         >
       </div>
     </div>
-
     <!-- Perfil -->
     <div class="container mx-auto px-4 md:px-15 lg:px-35 -mt-12 md:-mt-16 relative">
       <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
@@ -28,20 +27,47 @@
           :src="user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
           alt="Avatar" 
           class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover"
-        >
-        <div class="text-center md:text-left  text-gray-800 md:text-white">
-          <h1 class="text-xl md:text-2xl font-bold">{{ user?.displayName || 'Usuario' }}</h1>
-          <p class="text-sm">{{ connections.length }} conexiones</p>
-          <div class="mt-1 flex -space-x-2">
-              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80">
-              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80">
-              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2.25&amp;w=256&amp;h=256&amp;q=80">
-              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80">
-              <img class="inline-block h-10 w-10 rounded-full ring-1 ring-white" alt="" src="https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80"></div><div class="mt-3 text-sm font-medium">
-          </div>
+        ><div class="text-center md:text-left text-gray-800 md:text-white">
+        <h1 class="text-xl md:text-2xl font-bold">{{ user?.displayName || 'Usuario' }}</h1>
+        <p class="text-sm">{{ connections.length }} conexiones</p>
+        <div class="mt-1 flex -space-x-2 items-center">
+          <!-- Primeras 5 imágenes -->
+          <img 
+            v-for="connection in connections.slice(0, 5)" 
+            class="inline-block h-10 w-10 rounded-full ring-1 ring-white" 
+            alt="" 
+            :src="connection.photoURLFile"
+          >
+          <!-- Sexto círculo con overlay y elipsis si hay 6 o más -->
+          <router-link 
+            v-if="connections.length > 5" 
+            :to="'/profile/connections'" 
+            class="relative inline-block h-10 w-10 rounded-full ring-1 ring-white hover:ring-2 hover:ring-[#02bcae] transition"
+          >
+            <!-- Imagen de la sexta conexión -->
+            <img 
+              :src="connections[5].photoURLFile" 
+              class="h-10 w-10 rounded-full object-cover" 
+              alt="Más conexiones"
+            >
+            <!-- Overlay gris y elipsis -->
+            <div class="absolute inset-0 bg-gray-800 opacity-70  rounded-full flex items-center justify-center">
+              <svg 
+                viewBox="0 0 24 24" 
+                width="16" 
+                height="16" 
+                fill="white" 
+                class="text-white"
+              >
+                <circle cx="4" cy="12" r="2" />
+                <circle cx="12" cy="12" r="2" />
+                <circle cx="20" cy="12" r="2" />
+              </svg>
+            </div>
+          </router-link>
         </div>
       </div>
-
+      </div>
       <!-- Botones de acción -->
       <div class="flex flex-col md:flex-row gap-2 mt-14 md:mt-2 relative md:top-2 md:right-4 md:static">
         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -64,7 +90,6 @@
         </div>
       </div>
     </div>
-
     <!-- Contenido del perfil -->
     <div class="container mx-auto px-4 md:px-15 lg:px-35 mt-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -76,7 +101,6 @@
             <p v-if="!profilePosts.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </div>
         </div>
-
         <!-- Conexiones -->
         <div>
           <h2 class="text-lg font-semibold text-[#2c3e50] mb-4">Conexiones</h2>
@@ -129,6 +153,13 @@ onMounted(async () => {
       { uid: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
       { uid: '2', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
       { uid: '3', displayName: 'María López', email: 'maria@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '4', displayName: 'Jose López', email: 'jose@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '5', displayName: 'Juan López', email: 'juan@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '6', displayName: 'Nay López', email: 'nay@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '7', displayName: 'Mir López', email: 'mir@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '8', displayName: 'Ta López', email: 'ta@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '9', displayName: 'Mar López', email: 'mar@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '10', displayName: 'Tu López', email: 'tu@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
     ].filter(c => c.uid !== user.value.uid); // Excluimos al usuario actual
 });
 
