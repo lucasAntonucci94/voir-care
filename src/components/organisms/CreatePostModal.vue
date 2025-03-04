@@ -1,3 +1,4 @@
+<!-- CreatePostModal.vue -->
 <template>
   <section class="flex justify-center mb-6">
     <input 
@@ -9,7 +10,7 @@
     />
   </section>
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 transition-opacity duration-300">
-    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
       <!-- Overlay de carga -->
       <div 
         v-if="isLoading" 
@@ -110,17 +111,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useAuth } from '../../api/auth/auth';
 import { usePostsStore } from '../../stores/posts';
-import { useCategories } from '../../composable/useCategories'; // Ajusta según tu estructura
+import { useCategories } from '../../composable/useCategories';
 
 const { categories } = useCategories();
 const { user } = useAuth();
 const postsStore = usePostsStore();
 const showModal = ref(false);
 const isLoading = ref(false);
-
 
 const newPost = ref({
   user: null,
@@ -129,6 +129,15 @@ const newPost = ref({
   media: null,
   mediaType: '',
   categories: [],
+});
+
+// Bloquear/desbloquear scroll del fondo
+watch(showModal, (newValue) => {
+  if (newValue) {
+    document.body.classList.add('overflow-hidden');
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
 });
 
 function handleMediaUpload(event) {
@@ -148,14 +157,15 @@ function handleMediaUpload(event) {
 
 async function createPost() {
   isLoading.value = true;
-  debugger
   if (!newPost.value.title || !newPost.value.description) {
     console.error('Título y descripción son obligatorios');
+    isLoading.value = false;
     return;
   }
 
   if (!user.value) {
     console.error('Usuario no autenticado');
+    isLoading.value = false;
     return;
   }
 
@@ -190,10 +200,11 @@ async function createPost() {
       mediaType: '',
       categories: [],
     };
-    isLoading.value = false;
     showModal.value = false;
   } catch (error) {
     console.error('Error al crear el post:', error);
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>

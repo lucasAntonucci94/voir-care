@@ -37,6 +37,11 @@
 .text-voir-darker{
   color: #01746a;
 }
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
 /* 
 a {
   font-weight: 500;

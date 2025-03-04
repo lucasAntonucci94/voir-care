@@ -1,5 +1,5 @@
 import { ref, onUnmounted } from 'vue';
-import { getFirestore, addDoc, collection, onSnapshot, orderBy, query, where, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, orderBy, query, where, serverTimestamp } from 'firebase/firestore';
 
 const db = getFirestore();
 const commentsRef = collection(db, 'comments');
