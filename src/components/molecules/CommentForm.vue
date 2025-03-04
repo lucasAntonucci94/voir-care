@@ -31,14 +31,11 @@ const props =defineProps({
 });
 
 const { user } = useAuth();
-
-debugger 
 const { saveComment } = useComments(props?.idPost); // Usamos el composable con el idPost
 const comment = ref('');
 
 // Función para enviar el comentario
 async function submitComment() {
-  debugger
   if (!comment.value.trim()) return; // Evita enviar comentarios vacíos
   if (!user.value) {
     console.error('Usuario no autenticado');

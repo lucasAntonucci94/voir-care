@@ -10,7 +10,14 @@
     />
   </section>
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 transition-opacity duration-300">
-    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100">
+    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
+      <!-- Overlay de carga -->
+      <div 
+        v-if="isLoading" 
+        class="absolute inset-0 bg-gray-200/50 rounded-xl flex items-center justify-center z-10 transition-opacity duration-200"
+      >
+        <div class="w-8 h-8 border-4 border-[#02bcae] border-t-transparent rounded-full animate-spin"></div>
+      </div>
       <h2 class="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">Crear Nueva Publicación</h2>
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
@@ -19,7 +26,8 @@
             v-model="newPost.title" 
             type="text" 
             placeholder="Título de tu publicación" 
-            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200" 
+            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            :disabled="isLoading"
             required 
           />
         </div>
@@ -28,7 +36,8 @@
           <textarea 
             v-model="newPost.description" 
             placeholder="¿Qué quieres compartir?" 
-            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200" 
+            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            :disabled="isLoading"
             required 
           ></textarea>
         </div>
@@ -38,7 +47,8 @@
             type="file" 
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
-            class="w-full p-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#02bcae] file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50" 
+            :disabled="isLoading"
+            class="w-full p-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#02bcae] file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
           />
         </div>
         <!-- Previsualización -->
@@ -68,7 +78,8 @@
               type="checkbox" 
               v-model="newPost.categories" 
               :value="category" 
-              class="h-4 w-4 text-[#02bcae] border-gray-300 rounded focus:ring-[#02bcae] focus:ring-opacity-50 cursor-pointer" 
+              :disabled="isLoading"
+              class="h-4 w-4 text-[#02bcae] border-gray-300 rounded focus:ring-[#02bcae] focus:ring-opacity-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" 
             />
             <span class="font-medium">{{ category.name }}</span>
           </label>
@@ -83,10 +94,15 @@
             Cancelar
           </button>
           <button 
+            :disabled="isLoading"
             type="submit" 
-            class="px-5 py-2 bg-[#02bcae] text-white font-medium rounded-lg hover:bg-teal-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            class="relative px-5 py-2 bg-[#02bcae] text-white font-medium rounded-lg hover:bg-teal-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-teal-400 disabled:cursor-not-allowed"
           >
-            Publicar
+            <span v-if="!isLoading">Publicar</span>
+            <span v-else class="flex items-center gap-2">
+              <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              Publicando...
+            </span>
           </button>
         </div>
       </form>
@@ -95,15 +111,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useAuth } from '../../api/auth/auth';
 import { usePostsStore } from '../../stores/posts';
-import { useCategories } from '../../composable/useCategories'; // Ajusta según tu estructura
+import { useCategories } from '../../composable/useCategories';
 
 const { categories } = useCategories();
 const { user } = useAuth();
 const postsStore = usePostsStore();
 const showModal = ref(false);
+const isLoading = ref(false);
 
 const newPost = ref({
   user: null,
@@ -112,6 +129,15 @@ const newPost = ref({
   media: null,
   mediaType: '',
   categories: [],
+});
+
+// Bloquear/desbloquear scroll del fondo
+watch(showModal, (newValue) => {
+  if (newValue) {
+    document.body.classList.add('overflow-hidden');
+  } else {
+    document.body.classList.remove('overflow-hidden');
+  }
 });
 
 function handleMediaUpload(event) {
@@ -130,13 +156,16 @@ function handleMediaUpload(event) {
 }
 
 async function createPost() {
+  isLoading.value = true;
   if (!newPost.value.title || !newPost.value.description) {
     console.error('Título y descripción son obligatorios');
+    isLoading.value = false;
     return;
   }
 
   if (!user.value) {
     console.error('Usuario no autenticado');
+    isLoading.value = false;
     return;
   }
 
@@ -174,6 +203,8 @@ async function createPost() {
     showModal.value = false;
   } catch (error) {
     console.error('Error al crear el post:', error);
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>

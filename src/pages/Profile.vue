@@ -3,7 +3,7 @@
   <main class="min-h-screen bg-gray-50 font-poppins">
     <!-- Banner -->
     <div class="relative w-full h-48 md:h-64 overflow-hidden">
-      <img :src="bannerUrl" alt="Banner" class="w-full h-full object-cover">
+      <img :src="user?.bannerUrlFile ?? bannerUrl" alt="Banner" class="w-full h-full object-cover">
       <div class="absolute inset-0 bg-black  opacity-50 flex items-end px-4 md:px-15 lg:px-32">
         <button 
           v-if="!isEditingBanner" 
@@ -25,7 +25,7 @@
     <div class="container mx-auto px-4 md:px-15 lg:px-35 -mt-12 md:-mt-16 relative">
       <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
         <img 
-          :src="user?.photoURLFile || 'https://via.placeholder.com/80'" 
+          :src="user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
           alt="Avatar" 
           class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover"
         >
@@ -70,10 +70,10 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Publicaciones -->
         <div class="md:col-span-2">
-          <h2 class="text-lg font-semibold text-[#2c3e50] mb-4">Publicaciones</h2>
+          <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
           <div class="space-y-6">
-            <PostCard v-for="post in posts" :key="post.id" :post="post" @delete="posts = posts.filter(p => p.id !== post.id)" />
-            <p v-if="!posts.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
+            <PostCard v-for="post in profilePosts" :key="post.id" :post="post" @delete="posts = posts.filter(p => p.id !== post.id)" />
+            <p v-if="!profilePosts.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </div>
         </div>
 
@@ -82,7 +82,7 @@
           <h2 class="text-lg font-semibold text-[#2c3e50] mb-4">Conexiones</h2>
           <div class="space-y-4">
             <div v-for="connection in connections" :key="connection.idDoc" class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">
-              <img :src="connection.photoURLFile || 'https://via.placeholder.com/40'" alt="Avatar" class="w-10 h-10 rounded-full">
+              <img :src="connection.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" alt="Avatar" class="w-10 h-10 rounded-full">
               <div>
                 <p class="text-sm font-medium text-gray-700">{{ connection.displayName }}</p>
                 <p class="text-xs text-gray-500">{{ connection.email }}</p>
@@ -97,10 +97,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAuth } from '../api/auth/auth';
 import { useStorage } from '../composable/useStorage';
 import PostCard from '../components/organisms/PostCard.vue';
+import { usePostsStore } from '../stores/posts';
 
 // Datos del usuario y lógica
 const { user } = useAuth();
@@ -110,36 +111,30 @@ const posts = ref([]);
 const connections = ref([]);
 const bannerUrl = ref('https://scontent.faep7-1.fna.fbcdn.net/v/t39.30808-6/468006144_10235042225423750_1721754758729309234_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHLiv8dN0LxWRWLAoantdebrW8BVSE3WC2tbwFVITdYLWPE5IcKzXsjstYJCRhTML4&_nc_ohc=h4dpp8obhPsQ7kNvgEFWjFO&_nc_oc=AdghQMM5J-uvHF2Rmsco8ZEkpWJW-fFeLzgudtB3nZO6NqLLr9A3i9BKaXhb9glG3PbjTLs2dtlcSMGnK5O0qEBw&_nc_zt=23&_nc_ht=scontent.faep7-1.fna&_nc_gid=AtJyPxfdbpgLXVow-4flfwi&oh=00_AYA6zA75nJh-mEs-Sbe2DAm0c8oq9FE4aYp8IINt2nvSpQ&oe=67C9CC8E'); // URL de ejemplo para el banner
 const isEditingBanner = ref(false);
+const postsStore = usePostsStore();
 
-// Simulación de carga de publicaciones y conexiones basadas en user.value
-onMounted(() => {
-  if (user.value?.uid) {
-    // Cargar publicaciones propias (simulado, filtrado por uid del usuario autenticado)
-    posts.value = [
-      {
-        id: 1,
-        user: { id: user.value.uid, name: user.value.displayName, avatar: user.value.photoURLFile },
-        title: 'Mi última publicación',
-        description: '¡Miren este evento increíble!',
-        media: 'https://via.placeholder.com/300',
-        mediaType: 'image',
-        categories: ['Eventos'],
-        timestamp: new Date(),
-        likes: [],
-        comments: [],
-        showComments: false,
-        showMenu: false,
-      },
-    ];
-
+// Filtrar posteos por user.id
+const profilePosts = computed(() => {
+  if (!user.value || !postsStore.posts.value) return [];
+  return postsStore.posts.value.filter(post => post.user.id === user.value.id);
+});
+// Ciclo de vida
+onMounted(async () => {
+  console.log('Feed.vue montado, iniciando suscripción...');
+  postsStore.subscribe(); // Inicia la suscripción a los posts en tiempo real
+  
     // Simulación de conexiones (puedes reemplazar con lógica real más adelante)
     // Por ahora, usamos un array estático como ejemplo
     connections.value = [
-      { idDoc: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: 'https://via.placeholder.com/40' },
-      { idDoc: '2', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: 'https://via.placeholder.com/40' },
-      { idDoc: '3', displayName: 'María López', email: 'maria@example.com', photoURLFile: 'https://via.placeholder.com/40' },
-    ].filter(c => c.idDoc !== user.value.uid); // Excluimos al usuario actual
-  }
+      { uid: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '2', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+      { uid: '3', displayName: 'María López', email: 'maria@example.com', photoURLFile: 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4' },
+    ].filter(c => c.uid !== user.value.uid); // Excluimos al usuario actual
+});
+
+onUnmounted(() => {
+  console.log('Feed.vue desmontado, cancelando suscripción...');
+  postsStore.unsubscribe(); // Cancela la suscripción al desmontar el componente
 });
 
 function toggleEditBanner() {

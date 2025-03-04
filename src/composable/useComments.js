@@ -1,5 +1,5 @@
 import { ref, onUnmounted } from 'vue';
-import { getFirestore, addDoc, collection, onSnapshot, orderBy, query, where, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, orderBy, query, where, serverTimestamp } from 'firebase/firestore';
 
 const db = getFirestore();
 const commentsRef = collection(db, 'comments');
@@ -35,7 +35,6 @@ export function useComments(postId) {
    * @returns {Promise<void>}
    */
   async function deleteComment(idDoc) {
-    debugger
     try {
       const docRef = doc(db, 'comments', idDoc);
       await deleteDoc(docRef);

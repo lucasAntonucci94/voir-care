@@ -3,7 +3,7 @@
   <div class="flex items-center justify-between mb-3">
     <div class="flex items-center gap-3">
       <img 
-        :src="post?.user?.photoURLFile || 'https://via.placeholder.com/40'" 
+        :src="post?.user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
         alt="Avatar" 
         class="w-10 h-10 rounded-full border border-gray-200"
       />
