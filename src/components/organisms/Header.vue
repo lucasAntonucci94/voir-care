@@ -24,6 +24,7 @@
           <router-link v-if="isAuthenticated" to="/feed" class="text-gray-100 hover:text-gray-300">
             <i class="fa-solid fa-house mr-1"></i>Inicio
           </router-link>
+          <router-link v-if="isAuthenticated" to="/chats" class="text-gray-100 hover:text-gray-300">Chats</router-link>
           <router-link v-if="isAuthenticated" to="/explorar" class="text-gray-100 hover:text-gray-300">Explorar</router-link>
           <router-link to="/faqs" class="text-gray-100 hover:text-gray-300">FAQs</router-link>
           <router-link v-if="!isAuthenticated" to="login" class="text-gray-100 hover:text-gray-300">Iniciar Sesión</router-link>
