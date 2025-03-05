@@ -17,7 +17,7 @@
         </router-link>
       </div>
       <nav class="flex flex-nowrap">
-        <div class="hidden md:flex space-x-4 mb-2 md:mb-0 mr-4">
+        <!-- <div class="hidden md:flex space-x-4 mb-2 md:mb-0 mr-4">
           <router-link v-if="!isAuthenticated" to="/" class="text-gray-100 hover:text-gray-300">
             <i class="fa-solid fa-house mr-1"></i>Inicio
           </router-link>
@@ -28,7 +28,7 @@
           <router-link v-if="isAuthenticated" to="/explorar" class="text-gray-100 hover:text-gray-300">Explorar</router-link>
           <router-link to="/faqs" class="text-gray-100 hover:text-gray-300">FAQs</router-link>
           <router-link v-if="!isAuthenticated" to="login" class="text-gray-100 hover:text-gray-300">Iniciar Sesión</router-link>
-        </div>
+        </div> -->
         <div class="flex items-center space-x-4">
           <NotificationDropdown v-if="isAuthenticated" :notifications="userNotifications" :is-open="isNotificationsMenuOpen" @toggle="toggleNotificationsMenu" />
           <MessagesDropdown v-if="isAuthenticated" :notifications="messagesNotifications" :is-open="isMessageMenuOpen" @toggle="toggleMessagesMenu" />
