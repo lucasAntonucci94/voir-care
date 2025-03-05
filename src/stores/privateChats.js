@@ -16,11 +16,10 @@ export const usePrivateChatsStore = defineStore('privateChats', {
       const { subscribeToPrivateChats } = usePrivateChats();
       this.unsubscribe = subscribeToPrivateChats(email, (updatedChats) => {
         console.log('Chats actualizados:', updatedChats);
-        debugger
+        // agrego esta validacion para quitar objetos ya eliminados, ya que tarda en refrescarse en firebase.
         if (this.deletedChatId && Array.isArray(this.deletedChatId) && this.deletedChatId.length > 0) {
           updatedChats = updatedChats.filter(chat => !this.deletedChatId.includes(chat.idDoc));
         }
-        debugger
         this.chats.value = updatedChats;
         this.loading = false;
       }, (err) => {
@@ -52,6 +51,22 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         }
         this.deletedChatId.push(chatId);
         debugger
+      } catch (err) {
+        this.error.value = err.message;
+        console.error('Error deleting chat:', err);
+      }
+    },
+    async deleteMessage(chatId, messageId) {
+      debugger
+      try {
+        usePrivateChats().deleteChatMessage(chatId, messageId);
+        // this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
+        // debugger
+        // if (this.selectedChatId === chatId) {
+        //   this.selectedChatId = null;
+        // }
+        // this.deletedChatId.push(chatId);
+        // debugger
       } catch (err) {
         this.error.value = err.message;
         console.error('Error deleting chat:', err);
