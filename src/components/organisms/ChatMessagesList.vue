@@ -26,7 +26,7 @@
             <button
               v-if="msg?.user === user?.email"
               @click.stop="openDeleteModal(msg.id)"
-              class="absolute top-2 right-2 p-1 bg-gray-100 rounded-full text-red-500 hover:text-red-700 hover:bg-gray-200 transition-colors duration-200 z-10"
+              class="absolute top-2 right-2 p-1 bg-gray-100 rounded-full text-gray-500 hover:text-red-700 hover:bg-gray-200 transition-colors duration-200 z-10"
             >
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6 2a1 1 0 00-1 1v1H3a1 1 0 000 2h1v11a2 2 0 002 2h8a2 2 0 002-2V6h1a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm1 2h6v1H7V4zm7 11V7H6v10h8z" />

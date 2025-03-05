@@ -18,7 +18,7 @@
               </div>
               <p class="text-sm text-gray-600 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin previsualización' }}</p>
             </div>
-            <button @click.stop="openDeleteChatModal(chat.idDoc)" class="ml-2 p-1 bg-gray-100 rounded-full text-red-500 hover:text-red-700 hover:bg-gray-200 transition-colors duration-200">
+            <button @click.stop="openDeleteChatModal(chat.idDoc)" class="ml-2 p-1 bg-gray-100 rounded-full text-gray-500 hover:text-red-700 hover:bg-gray-200 transition-colors duration-200">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6 2a1 1 0 00-1 1v1H3a1 1 0 000 2h1v11a2 2 0 002 2h8a2 2 0 002-2V6h1a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm1 2h6v1H7V4zm7 11V7H6v10h8z"></path>
               </svg>
@@ -27,7 +27,7 @@
         </div>
       </div>
       <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" />
-       <!-- Modal de confirmación integrado -->
+       <!-- Modal de confirmación -->
         <div v-if="showDeleteChatModal" class="fixed inset-0 z-50 flex items-center justify-center">
             <div class="fixed inset-0 bg-black opacity-90"></div>
 
