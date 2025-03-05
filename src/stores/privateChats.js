@@ -8,6 +8,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     selectedChatId: ref(null),
     loading: ref(true),
     error: ref(null),
+    deletedChatId: ref([]),
   }),
   actions: {
     async initializeSubscription(email) {
@@ -15,6 +16,11 @@ export const usePrivateChatsStore = defineStore('privateChats', {
       const { subscribeToPrivateChats } = usePrivateChats();
       this.unsubscribe = subscribeToPrivateChats(email, (updatedChats) => {
         console.log('Chats actualizados:', updatedChats);
+        debugger
+        if (this.deletedChatId && Array.isArray(this.deletedChatId) && this.deletedChatId.length > 0) {
+          updatedChats = updatedChats.filter(chat => !this.deletedChatId.includes(chat.idDoc));
+        }
+        debugger
         this.chats.value = updatedChats;
         this.loading = false;
       }, (err) => {
@@ -33,19 +39,22 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     setSelectedChatId(chatId) {
       this.selectedChatId = chatId;
     },
+    setDeletedChatId(chatId) {
+      this.selectedChatId = chatId;
+    },
     async deleteChat(chatId) {
-      if (confirm('¿Estás seguro de eliminar este chat?')) {
-        try {
-          const { db, deleteDoc, doc } = usePrivateChats(); // Añadimos acceso a Firebase desde el composable
-          await deleteDoc(doc(db, 'chats-private', chatId));
-          this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
-          if (this.selectedChatId === chatId) {
-            this.selectedChatId = null;
-          }
-        } catch (err) {
-          this.error.value = err.message;
-          console.error('Error deleting chat:', err);
+      try {
+        usePrivateChats().deleteChat(chatId);
+        this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
+        debugger
+        if (this.selectedChatId === chatId) {
+          this.selectedChatId = null;
         }
+        this.deletedChatId.push(chatId);
+        debugger
+      } catch (err) {
+        this.error.value = err.message;
+        console.error('Error deleting chat:', err);
       }
     },
   },

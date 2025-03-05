@@ -12,7 +12,7 @@
       />
       <!-- Contenido principal -->
       <main class="flex-grow bg-gray-50 font-poppins overflow-y-auto flex-1">
-        <div class="container mx-auto px-4">
+        <div class="container mx-auto">
           <router-view />
         </div>
       </main>

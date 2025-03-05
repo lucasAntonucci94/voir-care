@@ -8,6 +8,7 @@ import Faqs from '../pages/Faqs.vue';
 import Explore from '../pages/Explore.vue';
 import LandingPage from '../pages/LandingPage.vue';
 import ChatView from '../pages/ChatView.vue';
+import { useAuth } from '../api/auth/auth';
 
 const routes = [
   {
@@ -18,6 +19,9 @@ const routes = [
         path: '/feed',
         name: 'feed',
         component: Feed,
+        meta: {
+            requiresAuth: true,
+        }
       },
       {
         path: '/',
@@ -38,6 +42,9 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: Profile,
+        meta: {
+            requiresAuth: true,
+        }
       },
       {
         path: '/faqs',
@@ -48,11 +55,17 @@ const routes = [
         path: '/explorar',
         name: 'explorar',
         component: Explore,
+        meta: {
+            requiresAuth: true,
+        }
       },
       {
         path: '/chats',
         name: 'chats',
         component: ChatView,
+        meta: {
+            requiresAuth: true,
+        }
       },
     ],
   },
@@ -61,6 +74,17 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+const { isAuthenticated } = useAuth();
+// Verificamos si una ruta requiere de autenticación para poder acceder.
+router.beforeEach((to, from) => {
+  
+  if(to.meta.requiresAuth && !isAuthenticated.value) {
+      return {
+          path: '/login',
+      }
+  }
 });
 
 export default router;

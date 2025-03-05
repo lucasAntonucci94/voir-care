@@ -78,6 +78,10 @@
       type: String,
       default: null,
     },
+    deletedChatId: {
+      type: String,
+      default: null,
+    },
   });
   
   // Estado reactivo
@@ -138,7 +142,7 @@
   };
   
   const getUserName = (email) => {
-    return email.split('@')[0].replace('.', ' ');
+    return email?.split('@')[0].replace('.', ' ');
   };
   
   const getOtherUserEmail = () => {

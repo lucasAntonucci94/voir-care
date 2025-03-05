@@ -94,15 +94,15 @@
     <div class="container mx-auto px-4 md:px-15 lg:px-35 mt-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Publicaciones -->
-        <div class="md:col-span-2">
+        <div class="md:col-span-2 mx-auto">
           <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
-          <div class="space-y-6">
+          <div class="space-y-6" >
             <PostCard v-for="post in profilePosts" :key="post.id" :post="post" @delete="posts = posts.filter(p => p.id !== post.id)" />
             <p v-if="!profilePosts.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </div>
         </div>
         <!-- Conexiones -->
-        <div>
+        <div class="hidden md:block">
           <h2 class="text-lg font-semibold text-[#2c3e50] mb-4">Conexiones</h2>
           <div class="space-y-4">
             <div v-for="connection in connections" :key="connection.idDoc" class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm">

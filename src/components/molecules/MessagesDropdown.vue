@@ -22,9 +22,9 @@
           ... and {{ notifications.length - 9 }} more
           </li>
           <li>
-            <button :class="[' text-white font-bold py-2 px-4 rounded w-48 md:w-100','bg-gray-500 hover:bg-gray-700']">
+            <router-link to="/chats" :class="['flex justify-center text-white font-bold py-2 px-4 rounded w-48 md:w-100','bg-gray-500 hover:bg-gray-700']">
               Ver todos los mensajes
-            </button>
+            </router-link>
           </li>
           </ul>
         <div v-else class="px-4 py-2 text-center text-gray-500">Sin notificaciones</div>
