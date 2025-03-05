@@ -4,7 +4,7 @@
     <div class="container mx-auto flex flex-wrap justify-between items-center">
       <div class="flex items-center mb-2 md:mb-0">
         <!-- Botón hamburguesa solo visible en móvil y en la ruta /feed -->
-        <button v-if="$route.path === '/feed' && isAuthenticated" class="md:hidden mr-4" @click="sidebarStore.toggleSidebar">
+        <button v-if=" isAuthenticated" class="md:hidden mr-4" @click="sidebarStore.toggleSidebar">
           <i class="fa-solid fa-arrow-right"></i>
         </button>
         <router-link v-if="isAuthenticated" to="/feed" class="flex items-center">
@@ -33,13 +33,13 @@
           <NotificationDropdown v-if="isAuthenticated" :notifications="userNotifications" :is-open="isNotificationsMenuOpen" @toggle="toggleNotificationsMenu" />
           <MessagesDropdown v-if="isAuthenticated" :notifications="messagesNotifications" :is-open="isMessageMenuOpen" @toggle="toggleMessagesMenu" />
           <UserDropdown v-if="isAuthenticated" :is-open="isUserMenuOpen" @toggle="toggleUserMenu" />
-          <button @click="toggleMobileMenu" class="md:hidden">
+          <!-- <button v-if="$route.path !== '/feed'" @click="toggleMobileMenu" class="md:hidden">
             <i class="fa-solid fa-bars"></i>
-          </button>
+          </button> -->
         </div>
       </nav>
     </div>
-    <transition name="fade">
+    <!-- <transition name="fade">
       <div v-if="isMobileMenuOpen" class="bg-gray-800 text-white p-4 absolute top-full left-0 w-full z-10">
         <div class="flex flex-col space-y-2">
           <router-link to="/" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Inicio</router-link>
@@ -49,7 +49,7 @@
           <router-link v-if="!isAuthenticated" to="login" class="text-gray-100 hover:text-gray-300" @click="isMobileMenuOpen = false">Iniciar Sesión</router-link>
         </div>
       </div>
-    </transition>
+    </transition> -->
   </header>
 </template>
 
@@ -63,7 +63,7 @@ import MessagesDropdown from '../molecules/MessagesDropdown.vue';
 import NotificationDropdown from '../molecules/NotificationDropdown.vue';
 
 const route = useRoute();
-const { user, isAuthenticated } = useAuth();
+const { isAuthenticated } = useAuth();
 const sidebarStore = useSidebarStore(); // Inicializar el store
 
 const isNotificationsMenuOpen = ref(false);
@@ -103,12 +103,12 @@ function toggleUserMenu() {
   isMobileMenuOpen.value = false;
 }
 
-function toggleMobileMenu() {
-  isUserMenuOpen.value = false;
-  isNotificationsMenuOpen.value = false;
-  isMessageMenuOpen.value = false;
-  isMobileMenuOpen.value = !isMobileMenuOpen.value;
-}
+// function toggleMobileMenu() {
+//   isUserMenuOpen.value = false;
+//   isNotificationsMenuOpen.value = false;
+//   isMessageMenuOpen.value = false;
+//   isMobileMenuOpen.value = !isMobileMenuOpen.value;
+// }
 </script>
 
 <style scoped>

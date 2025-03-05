@@ -1,9 +1,7 @@
 <!-- Feed.vue -->
 <template>
   <div class="flex flex-1 overflow-hidden">
-    <!-- Sidebar -->
-    <Sidebar :show="sidebarStore.showSidebar" @toggle="sidebarStore.toggleSidebar" />
-    <!-- Contenido principal del Feed -->
+    <!-- Contenido principal del Feed (sin Sidebar, ahora en MainLayout) -->
     <main class="flex-grow py-10 bg-gray-50 min-h-screen font-poppins overflow-y-auto">
       <div class="container mx-auto px-4">
         <!-- Reels o Highlights -->
@@ -32,15 +30,12 @@ import { onMounted, onUnmounted } from 'vue';
 import CreatePostModal from '../components/organisms/CreatePostModal.vue';
 import PostCard from '../components/organisms/PostCard.vue';
 import HighlightsCarousel from '../components/organisms/HighlightsCarousel.vue';
-import Sidebar from '../components/organisms/Sidebar.vue';
-import { useSidebarStore } from '../stores/sidebar';
 import { usePostsStore } from '../stores/posts';
 import { useAuth } from '../api/auth/auth';
 // Stores y estado
 const { user } = useAuth();
 
 const postsStore = usePostsStore();
-const sidebarStore = useSidebarStore();
 
 // Ciclo de vida
 onMounted(async () => {

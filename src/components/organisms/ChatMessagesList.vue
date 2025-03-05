@@ -99,7 +99,6 @@
           unsubscribeMessages.value();
           unsubscribeMessages.value = null;
         }
-        debugger
         if (newChatId) {
           loadingMessages.value = true;
           const otherUser = getOtherUserEmail();
