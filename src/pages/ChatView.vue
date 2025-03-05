@@ -26,7 +26,7 @@
           </div>
         </div>
       </div>
-      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" />
+      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" :deletedChatId="privateChatsStore.deletedChatId" />
        <!-- Modal de confirmación -->
         <div v-if="showDeleteChatModal" class="fixed inset-0 z-50 flex items-center justify-center">
             <div class="fixed inset-0 bg-black opacity-90"></div>
@@ -43,7 +43,7 @@
     </div>
   </template>
   <script setup>
-  import { ref, onMounted, onUnmounted } from 'vue';
+  import { ref, onMounted, onUnmounted, watch } from 'vue';
   import { usePrivateChatsStore } from '../stores/privateChats';
   import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
   import { formatTimestamp } from '../utils/formatTimestamp';
@@ -53,6 +53,7 @@
   const privateChatsStore = usePrivateChatsStore();
   const showDeleteChatModal = ref(false);
   const chatToDelete = ref(null);
+  const deletedChatId = ref(null);
 
   // Montaje y desmontaje
   onMounted(() => {
@@ -63,6 +64,7 @@
   onUnmounted(() => {
     privateChatsStore.unsubscribe();
     privateChatsStore.setSelectedChatId(null);
+    privateChatsStore.setDeletedChatId(null);
   });
   
   // Métodos
@@ -97,7 +99,7 @@
   
   const getUserName = (user) => {
     const selectedEmail = Object.keys(user)?.find(u => u !== 'lucas.e.antonucci@gmail.com');
-    return selectedEmail.split('@')[0].replace('.', ' ');
+    return selectedEmail?.split('@')[0].replace('.', ' ');
   };
   </script>
   

@@ -2,8 +2,14 @@
   <div class="flex flex-col min-h-screen">
     <Header />
     <div class="flex flex-1 relative">
-      <!-- Sidebar -->
-      <Sidebar :show="sidebarStore.showSidebar" @toggle="sidebarStore.toggleSidebar" />
+      <!-- Sidebar visible solo en /feed y /profile en desktop, pero siempre accesible en mobile -->
+      <Sidebar
+        :class="{
+          'hidden md:block': !permitedRoutes()
+        }"
+        :show="sidebarStore.showSidebar"
+        @toggle="sidebarStore.toggleSidebar"
+      />
       <!-- Contenido principal -->
       <main class="flex-grow bg-gray-50 font-poppins overflow-y-auto flex-1">
         <div class="container mx-auto">
@@ -23,14 +29,14 @@ import { useSidebarStore } from '../../stores/sidebar';
 import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/auth';
 
-const route = useRoute();
+const $route = useRoute();
 const { isAuthenticated } = useAuth();
 const sidebarStore = useSidebarStore();
 
 // Métodos
 const permitedRoutes = () => {
-  var asas = (route.path === '/feed' || route.path === '/profile') && isAuthenticated;
-  return asas
+  console.log(($route.path === '/feed' || $route.path === '/profile') && isAuthenticated)
+  return ($route.path === '/feed' || $route.path === '/profile') && isAuthenticated;
 };
 </script>
 

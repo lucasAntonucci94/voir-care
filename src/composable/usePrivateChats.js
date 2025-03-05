@@ -1,17 +1,5 @@
 import { ref, onUnmounted } from 'vue';
-import {
-  getFirestore,
-  addDoc,
-  FieldPath,
-  collection,
-  getDocs,
-  onSnapshot,
-  serverTimestamp,
-  orderBy,
-  query,
-  where,
-  limit,
-} from 'firebase/firestore';
+import { doc, getFirestore, addDoc,  FieldPath, collection, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
 
 const db = getFirestore();
 const privateChatRef = collection(db, 'chats-private');
@@ -97,6 +85,27 @@ export function usePrivateChats() {
     });
   }
 
+  /**
+   * Elimina un chat por su ID.
+   * @param {string} id - ID del chat
+   * @returns {Promise<void>}
+   */
+  async function deleteChat(chatId) {
+    try {
+      const docRef = doc(db, 'chats-private', chatId);
+      await deleteDoc(docRef);
+    } catch (err) {
+      console.error('Error al eliminar post:', err);
+      throw err;
+    }
+  }
+
+
+  /**
+   * Hereado de proyecto viejo, adaptado en la subscripción
+   * @param {*} email 
+   * @returns 
+   */
   async function getChatsByEmail(email) {
     const fieldPath = new FieldPath('users', email);
     try {
@@ -140,6 +149,23 @@ export function usePrivateChats() {
     }
   }
 
+  /**
+   * Metodo para quitar duplicados
+   * @param {*} chats 
+   * @returns chats filtrados / Distinct
+   */
+  function filterUniqueChats(chats){
+    debugger
+    const uniqueIds = new Set();
+    return chats.filter(chat => {
+      if (uniqueIds.has(chat.idDoc)) {
+        return false; // Si es duplicado lo filtramos
+      }
+      uniqueIds.add(chat.idDoc);
+      return true; // sino lo mantenemos
+    });
+  };
+
   function subscribeToPrivateChats(email, callback) {
     const fieldPath = new FieldPath('users', email);
     const q = query(
@@ -171,10 +197,10 @@ export function usePrivateChats() {
           });
         }
       }
-      callback(updatedChats);
+      callback(filterUniqueChats(updatedChats));
     }, (err) => {
       console.error('Error subscribing to private chats:', err);
-    });
+    });   
 
     onUnmounted(() => {
       unsubscribe();
@@ -184,6 +210,7 @@ export function usePrivateChats() {
   }
 
   return {
+    deleteChat,
     savePrivateMessage,
     subscribeToIncomingPrivateMessages,
     hasPrivateMessages,
