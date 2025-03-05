@@ -147,9 +147,9 @@ export function usePrivateChats() {
       where(fieldPath, '==', true),
       orderBy('created_at', 'desc')
     );
-
+    const updatedChats = [];
+    // instancio unsubscribe para poder cancelar la suscripción
     const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const updatedChats = [];
       for (const doc of snapshot.docs) {
         const chatData = doc.data();
         const chatId = doc.id;

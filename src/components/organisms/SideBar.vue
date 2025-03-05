@@ -1,6 +1,6 @@
 <template>
   <aside :class="[
-    'bg-gray-100 w-64 p-6 shadow-lg transition-transform duration-300 fixed top-0 bottom-0 z-30',
+    'bg-gray-100 w-64 p-6 shadow-lg transition-transform duration-300 fixed top-0 bottom-0 z-100',
     show ? 'translate-x-0' : '-translate-x-full',
     'md:bg-white md:w-72 md:shadow-none md:static md:translate-x-0'
   ]">
@@ -33,26 +33,47 @@
       <router-link 
         to="/feed" 
         class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
-        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-white"
+        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-[#02bcae]"
+        @click="emit('toggle')"
       >
         <i class="fas fa-home w-5 text-center"></i>
         <span class="text-sm font-medium">Inicio</span>
       </router-link>
       <router-link 
+        to="/explorar" 
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
+        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-white"
+        @click="emit('toggle')"
+      >
+        <i class="fas fa-compass w-5 text-center"></i>
+        <span class="text-sm font-medium">Explorar</span>
+      </router-link>
+      <router-link 
         to="/profile" 
         class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
         active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-white"
+        @click="emit('toggle')"
       >
         <i class="fas fa-user w-5 text-center"></i>
         <span class="text-sm font-medium">Perfil</span>
       </router-link>
       <router-link 
-        to="/explorar" 
+        to="/chats" 
         class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
         active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-white"
+        @click="emit('toggle')"
       >
-        <i class="fas fa-compass w-5 text-center"></i>
-        <span class="text-sm font-medium">Explorar</span>
+        <i class="fas fa-user w-5 text-center"></i>
+        <span class="text-sm font-medium">Mensajes</span>
+      </router-link>
+      <router-link 
+        to="/faqs" 
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
+        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-white"
+        @click="emit('toggle')"
+      >
+        <i class="fas fa-user w-5 text-center"></i>
+        <span class="text-sm font-medium">Faqs</span>
       </router-link>
     </nav>
 

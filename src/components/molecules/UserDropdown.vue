@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
-    <button @click="toggle" class="relative flex items-center  text-gray-500 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 transition duration-300">
-        <span class="ml-2 mr-2">{{ user?.displayName ?? '' }}</span>
+    <button @click="toggle" class="relative flex items-center text-gray-100 hover:text-gray-300 transition duration-300">
+        <span class="hidden md:flex ml-2 mr-2">{{ user?.displayName ?? '' }}</span>
         <i class="fa-solid fa-user text-xl" ></i>
     </button>
     <transition name="fade">

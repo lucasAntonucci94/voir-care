@@ -2,7 +2,7 @@
 <template>
   <div class="relative">
     <button @click="toggle" class="relative flex items-center">  
-        <i class="fa-solid fa-comment-dots text-xl text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition duration-300" ></i>
+        <i class="fa-solid fa-comment-dots text-xl text-gray-100 hover:text-gray-300 transition duration-300" ></i>
         <span v-if="notifications.length > 0" class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold p-1">
             {{ notifications.length > 9? '9+': notifications.length }}
         </span>
