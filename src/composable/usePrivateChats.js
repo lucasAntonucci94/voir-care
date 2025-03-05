@@ -1,6 +1,9 @@
 import { ref, onUnmounted } from 'vue';
 import { doc, getFirestore, addDoc,  FieldPath, collection, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
+import { useAuth } from '../api/auth/auth';
 
+
+const { user } = useAuth();
 const db = getFirestore();
 const privateChatRef = collection(db, 'chats-private');
 
@@ -61,17 +64,31 @@ export function usePrivateChats() {
     const currentChatRef = await getPrivateChatRef(from, to);
     await addDoc(currentChatRef, {
       message,
-      user: from,
+      user: {
+        email: user?.value?.email ?? from,
+        displayName: user?.value?.displayName,
+        photoURLFile: user?.value?.photoURLFile
+      },
       created_at: serverTimestamp(),
     });
   }
 
   async function subscribeToIncomingPrivateMessages(from, to, callback) {
-    const ref = await getPrivateChatRef(from, to);
-    const queryMessages = query(ref, orderBy('created_at'));
-    return onSnapshot(queryMessages, (snapshot) => {
-      const docs = snapshot.docs.map((item) => item.data());
-      callback(docs);
+      const ref = await getPrivateChatRef(from, to);
+      const queryMessages = query(ref, orderBy('created_at'));
+      return onSnapshot(queryMessages, (snapshot) => {
+        const messages = snapshot.docs.map((doc) => {
+          const message = doc.data();
+          return {
+            idDoc: doc.id,
+            message: message.message,
+            user: message.user,
+            created_at: message.created_at,
+          };
+        }
+      );
+      debugger
+      callback(messages);
     });
   }
 
@@ -99,7 +116,23 @@ export function usePrivateChats() {
       throw err;
     }
   }
-
+  /**
+   * Elimina un mensaje específico de un chat por su chatId y messageId.
+   * @param {string} chatId - ID del chat
+   * @param {string} messageId - ID del mensaje
+   * @returns {Promise<void>}
+   */
+  async function deleteChatMessage(chatId, messageId) {
+    debugger
+    try {
+      // Referencia al documento específico del mensaje dentro de la subcolección 'messages'
+      const messageRef = doc(db, 'chats-private', chatId, 'messages', messageId);
+      await deleteDoc(messageRef);
+    } catch (err) {
+      console.error('Error al eliminar el mensaje:', err);
+      throw err;
+    }
+  }
 
   /**
    * Hereado de proyecto viejo, adaptado en la subscripción
@@ -149,23 +182,6 @@ export function usePrivateChats() {
     }
   }
 
-  /**
-   * Metodo para quitar duplicados
-   * @param {*} chats 
-   * @returns chats filtrados / Distinct
-   */
-  function filterUniqueChats(chats){
-    debugger
-    const uniqueIds = new Set();
-    return chats.filter(chat => {
-      if (uniqueIds.has(chat.idDoc)) {
-        return false; // Si es duplicado lo filtramos
-      }
-      uniqueIds.add(chat.idDoc);
-      return true; // sino lo mantenemos
-    });
-  };
-
   function subscribeToPrivateChats(email, callback) {
     const fieldPath = new FieldPath('users', email);
     const q = query(
@@ -201,6 +217,23 @@ export function usePrivateChats() {
     }, (err) => {
       console.error('Error subscribing to private chats:', err);
     });   
+      
+    /**
+     * Metodo para quitar duplicados
+     * @param {*} chats 
+     * @returns chats filtrados / Distinct
+     */
+    function filterUniqueChats(chats){
+      debugger
+      const uniqueIds = new Set();
+      return chats.filter(chat => {
+        if (uniqueIds.has(chat.idDoc)) {
+          return false; // Si es duplicado lo filtramos
+        }
+        uniqueIds.add(chat.idDoc);
+        return true; // sino lo mantenemos
+      });
+    };
 
     onUnmounted(() => {
       unsubscribe();
@@ -210,12 +243,13 @@ export function usePrivateChats() {
   }
 
   return {
-    deleteChat,
     savePrivateMessage,
     subscribeToIncomingPrivateMessages,
     hasPrivateMessages,
     getChatsByEmail,
     subscribeToPrivateChats,
+    deleteChat,
+    deleteChatMessage,
     privateRefCache,
   };
 }
