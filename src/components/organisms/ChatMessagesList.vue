@@ -16,16 +16,16 @@
           :key="msg.id"
           class="p-3 rounded-2xl max-w-[70%] break-words relative"
           :class="{
-            'bg-gray-200 mr-auto': msg?.user !== user?.email,
-            'bg-[#d9f0ed] ml-auto': msg?.user === user?.email
+            'bg-gray-200 mr-auto': msg?.user?.email !== user?.email,
+            'bg-[#d9f0ed] ml-auto': msg?.user?.email === user?.email
           }"
         >
           <div class="relative">
             <p class="text-sm text-gray-950 pr-14">{{ msg?.message }}</p>
-            <span class="text-xs text-gray-600 block mt-1">{{ msg?.user }} - {{ formatDate(msg.created_at) }}</span>
+            <span class="text-xs text-gray-600 block mt-1">{{ msg?.user.email }} - {{ formatDate(msg.created_at) }}</span>
             <button
-              v-if="msg?.user === user?.email"
-              @click.stop="openDeleteModal(msg.id)"
+              v-if="msg?.user.email === user?.email"
+              @click.stop="openDeleteModal(msg.idDoc)"
               class="absolute top-2 right-2 p-1 bg-gray-100 rounded-full text-gray-500 hover:text-red-700 hover:bg-gray-200 transition-colors duration-200 z-10"
             >
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -33,7 +33,7 @@
               </svg>
             </button>
             <div
-              v-if="msg?.user === user?.email"
+              v-if="msg?.user.email === user?.email"
               class="absolute -bottom-2 -right-2 w-0 h-0 border-l-[10px] border-l-transparent border-t-[10px] border-t-[#d9f0ed] border-r-[10px] border-r-transparent"
             ></div>
             <div
@@ -85,11 +85,11 @@
   });
   
   // Estado reactivo
+  const { user } = useAuth();
   const privateChatsStore = usePrivateChatsStore();
   const messages = ref([]);
   const loadingMessages = ref(false);
   const unsubscribeMessages = ref(null);
-  const { user } = useAuth();
   const showDeleteModal = ref(false);
   const messageToDelete = ref(null);
   
@@ -164,10 +164,8 @@
   
   const deleteMessage = async (messageId) => {
     console.log('Confirmando eliminación de mensaje ID:', messageId);
-    // Lógica para eliminar el mensaje (debes implementarla según tu backend o Firestore)
-    // Ejemplo: messages.value = messages.value.filter(msg => msg.id !== messageId);
-    showDeleteModal.value = false;
-    messageToDelete.value = null;
+    privateChatsStore.deleteMessage(props.selectedChatId, messageId);
+    closeDeleteModal();
   };
   </script>
   
