@@ -15,7 +15,7 @@
     <div class="relative">
       <button 
         @click="post.showMenu = !post.showMenu" 
-        class="text-gray-600 hover:text-[#02bcae] focus:outline-none transition-colors duration-200"
+        class="text-gray-600 hover:text-primary focus:outline-none transition-colors duration-200"
       >
         <i class="fas fa-ellipsis-h"></i>
       </button>

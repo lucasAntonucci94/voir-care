@@ -5,11 +5,11 @@
       v-model="comment" 
       type="text" 
       placeholder="Escribe un comentario..." 
-      class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#02bcae] bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200" 
+      class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200" 
     />
     <Button 
       type="submit" 
-      class="flex items-center justify-center px-4 py-2 bg-[#02bcae] text-white rounded-lg hover:bg-teal-600 transition-all duration-200"
+      class="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-teal-600 transition-all duration-200"
     >
       <i class="fas fa-paper-plane"></i>
       <!-- <span class="pl-2">Enviar</span> -->

@@ -7,19 +7,19 @@
       <img :src="post?.imageUrlFile" alt="Post media" class="w-full h-48 object-cover rounded-lg" />
     </div>
     <div class="flex gap-2 mt-2 flex-wrap">
-      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-[#02bcae] bg-teal-100 px-2 py-1 rounded-full">
+      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 px-2 py-1 rounded-full">
         {{ category.name }}
       </span>
     </div>
     <div class="flex justify-between mt-3 text-sm text-gray-600">
       <button
         @click="toggleLike"
-        :class="{ 'text-[#02bcae]': post?.likes?.some(l => l.userId === user?.id) }"
-        class="hover:text-[#02bcae] transition-colors flex items-center gap-1"
+        :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.id) }"
+        class="hover:text-primary transition-colors flex items-center gap-1"
       >
         <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
       </button>
-      <button @click="post.showComments = !post.showComments" class="hover:text-[#02bcae] transition-colors">
+      <button @click="post.showComments = !post.showComments" class="hover:text-primary transition-colors">
         {{ comments?.length ?? 0 }} Comentarios
       </button>
     </div>
