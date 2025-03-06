@@ -48,7 +48,7 @@
         <!-- Botones de acción -->
         <div v-if="isOwnProfile" class="flex flex-col gap-4 h-30 w-full md:w-auto">
           <!-- Editar portada (superior derecha) -->
-          <div class="flex justify-center md:justify-end gap-2">
+          <div class="hidden md:flex justify-center md:justify-end gap-2">
           <button 
             v-if="!isEditingBanner" 
             @click="toggleEditBanner" 
@@ -138,20 +138,20 @@
         <!-- Publicaciones -->
         <div class="md:col-span-2">
           <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
-          <div v-if="activeTab === 'publicaciones'" class="space-y-6">
+          <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
             <PostCard v-for="post in profilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
             <p v-if="!profilePosts?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </div>
-          <div v-else-if="activeTab === 'información'" class="bg-white p-4 rounded-lg shadow-sm">
+          <div v-else-if="activeTab === 'información'" class="bg-white p-4 rounded-lg shadow-sm  mx-auto max-w-lg">
             <p>Información del usuario (pendiente de implementación)</p>
           </div>
-          <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm">
+          <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
             <p>Galería (pendiente de implementación)</p>
           </div>
-          <div v-else-if="activeTab === 'eventos'" class="bg-white p-4 rounded-lg shadow-sm">
+          <div v-else-if="activeTab === 'eventos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
             <p>Eventos (pendiente de implementación)</p>
           </div>
-          <div v-else-if="activeTab === 'grupos'" class="bg-white p-4 rounded-lg shadow-sm">
+          <div v-else-if="activeTab === 'grupos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
             <p>Grupos (pendiente de implementación)</p>
           </div>
         </div>
