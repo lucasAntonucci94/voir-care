@@ -31,7 +31,7 @@
     <!-- Navegación principal -->
     <nav class="space-y-2">
       <router-link 
-        :to="routeDestination(isAuthenticated)" 
+        :to="isAuthenticated ? '/feed' : '/'" 
         class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
         active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
@@ -39,24 +39,6 @@
         <i class="fas fa-home w-5 text-center"></i>
         <span class="text-sm font-medium">Inicio</span>
       </router-link>
-      <!-- <router-link v-if="isAuthenticated"
-        to="/feed" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
-        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
-        @click="emit('toggle')"
-      >
-        <i class="fas fa-home w-5 text-center"></i>
-        <span class="text-sm font-medium">Inicio</span>
-      </router-link>
-      <router-link v-else
-        to="/feed" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
-        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
-        @click="emit('toggle')"
-      >
-        <i class="fas fa-home w-5 text-center"></i>
-        <span class="text-sm font-medium">Inicio</span>
-      </router-link> -->
       <router-link v-if="isAuthenticated"
         to="/explorar" 
         class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
@@ -117,7 +99,6 @@
       </ul>
     </div>
   </aside>
-
   <!-- Fondo semitransparente para cerrar en móvil -->
   <div 
     v-if="show" 
@@ -132,8 +113,4 @@ const { user, isAuthenticated } = useAuth();
 const emit = defineEmits(['toggle']);
 
 defineProps(['show']);
-
-function routeDestination(isAuthenticated) {
-  return isAuthenticated ? '/feed' : '/';
-}
 </script>
