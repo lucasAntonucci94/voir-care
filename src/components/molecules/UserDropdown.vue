@@ -22,12 +22,12 @@
         <!-- Botón de cierre (solo mobile) -->
         <button
           @click="toggle"
-          class="sm:hidden self-end p-4 text-primary hover:text-primary-darker transition-colors duration-200"
+          class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-primary transition-colors md:hidden"
         >
           <i class="fa-solid fa-times text-xl"></i>
         </button>
         <!-- Información del usuario -->
-        <div v-if="isAuthenticated" class="p-4 border-b border-gray-100">
+        <div v-if="isAuthenticated" class="pt-10 p-4 border-b border-gray-100">
           <div class="flex items-center gap-3">
             <img
               :src="user?.photoURLFile || 'https://via.placeholder.com/48'"

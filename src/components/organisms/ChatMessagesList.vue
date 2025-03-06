@@ -46,7 +46,7 @@
       <ChatMessageInput :selectedChatId="selectedChatId" class="mt-auto p-3 bg-gray-100 border-t border-gray-200" />
   
         <!-- Modal de confirmación integrado -->
-        <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center">
+        <div v-if="showDeleteModal" class="fixed inset-0 z-101 flex items-center justify-center">
             <div class="fixed inset-0 bg-black opacity-90"></div>
 
             <div class="relative bg-white rounded-2xl p-6 shadow-lg w-full max-w-md">
