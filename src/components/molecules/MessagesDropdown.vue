@@ -74,11 +74,26 @@ const privateChatsStore = usePrivateChatsStore();
 // debugger
 
 const notifications = ref([
-  { id: 1, message: 'Comentaron tu publicacion @nombrePublicacion blah blah' },
-  { id: 2, message: 'Alguien te ha seguido' },
-  { id: 3, message: 'Alguien te ha seguido' },
-  { id: 4, message: 'Alguien te ha seguido' },
+  { id: 1, message: 'Como estas amigo ?' },
+  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 3, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 4, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 5, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 6, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 7, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 8, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 9, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 10, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 11, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 12, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 13, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 14, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 15, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 16, message: 'Seguis teniendo a ese gatito ?' },
+  { id: 17, message: 'Seguis teniendo a ese gatito ?' },
 ]);
+
+
 const props = defineProps({
   isOpen: {
     type: Boolean,

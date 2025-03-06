@@ -59,26 +59,6 @@ const navbarStore = useNavbarStore();
 const sidebarStore = useSidebarStore();
 const headerRef = ref(null);
 
-const messagesNotifications = ref([
-  { id: 1, message: 'Como estas amigo ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-]);
-
 function handleClickOutside(event) {
   if (headerRef.value && !headerRef.value.contains(event.target)) {
     navbarStore.closeAllMenus();

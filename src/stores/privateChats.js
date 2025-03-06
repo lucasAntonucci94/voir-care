@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { usePrivateChats } from '../composable/usePrivateChats'; // Ajusta la ruta según tu estructura
+import { usePrivateChats } from '../composable/usePrivateChats';
 
 export const usePrivateChatsStore = defineStore('privateChats', {
   state: () => ({
@@ -9,22 +9,23 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     loading: ref(true),
     error: ref(null),
     deletedChatId: ref([]),
-    unsubscribe: null,
+    unsubscribe: ref(null), // Usamos ref para mayor control
   }),
   actions: {
-    async initializeSubscription(email) {
-      if (this.unsubscribe) {
+    initializeSubscription(email) {
+      // Verificación más estricta: solo ignoramos si unsubscribe es una función válida
+      if (typeof this.unsubscribe === 'function') {
         console.log('Ya hay una suscripción activa, ignorando...');
-        return;
+        debugger
+        this.unsubscribe();
+        // return; // No necesitamos retornar, ya que unsubscribe se encarga de limpiar
       }
-   
 
       this.loading = true;
       const { subscribeToPrivateChats } = usePrivateChats();
       this.unsubscribe = subscribeToPrivateChats(email, (updatedChats) => {
         console.log('Chats actualizados:', updatedChats);
-        // agrego esta validacion para quitar objetos ya eliminados, ya que tarda en refrescarse en firebase.
-        if (this.deletedChatId && Array.isArray(this.deletedChatId) && this.deletedChatId.length > 0) {
+        if (this.deletedChatId.length > 0) {
           updatedChats = updatedChats.filter(chat => !this.deletedChatId.includes(chat.idDoc));
         }
         this.chats.value = updatedChats;
@@ -32,30 +33,38 @@ export const usePrivateChatsStore = defineStore('privateChats', {
       }, (err) => {
         this.error.value = err.message;
         this.loading = false;
-        console.error('Error suscribing to chats:', err);
+        console.error('Error subscribing to chats:', err);
+        this.unsubscribe = null; // Limpiamos en caso de error
       });
+      debugger
     },
     unsubscribe() {
-      if (this.unsubscribe) {
+      debugger
+      if (typeof this.unsubscribe === 'function') {
         console.log('Cancelando suscripción a chats...');
         this.unsubscribe();
-        this.unsubscribe = null;
       }
+      this.unsubscribe = null; // Siempre seteamos a null después de cancelar
+      this.chats.value = [];
+      this.loading = true;
     },
     setSelectedChatId(chatId) {
       this.selectedChatId = chatId;
     },
     setDeletedChatId(chatId) {
-      this.deletedChatId = chatId;
+      if (!this.deletedChatId.includes(chatId)) {
+        this.deletedChatId.push(chatId);
+      }
     },
     async deleteChat(chatId) {
       try {
-        usePrivateChats().deleteChat(chatId);
+        const { deleteChat } = usePrivateChats();
+        await deleteChat(chatId);
         this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
         if (this.selectedChatId === chatId) {
           this.selectedChatId = null;
         }
-        this.deletedChatId.push(chatId);
+        this.setDeletedChatId(chatId);
       } catch (err) {
         this.error.value = err.message;
         console.error('Error deleting chat:', err);
@@ -63,10 +72,11 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     },
     async deleteMessage(chatId, messageId) {
       try {
-        usePrivateChats().deleteChatMessage(chatId, messageId);
+        const { deleteChatMessage } = usePrivateChats();
+        await deleteChatMessage(chatId, messageId);
       } catch (err) {
         this.error.value = err.message;
-        console.error('Error deleting chat:', err);
+        console.error('Error deleting message:', err);
       }
     },
   },

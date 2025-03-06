@@ -190,57 +190,56 @@ export function usePrivateChats() {
       orderBy('created_at', 'desc')
     );
     const updatedChats = [];
-    // instancio unsubscribe para poder cancelar la suscripción
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      for (const doc of snapshot.docs) {
-        const chatData = doc.data();
-        const chatId = doc.id;
-
-        const messagesQuery = query(
-          collection(privateChatRef, chatId, 'messages'),
-          orderBy('created_at', 'desc'),
-          limit(1)
-        );
-        const messagesSnapshot = await getDocs(messagesQuery);
-
-        if (!messagesSnapshot.empty) {
-          const latestMessage = messagesSnapshot.docs[0].data();
-          updatedChats.push({
-            idDoc: chatId,
-            user: chatData.users,
-            created_at: chatData.created_at,
-            message: latestMessage,
-          });
+  
+    return onSnapshot(
+      q,
+      async (snapshot) => {
+        updatedChats.length = 0; // Limpiamos el array
+        for (const doc of snapshot.docs) {
+          const chatData = doc.data();
+          const chatId = doc.id;
+  
+          const messagesQuery = query(
+            collection(privateChatRef, chatId, 'messages'),
+            orderBy('created_at', 'desc'),
+            limit(1)
+          );
+          const messagesSnapshot = await getDocs(messagesQuery);
+  
+          if (!messagesSnapshot.empty) {
+            const latestMessage = messagesSnapshot.docs[0].data();
+            updatedChats.push({
+              idDoc: chatId,
+              user: chatData.users,
+              created_at: chatData.created_at,
+              message: latestMessage,
+            });
+          }
         }
+        callback(filterUniqueChats(updatedChats));
+      },
+      (err) => {
+        console.error('Error subscribing to private chats:', err);
       }
-      callback(filterUniqueChats(updatedChats));
-    }, (err) => {
-      console.error('Error subscribing to private chats:', err);
-    });   
-      
-    /**
-     * Metodo para quitar duplicados
-     * @param {*} chats 
-     * @returns chats filtrados / Distinct
-     */
-    function filterUniqueChats(chats){
-      debugger
-      const uniqueIds = new Set();
-      return chats.filter(chat => {
-        if (uniqueIds.has(chat.idDoc)) {
-          return false; // Si es duplicado lo filtramos
-        }
-        uniqueIds.add(chat.idDoc);
-        return true; // sino lo mantenemos
-      });
-    };
-
-    onUnmounted(() => {
-      unsubscribe();
-    });
-
-    return unsubscribe;
+    );
   }
+
+  /**
+   * Metodo para quitar duplicados
+   * @param {*} chats 
+   * @returns chats filtrados / Distinct
+   */
+  function filterUniqueChats(chats){
+    debugger
+    const uniqueIds = new Set();
+    return chats.filter(chat => {
+      if (uniqueIds.has(chat.idDoc)) {
+        return false; // Si es duplicado lo filtramos
+      }
+      uniqueIds.add(chat.idDoc);
+      return true; // sino lo mantenemos
+    });
+  };
 
   return {
     savePrivateMessage,

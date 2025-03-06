@@ -43,29 +43,15 @@
     </div>
   </template>
   <script setup>
-  import { ref, onMounted, onUnmounted, watch } from 'vue';
+  import { ref } from 'vue';
   import { usePrivateChatsStore } from '../stores/privateChats';
   import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
   import { formatTimestamp } from '../utils/formatTimestamp';
   import { useAuth } from '../api/auth/auth';
 
-  const { user } = useAuth();
   const privateChatsStore = usePrivateChatsStore();
   const showDeleteChatModal = ref(false);
   const chatToDelete = ref(null);
-  const deletedChatId = ref(null);
-
-  // Montaje y desmontaje
-  onMounted(() => {
-      console.log('ChatView.vue montado, iniciando suscripción...');
-      // privateChatsStore.initializeSubscription(user.value.email); // Inicia la suscripción en el store
-  });
-  
-  onUnmounted(() => {
-    // privateChatsStore.unsubscribe();
-    // privateChatsStore.setSelectedChatId(null);
-    // privateChatsStore.setDeletedChatId(null);
-  });
   
   // Métodos
   const selectChat = (chatId) => {
