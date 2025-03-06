@@ -50,12 +50,10 @@ props.post.showMenu = props.post.showMenu || false;
 props.post.showComments = props.post.showComments || false;
 
 async function toggleLike() {
-  debugger
   if (!user.value) {
     console.log('Usuario no autenticado, no puede dar Like');
     return;
   }
-  debugger
   await postsStore.toggleLike(props.post.idDoc, {
     id: user.value.id,
     email: user.value.email,

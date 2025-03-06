@@ -2,14 +2,14 @@
     <div class="w-full p-6 flex flex-col md:flex-row bg-gray-50" style="min-height: calc(100vh - 120px);">
       <div class="w-full md:w-1/3 bg-white rounded-2xl shadow-lg p-5 mb-5 md:mb-0 md:mr-5 overflow-y-auto" style="max-height: 80vh;">
         <h2 class="text-xl font-semibold text-gray-800 mb-5 border-b border-gray-200 pb-2">Chats</h2>
-        <div v-if="privateChatsStore.loading" class="flex justify-center">
+        <div v-if="privateChatsStore?.loading" class="flex justify-center">
           <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
         </div>
-        <div v-else-if="privateChatsStore.chats.value.length === 0" class="text-center text-gray-500 italic py-4 min-h-[200px] flex items-center justify-center">
+        <div v-else-if="privateChatsStore?.chats?.value?.length === 0" class="text-center text-gray-500 italic py-4 min-h-[200px] flex items-center justify-center">
           No tienes chats con mensajes.
         </div>
         <div v-else class="space-y-3">
-          <div v-for="chat in privateChatsStore.chats.value" :key="chat.idDoc" class="flex items-center p-3 rounded-xl transition-all duration-200 cursor-pointer" :class="{ 'bg-[#e6f7f5] border-l-4 border-primary': privateChatsStore.selectedChatId === chat.idDoc, 'hover:bg-gray-50': privateChatsStore.selectedChatId !== chat.idDoc }" @click="selectChat(chat.idDoc)">
+          <div v-for="chat in privateChatsStore?.chats?.value" :key="chat.idDoc" class="flex items-center p-3 rounded-xl transition-all duration-200 cursor-pointer" :class="{ 'bg-[#e6f7f5] border-l-4 border-primary': privateChatsStore?.selectedChatId === chat.idDoc, 'hover:bg-gray-50': privateChatsStore?.selectedChatId !== chat.idDoc }" @click="selectChat(chat.idDoc)">
             <img :src="getUserPhoto(chat) || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" alt="User avatar" class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105" />
             <div class="flex-1">
               <div class="flex justify-between items-center">
@@ -26,7 +26,7 @@
           </div>
         </div>
       </div>
-      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" :deletedChatId="privateChatsStore.deletedChatId" />
+      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" :deletedChatId="privateChatsStore?.deletedChatId" />
        <!-- Modal de confirmación -->
         <div v-if="showDeleteChatModal" class="fixed inset-0 z-50 flex items-center justify-center">
             <div class="fixed inset-0 bg-black opacity-90"></div>
@@ -43,30 +43,15 @@
     </div>
   </template>
   <script setup>
-  import { ref, onMounted, onUnmounted, watch } from 'vue';
+  import { ref } from 'vue';
   import { usePrivateChatsStore } from '../stores/privateChats';
   import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
   import { formatTimestamp } from '../utils/formatTimestamp';
   import { useAuth } from '../api/auth/auth';
 
-  const { user } = useAuth();
   const privateChatsStore = usePrivateChatsStore();
   const showDeleteChatModal = ref(false);
   const chatToDelete = ref(null);
-  const deletedChatId = ref(null);
-
-  // Montaje y desmontaje
-  onMounted(() => {
-      console.log('ChatView.vue montado, iniciando suscripción...');
-      privateChatsStore.initializeSubscription(user.value.email); // Inicia la suscripción en el store
-    });
-    
-    onUnmounted(() => {
-    console.log('ChatView.vue desmontado, iniciando desuscripción...');
-    privateChatsStore.unsubscribe();
-    privateChatsStore.setSelectedChatId(null);
-    privateChatsStore.setDeletedChatId(null);
-  });
   
   // Métodos
   const selectChat = (chatId) => {

@@ -185,7 +185,6 @@ export function usePosts() {
         email: userData.email,
         // timestamp: serverTimestamp(),
       };
-      debugger
       await updateDoc(docRef, {
         likes: arrayUnion(likeData), // Agrega el like si no existe
       });
