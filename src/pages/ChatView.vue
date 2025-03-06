@@ -14,7 +14,7 @@
             <div class="flex-1">
               <div class="flex justify-between items-center">
                 <h3 class="text-sm font-semibold text-gray-900">{{ getUserName(chat.user) || 'Usuario desconocido' }}</h3>
-                <span class="text-xs text-gray-400 truncate">{{ formatDate(chat.created_at) }}</span>
+                <span class="text-xs text-gray-400 truncate">{{ formatTimestamp(chat.created_at) }}</span>
               </div>
               <p class="text-sm text-gray-600 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin previsualización' }}</p>
             </div>
@@ -47,7 +47,6 @@
   import { usePrivateChatsStore } from '../stores/privateChats';
   import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
   import { formatTimestamp } from '../utils/formatTimestamp';
-  import { useAuth } from '../api/auth/auth';
 
   const privateChatsStore = usePrivateChatsStore();
   const showDeleteChatModal = ref(false);
@@ -73,9 +72,6 @@
         closeDeleteChatModal();
     };
 
-  const formatDate = (timestamp) => {
-      return formatTimestamp(timestamp);
-  };
   
   const getUserPhoto = (chat) => {
     if(!chat) return null;
