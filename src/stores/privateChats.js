@@ -36,9 +36,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         });
       },
       initializeUnsubscribe() {
-        debugger
         if (this.unsubscribe) { // Check if unsubscribe is not null before calling
-          debugger
           console.log('Cancelando suscripción a chats...');
           this.unsubscribe();
           this.unsubscribe = null; // Set to null immediately after calling to prevent further calls
