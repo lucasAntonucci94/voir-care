@@ -9,9 +9,16 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     loading: ref(true),
     error: ref(null),
     deletedChatId: ref([]),
+    unsubscribe: null,
   }),
   actions: {
     async initializeSubscription(email) {
+      if (this.unsubscribe) {
+        console.log('Ya hay una suscripción activa, ignorando...');
+        return;
+      }
+   
+
       this.loading = true;
       const { subscribeToPrivateChats } = usePrivateChats();
       this.unsubscribe = subscribeToPrivateChats(email, (updatedChats) => {
@@ -39,34 +46,24 @@ export const usePrivateChatsStore = defineStore('privateChats', {
       this.selectedChatId = chatId;
     },
     setDeletedChatId(chatId) {
-      this.selectedChatId = chatId;
+      this.deletedChatId = chatId;
     },
     async deleteChat(chatId) {
       try {
         usePrivateChats().deleteChat(chatId);
         this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
-        debugger
         if (this.selectedChatId === chatId) {
           this.selectedChatId = null;
         }
         this.deletedChatId.push(chatId);
-        debugger
       } catch (err) {
         this.error.value = err.message;
         console.error('Error deleting chat:', err);
       }
     },
     async deleteMessage(chatId, messageId) {
-      debugger
       try {
         usePrivateChats().deleteChatMessage(chatId, messageId);
-        // this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
-        // debugger
-        // if (this.selectedChatId === chatId) {
-        //   this.selectedChatId = null;
-        // }
-        // this.deletedChatId.push(chatId);
-        // debugger
       } catch (err) {
         this.error.value = err.message;
         console.error('Error deleting chat:', err);

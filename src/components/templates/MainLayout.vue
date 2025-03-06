@@ -28,10 +28,25 @@ import Sidebar from '../../components/organisms/Sidebar.vue';
 import { useSidebarStore } from '../../stores/sidebar';
 import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/auth';
+import { onMounted, onUnmounted } from 'vue';
+import { usePrivateChatsStore } from '../../stores/privateChats'; // Añadimos el store de chats privados
 
 const $route = useRoute();
-const { isAuthenticated } = useAuth();
+const { user, isAuthenticated } = useAuth();
 const sidebarStore = useSidebarStore();
+const privateChatsStore = usePrivateChatsStore();
+
+onMounted(async () => {
+  console.log('MainLayout.vue montado, iniciando suscripciones a chats...');
+  if (user.value?.email) {
+    privateChatsStore.initializeSubscription(user.value.email);
+  }
+});
+
+onUnmounted(() => {
+  console.log('MainLayout.vue desmontado, cancelando suscripciones a chats...');
+  privateChatsStore.unsubscribe();
+});
 
 // Métodos
 const permitedRoutes = () => {
