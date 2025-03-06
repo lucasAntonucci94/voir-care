@@ -35,27 +35,27 @@ const privateChatsStore = usePrivateChatsStore();
 
 // Watch para manejar la suscripción cuando el usuario cambia
 watch(
-    () => user.value?.email,
-    (newEmail, oldEmail) => {
-      if (newEmail && newEmail !== oldEmail) {
-        console.log('Usuario autenticado, iniciando suscripción a chats para:', newEmail);
-        privateChatsStore.initializeSubscription(newEmail);
-      } else if (!newEmail && oldEmail) {
-        console.log('Usuario desautenticado, cancelando suscripción a chats...');
-        privateChatsStore.initializeUnsubscribe();
-      }
-    },
-    { immediate: true }
+  () => user.value?.email,
+  (newEmail, oldEmail) => {
+    if (newEmail && newEmail !== oldEmail) {
+      console.log('Usuario autenticado, iniciando suscripción a chats para:', newEmail);
+      privateChatsStore.initializeSubscription(newEmail);
+    } else if (!newEmail && oldEmail) {
+      console.log('Usuario desautenticado, cancelando suscripción a chats...');
+      privateChatsStore.initializeUnsubscribe();
+    }
+  },
+  { immediate: true }
 );
 // Cancelar suscripción al desmontar el componente
 onUnmounted(() => {
-    console.log('MainLayout.vue desmontado, cancelando suscripción a chats...');
-    privateChatsStore.initializeUnsubscribe();
+  console.log('MainLayout.vue desmontado, cancelando suscripción a chats...');
+  privateChatsStore.initializeUnsubscribe();
 });
 
 // Método para determinar rutas permitidas
 const permitedRoutes = () => {
-    return ($route.path === '/feed' || $route.path === '/profile') && isAuthenticated.value;
+  return ($route.path === '/feed' || $route.path === '/profile') && isAuthenticated.value;
 };
 </script>
 

@@ -26,15 +26,6 @@
         class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-72 md:w-80 lg:w-96 h-full sm:h-auto max-h-[calc(100vh-4rem)] bg-white shadow-lg rounded-none sm:rounded-lg z-20 overflow-y-auto"
       >
         <ul v-if="notifications.length > 0" class="divide-y divide-gray-100">
-          <li>
-            <button
-              @click="markAllAsRead"
-              class="w-full text-white font-medium py-2 px-4 bg-primary hover:bg-primary-darker rounded-t-lg transition-colors duration-200 flex items-center justify-center gap-2"
-            >
-              <i class="fa-solid fa-check text-sm"></i>
-              Marcar todos como leídos
-            </button>
-          </li>
           <li
             v-for="notification in notifications.slice(0, 9)"
             :key="notification.id"
@@ -47,6 +38,15 @@
             class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
           >
             ... and {{ notifications.length - 9 }} more
+          </li>
+          <li>
+            <button
+              @click="markAllAsRead"
+              class="w-full text-primary font-medium py-2 px-4 bg-gray-100 hover:bg-gray-200 hover:text-primary-darker rounded-t-lg transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <i class="fa-solid fa-check text-sm"></i>
+              Marcar todos como leídos
+            </button>
           </li>
           <li>
             <router-link
