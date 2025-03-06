@@ -44,7 +44,6 @@ export const usePostsStore = defineStore('posts', {
         categories: newPostData.categories || [],
         imageBase64: newPostData.media, // El archivo en crudo (File object)
       };
-      postData.user.email = 'lucas.e.antonucci@gmail.com'
       try {
         await savePost(postData);
         console.log('Post añadido exitosamente a Firebase');
@@ -59,6 +58,19 @@ export const usePostsStore = defineStore('posts', {
       const { deletePost } = usePosts();
       await deletePost(postIdDoc);
       console.log('Post eliminado, esperando actualización de Firebase...');
+    },// Nueva acción para agregar un Like
+    async toggleLike(postIdDoc, userData) {
+      const { addLike, removeLike } = usePosts();
+      const post = this.posts.value.find(p => p.idDoc === postIdDoc);
+      if (!post) return;
+
+      const userLiked = post.likes.some(like => like.userId === userData.id);
+      if (userLiked) {
+        await removeLike(postIdDoc, userData);
+      } else {
+        await addLike(postIdDoc, userData);
+      }
+      // La actualización en tiempo real vendrá del suscriptor
     },
   },
 });

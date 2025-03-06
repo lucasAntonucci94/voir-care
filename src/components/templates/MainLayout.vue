@@ -35,7 +35,6 @@ const sidebarStore = useSidebarStore();
 
 // Métodos
 const permitedRoutes = () => {
-  console.log(($route.path === '/feed' || $route.path === '/profile') && isAuthenticated)
   return ($route.path === '/feed' || $route.path === '/profile') && isAuthenticated;
 };
 </script>

@@ -14,8 +14,9 @@
     <div class="flex justify-between mt-3 text-sm text-gray-600">
       <button
         @click="toggleLike"
-        :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.id) }"
+        :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
         class="hover:text-primary transition-colors flex items-center gap-1"
+        :disabled="!user"
       >
         <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
       </button>
@@ -45,18 +46,20 @@ const { comments } = useComments(props.post.idDoc);
 
 // Inicializamos propiedades faltantes si no vienen de la base de datos
 props.post.likes = props.post.likes || [];
-props.post.comments = [];
-// props.post.comments = comments.value || [];
-props.post.showComments = props.post.showComments || false;
 props.post.showMenu = props.post.showMenu || false;
+props.post.showComments = props.post.showComments || false;
 
-function toggleLike() {
-  const userLiked = props.post.likes.some(like => like.userId === user.value?.id);
-  if (userLiked) {
-    props.post.likes = props.post.likes.filter(like => like.userId !== user.value?.id);
-  } else {
-    props.post.likes.push({ userId: user.value?.id });
+async function toggleLike() {
+  debugger
+  if (!user.value) {
+    console.log('Usuario no autenticado, no puede dar Like');
+    return;
   }
+  debugger
+  await postsStore.toggleLike(props.post.idDoc, {
+    id: user.value.id,
+    email: user.value.email,
+  });
 }
 
 function editPost() {
@@ -78,13 +81,5 @@ function sharePost() {
 function reportPost() {
   console.log('Reportar post:', props.post.id);
   props.post.showMenu = false;
-}
-
-// Función para formatear el timestamp de Firebase
-function formatTimestamp(timestamp) {
-  if (timestamp && timestamp.seconds) {
-    return new Date(timestamp.seconds * 1000).toLocaleTimeString(); // Convertimos segundos a fecha
-  }
-  return timestamp?.toLocaleTimeString() || 'Sin fecha';
 }
 </script>
