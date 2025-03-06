@@ -1,6 +1,6 @@
 <template>
   <div class="md:min-w-md p-8 mb-8 mx-auto bg-white border border-gray-200 rounded-2xl shadow-lg">
-    <h3 class="font-heading tracking-tight text-4xl font-bold text-voir-darker mb-3 text-left">Registro</h3>
+    <h3 class="font-heading tracking-tight text-4xl font-bold text-primary mb-3 text-left">Registro</h3>
     <p class="text-gray-500 mb-8 text-left">¡Bienvenido! Por favor, ingresa tus datos.</p>
 
     <form @submit.prevent="handleSubmit">
@@ -9,14 +9,14 @@
       <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña" />
       <InputPassword v-model="confirmPassword.field.value" label="Confirmar Contraseña" id="confirmpassword" placeholder="Ingresa nuevamente tu contraseña" />
 
-      <button type="submit" :disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-voir to-cyan-800 rounded-lg transition-all duration-300 focus:outline-none">
+      <button type="submit" :disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-primary to-cyan-800 rounded-lg transition-all duration-300 focus:outline-none">
         <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full rounded-lg bg-cyanGreen-900 opacity-50 animate-pulse"></div>
         <span v-if="isLoading">Registrando...</span>
         <span v-else>Registrar</span>
       </button>
 
       <div class="text-center mt-4 text-gray-700">
-        ¿Ya tienes una cuenta? <router-link to="/login" class="text-voir hover:text-voir-darker font-semibold ml-1">Iniciar Sesión</router-link>
+        ¿Ya tienes una cuenta? <router-link to="/login" class="text-primary hover:text-primary-darker font-semibold ml-1">Iniciar Sesión</router-link>
       </div>
     </form>
   </div>

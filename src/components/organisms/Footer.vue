@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-voir text-white p-4">
+  <footer class="bg-primary text-white p-4">
     <div class="container mx-auto text-center">
       <p>&copy; 2023 Mi Red Social. Todos los derechos reservados.</p>
       <ul class="flex justify-center space-x-4">

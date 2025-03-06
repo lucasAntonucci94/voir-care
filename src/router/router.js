@@ -12,7 +12,7 @@ import { useAuth } from '../api/auth/auth';
 
 const routes = [
   {
-    path: '/',
+    path: '',
     component: MainLayout,
     children: [
       {
@@ -79,10 +79,14 @@ const router = createRouter({
 const { isAuthenticated } = useAuth();
 // Verificamos si una ruta requiere de autenticación para poder acceder.
 router.beforeEach((to, from) => {
-  
   if(to.meta.requiresAuth && !isAuthenticated.value) {
       return {
           path: '/login',
+      }
+  }
+  if(to.path === '/' && isAuthenticated.value) {
+      return {
+          path: '/feed',
       }
   }
 });

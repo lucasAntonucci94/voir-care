@@ -7,19 +7,20 @@
       <img :src="post?.imageUrlFile" alt="Post media" class="w-full h-48 object-cover rounded-lg" />
     </div>
     <div class="flex gap-2 mt-2 flex-wrap">
-      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-[#02bcae] bg-teal-100 px-2 py-1 rounded-full">
+      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 px-2 py-1 rounded-full">
         {{ category.name }}
       </span>
     </div>
     <div class="flex justify-between mt-3 text-sm text-gray-600">
       <button
         @click="toggleLike"
-        :class="{ 'text-[#02bcae]': post?.likes?.some(l => l.userId === user?.id) }"
-        class="hover:text-[#02bcae] transition-colors flex items-center gap-1"
+        :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
+        class="hover:text-primary transition-colors flex items-center gap-1"
+        :disabled="!user"
       >
         <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
       </button>
-      <button @click="post.showComments = !post.showComments" class="hover:text-[#02bcae] transition-colors">
+      <button @click="post.showComments = !post.showComments" class="hover:text-primary transition-colors">
         {{ comments?.length ?? 0 }} Comentarios
       </button>
     </div>
@@ -45,18 +46,20 @@ const { comments } = useComments(props.post.idDoc);
 
 // Inicializamos propiedades faltantes si no vienen de la base de datos
 props.post.likes = props.post.likes || [];
-props.post.comments = [];
-// props.post.comments = comments.value || [];
-props.post.showComments = props.post.showComments || false;
 props.post.showMenu = props.post.showMenu || false;
+props.post.showComments = props.post.showComments || false;
 
-function toggleLike() {
-  const userLiked = props.post.likes.some(like => like.userId === user.value?.id);
-  if (userLiked) {
-    props.post.likes = props.post.likes.filter(like => like.userId !== user.value?.id);
-  } else {
-    props.post.likes.push({ userId: user.value?.id });
+async function toggleLike() {
+  debugger
+  if (!user.value) {
+    console.log('Usuario no autenticado, no puede dar Like');
+    return;
   }
+  debugger
+  await postsStore.toggleLike(props.post.idDoc, {
+    id: user.value.id,
+    email: user.value.email,
+  });
 }
 
 function editPost() {
@@ -78,13 +81,5 @@ function sharePost() {
 function reportPost() {
   console.log('Reportar post:', props.post.id);
   props.post.showMenu = false;
-}
-
-// Función para formatear el timestamp de Firebase
-function formatTimestamp(timestamp) {
-  if (timestamp && timestamp.seconds) {
-    return new Date(timestamp.seconds * 1000).toLocaleTimeString(); // Convertimos segundos a fecha
-  }
-  return timestamp?.toLocaleTimeString() || 'Sin fecha';
 }
 </script>

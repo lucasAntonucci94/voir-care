@@ -5,7 +5,7 @@
         Chat con {{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}
       </h2>
       <div v-if="loadingMessages" class="flex justify-center bg-gray-50 py-6">
-        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#02bcae]"></div>
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
       <div v-else-if="messages.length === 0" class="text-center text-gray-700 bg-gray-50 py-6 italic">
         No hay mensajes en este chat.
@@ -54,7 +54,7 @@
             <p class="text-gray-600 mb-6">¿Estás seguro de que deseas eliminar este mensaje?</p>
             <div class="flex justify-end space-x-4">
                 <button @click="closeDeleteModal" class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors duration-200">Cancelar</button>
-                <button @click="deleteMessage(messageToDelete)" class="px-4 py-2 bg-[#02bcae] text-white rounded-xl hover:bg-[#019a8e] transition-colors duration-200">Confirmar</button>
+                <button @click="deleteMessage(messageToDelete)" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-[#019a8e] transition-colors duration-200">Confirmar</button>
             </div>
             </div>
         </div>

@@ -1,8 +1,8 @@
-import { getFirestore, addDoc, deleteDoc, doc, getDocs, updateDoc, collection, onSnapshot, query, where, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, addDoc, deleteDoc, doc, getDocs, updateDoc, collection, onSnapshot, query, where, orderBy, limit, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { newGuid } from '../utils/newGuid';
 import { useStorage } from './useStorage'; // Importamos el composable de storage
-const { uploadFile, getFileUrl, getFileMetadata } = useStorage();
 
+const { uploadFile, getFileUrl, getFileMetadata } = useStorage();
 const db = getFirestore();
 const postRef = collection(db, 'posts');
 
@@ -24,6 +24,7 @@ export function usePosts() {
         timestamp: serverTimestamp(),
         imagePathFile: null,
         imageUrlFile: null,
+        likes: [],
       };
       if (imageBase64) {
         const filePath = `post/${user.email}/${data.id}.jpg`;
@@ -60,6 +61,7 @@ export function usePosts() {
             timestamp: post.timestamp,
             imagePathFile: post.imagePathFile,
             imageUrlFile: post.imageUrlFile,
+            likes: post.likes || [],
           };
         });
         callback(posts);
@@ -174,6 +176,43 @@ export function usePosts() {
     }
   }
 
+  // Nuevo método para agregar un Like
+  async function addLike(postIdDoc, userData) {
+    try {
+      const docRef = doc(db, 'posts', postIdDoc);
+      const likeData = {
+        userId: userData.id,
+        email: userData.email,
+        // timestamp: serverTimestamp(),
+      };
+      debugger
+      await updateDoc(docRef, {
+        likes: arrayUnion(likeData), // Agrega el like si no existe
+      });
+    } catch (err) {
+      console.error('Error al agregar like:', err);
+      throw err;
+    }
+  }
+
+  // Nuevo método para quitar un Like
+  async function removeLike(postIdDoc, userData) {
+    try {
+      const docRef = doc(db, 'posts', postIdDoc);
+      const likeData = {
+        userId: userData.id,
+        email: userData.email,
+        // No necesitamos email ni timestamp aquí, Firestore compara por igualdad estricta
+      };
+      await updateDoc(docRef, {
+        likes: arrayRemove(likeData), // Quita el like si existe
+      });
+    } catch (err) {
+      console.error('Error al quitar like:', err);
+      throw err;
+    }
+  }
+
   /**
    * Actualiza el usuario en todos los posts relacionados.
    * @param {{id: string, data: Object}} options - ID y datos del usuario
@@ -262,5 +301,7 @@ export function usePosts() {
     updateUserFromPost,
     subscribeToIncomingProfilePosts,
     reloadPostImage,
+    addLike,
+    removeLike,
   };
 }

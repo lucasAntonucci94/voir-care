@@ -2,7 +2,7 @@
 <template>
   <!-- Hero Section -->
   <section
-  class="relative h-[75vh] xs:h-[60vh] sm:h-[65vh] bg-gradient-to-tr from-black via-[#02bcae] to-[#02bcae] text-white pt-15 md:pt-25"
+  class="relative h-[75vh] xs:h-[60vh] sm:h-[65vh] bg-gradient-to-tr from-black via-primary to-primary text-white pt-15 md:pt-25"
   :style="{ clipPath: 'polygon(0 0, 100% 0%, 100% 100%, 0 90%)' }"
 >
   <div class="container mx-auto px-4 font-poppins">
@@ -50,7 +50,7 @@
     </div>
   </section>
 <!-- Servicios Geolocalizados -->
-<section class="bg-gradient-to-tr from-[#02bcae] via-[#02bcae] to-black py-16 relative md:h-[50vh] font-poppins">
+<section class="bg-gradient-to-tr from-primary via-primary to-black py-16 relative md:h-[50vh] font-poppins">
     <div class="container mx-auto px-4">
       <h2 class="text-4xl font-bold text-white text-center mb-10 md:mb-0">Servicios Geolocalizados</h2>
       <div class="flex flex-col md:flex-row justify-center gap-4 md:gap-10 md:-translate-y-2/3 lg:-translate-y-2/3">
@@ -58,7 +58,7 @@
           <div class="service-image bg-gray-300 h-40 mb-4 rounded"></div>
           <h4 class="text-xl font-bold mb-2">{{ service.name }}</h4>
           <p class="text-sm mb-4">{{ service.description }}</p>
-          <a href="#" class="inline-block px-6 py-2 bg-[#02bcae] text-white font-semibold rounded-full hover:bg-teal-600 transition-colors">Explorar {{ service.name }}</a>
+          <a href="#" class="inline-block px-6 py-2 bg-primary text-white font-semibold rounded-full hover:bg-teal-600 transition-colors">Explorar {{ service.name }}</a>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
       <div class="flex flex-col md:flex-row gap-20">
         <!-- Columna Izquierda -->
         <div class="w-full md:w-1/2 flex flex-col items-start gap-4">
-          <p class="text-xs font-semibold text-[#02bcae] font-poppins uppercase">Comunicación Privada</p>
+          <p class="text-xs font-semibold text-primary font-poppins uppercase">Comunicación Privada</p>
           <h2 class="text-5xl font-bold text-gray-800 font-abril pb-2">Chat Seguro y Directo</h2>
           <p class="text-base text-gray-800 font-poppins pb-2">
             La integración de un chat privado en nuestra plataforma permite a los usuarios comunicarse directamente con proveedores de servicios y otros miembros de la comunidad. Esta herramienta no solo facilita las transacciones, sino que también fomenta conexiones personales y seguras, mejorando la experiencia de usuario al permitir interacciones fluidas y personalizadas.
@@ -89,51 +89,7 @@
       </div>
     </div>
   </section>
-<!-- Concienciación Activa -->
-<!-- <section class="bg-white py-16 overflow-hidden">
-    <div class="container mx-auto px-4 w-[90vw]">
-      <h2 class="text-4xl font-bold text-gray-800 text-center mb-10 font-poppins">Concienciación Activa</h2>
-      <div class="relative">
-        <div
-          ref="scrollContainer"
-          class="flex overflow-x-auto space-x-5 scrollbar-hide snap-x snap-mandatory"
-          style="scroll-behavior: smooth;"
-        >
-          <div
-            v-for="event in awarenessEvents"
-            :key="event.title"
-            class="awareness-card bg-gray-100 p-5 rounded-lg text-center min-w-[250px] md:min-w-[300px] lg:min-w-[350px] flex-shrink-0 snap-center"
-          >
-            <div class="awareness-image bg-[#02bcae] h-40 mb-4 rounded"></div>
-            <h3 class="text-xl text-gray-800 mb-2 font-poppins">{{ event.title }}</h3>
-            <p class="text-sm text-gray-600 mb-4 font-poppins">{{ event.date }}</p>
-            <a href="#" class="inline-block px-6 py-2 bg-[#2c3e50] text-white font-semibold rounded-lg hover:bg-teal-600 transition-colors font-poppins">
-              Inscribirse
-            </a>
-          </div>
-        </div>
-        <button
-          class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md z-10"
-          @click="scroll(-1)"
-        >
-          <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
-        </button>
-        <button
-          class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md z-10"
-          @click="scroll(1)"
-        >
-          <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </section> -->
-
   <CarouselAwareness title="Eventos Próximos" :events="awarenessEvents" :auto-scroll="false" />
-
   <!-- Footer -->
   <footer class="bg-gray-800 text-white py-10">
     <div class="container mx-auto px-4 text-center">

@@ -42,7 +42,7 @@
           <router-link 
             v-if="connections.length > 5" 
             :to="'/profile/connections'" 
-            class="relative inline-block h-10 w-10 rounded-full ring-1 ring-white hover:ring-2 hover:ring-[#02bcae] transition"
+            class="relative inline-block h-10 w-10 rounded-full ring-1 ring-white hover:ring-2 hover:ring-primary transition"
           >
             <!-- Imagen de la sexta conexión -->
             <img 
