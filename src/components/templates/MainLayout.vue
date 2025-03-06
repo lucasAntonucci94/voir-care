@@ -46,8 +46,7 @@ watch(
       console.log('Usuario desautenticado, cancelando suscripción a chats...');
       privateChatsStore.initializeUnsubscribe();
     }
-    debugger
-    loadCategories(); 
+    if(isAuthenticated.value) loadCategories(); 
   },
   { immediate: true }
 );
