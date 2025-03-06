@@ -32,8 +32,8 @@
     <nav class="space-y-2">
       <router-link 
         to="/feed" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
-        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-[#02bcae]"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
         <i class="fas fa-home w-5 text-center"></i>
@@ -41,8 +41,8 @@
       </router-link>
       <router-link 
         to="/explorar" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
-        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-[#02bcae]"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
         <i class="fas fa-compass w-5 text-center"></i>
@@ -50,8 +50,8 @@
       </router-link>
       <router-link 
         to="/profile" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
-        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-[#02bcae]"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
         <i class="fas fa-user w-5 text-center"></i>
@@ -59,8 +59,8 @@
       </router-link>
       <router-link 
         to="/chats" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
-        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-[#02bcae]"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
         <i class="fas fa-user w-5 text-center"></i>
@@ -68,8 +68,8 @@
       </router-link>
       <router-link 
         to="/faqs" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-[#02bcae] rounded-lg transition-colors"
-        active-class="bg-[#02bcae] text-white hover:bg-[#02bcae] hover:text-[#02bcae]"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
         <i class="fas fa-question w-5 text-center"></i>
@@ -82,17 +82,17 @@
       <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Explorar</h3>
       <ul class="space-y-2">
         <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-[#02bcae] hover:bg-gray-200 rounded-md transition-colors">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-200 rounded-md transition-colors">
             Eventos
           </a>
         </li>
         <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-[#02bcae] hover:bg-gray-200 rounded-md transition-colors">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-200 rounded-md transition-colors">
             Adopciones
           </a>
         </li>
         <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-[#02bcae] hover:bg-gray-200 rounded-md transition-colors">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-200 rounded-md transition-colors">
             Educación
           </a>
         </li>

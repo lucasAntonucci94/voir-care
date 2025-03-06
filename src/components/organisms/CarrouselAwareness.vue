@@ -14,7 +14,7 @@
               :key="event.title"
               class="awareness-card bg-gray-100 p-5 rounded-lg text-center min-w-[250px] md:min-w-[300px] lg:min-w-[350px] flex-shrink-0 snap-center"
             >
-              <div class="awareness-image bg-[#02bcae] h-40 mb-4 rounded" :style="event.image ? { backgroundImage: `url(${event.image})`, backgroundSize: 'cover' } : {}"></div>
+              <div class="awareness-image bg-primary h-40 mb-4 rounded" :style="event.image ? { backgroundImage: `url(${event.image})`, backgroundSize: 'cover' } : {}"></div>
               <h3 class="text-xl text-gray-800 mb-2 font-poppins">{{ event.title }}</h3>
               <p class="text-sm text-gray-600 mb-4 font-poppins">{{ event.date }}</p>
               <a
