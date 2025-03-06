@@ -45,28 +45,18 @@ export const usePrivateChatsStore = defineStore('privateChats', {
       try {
         usePrivateChats().deleteChat(chatId);
         this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
-        debugger
         if (this.selectedChatId === chatId) {
           this.selectedChatId = null;
         }
         this.deletedChatId.push(chatId);
-        debugger
       } catch (err) {
         this.error.value = err.message;
         console.error('Error deleting chat:', err);
       }
     },
     async deleteMessage(chatId, messageId) {
-      debugger
       try {
         usePrivateChats().deleteChatMessage(chatId, messageId);
-        // this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
-        // debugger
-        // if (this.selectedChatId === chatId) {
-        //   this.selectedChatId = null;
-        // }
-        // this.deletedChatId.push(chatId);
-        // debugger
       } catch (err) {
         this.error.value = err.message;
         console.error('Error deleting chat:', err);

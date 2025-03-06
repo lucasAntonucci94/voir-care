@@ -59,9 +59,10 @@
   onMounted(() => {
       console.log('ChatView.vue montado, iniciando suscripción...');
       privateChatsStore.initializeSubscription(user.value.email); // Inicia la suscripción en el store
-  });
-  
-  onUnmounted(() => {
+    });
+    
+    onUnmounted(() => {
+    console.log('ChatView.vue desmontado, iniciando desuscripción...');
     privateChatsStore.unsubscribe();
     privateChatsStore.setSelectedChatId(null);
     privateChatsStore.setDeletedChatId(null);
