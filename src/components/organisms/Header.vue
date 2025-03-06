@@ -27,7 +27,6 @@
           /> -->
           <MessagesDropdown
             v-if="isAuthenticated"
-            :notifications="messagesNotifications"
             :is-open="navbarStore.isMessageMenuOpen"
             @toggle="navbarStore.toggleMenu('messages')"
             class="flex-shrink-0"
@@ -59,31 +58,6 @@ const { isAuthenticated } = useAuth();
 const navbarStore = useNavbarStore();
 const sidebarStore = useSidebarStore();
 const headerRef = ref(null);
-
-const userNotifications = ref([
-  { id: 1, message: 'Comentaron tu publicacion @nombrePublicacion blah blah' },
-  { id: 2, message: 'Alguien te ha seguido' },
-]);
-
-const messagesNotifications = ref([
-  { id: 1, message: 'Como estas amigo ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-  { id: 2, message: 'Seguis teniendo a ese gatito ?' },
-]);
 
 function handleClickOutside(event) {
   if (headerRef.value && !headerRef.value.contains(event.target)) {

@@ -78,10 +78,6 @@
       type: String,
       default: null,
     },
-    deletedChatId: {
-      type: String,
-      default: null,
-    },
   });
   
   // Estado reactivo
