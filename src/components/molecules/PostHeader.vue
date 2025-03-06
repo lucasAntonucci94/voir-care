@@ -1,7 +1,10 @@
 <!-- PostHeader.vue -->
 <template>
   <div class="flex items-center justify-between mb-3">
-    <div class="flex items-center gap-3">
+    <router-link 
+      :to="`/profile/${post?.user?.id}`" 
+      class="flex items-center gap-3 hover:bg-gray-100 rounded transition-colors"
+    >
       <img 
         :src="post?.user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
         alt="Avatar" 
@@ -11,7 +14,7 @@
         <p class="text-sm font-bold text-[#2c3e50]">{{ post?.user?.displayName || 'Anónimo' }}</p>
         <p class="text-xs text-gray-500">{{ formatTimestamp(post?.timestamp) }}</p>
       </div>
-    </div>
+    </router-link>
     <div class="relative">
       <button 
         @click="post.showMenu = !post.showMenu" 
