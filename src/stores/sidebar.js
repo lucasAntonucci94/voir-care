@@ -7,7 +7,7 @@ export const useSidebarStore = defineStore('sidebar', {
   }),
   actions: {
     toggleSidebar() {
-      this.showSidebar = !this.showSidebar;
+      this.showSidebar = !this?.showSidebar;
     },
     openSidebar() {
       this.showSidebar = true;

@@ -27,11 +27,13 @@ import { useSidebarStore } from '../../stores/sidebar';
 import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/auth';
 import { usePrivateChatsStore } from '../../stores/privateChats';
+import { useCategories } from '../../composable/useCategories';
 
 const $route = useRoute();
 const { user, isAuthenticated } = useAuth();
 const sidebarStore = useSidebarStore();
 const privateChatsStore = usePrivateChatsStore();
+const { loadCategories } = useCategories();
 
 // Watch para manejar la suscripción cuando el usuario cambia
 watch(
@@ -44,6 +46,7 @@ watch(
       console.log('Usuario desautenticado, cancelando suscripción a chats...');
       privateChatsStore.initializeUnsubscribe();
     }
+    if(isAuthenticated.value) loadCategories(); 
   },
   { immediate: true }
 );
