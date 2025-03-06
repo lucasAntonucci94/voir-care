@@ -30,7 +30,6 @@ import InputText from '../atoms/InputText.vue';
 import InputPassword from '../atoms/InputPassword.vue';
 import { useAuth } from '../../api/auth/auth';
 import { useFormField } from '../../composable/useFormField';
-import { useCategories } from '../../composable/useCategories';
 
 const { login, error } = useAuth();
 const router = useRouter();
@@ -74,10 +73,10 @@ const handleSubmit = async () => {
   if (result !== true && error.value?.code) {
     setErrorFromFirebase(error.value.code, error.value.message);
   } else {
-    const { loadCategories } = useCategories();
-    loadCategories().then(()=>{
+    // const { loadCategories } = useCategories();
+    // loadCategories().then(()=>{
       router.push('/feed');
-    }); 
+    // }); 
   }
 
   isLoading.value = false;
