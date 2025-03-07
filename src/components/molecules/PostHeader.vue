@@ -2,7 +2,7 @@
 <template>
   <div class="flex items-center justify-between mb-3">
     <router-link 
-      :to="`/profile/${post?.user?.id}`" 
+      :to="`/profile/${post?.user?.email}`" 
       class="flex items-center gap-3 hover:bg-gray-100 rounded transition-colors"
     >
       <img 
@@ -88,17 +88,23 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAuth } from '../../api/auth/auth'; // Ajusta la ruta
 import { formatTimestamp } from '../../utils/formatTimestamp'; // Ajusta la ruta
 
-defineProps(['post']);
+const props = defineProps(['post']);
 const emit = defineEmits(['edit', 'delete', 'share', 'report']);
 
 const { user } = useAuth();
 
 // Estado para el modal
 const showModal = ref(false);
+
+onMounted(() => {
+  debugger
+  console.log('PostHeader mounted');
+  console.log(props.post);
+});
 
 // Mostrar el modal de confirmación
 function showDeleteModal() {

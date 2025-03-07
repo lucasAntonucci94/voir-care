@@ -39,7 +39,7 @@ const routes = [
         component: Register,
       },
       {
-        path: '/profile/:id?',
+        path: '/profile/:email?',
         name: 'profile',
         component: Profile,
         meta: {
@@ -60,7 +60,7 @@ const routes = [
         }
       },
       {
-        path: '/chats',
+        path: '/chats/:idChat?',
         name: 'chats',
         component: ChatView,
         meta: {

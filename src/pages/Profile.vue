@@ -94,12 +94,12 @@
           <!-- Agregar historia y Editar perfil (inferior derecha) -->
           <div class="flex justify-center md:justify-end mt-auto">
             <div class="flex flex-col gap-2 md:flex-row md:gap-4">
-              <button 
+              <router-link 
                 class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
-                @click="sendMessage"
+                :to="activeUser ? `/chat/${activeUser?.email}` : '/chat'"
               >
                 Enviar Mensaje
-              </button>
+              </router-link>
               <button 
                 class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" 
                 @click="showProfileInfo"
@@ -152,7 +152,7 @@
     </div>
     <!-- Contenido del perfil -->
     <div class="container mx-auto px-4 md:px-8 lg:px-16 mt-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-full mx-4 md:mx-0">
+      <div class="grid grid-cols-1 gap-6 max-w-full mx-4 md:mx-0">
         <!-- Publicaciones -->
         <div class="md:col-span-2">
           <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
@@ -164,7 +164,24 @@
             <p>Información del usuario (pendiente de implementación)</p>
           </div>
           <div v-else-if="activeTab === 'conexiones'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-            <p>Conexiones (pendiente de implementación)</p>
+            <!-- Conexiones -->
+            <div class="block">
+              <h2 class="text-lg font-semibold text-[#2c3e50] mb-4">Conexiones</h2>
+              <div class="space-y-4">
+                <div v-for="connection in connections" :key="connection.idDoc" class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition">
+                  <img 
+                    :src="connection.photoURLFile || defaultAvatar" 
+                    alt="Avatar" 
+                    class="w-10 h-10 rounded-full"
+                  />
+                  <div>
+                    <p class="text-sm font-medium text-gray-700">{{ connection.displayName }}</p>
+                    <p class="text-xs text-gray-500">{{ connection.email }}</p>
+                  </div>
+                </div>
+                <p v-if="connections.length === 0" class="text-center text-gray-500">No hay conexiones aún.</p>
+              </div>
+            </div>
           </div>
           <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
             <p>Galería (pendiente de implementación)</p>
@@ -176,25 +193,141 @@
             <p>Grupos (pendiente de implementación)</p>
           </div>
         </div>
-        <!-- Conexiones -->
-        <div class="hidden lg:block">
-          <h2 class="text-lg font-semibold text-[#2c3e50] mb-4">Conexiones</h2>
-          <div class="space-y-4">
-            <div v-for="connection in connections" :key="connection.idDoc" class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition">
-              <img 
-                :src="connection.photoURLFile || defaultAvatar" 
-                alt="Avatar" 
-                class="w-10 h-10 rounded-full"
-              />
-              <div>
-                <p class="text-sm font-medium text-gray-700">{{ connection.displayName }}</p>
-                <p class="text-xs text-gray-500">{{ connection.email }}</p>
-              </div>
-            </div>
-            <p v-if="!connections.length" class="text-center text-gray-500">No hay conexiones aún.</p>
-          </div>
-        </div>
       </div>
+    </div>
+  </div>
+  <!-- Modal para editar perfil -->
+  <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <!-- Header del modal -->
+      <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold text-gray-800">Editar Perfil</h2>
+        <button 
+          @click="closeEditModal" 
+          class="text-gray-500 hover:text-gray-700"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <form @submit.prevent="saveProfile" class="p-4 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nombre de usuario</label>
+          <input
+            v-model="editForm.displayName"
+            type="text"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Nombre de usuario"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input
+            v-model="editForm.firstName"
+            type="text"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Nombre"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Apellido</label>
+          <input
+            v-model="editForm.lastName"
+            type="text"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Apellido"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            v-model="editForm.email"
+            type="email"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Correo electrónico"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+          <input
+            v-model="editForm.phoneNumber"
+            type="tel"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Número de teléfono"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Fecha de nacimiento</label>
+          <input
+            v-model="editForm.birthday"
+            type="date"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Género</label>
+          <select
+            v-model="editForm.gender"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="No ha definido un género">Seleccionar</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">País</label>
+          <input
+            v-model="editForm.country"
+            type="text"
+            class="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="País"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Foto de perfil</label>
+          <input
+            type="file"
+            @change="handlePhotoUpload"
+            class="mt-1 w-full px-3 py-2 border rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-primary-md"
+          />
+          <img 
+            v-if="editForm.photoURL" 
+            :src="editForm.photoURL" 
+            alt="Vista previa" 
+            class="mt-2 w-20 h-20 rounded-full object-cover"
+          />
+        </div>
+
+        <!-- Botones del formulario -->
+        <div class="flex justify-end gap-2 pt-4 border-t">
+          <button
+            type="button"
+            @click="closeEditModal"
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md"
+          >
+            Guardar
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -206,12 +339,13 @@ import { useAuth } from '../api/auth/auth';
 import { useStorage } from '../composable/useStorage';
 import { usePostsStore } from '../stores/posts';
 import PostCard from '../components/organisms/PostCard.vue';
-
+import { useUsers } from '../composable/useUsers';
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();
 const { uploadFile, getFileUrl } = useStorage();
 const postsStore = usePostsStore();
+const { getUserProfileByEmail } = useUsers();
 
 // Estados
 const activeUser = ref(null);
@@ -221,6 +355,8 @@ const isEditingBanner = ref(false);
 const activeTab = ref('publicaciones');
 const showMoreTabs = ref(false);
 const defaultAvatar = 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4';
+const showEditModal = ref(false);
+const editForm = ref({});
 
 // Tabs
 const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos'];
@@ -229,22 +365,21 @@ const hiddenTabs = computed(() => allTabs.slice(4));
 const setTabConexiones = computed(() => { activeTab.value = 'conexiones'});
 
 // Computados
-const activeUserId = computed(() => route.params.id || authUser.value?.uid);
-const isOwnProfile = computed(() => activeUserId.value === authUser.value?.uid);
+const activeUserEmail = computed(() => route.params.email || authUser.value?.email);
+const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.email);
 const profilePosts = computed(() => {
-  if (!activeUserId.value || !postsStore.posts.value) return [];
-  return postsStore.posts.value.filter(post => post.user.id === activeUserId.value);
+  if (!activeUserEmail.value || !postsStore.posts.value) return [];
+  return postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
 });
 
 // Fetch de datos
-const fetchUserData = async (userId) => {
-  const mockUser = {
-    uid: userId,
-    displayName: userId === authUser.value?.uid ? authUser.value.displayName : `Usuario ${userId}`,
-    photoURLFile: authUser.value?.photoURLFile,
-    bannerUrlFile: null,
-  };
-  activeUser.value = mockUser;
+const fetchUserData = async (userEmail) => {
+  debugger
+  await getUserProfileByEmail(userEmail).then(profileUser => {
+    debugger
+    activeUser.value = profileUser;
+  });
+
   connections.value = [
     { idDoc: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: defaultAvatar },
     { idDoc: '2', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
@@ -253,7 +388,7 @@ const fetchUserData = async (userId) => {
     { idDoc: '5', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
     { idDoc: '6', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
     // ... más conexiones
-  ].filter(c => c.idDoc !== userId);
+  ].filter(c => c.email !== userEmail);
 };
 
 // Métodos
@@ -263,7 +398,7 @@ function toggleEditBanner() {
 
 async function updateBanner(file) {
   if (!isOwnProfile.value || !file) return;
-  const filepath = `banners/${activeUserId.value}/${Date.now()}`;
+  const filepath = `banners/${activeUserEmail.value}/${Date.now()}`;
   try {
     await uploadFile(filepath, file);
     const url = await getFileUrl(filepath);
@@ -283,7 +418,58 @@ function addStory() {
 }
 
 function editProfile() {
-  console.log('Editar perfil');
+  // Inicializar el formulario con los datos actuales del usuario
+  editForm.value = {
+    id: activeUser.value?.uid || activeUser.value?.id,
+    displayName: activeUser.value?.displayName || 'No ha definido un displayName',
+    firstName: activeUser.value?.firstName || 'No ha definido un nombre',
+    lastName: activeUser.value?.lastName || 'No ha definido un apellido',
+    email: activeUser.value?.email || 'No ha definido un correo',
+    phoneNumber: activeUser.value?.phoneNumber || 'No ha definido un número de teléfono',
+    birthday: activeUser.value?.birthday || 'No ha definido una fecha de nacimiento',
+    gender: activeUser.value?.gender || 'No ha definido un género',
+    country: activeUser.value?.country || 'No ha definido un país',
+    photoURL: activeUser.value?.photoURL || null,
+    photoURLFile: activeUser.value?.photoURLFile || null,
+  };
+  showEditModal.value = true;
+}
+
+function closeEditModal() {
+  showEditModal.value = false;
+}
+
+function handlePhotoUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    editForm.value.photoURLFile = file;
+    editForm.value.photoURL = URL.createObjectURL(file); // Vista previa
+  }
+}
+
+async function saveProfile() {
+  debugger
+  try {
+    // Si hay una nueva foto, subirla primero
+    if (editForm.value.photoURLFile) {
+      const filepath = `profile/${activeUserEmail.value}/${Date.now()}`;
+      await uploadFile(filepath, editForm.value.photoURLFile);
+      editForm.value.photoURL = await getFileUrl(filepath);
+    }
+
+    // Actualizar activeUser con los nuevos datos
+    activeUser.value = {
+      ...activeUser.value,
+      ...editForm.value,
+      photoURLFile: editForm.value.photoURL, // Actualizar la URL de la foto
+    };
+
+    // Aquí iría la lógica para guardar en tu backend o base de datos
+    console.log('Perfil actualizado:', editForm.value);
+    closeEditModal();
+  } catch (err) {
+    console.error('Error al guardar el perfil:', err);
+  }
 }
 
 function sendMessage() {
@@ -296,8 +482,9 @@ function showProfileInfo() {
 
 // Ciclo de vida
 onMounted(async () => {
-  if (!activeUserId.value) return;
-  await fetchUserData(activeUserId.value);
+  debugger
+  if (!activeUserEmail.value) return;
+  await fetchUserData(activeUserEmail.value);
   postsStore.subscribe();
 });
 
