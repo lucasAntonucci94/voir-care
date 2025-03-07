@@ -47,14 +47,14 @@
   
         <!-- Modal de confirmación integrado -->
         <div v-if="showDeleteModal" class="fixed inset-0 z-101 flex items-center justify-center">
-            <div class="fixed inset-0 bg-black opacity-90"></div>
+            <div class="fixed inset-0 bg-black opacity-50"></div>
 
             <div class="relative bg-white rounded-2xl p-6 shadow-lg w-full max-w-md">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirmar eliminación</h3>
             <p class="text-gray-600 mb-6">¿Estás seguro de que deseas eliminar este mensaje?</p>
             <div class="flex justify-end space-x-4">
                 <button @click="closeDeleteModal" class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors duration-200">Cancelar</button>
-                <button @click="deleteMessage(messageToDelete)" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-[#019a8e] transition-colors duration-200">Confirmar</button>
+                <button @click="deleteMessage(messageToDelete)" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-md transition-colors duration-200">Eliminar</button>
             </div>
             </div>
         </div>
@@ -102,6 +102,8 @@
         if (newChatId) {
           loadingMessages.value = true;
           const otherUser = getOtherUserEmail();
+          debugger
+          if(!user?.value && !otherUser) return;	
           unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
             user.value.email,
             otherUser,

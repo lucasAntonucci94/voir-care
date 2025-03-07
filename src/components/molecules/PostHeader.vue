@@ -38,7 +38,7 @@
           <li v-if="post?.user?.id === user?.id || user?.isAdmin">
             <button 
               @click="showDeleteModal" 
-              class="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-primary-transparent text-primary hover:text-primary-darker transition-all duration-200"
             >
               <i class="fas fa-trash mr-2"></i> Eliminar
             </button>
@@ -78,7 +78,7 @@
         </button>
         <button 
           @click="confirmDelete" 
-          class="px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
+          class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-md transition-all duration-200 shadow-md hover:shadow-lg"
         >
           Eliminar
         </button>

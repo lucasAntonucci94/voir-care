@@ -18,7 +18,7 @@
       </div>
       <button 
         @click="showDeleteModal(comment.idDoc)" 
-        class="text-gray-400 hover:text-red-500 transition-colors duration-200 focus:outline-none"
+        class=" text-primary hover:text-primary-darker transition-colors duration-200 focus:outline-none"
         title="Eliminar comentario"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +41,7 @@
           </button>
           <button 
             @click="confirmDelete" 
-            class="px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-md transition-all duration-200 shadow-md hover:shadow-lg"
           >
             Eliminar
           </button>

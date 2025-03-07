@@ -4,8 +4,9 @@
 @theme{
   --color-primary-lighter: #14e6d4;  
   --color-primary: #02bcae;
-  --color-primary-transparent: #02bcac68;
+  --color-primary-md: #019a8e;
   --color-primary-darker: #01746a;  
+  --color-primary-transparent: #0ef2df29;
 }
 
 /* Your other custom styles go here */
@@ -16,6 +17,7 @@
   font-weight: 400;
   /* color-scheme: light; */
   /* color: rgba(255, 255, 255, 0.87); */
+  background-color:  #0ef2df29;
   background-color:  #ffffff;
 
   font-synthesis: none;

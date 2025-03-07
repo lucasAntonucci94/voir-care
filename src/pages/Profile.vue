@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-gray-50 font-poppins">
+  <div class="min-h-screen bg-gray-50 font-poppins">
     <!-- Banner -->
     <div class="relative w-full h-38 md:h-64 overflow-hidden">
       <img :src="activeUser?.bannerUrlFile ?? bannerUrl" alt="Banner" class="w-full h-full object-cover" />
@@ -17,66 +17,66 @@
             <h1 class="text-xl md:text-2xl font-bold">{{ activeUser?.displayName || 'Usuario' }}</h1>
             <p class="text-sm">{{ connections?.length || 0 }} conexiones</p>
             <div class="mt-2 flex -space-x-2 items-center">
-            <img 
-              v-for="connection in connections?.slice(0, 5)" 
-              :key="connection.idDoc"
-              :src="connection.photoURLFile"
-              alt=""
-              class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-            />
-            <router-link 
-              v-if="connections?.length > 5" 
-              :to="`/profile/${activeUserId}/connections`" 
-              class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary transition"
-            >
               <img 
-                :src="connections[5]?.photoURLFile" 
-                class="h-8 w-8 rounded-full object-cover"
-                alt="Más conexiones"
+                v-for="connection in connections?.slice(0, 5)" 
+                :key="connection.idDoc"
+                :src="connection.photoURLFile"
+                alt=""
+                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
               />
-              <div class="absolute inset-0 bg-gray-800/70 rounded-full flex items-center justify-center">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="white">
-                  <circle cx="4" cy="12" r="2" />
-                  <circle cx="12" cy="12" r="2" />
-                  <circle cx="20" cy="12" r="2" />
-                </svg>
-              </div>
-            </router-link>
-          </div>
+              <button 
+                v-if="connections?.length > 5" 
+                @click="setTabConexiones" 
+                class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary transition"
+              >
+                <img 
+                  :src="connections[5]?.photoURLFile" 
+                  class="h-8 w-8 rounded-full object-cover"
+                  alt="Más conexiones"
+                />
+                <div class="absolute inset-0 bg-gray-800/70 rounded-full flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="white">
+                    <circle cx="4" cy="12" r="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <circle cx="20" cy="12" r="2" />
+                  </svg>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
         <!-- Botones de acción -->
         <div v-if="isOwnProfile" class="flex flex-col gap-4 h-30 w-full md:w-auto">
           <!-- Editar portada (superior derecha) -->
           <div class="hidden md:flex justify-center md:justify-end gap-2">
-          <button 
-            v-if="!isEditingBanner" 
-            @click="toggleEditBanner" 
-            class="px-4 py-2 bg-white/80 text-gray-700 rounded-full hover:bg-white transition-all shadow-md"
-          >
-            Editar portada
-          </button>
-          <div v-if="isEditingBanner" class="flex items-center gap-2">
-            <input 
-              type="file" 
-              @change="updateBanner($event.target.files[0])" 
-              class="px-4 py-2 bg-white/80 text-gray-700 rounded-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white"
-            />
             <button 
+              v-if="!isEditingBanner" 
               @click="toggleEditBanner" 
-              class="px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all shadow-md"
+              class="px-4 py-2 bg-white/80 text-gray-700 rounded-full hover:bg-white transition-all shadow-md"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Editar portada
             </button>
+            <div v-if="isEditingBanner" class="flex items-center gap-2">
+              <input 
+                type="file" 
+                @change="updateBanner($event.target.files[0])" 
+                class="px-4 py-2 bg-white/80 text-gray-700 rounded-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-primary-md"
+              />
+              <button 
+                @click="toggleEditBanner" 
+                class="px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all shadow-md"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
-        </div>
           <!-- Agregar historia y Editar perfil (inferior derecha) -->
           <div class="flex justify-center md:justify-end mt-auto">
             <div class="flex flex-col gap-2 md:flex-row md:gap-4">
               <button 
-                class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all shadow-md" 
+                class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
                 @click="addStory"
               >
                 Agregar historia
@@ -86,6 +86,25 @@
                 @click="editProfile"
               >
                 Editar perfil
+              </button>
+            </div>
+          </div>
+        </div>
+        <div v-else class="flex flex-col gap-4 h-30 w-full md:w-auto">
+          <!-- Agregar historia y Editar perfil (inferior derecha) -->
+          <div class="flex justify-center md:justify-end mt-auto">
+            <div class="flex flex-col gap-2 md:flex-row md:gap-4">
+              <button 
+                class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
+                @click="sendMessage"
+              >
+                Enviar Mensaje
+              </button>
+              <button 
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" 
+                @click="showProfileInfo"
+              >
+                Ver Información
               </button>
             </div>
           </div>
@@ -102,7 +121,7 @@
           @click="activeTab = tab.toLowerCase()"
           :class="[
             'px-4 py-2 rounded-full text-sm font-medium transition-all',
-            activeTab === tab.toLowerCase() ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            activeTab === tab.toLowerCase() ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
           ]"
         >
           {{ tab }}
@@ -131,7 +150,6 @@
         </div>
       </div>
     </div>
-
     <!-- Contenido del perfil -->
     <div class="container mx-auto px-4 md:px-8 lg:px-16 mt-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-full mx-4 md:mx-0">
@@ -144,6 +162,9 @@
           </div>
           <div v-else-if="activeTab === 'información'" class="bg-white p-4 rounded-lg shadow-sm  mx-auto max-w-lg">
             <p>Información del usuario (pendiente de implementación)</p>
+          </div>
+          <div v-else-if="activeTab === 'conexiones'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+            <p>Conexiones (pendiente de implementación)</p>
           </div>
           <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
             <p>Galería (pendiente de implementación)</p>
@@ -175,7 +196,7 @@
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>
@@ -202,9 +223,10 @@ const showMoreTabs = ref(false);
 const defaultAvatar = 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4';
 
 // Tabs
-const allTabs = ['Publicaciones', 'Información', 'Galería', 'Eventos', 'Grupos'];
+const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos'];
 const visibleTabs = computed(() => allTabs.slice(0, 4));
 const hiddenTabs = computed(() => allTabs.slice(4));
+const setTabConexiones = computed(() => { activeTab.value = 'conexiones'});
 
 // Computados
 const activeUserId = computed(() => route.params.id || authUser.value?.uid);
@@ -262,6 +284,14 @@ function addStory() {
 
 function editProfile() {
   console.log('Editar perfil');
+}
+
+function sendMessage() {
+  console.log('Enviar Mensaje');
+}
+
+function showProfileInfo() {
+  console.log('Ver detalles de perfil');
 }
 
 // Ciclo de vida
