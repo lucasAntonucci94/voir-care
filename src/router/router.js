@@ -39,7 +39,7 @@ const routes = [
         component: Register,
       },
       {
-        path: '/profile',
+        path: '/profile/:id?',
         name: 'profile',
         component: Profile,
         meta: {
