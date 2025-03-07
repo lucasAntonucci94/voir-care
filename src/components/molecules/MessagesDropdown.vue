@@ -23,15 +23,22 @@
     <transition name="dropdown">
       <div
         v-if="isOpen"
-        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-72 md:w-80 lg:w-96 h-full sm:h-auto max-h-[calc(100vh-4rem)] bg-white shadow-lg rounded-none sm:rounded-lg z-20 overflow-y-auto"
+        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-72 md:w-80 lg:w-96 h-full sm:h-auto max-h-[calc(100vh-4rem)] bg-white shadow-lg rounded-none sm:rounded-lg z-20 overflow-y-auto flex flex-col pt-12 sm:pt-0"
       >
+        <!-- Botón de cierre (solo mobile) -->
+        <button
+          @click="toggle"
+          class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-primary transition-colors md:hidden"
+        >
+          <i class="fa-solid fa-times text-xl"></i>
+        </button>
         <ul v-if="privateChatsStore?.chats?.value?.length > 0" class="divide-y divide-gray-100">
           <li
             v-for="notification in privateChatsStore?.chats?.value?.slice(0, 9)"
             :key="notification.id"
             class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
           >
-            {{ getOtherUserEmail(notification.user) +':'+ notification.message.message }}
+            {{ getOtherUserEmail(notification.user) + ':' + notification.message.message }}
           </li>
           <li
             v-if="privateChatsStore?.chats?.value?.length > 9"

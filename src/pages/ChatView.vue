@@ -26,20 +26,20 @@
           </div>
         </div>
       </div>
-      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" :deletedChatId="privateChatsStore?.deletedChatId" />
-       <!-- Modal de confirmación -->
-        <div v-if="showDeleteChatModal" class="fixed inset-0 z-50 flex items-center justify-center">
-            <div class="fixed inset-0 bg-black opacity-90"></div>
+      <!-- Modal de confirmación al eliminar un chat -->
+      <div v-if="showDeleteChatModal" class="fixed inset-0 z-101 flex items-center justify-center">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
 
             <div class="relative bg-white rounded-2xl p-6 shadow-lg w-full max-w-md">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirmar eliminación</h3>
             <p class="text-gray-600 mb-6">¿Estás seguro de que deseas eliminar este chat?</p>
             <div class="flex justify-end space-x-4">
                 <button @click="closeDeleteChatModal" class="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors duration-200">Cancelar</button>
-                <button @click="deleteChat(chatToDelete)" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-[#019a8e] transition-colors duration-200">Confirmar</button>
+                <button @click="deleteChat(chatToDelete)" class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-md transition-colors duration-200">Eliminar</button>
             </div>
             </div>
         </div>
+      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" :deletedChatId="privateChatsStore?.deletedChatId" />
     </div>
   </template>
   <script setup>
@@ -47,7 +47,10 @@
   import { usePrivateChatsStore } from '../stores/privateChats';
   import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
   import { formatTimestamp } from '../utils/formatTimestamp';
+  import { useAuth } from '../api/auth/auth';
 
+  
+  const { user: userAuth } = useAuth();
   const privateChatsStore = usePrivateChatsStore();
   const showDeleteChatModal = ref(false);
   const chatToDelete = ref(null);
@@ -72,15 +75,15 @@
         closeDeleteChatModal();
     };
 
-  
+  // TO DO: Refactorizar estos métodos a un archivo de utilidades y obtener imagen de firebase
   const getUserPhoto = (chat) => {
     if(!chat) return null;
-    const selectedEmail = Object.keys(chat.user)?.find(u => u !== 'lucas.e.antonucci@gmail.com');
+    const selectedEmail = Object.keys(chat.user)?.find(u => u !== userAuth?.value?.email);
     return `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4` || 'https://via.placeholder.com/40';
   };
-  
+  // TO DO: Refactorizar estos métodos a un archivo de utilidades y que obtenga el displayName del usuario o email.
   const getUserName = (user) => {
-    const selectedEmail = Object.keys(user)?.find(u => u !== 'lucas.e.antonucci@gmail.com');
+    const selectedEmail = Object.keys(user)?.find(u => u !== userAuth?.value?.email);
     return selectedEmail?.split('@')[0].replace('.', ' ');
   };
   </script>

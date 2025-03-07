@@ -1,7 +1,10 @@
 <!-- PostHeader.vue -->
 <template>
   <div class="flex items-center justify-between mb-3">
-    <div class="flex items-center gap-3">
+    <router-link 
+      :to="`/profile/${post?.user?.id}`" 
+      class="flex items-center gap-3 hover:bg-gray-100 rounded transition-colors"
+    >
       <img 
         :src="post?.user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
         alt="Avatar" 
@@ -11,7 +14,7 @@
         <p class="text-sm font-bold text-[#2c3e50]">{{ post?.user?.displayName || 'Anónimo' }}</p>
         <p class="text-xs text-gray-500">{{ formatTimestamp(post?.timestamp) }}</p>
       </div>
-    </div>
+    </router-link>
     <div class="relative">
       <button 
         @click="post.showMenu = !post.showMenu" 
@@ -35,7 +38,7 @@
           <li v-if="post?.user?.id === user?.id || user?.isAdmin">
             <button 
               @click="showDeleteModal" 
-              class="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 hover:text-red-700 transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-primary-transparent text-primary hover:text-primary-darker transition-all duration-200"
             >
               <i class="fas fa-trash mr-2"></i> Eliminar
             </button>
@@ -62,7 +65,7 @@
   </div>
 
   <!-- Modal de confirmación -->
-  <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 transition-opacity duration-300">
+  <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
     <div class="bg-white rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
       <h3 class="text-lg font-semibold text-gray-800 mb-4">¿Eliminar posteo?</h3>
       <p class="text-sm text-gray-600 mb-6">¿Estás seguro de que quieres eliminar este posteo? Esta acción no se puede deshacer.</p>
@@ -75,7 +78,7 @@
         </button>
         <button 
           @click="confirmDelete" 
-          class="px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
+          class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-md transition-all duration-200 shadow-md hover:shadow-lg"
         >
           Eliminar
         </button>

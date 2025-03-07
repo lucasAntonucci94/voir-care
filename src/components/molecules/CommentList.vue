@@ -18,7 +18,7 @@
       </div>
       <button 
         @click="showDeleteModal(comment.idDoc)" 
-        class="text-gray-400 hover:text-red-500 transition-colors duration-200 focus:outline-none"
+        class=" text-primary hover:text-primary-darker transition-colors duration-200 focus:outline-none"
         title="Eliminar comentario"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Modal de confirmación -->
-    <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 transition-opacity duration-300">
+    <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
       <div class="bg-white rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
         <h3 class="text-lg font-semibold text-gray-800 mb-4">¿Eliminar comentario?</h3>
         <p class="text-sm text-gray-600 mb-6">¿Estás seguro de que quieres eliminar este comentario? Esta acción no se puede deshacer.</p>
@@ -41,7 +41,7 @@
           </button>
           <button 
             @click="confirmDelete" 
-            class="px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            class="px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-md transition-all duration-200 shadow-md hover:shadow-lg"
           >
             Eliminar
           </button>

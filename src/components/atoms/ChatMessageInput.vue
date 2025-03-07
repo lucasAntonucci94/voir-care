@@ -24,6 +24,7 @@
   import { ref, defineProps, watch } from 'vue';
   import { usePrivateChats } from '../../composable/usePrivateChats';
   import { usePrivateChatsStore } from '../../stores/privateChats';
+  import { useAuth } from '../../api/auth/auth';
   
   // Props
   const props = defineProps({
@@ -38,6 +39,7 @@
   const loading = ref(false);
   const privateChatsStore = usePrivateChatsStore();
   const { savePrivateMessage } = usePrivateChats();
+  const { user } = useAuth();
   
   // Métodos
   const sendMessage = async () => {
@@ -46,8 +48,8 @@
     loading.value = true;
     try {
       const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === props.selectedChatId);
-      const otherUser = Object.keys(selectedChat.user).find(u => u !== 'lucas.e.antonucci@gmail.com');
-      await savePrivateMessage('lucas.e.antonucci@gmail.com', otherUser, messageText.value);
+      const otherUser = Object.keys(selectedChat.user).find(u => u !== user?.value.email);
+      await savePrivateMessage(user?.value.email, otherUser, messageText.value);
       messageText.value = ''; // Limpiar el input después de enviar
     } catch (err) {
       console.error('Error sending message:', err);

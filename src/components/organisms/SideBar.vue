@@ -8,7 +8,7 @@
     <button 
       v-if="show" 
       @click="emit('toggle')" 
-      class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-[#2c3e50] transition-colors md:hidden"
+      class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-primary transition-colors md:hidden"
     >
       <i class="fas fa-times text-lg"></i>
     </button>
