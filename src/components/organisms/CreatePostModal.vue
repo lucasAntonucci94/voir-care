@@ -178,7 +178,7 @@ async function createPost() {
       email: user.value.email || 'No ha definido un correo',
       phoneNumber: user.value.phoneNumber || 'No ha definido un número de teléfono',
       birthday: user.value.birthday || 'No ha definido una fecha de nacimiento',
-      gender: user.value.gender || 'No ha definido un género',
+      genre: user.value.genre || 'No ha definido un género',
       country: user.value.country || 'No ha definido un país',
       photoURL: user.value.photoURL || null,
       photoURLFile: user.value.photoURLFile || null,
