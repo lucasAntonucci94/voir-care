@@ -14,7 +14,8 @@
     </button>
 
     <!-- Perfil del usuario -->
-    <div v-if="isAuthenticated" class="flex items-center gap-4 mb-8">
+    <!-- Perfil del usuario -->
+    <router-link to="/profile" v-if="isAuthenticated" class="flex items-center gap-4 mb-8">
       <img 
         :src="user?.photoURLFile || 'https://via.placeholder.com/40'" 
         alt="Avatar" 
@@ -26,7 +27,7 @@
         </p>
         <p class="text-xs text-gray-500">Miembro</p>
       </div>
-    </div>
+    </router-link>
 
     <!-- Navegación principal -->
     <nav class="space-y-2">
