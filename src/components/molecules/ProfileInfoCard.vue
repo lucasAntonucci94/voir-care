@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
-        <img :src="activeUser?.photoURLFile || defaultAvatar" alt="Avatar" class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover shadow-lg" />
+        <img :src="activeUser?.photoURLFile  || avatarDefault" alt="Avatar" class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover shadow-lg" />
         <div class="text-center md:text-left text-gray-800 md:text-white">
-            <h1 class="text-xl md:text-2xl font-bold">{{ activeUser?.displayName || 'Usuario' }}</h1>
+            <h1 class="text-xl md:text-2xl font-bold">{{ activeUser?.displayName || activeUser?.email || 'Usuario' }}</h1>
             <p class="text-sm">{{ connections?.length || 0 }} conexiones</p>
             <div class="mt-2 flex -space-x-2 items-center">
                 <img 
@@ -36,6 +36,7 @@
 </template>
 <script setup>
 import { defineProps } from 'vue';
+import avatarDefault from '../../assets/avatar1.jpg';
 
 // Props
 const props = defineProps({

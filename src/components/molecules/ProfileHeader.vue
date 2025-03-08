@@ -5,46 +5,11 @@
       <div class="absolute inset-0 bg-black/50">
       </div>
     </div>
-
     <!-- Perfil -->
     <div class="container mx-auto px-4 md:px-8 lg:px-16 -mt-12 md:-mt-16 relative">
       <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
         <!-- Datos del usuario -->
          <ProfileInfoCard :activeUser="activeUser" :connections="connections" :setTabConexiones="setTabConexiones" />
-        <!-- <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
-          <img :src="activeUser?.photoURLFile || defaultAvatar" alt="Avatar" class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover shadow-lg" />
-          <div class="text-center md:text-left text-gray-800 md:text-white">
-            <h1 class="text-xl md:text-2xl font-bold">{{ activeUser?.displayName || 'Usuario' }}</h1>
-            <p class="text-sm">{{ connections?.length || 0 }} conexiones</p>
-            <div class="mt-2 flex -space-x-2 items-center">
-              <img 
-                v-for="connection in connections?.slice(0, 5)" 
-                :key="connection.idDoc"
-                :src="connection.photoURLFile"
-                alt=""
-                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
-              />
-              <button 
-                v-if="connections?.length > 5" 
-                @click="setTabConexiones" 
-                class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary transition"
-              >
-                <img 
-                  :src="connections[5]?.photoURLFile" 
-                  class="h-8 w-8 rounded-full object-cover"
-                  alt="Más conexiones"
-                />
-                <div class="absolute inset-0 bg-gray-800/70 rounded-full flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="white">
-                    <circle cx="4" cy="12" r="2" />
-                    <circle cx="12" cy="12" r="2" />
-                    <circle cx="20" cy="12" r="2" />
-                  </svg>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div> -->
         <!-- Botones de acción -->
         <div v-if="isOwnProfile" class="flex flex-col gap-4 h-30 w-full md:w-auto">
           <!-- Editar portada (superior derecha) -->
@@ -96,7 +61,8 @@
             <div class="flex flex-col gap-2 md:flex-row md:gap-4">
               <router-link 
                 class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
-                :to="activeUser ? `/chat/${activeUser?.email}` : '/chat'"
+                to="/chats"
+                @click="sendMessage"
               >
                 Enviar Mensaje
               </router-link>
@@ -134,10 +100,14 @@
 </template>
 
 <script setup>
-import { ref, defineProps,computed } from 'vue';
+import { ref, defineProps } from 'vue';
 import { useStorage } from '../../composable/useStorage';
 import ProfileForm from '../molecules/ProfileForm.vue';
 import ProfileInfoCard from './ProfileInfoCard.vue';
+import { usePrivateChatsStore } from '../../stores/privateChats';
+import { usePrivateChats } from '../../composable/usePrivateChats';
+import { useAuth } from '../../api/auth/useAuth';
+
 
 // Props
 const props = defineProps({
@@ -152,6 +122,9 @@ const props = defineProps({
 
 // Instancias
 const { uploadFile, getFileUrl } = useStorage();
+const { user: authUser } = useAuth();
+const { getChatIdByReference } = usePrivateChats();
+const privateChatsStore = usePrivateChatsStore();
 
 // Estados
 const isEditingBanner = ref(false);
@@ -195,7 +168,15 @@ function closeEditModal() {
   showEditModal.value = false;
 }
 
-function sendMessage() {
+async function sendMessage() {
   console.log('Enviar Mensaje');
+  console.log(props.activeUser)
+  //obtener chat a partir del email del activeUser y el authUser
+  console.log(props.activeUser.email)
+  console.log(authUser.value.email)
+  debugger
+  const chatId = await getChatIdByReference(authUser.value.email, props.activeUser.email )
+  debugger
+  privateChatsStore.setSelectedChatId(chatId);
 }
 </script>
