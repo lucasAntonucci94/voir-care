@@ -112,7 +112,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 import { usePostsStore } from '../../stores/posts';
 import { useCategories } from '../../composable/useCategories';
 

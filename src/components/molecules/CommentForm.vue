@@ -19,7 +19,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useAuth } from '../../api/auth/auth'; // Ajusta la ruta según tu estructura
+import { useAuth } from '../../api/auth/useAuth'; // Ajusta la ruta según tu estructura
 import { useComments } from '../../composable/useComments'; // Ajusta la ruta
 import Button from '../atoms/Button.vue';
 

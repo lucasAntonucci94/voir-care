@@ -8,7 +8,7 @@ import Faqs from '../pages/Faqs.vue';
 import Explore from '../pages/Explore.vue';
 import LandingPage from '../pages/LandingPage.vue';
 import ChatView from '../pages/ChatView.vue';
-import { useAuth } from '../api/auth/auth';
+import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
   {

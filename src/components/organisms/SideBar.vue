@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 const { user, isAuthenticated } = useAuth();
 const emit = defineEmits(['toggle']);
 

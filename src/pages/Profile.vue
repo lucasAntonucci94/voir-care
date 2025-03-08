@@ -102,7 +102,7 @@
               </router-link>
               <button 
                 class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" 
-                @click="showProfileInfo"
+                @click="setTabInformation"
               >
                 Ver Información
               </button>
@@ -197,7 +197,7 @@
     </div>
   </div>
   <!-- Modal para editar perfil -->
-  <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
       <!-- Header del modal -->
       <div class="flex items-center justify-between p-4 border-b">
@@ -335,17 +335,18 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useAuth } from '../api/auth/auth';
+import { useAuth } from '../api/auth/useAuth';
 import { useStorage } from '../composable/useStorage';
 import { usePostsStore } from '../stores/posts';
 import PostCard from '../components/organisms/PostCard.vue';
 import { useUsers } from '../composable/useUsers';
+
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();
 const { uploadFile, getFileUrl } = useStorage();
 const postsStore = usePostsStore();
-const { getUserProfileByEmail } = useUsers();
+const { getUserProfileByEmail, updateUser } = useUsers();
 
 // Estados
 const activeUser = ref(null);
@@ -363,6 +364,7 @@ const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eve
 const visibleTabs = computed(() => allTabs.slice(0, 4));
 const hiddenTabs = computed(() => allTabs.slice(4));
 const setTabConexiones = computed(() => { activeTab.value = 'conexiones'});
+const setTabInformation = computed(() => { activeTab.value = 'información'});
 
 // Computados
 const activeUserEmail = computed(() => route.params.email || authUser.value?.email);
@@ -375,10 +377,7 @@ const profilePosts = computed(() => {
 // Fetch de datos
 const fetchUserData = async (userEmail) => {
   debugger
-  await getUserProfileByEmail(userEmail).then(profileUser => {
-    debugger
-    activeUser.value = profileUser;
-  });
+  activeUser.value = await getUserProfileByEmail(userEmail);
 
   connections.value = [
     { idDoc: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: defaultAvatar },
@@ -439,20 +438,22 @@ function closeEditModal() {
   showEditModal.value = false;
 }
 
-function handlePhotoUpload(event) {
-  const file = event.target.files[0];
-  if (file) {
-    editForm.value.photoURLFile = file;
-    editForm.value.photoURL = URL.createObjectURL(file); // Vista previa
-  }
-}
+// funciones de carga de imagen
+const handlePhotoUpload = (ev) => {
+  const reader = new FileReader();
+  const file = ev.target.files[0];
+  reader.addEventListener("load", function () {
+    editForm.value.photoURLFile = reader.result;
+  });
+  editForm.value.photoURL = URL.createObjectURL(file); // Vista previa
+  reader.readAsDataURL(file);
+};
 
 async function saveProfile() {
-  debugger
   try {
     // Si hay una nueva foto, subirla primero
     if (editForm.value.photoURLFile) {
-      const filepath = `profile/${activeUserEmail.value}/${Date.now()}`;
+      const filepath = `profile/${activeUserEmail.value}.jpg`;
       await uploadFile(filepath, editForm.value.photoURLFile);
       editForm.value.photoURL = await getFileUrl(filepath);
     }
@@ -464,8 +465,9 @@ async function saveProfile() {
       photoURLFile: editForm.value.photoURL, // Actualizar la URL de la foto
     };
 
+    await updateUser(activeUser.value.uid, activeUser.value);
     // Aquí iría la lógica para guardar en tu backend o base de datos
-    console.log('Perfil actualizado:', editForm.value);
+    console.log('Perfil actualizado:', activeUser.value);
     closeEditModal();
   } catch (err) {
     console.error('Error al guardar el perfil:', err);

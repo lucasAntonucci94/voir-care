@@ -89,7 +89,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useAuth } from '../../api/auth/auth'; // Ajusta la ruta
+import { useAuth } from '../../api/auth/useAuth'; // Ajusta la ruta
 import { formatTimestamp } from '../../utils/formatTimestamp'; // Ajusta la ruta
 
 const props = defineProps(['post']);
@@ -101,7 +101,6 @@ const { user } = useAuth();
 const showModal = ref(false);
 
 onMounted(() => {
-  debugger
   console.log('PostHeader mounted');
   console.log(props.post);
 });
