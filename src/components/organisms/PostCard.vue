@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 import CommentForm from '../molecules/CommentForm.vue';
 import CommentList from '../molecules/CommentList.vue';
 import PostHeader from '../molecules/PostHeader.vue';
@@ -54,8 +54,9 @@ async function toggleLike() {
     console.log('Usuario no autenticado, no puede dar Like');
     return;
   }
+  debugger
   await postsStore.toggleLike(props.post.idDoc, {
-    id: user.value.id,
+    id: user.value.uid,
     email: user.value.email,
   });
 }

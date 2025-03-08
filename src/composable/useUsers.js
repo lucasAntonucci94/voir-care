@@ -1,10 +1,13 @@
+import { ref } from 'vue';
 import { getFirestore, doc, setDoc, getDocs, updateDoc, collection, query, where, limit } from 'firebase/firestore';
-import { useStorage } from './useStorage'; // Importamos el composable de storage
-// import { updateUserFromPost } from '../posts/index.js'; // Mantenemos esta dependencia
+import { useStorage } from './useStorage'; // Ajusta la ruta según tu estructura
 
 const db = getFirestore();
 const usersRef = collection(db, 'users');
-const { getFileUrl } = useStorage(); // Extraemos getFileUrl para usarlo si es necesario
+const { getFileUrl } = useStorage();
+
+// Estado reactivo para el perfil del usuario (opcional, dependiendo de cómo quieras usarlo)
+const userProfile = ref(null);
 
 export function useUsers() {
   /**
@@ -51,26 +54,18 @@ export function useUsers() {
 
       const userDoc = snapshot.docs[0];
       const user = userDoc.data();
-      console.log({
-        id: userDoc.id,
-        email: user.email,
-        displayName: user.displayName,
-        firstName: user.firstName || null,
-        lastName: user.lastName || null,
-        avatar: user.avatar || null,
-        isAdmin: user.isAdmin || null,
-        photoURLFile: user.photoURLFile,
-      });
-
       return {
-        id: userDoc.id,
+        uid: userDoc.id,
         email: user.email,
         displayName: user.displayName,
         firstName: user.firstName || null,
         lastName: user.lastName || null,
+        phoneNumber: user.phoneNumber || null,
+        genre: user.genre || null,
+        country: user.country || null,
+        photoURLFile: user.photoURLFile|| null,
         avatar: user.avatar || null,
-        isAdmin: user.isAdmin || null,
-        photoURLFile: user.photoURLFile,
+        isAdmin: user.isAdmin || false,
       };
     } catch (error) {
       console.error('Error al obtener el perfil por email:', error);
@@ -94,7 +89,7 @@ export function useUsers() {
         lastName: data.lastName || '',
         avatar: data.avatar || null,
         photoURLFile: data.photoURLFile || null,
-        isAdmin: data.isAdmin || false, // Valor por defecto
+        isAdmin: data.isAdmin || false,
       });
     } catch (error) {
       console.error('Error al crear usuario:', error);
@@ -103,35 +98,72 @@ export function useUsers() {
   }
 
   /**
-   * Actualiza los datos de un usuario en Firestore y posts relacionados
+   * Actualiza los datos de un usuario en Firestore
    * @param {string} id - ID del usuario
    * @param {Object} data - Datos a actualizar (displayName, firstName, etc.)
    * @returns {Promise<void>}
    */
   async function updateUser(id, data) {
+    debugger
     try {
       const docRef = doc(db, 'users', id);
       await updateDoc(docRef, {
         displayName: data.displayName,
         firstName: data.firstName ?? '',
         lastName: data.lastName ?? '',
+        phoneNumber: data.phoneNumber ?? '',
+        birthday: data.birthday ?? '',
+        genre: data.genre ?? '',
+        country: data.country ?? '',
         avatar: data.avatar || null,
         photoURLFile: data.photoURLFile || null,
       });
-
-      // Actualizamos datos en posts relacionados (si aplica)
-    //   await updateUserFromPost({ id, data });
     } catch (error) {
       console.error('Error al actualizar usuario:', error);
       throw error;
     }
   }
 
-  // Devolvemos las funciones para usarlas en los componentes
+  /**
+   * Carga la información completa del perfil del usuario desde Storage y Firestore.
+   * @param {Object} firebaseUser - Objeto del usuario de Firebase Auth
+   * @returns {Promise<Object>} - Datos combinados del usuario
+   */
+  async function loadProfileInfo(firebaseUser) {
+    if (!firebaseUser) return null;
+
+    try {
+      const photoURLFilePromise = firebaseUser.photoURL
+        ? getFileUrl(firebaseUser.photoURL)
+        : Promise.resolve(null);
+
+      const userProfilePromise = getUserProfileByEmail(firebaseUser.email);
+
+      const [photoURLFile, profile] = await Promise.all([
+        photoURLFilePromise,
+        userProfilePromise,
+      ]);
+
+      const combinedData = {
+        ...firebaseUser, // Datos de Firebase Auth
+        photoURLFile,    // URL de la imagen desde Storage
+        ...profile,      // Datos adicionales de Firestore
+      };
+
+      userProfile.value = combinedData; // Actualizamos el estado reactivo
+      return combinedData;
+    } catch (error) {
+      console.error('Error al cargar el perfil del usuario:', error);
+      throw error;
+    }
+  }
+
   return {
+    userProfile, // Estado reactivo opcional
     getAllUsers,
     getUserProfileByEmail,
     createUser,
     updateUser,
+    loadProfileInfo,
   };
 }

@@ -47,7 +47,7 @@
   import { usePrivateChatsStore } from '../stores/privateChats';
   import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
   import { formatTimestamp } from '../utils/formatTimestamp';
-  import { useAuth } from '../api/auth/auth';
+  import { useAuth } from '../api/auth/useAuth';
 
   
   const { user: userAuth } = useAuth();

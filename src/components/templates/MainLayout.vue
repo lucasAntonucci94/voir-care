@@ -25,7 +25,7 @@ import Footer from '../../components/organisms/Footer.vue';
 import Sidebar from '../../components/organisms/Sidebar.vue';
 import { useSidebarStore } from '../../stores/sidebar';
 import { useRoute } from 'vue-router';
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useCategories } from '../../composable/useCategories';
 

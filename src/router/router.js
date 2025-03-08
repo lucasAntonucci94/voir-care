@@ -8,7 +8,7 @@ import Faqs from '../pages/Faqs.vue';
 import Explore from '../pages/Explore.vue';
 import LandingPage from '../pages/LandingPage.vue';
 import ChatView from '../pages/ChatView.vue';
-import { useAuth } from '../api/auth/auth';
+import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
   {
@@ -39,7 +39,7 @@ const routes = [
         component: Register,
       },
       {
-        path: '/profile/:id?',
+        path: '/profile/:email?',
         name: 'profile',
         component: Profile,
         meta: {
@@ -60,7 +60,7 @@ const routes = [
         }
       },
       {
-        path: '/chats',
+        path: '/chats/:idChat?',
         name: 'chats',
         component: ChatView,
         meta: {
