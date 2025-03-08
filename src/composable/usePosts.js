@@ -185,6 +185,7 @@ export function usePosts() {
         email: userData.email,
         // timestamp: serverTimestamp(),
       };
+      debugger
       await updateDoc(docRef, {
         likes: arrayUnion(likeData), // Agrega el like si no existe
       });
@@ -203,6 +204,7 @@ export function usePosts() {
         email: userData.email,
         // No necesitamos email ni timestamp aquí, Firestore compara por igualdad estricta
       };
+      debugger
       await updateDoc(docRef, {
         likes: arrayRemove(likeData), // Quita el like si existe
       });

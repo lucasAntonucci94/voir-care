@@ -83,7 +83,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 import { defineProps, defineEmits } from 'vue';
 import ThemeModeButton from '../atoms/ThemeModeButton.vue';
 

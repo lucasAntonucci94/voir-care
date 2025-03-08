@@ -46,7 +46,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 import { useSidebarStore } from '../../stores/sidebar';
 import UserDropdown from '../molecules/UserDropdown.vue';
 import MessagesDropdown from '../molecules/MessagesDropdown.vue';

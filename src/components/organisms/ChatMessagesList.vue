@@ -71,7 +71,7 @@
   import { defineProps } from 'vue';
   import { formatTimestamp } from '../../utils/formatTimestamp';
   import ChatMessageInput from '../atoms/ChatMessageInput.vue';
-  import { useAuth } from '../../api/auth/auth';
+  import { useAuth } from '../../api/auth/useAuth';
   // Props
   const props = defineProps({
     selectedChatId: {
@@ -102,7 +102,6 @@
         if (newChatId) {
           loadingMessages.value = true;
           const otherUser = getOtherUserEmail();
-          debugger
           if(!user?.value && !otherUser) return;	
           unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
             user.value.email,
