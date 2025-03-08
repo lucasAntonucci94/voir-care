@@ -54,7 +54,6 @@ async function toggleLike() {
     console.log('Usuario no autenticado, no puede dar Like');
     return;
   }
-  debugger
   await postsStore.toggleLike(props.post.idDoc, {
     id: user.value.uid,
     email: user.value.email,

@@ -23,13 +23,18 @@ export function useUsers() {
       querySnapshot.forEach((doc) => {
         const user = doc.data();
         users.push({
-          idDoc: doc.id,
-          displayName: user.displayName,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          uid: userDoc.id,
           email: user.email,
+          displayName: user.displayName,
+          firstName: user.firstName || null,
+          lastName: user.lastName || null,
+          phoneNumber: user.phoneNumber || null,
+          genre: user.genre || null,
+          birthday: user.birthday || null,
+          country: user.country || null,
+          photoURLFile: user.photoURLFile|| null,
           avatar: user.avatar || null,
-          photoURLFile: user.photoURLFile,
+          isAdmin: user.isAdmin || false,
         });
       });
 
@@ -62,6 +67,7 @@ export function useUsers() {
         lastName: user.lastName || null,
         phoneNumber: user.phoneNumber || null,
         genre: user.genre || null,
+        birthday: user.birthday || null,
         country: user.country || null,
         photoURLFile: user.photoURLFile|| null,
         avatar: user.avatar || null,
@@ -85,10 +91,14 @@ export function useUsers() {
       await setDoc(docRef, {
         email: data.email,
         displayName: data.displayName,
-        firstName: data.firstName || '',
-        lastName: data.lastName || '',
+        firstName: data.firstName || null,
+        lastName: data.lastName || null,
+        phoneNumber: data.phoneNumber || null,
+        genre: data.genre || null,
+        birthday: data.birthday || null,
+        country: data.country || null,
+        photoURLFile: data.photoURLFile|| null,
         avatar: data.avatar || null,
-        photoURLFile: data.photoURLFile || null,
         isAdmin: data.isAdmin || false,
       });
     } catch (error) {
