@@ -28,7 +28,7 @@ import * as yup from 'yup';
 import { useRouter } from 'vue-router';
 import InputText from '../atoms/InputText.vue';
 import InputPassword from '../atoms/InputPassword.vue';
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 import { useFormField } from '../../composable/useFormField';
 
 // Definimos el esquema de validación con yup

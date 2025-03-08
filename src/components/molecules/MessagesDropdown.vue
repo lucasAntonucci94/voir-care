@@ -77,7 +77,7 @@
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats'; // Importamos el store de chats privados
-import { useAuth } from '../../api/auth/auth'; // Importamos el composable de autenticación
+import { useAuth } from '../../api/auth/useAuth'; // Importamos el composable de autenticación
 const { user } = useAuth(); // Usamos el composable de autenticación
 const privateChatsStore = usePrivateChatsStore();
 

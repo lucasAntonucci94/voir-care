@@ -31,7 +31,7 @@ import CreatePostModal from '../components/organisms/CreatePostModal.vue';
 import PostCard from '../components/organisms/PostCard.vue';
 import HighlightsCarousel from '../components/organisms/HighlightsCarousel.vue';
 import { usePostsStore } from '../stores/posts';
-import { useAuth } from '../api/auth/auth';
+import { useAuth } from '../api/auth/useAuth';
 // Stores y estado
 const { user } = useAuth();
 

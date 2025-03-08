@@ -112,7 +112,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { useAuth } from '../../api/auth/auth';
+import { useAuth } from '../../api/auth/useAuth';
 import { usePostsStore } from '../../stores/posts';
 import { useCategories } from '../../composable/useCategories';
 
@@ -172,10 +172,14 @@ async function createPost() {
   const postData = {
     user: {
       id: user.value.uid || user.value.id,
-      displayName: user.value.displayName || 'Usuario Anónimo',
-      firstName: user.value.firstName || 'Usuario Anónimo',
-      lastName: user.value.lastName || 'Usuario Anónimo',
-      phoneNumber: user.value.phoneNumber || 'Usuario Anónimo',
+      displayName: user.value.displayName || 'No ha definido un displayName',
+      firstName: user.value.firstName || 'No ha definido un nombre',
+      lastName: user.value.lastName || 'No ha definido un apellido',
+      email: user.value.email || 'No ha definido un correo',
+      phoneNumber: user.value.phoneNumber || 'No ha definido un número de teléfono',
+      birthday: user.value.birthday || 'No ha definido una fecha de nacimiento',
+      gender: user.value.gender || 'No ha definido un género',
+      country: user.value.country || 'No ha definido un país',
       photoURL: user.value.photoURL || null,
       photoURLFile: user.value.photoURLFile || null,
     },

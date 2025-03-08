@@ -120,7 +120,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useAuth } from '../api/auth/auth';
+import { useAuth } from '../api/auth/useAuth';
 import CarouselAwareness from '../components/organisms/CarrouselAwareness.vue';
 const { user } = useAuth();
 

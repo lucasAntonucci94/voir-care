@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { doc, getFirestore, addDoc,  FieldPath, collection, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
-import { useAuth } from '../api/auth/auth';
+import { useAuth } from '../api/auth/useAuth';
 
 
 const { user } = useAuth();

@@ -24,7 +24,7 @@
   import { ref, defineProps, watch } from 'vue';
   import { usePrivateChats } from '../../composable/usePrivateChats';
   import { usePrivateChatsStore } from '../../stores/privateChats';
-  import { useAuth } from '../../api/auth/auth';
+  import { useAuth } from '../../api/auth/useAuth';
   
   // Props
   const props = defineProps({
