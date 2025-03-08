@@ -93,7 +93,7 @@
                   class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition"
                 >
                   <img
-                    :src="connection.photoURLFile || defaultAvatar"
+                    :src="connection.photoURLFile || avatarDefault"
                     alt="Avatar"
                     class="w-10 h-10 rounded-full"
                   />
@@ -130,6 +130,7 @@ import PostCard from '../components/organisms/PostCard.vue';
 import { useUsers } from '../composable/useUsers';
 import ProfileHeader from '../components/molecules/ProfileHeader.vue';
 import ProfileInfo from '../components/molecules/ProfileInfoTab.vue';
+import avatarDefault from '../assets/avatar1.jpg';
 
 // Instancias
 const route = useRoute();
@@ -144,15 +145,13 @@ const tabsContainer = ref(null); // Referencia al contenedor de tabs
 const showArrows = ref(false); // Controlar visibilidad de flechas
 const canScrollLeft = ref(false); // Controlar visibilidad de flecha izquierda
 const canScrollRight = ref(false); // Controlar visibilidad de flecha derecha
-const defaultAvatar =
-  'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4';
 const connections = ref([
-  { idDoc: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: defaultAvatar },
-  { idDoc: '2', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
-  { idDoc: '3', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
-  { idDoc: '4', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
-  { idDoc: '5', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
-  { idDoc: '6', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: defaultAvatar },
+  { idDoc: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: avatarDefault },
+  { idDoc: '2', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
+  { idDoc: '3', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
+  { idDoc: '4', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
+  { idDoc: '5', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
+  { idDoc: '6', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
 ].filter(c => c.email !== activeUser?.email));
 
 // Tabs
