@@ -14,16 +14,15 @@
     </button>
 
     <!-- Perfil del usuario -->
-    <!-- Perfil del usuario -->
     <router-link to="/profile" v-if="isAuthenticated" class="flex items-center gap-4 mb-8">
       <img 
-        :src="user?.photoURLFile || 'https://via.placeholder.com/40'" 
+        :src="user?.photoURLFile || avatarDefault" 
         alt="Avatar" 
         class="w-12 h-12 rounded-full border-2 border-gray-200 object-cover"
       />
       <div>
         <p class="text-base font-semibold text-[#2c3e50] tracking-tight">
-          {{ user?.displayName || 'Usuario' }}
+          {{ user?.displayName || user?.email || 'Usuario' }}
         </p>
         <p class="text-xs text-gray-500">Miembro</p>
       </div>
@@ -118,7 +117,9 @@
 </template>
 
 <script setup>
+import avatarDefault from '../../assets/avatar1.jpg';
 import { useAuth } from '../../api/auth/useAuth';
+
 const { user, isAuthenticated } = useAuth();
 const emit = defineEmits(['toggle']);
 
