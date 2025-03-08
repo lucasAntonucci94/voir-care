@@ -33,19 +33,29 @@
           <i class="fa-solid fa-times text-xl"></i>
         </button>
         <ul v-if="privateChatsStore?.chats?.value?.length > 0" class="divide-y divide-gray-100">
+          <!-- Lista de chats -->
           <li
             v-for="notification in privateChatsStore?.chats?.value?.slice(0, 9)"
             :key="notification.id"
             class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
           >
-            {{ getOtherUserEmail(notification.user) + ':' + notification.message.message }}
+            <button
+              @click="handleChatClick(notification.user)"
+              class="w-full text-left focus:outline-none"
+            >
+              {{ getOtherUserEmail(notification.user) + ': ' + notification.message.message }}
+            </button>
           </li>
+
+          <!-- Indicador de más chats -->
           <li
             v-if="privateChatsStore?.chats?.value?.length > 9"
             class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
           >
             ... and {{ privateChatsStore?.chats?.value?.length - 9 }} more
           </li>
+
+          <!-- Botón para marcar todos como leídos -->
           <li>
             <button
               @click="markAllAsRead"
@@ -55,6 +65,8 @@
               Marcar todos como leídos
             </button>
           </li>
+
+          <!-- Enlace para ver todos los mensajes -->
           <li>
             <router-link
               to="/chats"
@@ -78,8 +90,14 @@
 import { ref, defineProps, defineEmits } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats'; // Importamos el store de chats privados
 import { useAuth } from '../../api/auth/useAuth'; // Importamos el composable de autenticación
+import { usePrivateChats } from '../../composable/usePrivateChats';
+import { useRouter } from 'vue-router';
+
+
 const { user } = useAuth(); // Usamos el composable de autenticación
+const { getChatIdByReference } = usePrivateChats();
 const privateChatsStore = usePrivateChatsStore();
+const router = useRouter();
 
 const props = defineProps({
   isOpen: {
@@ -100,8 +118,25 @@ function markAllAsRead() {
 }
 
 const getOtherUserEmail = (userDictionary) => {
-    return userDictionary ? Object.keys(userDictionary).find(u => u !== user?.value.email) : null;
-  };
+  return userDictionary ? Object.keys(userDictionary).find(u => u !== user?.value.email) : null;
+};
+
+
+async function handleChatClick(userDictionary) {
+  debugger
+  console.log('Enviar Mensaje');
+  const from = user.value.email;
+  const to = getOtherUserEmail(userDictionary);
+  console.log(from);
+  console.log(to)
+  //obtener chat a partir del email del activeUser y el authUser
+  debugger
+  const chatId = await getChatIdByReference(from, to)
+  debugger
+  privateChatsStore.setSelectedChatId(chatId);
+  emit('toggle');
+  router.push('/chats'); 
+}
 
 </script>
 

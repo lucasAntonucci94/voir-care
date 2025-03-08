@@ -1,11 +1,12 @@
 import { ref } from 'vue';
 import { getFirestore, doc, setDoc, getDocs, updateDoc, collection, query, where, limit } from 'firebase/firestore';
 import { useStorage } from './useStorage'; // Ajusta la ruta según tu estructura
+import { usePosts } from '../composable/usePosts';
 
 const db = getFirestore();
 const usersRef = collection(db, 'users');
 const { getFileUrl } = useStorage();
-
+const { updateUserFromPost } = usePosts();
 // Estado reactivo para el perfil del usuario (opcional, dependiendo de cómo quieras usarlo)
 const userProfile = ref(null);
 
@@ -117,7 +118,7 @@ export function useUsers() {
     debugger
     try {
       const docRef = doc(db, 'users', id);
-      await updateDoc(docRef, {
+      const userData = {
         displayName: data.displayName,
         firstName: data.firstName ?? '',
         lastName: data.lastName ?? '',
@@ -127,7 +128,10 @@ export function useUsers() {
         country: data.country ?? '',
         avatar: data.avatar || null,
         photoURLFile: data.photoURLFile || null,
-      });
+      }
+      await updateDoc(docRef, userData);
+      debugger
+      await updateUserFromPost(id, userData)
     } catch (error) {
       console.error('Error al actualizar usuario:', error);
       throw error;

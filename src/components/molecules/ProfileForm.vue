@@ -178,7 +178,12 @@
   
   async function saveProfile() {
     try {
-      const oldPhotoURL = props.activeUser.photoURL;
+      debugger
+      var oldPhotoURL = props.activeUser.photoURL;
+      if(!oldPhotoURL){
+        const filepath = `profile/${props.activeUser.email}.jpg`; // Corregí props.activeUserEmail a props.activeUser.email
+        oldPhotoURL = await getFileUrl(filepath);
+      }
       if (editForm.value.photoURLFile != null && editForm.value.photoURLFile !== props.activeUser.photoURLFile) {
         const filepath = `profile/${props.activeUser.email}.jpg`; // Corregí props.activeUserEmail a props.activeUser.email
         await uploadFile(filepath, editForm.value.photoURLFile);

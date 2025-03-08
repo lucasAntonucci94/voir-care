@@ -217,7 +217,7 @@ export function usePosts() {
    * @param {{id: string, data: Object}} options - ID y datos del usuario
    * @returns {Promise<void>}
    */
-  async function updateUserFromPost({ id, data }) {
+  async function updateUserFromPost( id, data ) {
     try {
       const q = query(postRef, where('user.id', '==', id));
       const postQuerySnapshot = await getDocs(q);
