@@ -24,7 +24,7 @@
         <p class="text-base font-semibold text-[#2c3e50] tracking-tight">
           {{ user?.displayName || user?.email || 'Usuario' }}
         </p>
-        <p class="text-xs text-gray-500">Miembro</p>
+        <p class="text-xs text-gray-500">{{user?.isAdmin ? 'Administrador' :'Miembro'}}</p>
       </div>
     </router-link>
 
@@ -72,7 +72,7 @@
         active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
-        <i class="fas fa-user w-5 text-center"></i>
+        <i class="fas fa-message w-5 text-center"></i>
         <span class="text-sm font-medium">Mensajes</span>
       </router-link>
       <router-link 
@@ -88,7 +88,7 @@
 
     <!-- Sección "Explorar" -->
     <div class="mt-8">
-      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Explorar</h3>
+      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Descubrir</h3>
       <ul class="space-y-2">
         <li>
           <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-200 rounded-md transition-colors">

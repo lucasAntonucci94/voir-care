@@ -123,16 +123,9 @@ const getOtherUserEmail = (userDictionary) => {
 
 
 async function handleChatClick(userDictionary) {
-  debugger
-  console.log('Enviar Mensaje');
   const from = user.value.email;
   const to = getOtherUserEmail(userDictionary);
-  console.log(from);
-  console.log(to)
-  //obtener chat a partir del email del activeUser y el authUser
-  debugger
   const chatId = await getChatIdByReference(from, to)
-  debugger
   privateChatsStore.setSelectedChatId(chatId);
   emit('toggle');
   router.push('/chats'); 

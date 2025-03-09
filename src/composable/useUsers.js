@@ -115,7 +115,6 @@ export function useUsers() {
    * @returns {Promise<void>}
    */
   async function updateUser(id, data) {
-    debugger
     try {
       const docRef = doc(db, 'users', id);
       const userData = {
@@ -131,7 +130,6 @@ export function useUsers() {
         photoURLFile: data.photoURLFile || null,
       }
       await updateDoc(docRef, userData);
-      debugger
       await updateUserFromPost(id, userData)
     } catch (error) {
       console.error('Error al actualizar usuario:', error);
