@@ -151,15 +151,15 @@
   
   function editProfile() {
     editForm.value = {
-      id: props.activeUser?.uid || props.activeUser?.id,
-      displayName: props.activeUser?.displayName || 'No ha definido un displayName',
-      firstName: props.activeUser?.firstName || 'No ha definido un nombre',
-      lastName: props.activeUser?.lastName || 'No ha definido un apellido',
-      email: props.activeUser?.email || 'No ha definido un correo',
-      phoneNumber: props.activeUser?.phoneNumber || 'No ha definido un número de teléfono',
+      id: props.activeUser?.uid || props.activeUser?.id || null,
+      displayName: props.activeUser?.displayName || null,
+      firstName: props.activeUser?.firstName  || null,
+      lastName: props.activeUser?.lastName  || null,
+      email: props.activeUser?.email  || null,
+      phoneNumber: props.activeUser?.phoneNumber  || null,
       birthday: props.activeUser?.birthday ? new Date(props.activeUser.birthday).toISOString().split('T')[0] : null,
       genre: props.activeUser?.genre || null,
-      country: props.activeUser?.country || 'No ha definido un país',
+      country: props.activeUser?.country  || null,
       photoURL: props.activeUser?.photoURL || null,
       photoURLFile: props.activeUser?.photoURLFile || null,
     };
@@ -178,7 +178,11 @@
   
   async function saveProfile() {
     try {
-      const oldPhotoURL = props.activeUser.photoURL;
+      var oldPhotoURL = props.activeUser.photoURL;
+      if(!oldPhotoURL){
+        const filepath = `profile/${props.activeUser.email}.jpg`; // Corregí props.activeUserEmail a props.activeUser.email
+        oldPhotoURL = await getFileUrl(filepath);
+      }
       if (editForm.value.photoURLFile != null && editForm.value.photoURLFile !== props.activeUser.photoURLFile) {
         const filepath = `profile/${props.activeUser.email}.jpg`; // Corregí props.activeUserEmail a props.activeUser.email
         await uploadFile(filepath, editForm.value.photoURLFile);
@@ -189,7 +193,6 @@
         ...editForm.value,
         photoURLFile: editForm.value.photoURL ?? oldPhotoURL,
       };
-      debugger
       await updateUser(profiletoUpdate.uid, profiletoUpdate);
       props.updateRefData(profiletoUpdate);
       console.log('Perfil actualizado:', profiletoUpdate);

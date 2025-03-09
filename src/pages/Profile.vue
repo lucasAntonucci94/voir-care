@@ -10,7 +10,7 @@
       :updateRefData="updateDataFromChild"
     />
     <!-- Tabs con flechas -->
-    <div class="container mx-auto mt-10 px-4 md:px-8 lg:px-16 sticky top-0 bg-white z-20 shadow-sm">
+    <div class="container mx-auto mt-10 px-4 md:px-8 lg:px-16 sticky top-0 bg-white  shadow-sm">
       <div class="relative">
         <!-- Botón de flecha izquierda -->
         <button
@@ -83,28 +83,7 @@
             <ProfileInfo :userInfo="activeUser" />
           </div>
           <div v-else-if="activeTab === 'conexiones'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-            <!-- Conexiones -->
-            <div class="block">
-              <h2 class="text-lg font-semibold text-[#2c3e50] mb-4">Conexiones</h2>
-              <div class="space-y-4">
-                <div
-                  v-for="connection in connections"
-                  :key="connection.idDoc"
-                  class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition"
-                >
-                  <img
-                    :src="connection.photoURLFile || avatarDefault"
-                    alt="Avatar"
-                    class="w-10 h-10 rounded-full"
-                  />
-                  <div>
-                    <p class="text-sm font-medium text-gray-700">{{ connection.displayName }}</p>
-                    <p class="text-xs text-gray-500">{{ connection.email }}</p>
-                  </div>
-                </div>
-                <p v-if="connections.length === 0" class="text-center text-gray-500">No hay conexiones aún.</p>
-              </div>
-            </div>
+            <ConnectionsTab :connections="connections" />
           </div>
           <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
             <p>Galería (pendiente de implementación)</p>
@@ -131,6 +110,7 @@ import { useUsers } from '../composable/useUsers';
 import ProfileHeader from '../components/molecules/ProfileHeader.vue';
 import ProfileInfo from '../components/molecules/ProfileInfoTab.vue';
 import avatarDefault from '../assets/avatar1.jpg';
+import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
 
 // Instancias
 const route = useRoute();
@@ -172,7 +152,7 @@ const activeUserEmail = computed(() => route.params.email || authUser.value?.ema
 const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.email);
 const profilePosts = computed(() => {
   if (!activeUserEmail.value || !postsStore.posts.value) return [];
-  return postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
+  return  postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
 });
 
 // Watcher
