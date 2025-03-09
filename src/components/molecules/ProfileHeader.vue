@@ -19,6 +19,7 @@
               @click="toggleEditBanner" 
               class="px-4 py-2 bg-white/80 text-gray-700 rounded-full hover:bg-white transition-all shadow-md"
             >
+              <i class="fa fa-camera pr-2"></i>
               Editar portada
             </button>
             <div v-if="isEditingBanner" class="flex items-center gap-2">
@@ -44,32 +45,46 @@
                 class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
                 @click="addStory"
               >
+                <i class="fa fa-book pr-2"></i>
                 Agregar historia
               </button>
               <button 
                 class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" 
                 @click="editProfile"
               >
+              <i class="fa fa-edit pr-2"></i>
                 Editar perfil
               </button>
             </div>
           </div>
         </div>
         <div v-else class="flex flex-col gap-4 h-30 w-full md:w-auto">
+          <div class="flex justify-center md:justify-end gap-2">
+            <button 
+              v-if="!isEditingBanner" 
+              @click="addConnection" 
+              class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md hover:text-gray-10 transition-all shadow-md"
+            >
+            <i class="fa fa-user-plus pr-2"></i>
+            Seguir
+            </button>
+          </div>
           <!-- Agregar historia y Editar perfil (inferior derecha) -->
           <div class="flex justify-center md:justify-end mt-auto">
             <div class="flex flex-col gap-2 md:flex-row md:gap-4">
               <router-link 
-                class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
+                class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md hover:text-gray-10 transition-all shadow-md" 
                 to="/chats"
                 @click="sendMessage"
               >
-                Enviar Mensaje
-              </router-link>
-              <button 
-                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" 
-                @click="setTabInformation"
-              >
+              <i class="fa fa-message pr-2"></i>
+              Enviar Mensaje
+            </router-link>
+            <button 
+            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" 
+            @click="setTabInformation"
+            >
+              <i class="fa fa-info pr-2"></i>
                 Ver Información
               </button>
             </div>
@@ -140,6 +155,10 @@ function toggleEditBanner() {
   isEditingBanner.value = !isEditingBanner.value;
 }
 
+function addConnection() {
+  
+}
+
 async function updateBanner(file) {
   if (!props.isOwnProfile || !file) return;
   const filepath = `banners/${props.activeUser.email}.jpg`;
@@ -169,14 +188,7 @@ function closeEditModal() {
 }
 
 async function sendMessage() {
-  console.log('Enviar Mensaje');
-  console.log(props.activeUser)
-  //obtener chat a partir del email del activeUser y el authUser
-  console.log(props.activeUser.email)
-  console.log(authUser.value.email)
-  debugger
   const chatId = await getChatIdByReference(authUser.value.email, props.activeUser.email )
-  debugger
   privateChatsStore.setSelectedChatId(chatId);
 }
 </script>

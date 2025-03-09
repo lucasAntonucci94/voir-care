@@ -115,70 +115,71 @@ export function usePrivateChats() {
         throw err;
       }
     }
-    /**
+  
+    /**
      * Elimina un mensaje específico de un chat por su chatId y messageId.
      * @param {string} chatId - ID del chat
      * @param {string} messageId - ID del mensaje
      * @returns {Promise<void>}
      */
-    async function deleteChatMessage(chatId, messageId) {
-      try {
-        // Referencia al documento específico del mensaje dentro de la subcolección 'messages'
-        const messageRef = doc(db, 'chats-private', chatId, 'messages', messageId);
-        await deleteDoc(messageRef);
-      } catch (err) {
-        console.error('Error al eliminar el mensaje:', err);
-        throw err;
-      }
-    }
+  async function deleteChatMessage(chatId, messageId) {
+    try {
+      // Referencia al documento específico del mensaje dentro de la subcolección 'messages'
+      const messageRef = doc(db, 'chats-private', chatId, 'messages', messageId);
+      await deleteDoc(messageRef);
+    } catch (err) {
+      console.error('Error al eliminar el mensaje:', err);
+      throw err;
+    }
+  }
 
-    /**
-     * Hereado de proyecto viejo, adaptado en la subscripción
-     * @param {*} email 
-     * @returns 
-     */
-    async function getChatsByEmail(email) {
-      const fieldPath = new FieldPath('users', email);
-      try {
-        const q = query(
-          privateChatRef,
-          where(fieldPath, '==', true),
-          orderBy('created_at', 'desc'),
-          limit(1)
-        );
-        const querySnapshot = await getDocs(q);
+   /**
+   * Hereado de proyecto viejo, adaptado en la subscripción
+   * @param {*} email 
+   * @returns 
+   */
+    async function getChatsByEmail(email) {
+      const fieldPath = new FieldPath('users', email);
+      try {
+        const q = query(
+          privateChatRef,
+          where(fieldPath, '==', true),
+          orderBy('created_at', 'desc'),
+          limit(1)
+        );
+        const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-          return null;
-        }
+        if (querySnapshot.empty) {
+          return null;
+        }
 
-        const doc = querySnapshot.docs[0];
-        const chatData = doc.data();
-        const chatId = doc.id;
+        const doc = querySnapshot.docs[0];
+        const chatData = doc.data();
+        const chatId = doc.id;
 
-        const messagesQuery = query(
-          collection(privateChatRef, chatId, 'messages'),
-          orderBy('created_at', 'desc'),
-          limit(1)
-        );
-        const messagesSnapshot = await getDocs(messagesQuery);
+        const messagesQuery = query(
+          collection(privateChatRef, chatId, 'messages'),
+          orderBy('created_at', 'desc'),
+          limit(1)
+        );
+        const messagesSnapshot = await getDocs(messagesQuery);
 
-        if (!messagesSnapshot.empty) {
-          const latestMessage = messagesSnapshot.docs[0].data();
-          return {
-            idDoc: chatId,
-            user: chatData.users,
-            created_at: chatData.created_at,
-            message: latestMessage,
-          };
-        }
+        if (!messagesSnapshot.empty) {
+          const latestMessage = messagesSnapshot.docs[0].data();
+          return {
+            idDoc: chatId,
+            user: chatData.users,
+            created_at: chatData.created_at,
+            message: latestMessage,
+        };
+      }
 
-        return null;
-      } catch (err) {
-        console.error('Error al obtener el último chat:', err);
-        return null;
-      }
-    }
+         return null;
+      } catch (err) {
+        console.error('Error al obtener el último chat:', err);
+        return null;
+      }
+    }
 
   /**
    * Obtiene el chatId de un chat privado entre dos usuarios específicos
@@ -204,18 +205,14 @@ export function usePrivateChats() {
       if (querySnapshot.empty) {
         return null;
       }
-      debugger
       // Filtrar los documentos para encontrar el que contiene activeUser
       const chatDoc = querySnapshot.docs.find((doc) => {
-      debugger
-      const docData = doc.data();
-      return docData.users && docData.users[activeUser] === true;
-    });
-    debugger
+        const docData = doc.data();
+        return docData.users && docData.users[activeUser] === true;
+      });
 
-    // Retornar el id si se encuentra, null si no
-    return chatDoc ? chatDoc.id : null;
-
+      // Retornar el id si se encuentra, null si no
+      return chatDoc ? chatDoc.id : null;
     } catch (err) {
       console.error('Error al obtener el chatId por referencia:', err);
       return null;
@@ -247,45 +244,45 @@ export function usePrivateChats() {
             const latestMessage = messagesSnapshot.docs[0].data();
             updatedChats.push({
               idDoc: chatId,
-              user: chatData.users,
-              created_at: chatData.created_at,
-              message: latestMessage,
-            });
-          }
-        }
-        callback(filterUniqueChats(updatedChats));
-      }, (err) => {
-        console.error('Error subscribing to private chats:', err);
-      });   
-        
-      /**
-       * Metodo para quitar duplicados
-       * @param {*} chats 
-       * @returns chats filtrados / Distinct
-       */
-      function filterUniqueChats(chats){
-        const uniqueIds = new Set();
-        return chats.filter(chat => {
-          if (uniqueIds.has(chat.idDoc)) {
-            return false; // Si es duplicado lo filtramos
-          }
-          uniqueIds.add(chat.idDoc);
-          return true; // sino lo mantenemos
-        });
-      };
+              user: chatData.users,
+              created_at: chatData.created_at,
+              message: latestMessage,
+            });
+          }
+        }
+        callback(filterUniqueChats(updatedChats));
+      }, (err) => {
+        console.error('Error subscribing to private chats:', err);
+      });
+      
+    /**
+     * Metodo para quitar duplicados
+     * @param {*} chats 
+     * @returns chats filtrados / Distinct
+     */
+      function filterUniqueChats(chats){
+        const uniqueIds = new Set();
+        return chats.filter(chat => {
+          if (uniqueIds.has(chat.idDoc)) {
+            return false; // Si es duplicado lo filtramos
+          }
+          uniqueIds.add(chat.idDoc);
+          return true; // sino lo mantenemos
+        });
+      };
 
-      return unsubscribe;
-    }
+    return unsubscribe;
+  }
 
-    return {
-      savePrivateMessage,
-      subscribeToIncomingPrivateMessages,
-      hasPrivateMessages,
-      getChatsByEmail,
-      subscribeToPrivateChats,
-      deleteChat,
-      deleteChatMessage,
-      privateRefCache,
-      getChatIdByReference
-    };
+  return {
+    savePrivateMessage,
+    subscribeToIncomingPrivateMessages,
+    hasPrivateMessages,
+    getChatsByEmail,
+    subscribeToPrivateChats,
+    deleteChat,
+    deleteChatMessage,
+    privateRefCache,
+    getChatIdByReference
+  };
 }

@@ -5,7 +5,7 @@
       type="text" 
       placeholder="¿Qué tienes en mente?" 
       @click="showModal = true" 
-      class="w-full max-w-xl p-4 rounded-full bg-white border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer text-gray-700 placeholder-gray-400 transition-all duration-200 hover:shadow-lg" 
+      class="w-full hover:bg-gray-50 max-w-xl p-4 rounded-full bg-white border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer text-gray-700 placeholder-gray-400 transition-all duration-200 hover:shadow-lg" 
       readonly 
     />
   </section>
@@ -26,7 +26,7 @@
             v-model="newPost.title" 
             type="text" 
             placeholder="Título de tu publicación" 
-            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-3 border  hover:bg-gray-100 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="isLoading"
             required 
           />
@@ -36,7 +36,7 @@
           <textarea 
             v-model="newPost.description" 
             placeholder="¿Qué quieres compartir?" 
-            class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-3 hover:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="isLoading"
             required 
           ></textarea>
@@ -48,7 +48,7 @@
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
             :disabled="isLoading"
-            class="w-full p-2.5 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
           />
         </div>
         <!-- Previsualización -->
@@ -68,18 +68,18 @@
         </div>
         <!-- Categorías -->
         <div class="flex flex-wrap gap-3">
-          <label 
-            v-for="category in categories" 
-            :key="category.id" 
+          <label
+            v-for="category in categories"
+            :key="category.id"
             class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
           >
-            <input 
-              :id="'filter_' + category.id" 
-              type="checkbox" 
-              v-model="newPost.categories" 
-              :value="category" 
+            <input
+              :id="'filter_' + category.id"
+              type="checkbox"
+              v-model="newPost.categories"
+              :value="category"
               :disabled="isLoading"
-              class="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-opacity-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" 
+              class="custom-checkbox hover:bg-gray-100"
             />
             <span class="font-medium">{{ category.name }}</span>
           </label>
@@ -212,3 +212,55 @@ async function createPost() {
   }
 }
 </script>
+
+<style>
+/* Estilo del checkbox personalizado */
+.custom-checkbox {
+  appearance: none; /* Elimina el estilo nativo del navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 16px; /* Tamaño del checkbox */
+  height: 16px;
+  border: 2px solid #d1d5db; /* Borde gris (border-gray-300) */
+  border-radius: 4px; /* Esquinas redondeadas */
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Estilo cuando está deshabilitado */
+.custom-checkbox:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Fondo y tilde cuando está seleccionado */
+.custom-checkbox:checked {
+  background-color: #02bcae; /* Usa tu color bg-primary */
+  border-color: #02bcae; /* Borde del mismo color */
+}
+
+/* Fondo y tilde cuando está seleccionado */
+.custom-checkbox:checked:hover {
+  background-color: #019a8e; /* Usa tu color bg-primary */
+  border-color: #019a8e; /* Borde del mismo color */
+}
+
+/* Crear el tilde personalizado con ::after */
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white; /* Tilde blanco */
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Efecto de foco */
+.custom-checkbox:focus {
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5); /* focus:ring-primary con opacity-50 */
+}
+</style>
