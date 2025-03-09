@@ -171,8 +171,11 @@ const updateDataFromChild = updatedData => {
 const activeUserEmail = computed(() => route.params.email || authUser.value?.email);
 const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.email);
 const profilePosts = computed(() => {
+  debugger
   if (!activeUserEmail.value || !postsStore.posts.value) return [];
-  return postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
+  const adwdaw =  postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
+  debugger
+  return adwdaw
 });
 
 // Watcher
@@ -225,6 +228,7 @@ function deletePost(postId) {
 onMounted(async () => {
   if (!activeUserEmail.value) return;
   await fetchUserData(activeUserEmail.value);
+  debugger
   postsStore.subscribe();
   checkScroll(); // Verificar al montar
   window.addEventListener('resize', checkScroll); // Verificar al redimensionar

@@ -122,6 +122,7 @@ export function useUsers() {
         displayName: data.displayName,
         firstName: data.firstName ?? '',
         lastName: data.lastName ?? '',
+        email: data.email ?? '',
         phoneNumber: data.phoneNumber ?? '',
         birthday: data.birthday ?? '',
         genre: data.genre ?? '',
