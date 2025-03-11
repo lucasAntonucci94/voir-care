@@ -167,7 +167,7 @@ export function usePosts() {
    * @param {{user: Object, title: string, body: string, categories: Array, imageUrlFile: string, mediaType: string}} data
    * @returns {Promise<void>}
    */
-  async function updatePost(postId, { user, title, body, categories, imageUrlFile, mediaType }) {
+  async function updatePost(postId, { user, title, body, categories, imageUrlFile, mediaType,timestamp }) {
     try {
       const postDocRef = doc(db, 'posts', postId);
       const updatedData = {
@@ -177,7 +177,8 @@ export function usePosts() {
         categories: categories || [],
         imageUrlFile: imageUrlFile || null,
         mediaType: mediaType || null,
-        timestamp: serverTimestamp(), // Actualizamos el timestamp al modificar
+        timestamp: timestamp, // Actualizamos el timestamp al modificar
+        updated_at: serverTimestamp(), // Actualizamos el timestamp al modificar
       };
       await updateDoc(postDocRef, updatedData);
     } catch (err) {

@@ -64,6 +64,7 @@ export const usePostsStore = defineStore('posts', {
         categories: updatedPostData.categories || [],
         imageUrlFile: updatedPostData.media, // La URL actualizada o existente
         mediaType: updatedPostData.mediaType,
+        timestamp: updatedPostData.timestamp,
       };
       try {
         await updatePost(postId, postData);

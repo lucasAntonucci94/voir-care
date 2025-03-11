@@ -43,7 +43,7 @@
               @click="handleChatClick(notification.user)"
               class="w-full text-left focus:outline-none"
             >
-              {{ getOtherUserEmail(notification.user) + ': ' + notification.message.message }}
+              {{ getOtherUserEmail(notification?.user) + ': ' + notification?.message?.message }}
             </button>
           </li>
 
