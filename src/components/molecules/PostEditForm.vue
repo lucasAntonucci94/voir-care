@@ -95,57 +95,51 @@
   
   <script setup>
   import { ref, defineProps, defineEmits, onMounted } from 'vue';
-  import { usePostsStore } from '../../stores/posts'; // Ajusta la ruta según tu proyecto
-  import { useCategories } from '../../composable/useCategories'; // Ajusta la ruta según tu proyecto
-  import { useStorage } from '../../composable/useStorage'; // Para manejar Firebase Storage
+  import { usePostsStore } from '../../stores/posts';
+  import { useCategories } from '../../composable/useCategories';
+  import { useStorage } from '../../composable/useStorage';
   
-  // Props
   const props = defineProps({
     post: { type: Object, required: true },
     closeModal: { type: Function, required: true },
   });
   
-  // Emits
   const emit = defineEmits(['update-post']);
   
-  // Instancias
   const postsStore = usePostsStore();
   const { categories } = useCategories();
   const { uploadFile, getFileUrl } = useStorage();
   
-  // Estados
   const editForm = ref({
     id: null,
     title: '',
     body: '',
-    media: null,
+    imageUrlFile: null,
     mediaType: '',
     categories: [],
-    newMediaFile: null, // Para almacenar el archivo nuevo temporalmente
+    newMediaBase64: null,
   });
   const isLoading = ref(false);
   
-  // Inicializar el formulario con los datos del posteo
   onMounted(() => {
     editForm.value = {
       id: props.post?.id || null,
       title: props.post?.title || '',
-      body: props.post?.body || '', // Corregido de description a body
-      media: props.post?.media || null, // Esto es una URL de Firebase Storage
+      body: props.post?.body || '',
+      imageUrlFile: props.post?.imageUrlFile || null,
       mediaType: props.post?.mediaType || '',
       categories: props.post?.categories ? [...props.post.categories] : [],
-      newMediaFile: null,
+      newMediaBase64: null,
     };
   });
   
-  // Manejar la carga de medios
   function handleMediaUpload(event) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        editForm.value.media = reader.result; // Vista previa en base64
-        editForm.value.newMediaFile = file; // Guardar el archivo para subirlo luego
+        editForm.value.imageUrlFile = reader.result;
+        editForm.value.newMediaBase64 = reader.result;
         editForm.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
       };
       reader.onerror = (error) => {
@@ -155,39 +149,50 @@
     }
   }
   
-  // Guardar los cambios del posteo
   async function savePost() {
     isLoading.value = true;
-    debugger
+  
     if (!editForm.value.title || !editForm.value.body) {
       console.error('Título y cuerpo son obligatorios');
       isLoading.value = false;
       return;
     }
   
-    let updatedMediaUrl = props.post.imageUrlFile; // Mantener la URL original por defecto
+    let updatedImageUrl = props.post.imageUrlFile; // URL original por defecto
+    let updatedImagePath = props.post.imagePathFile; // Path original por defecto
   
-    // Si se subió un nuevo archivo, procesarlo y subirlo a Firebase Storage
-    if (editForm.value.newMediaFile) {
-      const fileExtension = editForm.value.newMediaFile.name.split('.').pop();
-      const filepath = `posts/${editForm.value.id}_${Date.now()}.${fileExtension}`;
-      await uploadFile(filepath, editForm.value.newMediaFile);
-      updatedMediaUrl = await getFileUrl(filepath); // Obtener la nueva URL
+    if (editForm.value.newMediaBase64) {
+      const extension = editForm.value.mediaType === 'image' ? 'jpg' : 'mp4';
+      let filepath;
+  
+      // Si no hay imagen previa, crear un nuevo path; si existe, sobrescribir el existente
+      if (!props.post.imageUrlFile || !props.post.imagePathFile) {
+        filepath = `post/${props.post.user.email}/${editForm.value.id}.${extension}`;
+        console.log('Creando nueva imagen en:', filepath);
+      } else {
+        filepath = props.post.imagePathFile; // Usar el path existente
+        console.log('Actualizando imagen existente en:', filepath);
+      }
+  
+      await uploadFile(filepath, editForm.value.newMediaBase64);
+      updatedImageUrl = await getFileUrl(filepath);
+      updatedImagePath = filepath; // Actualizar el path también
     }
   
     const updatedPost = {
       ...props.post,
       title: editForm.value.title,
       body: editForm.value.body,
-      media: updatedMediaUrl, // Usar la URL actualizada o la original
+      imageUrlFile: updatedImageUrl,
+      imagePathFile: updatedImagePath, // Aseguramos que el path se mantenga actualizado
       mediaType: editForm.value.mediaType,
       categories: editForm.value.categories,
     };
   
     try {
-      await postsStore.updatePost(updatedPost.idDoc, updatedPost); // Actualizar en el store
-      emit('update-post', updatedPost); // Notificar al componente padre
-      props.closeModal(); // Cerrar el modal
+      await postsStore.updatePost(updatedPost.idDoc, updatedPost);
+      emit('update-post', updatedPost);
+      props.closeModal();
     } catch (error) {
       console.error('Error al actualizar el post:', error);
     } finally {

@@ -184,14 +184,10 @@ async function createPost() {
       photoURLFile: user.value.photoURLFile || null,
     },
     title: newPost.value.title,
-    description: newPost.value.description,
-    media: newPost.value.media,
+    body: newPost.value.description, // Cambiamos description a body
+    imageBase64: newPost.value.media, // Base64 para subir
     mediaType: newPost.value.mediaType,
     categories: newPost.value.categories,
-    timestamp: new Date(),
-    likes: 0,
-    comments: [],
-    shares: 0,
   };
 
   try {

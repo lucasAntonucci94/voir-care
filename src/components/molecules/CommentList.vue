@@ -14,7 +14,7 @@
           <strong class="font-semibold text-gray-800">{{ comment.user.displayName || 'Anónimo' }}</strong> 
           <span class="ml-1 text-gray-700">{{ comment.message }}</span>
         </p>
-        <p class="text-xs text-gray-500 mt-1">{{ formatTimestamp(comment.timestamp) }}</p>
+        <p class="text-xs text-gray-500 mt-1">{{ formatTimestamp(comment.created_at) }}</p>
       </div>
       <button 
         @click="showDeleteModal(comment.idDoc)" 

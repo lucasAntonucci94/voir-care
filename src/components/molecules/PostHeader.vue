@@ -12,7 +12,7 @@
       />
       <div>
         <p class="text-sm font-bold text-[#2c3e50]">{{ post?.user?.displayName || 'Anónimo' }}</p>
-        <p class="text-xs text-gray-500">{{ formatTimestamp(post?.timestamp) }}</p>
+        <p class="text-xs text-gray-500">{{ formatTimestamp(post?.created_at) }}</p>
       </div>
     </router-link>
     <div class="relative">
@@ -132,7 +132,6 @@ function showEditModal() {
 }
 
 function handlePostUpdate(updatedPost) {
-  debugger
   emit('edit', updatedPost); // Emitir el evento al padre con el posteo actualizado
   showModalEdit.value = false; // Cerrar el modal
 }

@@ -12,30 +12,59 @@ export function usePosts() {
    * @param {{user: Object, title: string, body: string, categories: Array, imageBase64: string}} data
    * @returns {Promise<void>}
    */
-  async function savePost({ user, title, body, categories, imageBase64 }) {
+  async function savePost({ user, title, body, categories, imageBase64, mediaType }) {
     try {
-      user.isAdmin = false; // Valor por defecto, ajustar según lógica
+      user.isAdmin = false;
       const data = {
         id: newGuid(),
         user,
         title,
         body,
         categories: categories || [],
-        timestamp: serverTimestamp(),
+        created_at: serverTimestamp(),
         imagePathFile: null,
         imageUrlFile: null,
+        mediaType: mediaType || null,
         likes: [],
+        connections: [],
       };
+      debugger
       if (imageBase64) {
-        const filePath = `post/${user.email}/${data.id}.jpg`;
+        const extension = mediaType === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
+        const filePath = `post/${user.email}/${data.id}.${extension}`;
         await uploadFile(filePath, imageBase64);
         data.imagePathFile = filePath;
-        data.imageUrlFile = await getFileUrl(filePath); // Esperamos la URL directamente
+        data.imageUrlFile = await getFileUrl(filePath);
       }
-
+      debugger
       await addDoc(postRef, data);
     } catch (err) {
       console.error('Error al grabar el post:', err);
+      throw err;
+    }
+  }
+
+   /**
+   * Actualiza un post en la base de datos.
+   * @param {{user: Object, title: string, body: string, categories: Array, imageBase64: string}} data
+   * @returns {Promise<void>}
+   */
+  async function updatePost(postId, { user, title, body, categories, imageUrlFile, imagePathFile, mediaType }) {
+    try {
+      const postDocRef = doc(db, 'posts', postId);
+      const updatedData = {
+        user,
+        title,
+        body,
+        categories: categories || [],
+        imageUrlFile: imageUrlFile || null,
+        imagePathFile: imagePathFile || null,
+        mediaType: mediaType || null,
+        created_at: serverTimestamp(), // Actualizamos timestamp al editar
+      };
+      await updateDoc(postDocRef, updatedData);
+    } catch (err) {
+      console.error('Error al actualizar el post:', err);
       throw err;
     }
   }
@@ -47,7 +76,7 @@ export function usePosts() {
    */
   function subscribeToIncomingPosts(callback) {
     try {
-      const q = query(postRef, orderBy('timestamp', 'desc'));
+      const q = query(postRef, orderBy('created_at', 'desc'));
       return onSnapshot(q, (snapshot) => {
         const posts = snapshot.docs.map((doc) => {
           const post = doc.data();
@@ -58,10 +87,11 @@ export function usePosts() {
             body: post.body,
             user: post.user,
             categories: post.categories,
-            timestamp: post.timestamp,
+            created_at: post.created_at,
             imagePathFile: post.imagePathFile,
             imageUrlFile: post.imageUrlFile,
             likes: post.likes || [],
+            mediaType: post.mediaType || 'image',
           };
         });
         callback(posts);
@@ -80,7 +110,7 @@ export function usePosts() {
   async function find(filters) {
     try {
       const posts = [];
-      const q = query(postRef, where('categories', 'array-contains-any', filters || []), orderBy('timestamp', 'desc'));
+      const q = query(postRef, where('categories', 'array-contains-any', filters || []), orderBy('created_at', 'desc'));
       const querySnapshot = await getDocs(q);
 
       querySnapshot.forEach((doc) => {
@@ -92,7 +122,7 @@ export function usePosts() {
           body: post.body,
           user: post.user,
           categories: post.categories,
-          timestamp: post.timestamp,
+          created_at: post.created_at,
           imagePathFile: post.imagePathFile,
           imageUrlFile: post.imageUrlFile,
         });
@@ -124,65 +154,12 @@ export function usePosts() {
         title: post.title,
         body: post.body,
         user: post.user,
-        timestamp: post.timestamp,
+        created_at: post.created_at,
         imagePathFile: post.imagePathFile ?? filePath,
         imageUrlFile: post.imageUrlFile ?? null,
       };
     } catch (err) {
       console.error('Error al obtener post por ID:', err);
-      throw err;
-    }
-  }
-
-  // /**
-  //  * Actualiza los datos de un post.
-  //  * @param {string} idDoc - ID del documento en Firestore
-  //  * @param {Object} data - Datos a actualizar
-  //  * @returns {Promise<void>}
-  //  */
-  // async function updatePost(idDoc, data) {
-  //   try {
-  //     if (data.imageBase64 && data.imageBase64 !== '') {
-  //       const filePath = data.imagePathFile || `post/${data.user.email}/${data.id}.jpg`;
-  //       await uploadFile(filePath, data.imageBase64);
-  //       data.imageUrlFile = await getFileUrl(filePath); // Actualizamos la URL
-  //     }
-
-  //     const docRef = doc(db, 'posts', idDoc);
-  //     await updateDoc(docRef, {
-  //       title: data.title,
-  //       body: data.body,
-  //       imagePathFile: data.imagePathFile,
-  //       imageUrlFile: data.imageUrlFile ?? null,
-  //     });
-  //   } catch (err) {
-  //     console.error('Error al actualizar post:', err);
-  //     throw err;
-  //   }
-  // }
-
-  /**
-   * Actualiza un post existente en la base de datos.
-   * @param {string} postId - ID del post a actualizar
-   * @param {{user: Object, title: string, body: string, categories: Array, imageUrlFile: string, mediaType: string}} data
-   * @returns {Promise<void>}
-   */
-  async function updatePost(postId, { user, title, body, categories, imageUrlFile, mediaType,timestamp }) {
-    try {
-      const postDocRef = doc(db, 'posts', postId);
-      const updatedData = {
-        user,
-        title,
-        body,
-        categories: categories || [],
-        imageUrlFile: imageUrlFile || null,
-        mediaType: mediaType || null,
-        timestamp: timestamp, // Actualizamos el timestamp al modificar
-        updated_at: serverTimestamp(), // Actualizamos el timestamp al modificar
-      };
-      await updateDoc(postDocRef, updatedData);
-    } catch (err) {
-      console.error('Error al actualizar el post:', err);
       throw err;
     }
   }
@@ -273,7 +250,7 @@ export function usePosts() {
    */
   function subscribeToIncomingProfilePosts(idUser, callback) {
     try {
-      const q = query(postRef, where('user.id', '==', idUser), orderBy('timestamp', 'desc'));
+      const q = query(postRef, where('user.id', '==', idUser), orderBy('created_at', 'desc'));
       return onSnapshot(q, (snapshot) => {
         const posts = snapshot.docs.map((doc) => {
           const post = doc.data();
@@ -284,9 +261,10 @@ export function usePosts() {
             title: post.title,
             body: post.body,
             image: post.image,
-            timestamp: post.timestamp,
+            created_at: post.created_at,
             imagePathFile: post.imagePathFile,
             imageUrlFile: post.imageUrlFile ?? null,
+            mediaType: post.mediaType ?? null,
           };
         });
         callback(posts);
