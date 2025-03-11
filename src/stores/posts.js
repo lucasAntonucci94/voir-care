@@ -52,13 +52,35 @@ export const usePostsStore = defineStore('posts', {
         throw error; // Para manejar el error en el componente si es necesario
       }
     },
+    // Actualizar un post existente
+    async updatePost(postId, updatedPostData) {
+      console.log('Actualizando post:', postId, updatedPostData);
+      const { updatePost } = usePosts();
+      const postData = {
+        id: postId,
+        user: updatedPostData.user,
+        title: updatedPostData.title,
+        body: updatedPostData.body,
+        categories: updatedPostData.categories || [],
+        imageUrlFile: updatedPostData.media, // La URL actualizada o existente
+        mediaType: updatedPostData.mediaType,
+      };
+      try {
+        await updatePost(postId, postData);
+        console.log('Post actualizado exitosamente en Firebase');
+      } catch (error) {
+        console.error('Error al actualizar el post:', error);
+        throw error;
+      }
+    },
     // Eliminar un post
     async deletePost(postIdDoc) {
       console.log('Eliminando post con idDoc:', postIdDoc);
       const { deletePost } = usePosts();
       await deletePost(postIdDoc);
       console.log('Post eliminado, esperando actualización de Firebase...');
-    },// Nueva acción para agregar un Like
+    },
+    // Nueva acción para agregar un Like
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
       const post = this.posts.value.find(p => p.idDoc === postIdDoc);

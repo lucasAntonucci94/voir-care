@@ -188,7 +188,8 @@ function closeEditModal() {
 }
 
 async function sendMessage() {
-  const chatId = await getChatIdByReference(authUser.value.email, props.activeUser.email )
+  debugger
+  const chatId = await getChatIdByReference(authUser.value.email, props.activeUser.email)
   privateChatsStore.setSelectedChatId(chatId);
 }
 </script>

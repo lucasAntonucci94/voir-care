@@ -134,29 +134,54 @@ export function usePosts() {
     }
   }
 
+  // /**
+  //  * Actualiza los datos de un post.
+  //  * @param {string} idDoc - ID del documento en Firestore
+  //  * @param {Object} data - Datos a actualizar
+  //  * @returns {Promise<void>}
+  //  */
+  // async function updatePost(idDoc, data) {
+  //   try {
+  //     if (data.imageBase64 && data.imageBase64 !== '') {
+  //       const filePath = data.imagePathFile || `post/${data.user.email}/${data.id}.jpg`;
+  //       await uploadFile(filePath, data.imageBase64);
+  //       data.imageUrlFile = await getFileUrl(filePath); // Actualizamos la URL
+  //     }
+
+  //     const docRef = doc(db, 'posts', idDoc);
+  //     await updateDoc(docRef, {
+  //       title: data.title,
+  //       body: data.body,
+  //       imagePathFile: data.imagePathFile,
+  //       imageUrlFile: data.imageUrlFile ?? null,
+  //     });
+  //   } catch (err) {
+  //     console.error('Error al actualizar post:', err);
+  //     throw err;
+  //   }
+  // }
+
   /**
-   * Actualiza los datos de un post.
-   * @param {string} idDoc - ID del documento en Firestore
-   * @param {Object} data - Datos a actualizar
+   * Actualiza un post existente en la base de datos.
+   * @param {string} postId - ID del post a actualizar
+   * @param {{user: Object, title: string, body: string, categories: Array, imageUrlFile: string, mediaType: string}} data
    * @returns {Promise<void>}
    */
-  async function updatePost(idDoc, data) {
+  async function updatePost(postId, { user, title, body, categories, imageUrlFile, mediaType }) {
     try {
-      if (data.imageBase64 && data.imageBase64 !== '') {
-        const filePath = data.imagePathFile || `post/${data.user.email}/${data.id}.jpg`;
-        await uploadFile(filePath, data.imageBase64);
-        data.imageUrlFile = await getFileUrl(filePath); // Actualizamos la URL
-      }
-
-      const docRef = doc(db, 'posts', idDoc);
-      await updateDoc(docRef, {
-        title: data.title,
-        body: data.body,
-        imagePathFile: data.imagePathFile,
-        imageUrlFile: data.imageUrlFile ?? null,
-      });
+      const postDocRef = doc(db, 'posts', postId);
+      const updatedData = {
+        user,
+        title,
+        body,
+        categories: categories || [],
+        imageUrlFile: imageUrlFile || null,
+        mediaType: mediaType || null,
+        timestamp: serverTimestamp(), // Actualizamos el timestamp al modificar
+      };
+      await updateDoc(postDocRef, updatedData);
     } catch (err) {
-      console.error('Error al actualizar post:', err);
+      console.error('Error al actualizar el post:', err);
       throw err;
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative">
-    <PostHeader :post="post" @edit="editPost" @delete="deletePost" @share="sharePost" @report="reportPost" />
+    <PostHeader :post="post" @edit="handleEditPost" @delete="deletePost" @share="sharePost" @report="reportPost" />
     <h3 class="text-lg font-bold text-[#2c3e50]">{{ post?.title }}</h3>
     <p class="text-gray-700 mt-1 text-sm">{{ post?.body }}</p>
     <div v-if="post?.imageUrlFile" class="mt-3">
@@ -60,7 +60,7 @@ async function toggleLike() {
   });
 }
 
-function editPost() {
+function handleEditPost() {
   console.log('Editar post:', props.post.id);
   props.post.showMenu = false;
 }
