@@ -1,10 +1,21 @@
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative">
-    <PostHeader :post="post" @edit="editPost" @delete="deletePost" @share="sharePost" @report="reportPost" />
+  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg light:bg-white dark:bg-gray-900">
+    <PostHeader :post="post" @edit="handleEditPost" @delete="deletePost" @share="sharePost" @report="reportPost" />
     <h3 class="text-lg font-bold text-[#2c3e50]">{{ post?.title }}</h3>
     <p class="text-gray-700 mt-1 text-sm">{{ post?.body }}</p>
     <div v-if="post?.imageUrlFile" class="mt-3">
-      <img :src="post?.imageUrlFile" alt="Post media" class="w-full h-48 object-cover rounded-lg" />
+      <img
+        v-if="post?.mediaType === 'image'"
+        :src="post?.imageUrlFile"
+        alt="Post media"
+        class="w-full h-48 object-cover rounded-lg"
+      />
+      <video
+        v-else-if="post?.mediaType === 'video'"
+        :src="post?.imageUrlFile"
+        controls
+        class="w-full h-48 rounded-lg"
+      ></video>
     </div>
     <div class="flex gap-2 mt-2 flex-wrap">
       <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 px-2 py-1 rounded-full">
@@ -60,7 +71,7 @@ async function toggleLike() {
   });
 }
 
-function editPost() {
+function handleEditPost() {
   console.log('Editar post:', props.post.id);
   props.post.showMenu = false;
 }

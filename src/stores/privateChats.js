@@ -59,7 +59,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         try {
           const { deleteChat } = usePrivateChats();
           await deleteChat(chatId);
-          this.chats.value = this.chats.value.filter(chat => chat.idDoc !== chatId);
+          this.chats.value = this.chats.value
           if (this.selectedChatId === chatId) {
             this.selectedChatId = null;
           }

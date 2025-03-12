@@ -9,6 +9,9 @@
   --color-primary-transparent: #0ef2df29;
 }
 
+@custom-variant light (&:where(.light, .light *));
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Your other custom styles go here */
 /* Any other custom styles you have */
 :root {

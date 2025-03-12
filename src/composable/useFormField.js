@@ -8,7 +8,6 @@ export function useFormField(initialValue = '', schema = null) {
     hasError: false,
     errorMessage: '',
   });
-
   // Validación frontend básica
   const validate = (rules = []) => {
     field.value.hasError = false;

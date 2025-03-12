@@ -1,13 +1,13 @@
 <!-- CreatePostModal.vue -->
 <template>
-  <section class="flex justify-center mb-6">
-    <input 
-      type="text" 
-      placeholder="¿Qué tienes en mente?" 
+  <section>
+    <button 
+      class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
       @click="showModal = true" 
-      class="w-full hover:bg-gray-50 max-w-xl p-4 rounded-full bg-white border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer text-gray-700 placeholder-gray-400 transition-all duration-200 hover:shadow-lg" 
-      readonly 
-    />
+    >
+      <i class="fa fa-book pr-2"></i>
+      Agregar historia
+    </button>
   </section>
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
     <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">

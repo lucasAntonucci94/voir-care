@@ -4,7 +4,7 @@ MainLayout.vue
       <Header />
       <div class="flex flex-1 relative">
         <Sidebar
-          :class="{ 'hidden md:block': !permitedRoutes() }"
+          v-if="isAuthenticated"
           :show="sidebarStore.showSidebar"
            @toggle="sidebarStore.toggleSidebar"
          />
@@ -58,7 +58,7 @@ onUnmounted(() => {
 
 // Método para determinar rutas permitidas
 const permitedRoutes = () => {
-  return ($route.path === '/feed' || $route.path === '/profile') && isAuthenticated.value;
+  return ($route.path !== '/' || $route.path !== '/login' || $route.path !== '/register') && isAuthenticated.value;
 };
 </script>
 

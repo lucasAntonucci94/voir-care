@@ -32,24 +32,43 @@ export const usePostsStore = defineStore('posts', {
         this.unsubscribe();
       }
     },
-    // Añadir un nuevo post
     async addPost(newPostData) {
       console.log('Añadiendo nuevo post:', newPostData);
       const { savePost } = usePosts();
-      // Preparar los datos para Firebase
       const postData = {
-        user: newPostData.user, // Objeto user con id, name, avatar
+        user: newPostData.user,
         title: newPostData.title,
-        body: newPostData.description, // Cambiamos description a body para coincidir con tu estructura
+        body: newPostData.body, // Normalizado
         categories: newPostData.categories || [],
-        imageBase64: newPostData.media, // El archivo en crudo (File object)
+        imageBase64: newPostData.imageBase64, // Base64
+        mediaType: newPostData.mediaType,
       };
       try {
         await savePost(postData);
         console.log('Post añadido exitosamente a Firebase');
       } catch (error) {
         console.error('Error al añadir el post:', error);
-        throw error; // Para manejar el error en el componente si es necesario
+        throw error;
+      }
+    },
+    async updatePost(postId, updatedPostData) {
+      console.log('Actualizando post:', postId, updatedPostData);
+      const { updatePost } = usePosts();
+      const postData = {
+        user: updatedPostData.user,
+        title: updatedPostData.title,
+        body: updatedPostData.body,
+        categories: updatedPostData.categories || [],
+        imageUrlFile: updatedPostData.imageUrlFile,
+        imagePathFile: updatedPostData.imagePathFile,
+        mediaType: updatedPostData.mediaType,
+      };
+      try {
+        await updatePost(postId, postData);
+        console.log('Post actualizado exitosamente en Firebase');
+      } catch (error) {
+        console.error('Error al actualizar el post:', error);
+        throw error;
       }
     },
     // Eliminar un post
@@ -58,7 +77,8 @@ export const usePostsStore = defineStore('posts', {
       const { deletePost } = usePosts();
       await deletePost(postIdDoc);
       console.log('Post eliminado, esperando actualización de Firebase...');
-    },// Nueva acción para agregar un Like
+    },
+    // Nueva acción para agregar un Like
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
       const post = this.posts.value.find(p => p.idDoc === postIdDoc);

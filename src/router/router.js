@@ -24,7 +24,7 @@ const routes = [
         }
       },
       {
-        path: '/',
+        path: '',
         name: 'landingPage',
         component: LandingPage,
       },
