@@ -205,17 +205,18 @@ async function saveProfile() {
   isLoading.value = true;
 
   try {
-    let updatedPhotoUrl = props.activeUser?.photoURL;
-    let updatedPhotoPath = props.activeUser?.photoURLFile;
+    let updatedPhotoUrl = props.activeUser?.photoURLFile;
+    let updatedPhotoPath = props.activeUser?.photoPathFile;
 
     if (editForm.value.newMediaBase64) {
-      const profilePath = `profile/${props.activeUser?.email}`;
+      const dynamicPath = `profile/${props.activeUser?.email}`;
+      debugger
       const { url, path } = await uploadMedia({
-        currentUrl: props.activeUser?.photoURL,
-        currentPath: props.activeUser?.photoURLFile,
+        currentUrl: props.activeUser?.photoURLFile,
+        currentPath: props.activeUser?.photoPathFile,
         newMediaBase64: editForm.value.newMediaBase64,
         mediaType: editForm.value.mediaType,
-        profilePath,
+        dynamicPath,
       });
       updatedPhotoUrl = url;
       updatedPhotoPath = path;

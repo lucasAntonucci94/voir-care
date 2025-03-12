@@ -127,14 +127,7 @@ const tabsContainer = ref(null); // Referencia al contenedor de tabs
 const showArrows = ref(false); // Controlar visibilidad de flechas
 const canScrollLeft = ref(false); // Controlar visibilidad de flecha izquierda
 const canScrollRight = ref(false); // Controlar visibilidad de flecha derecha
-const connections = ref([
-  { idDoc: '1', displayName: 'Ana Gómez', email: 'ana@example.com', photoURLFile: avatarDefault },
-  { idDoc: '2', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
-  { idDoc: '3', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
-  { idDoc: '4', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
-  { idDoc: '5', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
-  { idDoc: '6', displayName: 'Carlos Pérez', email: 'carlos@example.com', photoURLFile: avatarDefault },
-].filter(c => c.email !== activeUser?.email));
+const connections = ref([]);
 
 // Tabs
 const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos', 'Configuración'];
@@ -197,6 +190,8 @@ const checkScroll = () => {
 // Fetch de datos
 const fetchUserData = async userEmail => {
   activeUser.value = await getUserProfileByEmail(userEmail);
+  debugger
+  connections.value = activeUser?.value?.connections?.filter(c => c.email !== activeUser?.email) ?? []; 
 };
 
 function deletePost(postId) {

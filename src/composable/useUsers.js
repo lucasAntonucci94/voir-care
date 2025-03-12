@@ -60,6 +60,7 @@ export function useUsers() {
 
       const userDoc = snapshot.docs[0];
       const user = userDoc.data();
+      debugger
       return {
         uid: userDoc.id,
         email: user.email,
@@ -129,6 +130,7 @@ export function useUsers() {
         country: data.country ?? '',
         avatar: data.avatar || null,
         photoURLFile: data.photoURLFile || null,
+        photoPathFile: data.photoPathFile || null,
       }
       await updateDoc(docRef, userData);
       await updateUserFromPost(id, userData)
