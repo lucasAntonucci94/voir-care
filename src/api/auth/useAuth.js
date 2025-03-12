@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { useUsers } from '../../composable/useUsers';
 
@@ -74,11 +75,9 @@ async function logout() {
 async function doRegister(displayName, email, password) {
   loading.value = true;
   error.value = null;
-  debugger
   try {
     const { user: newAuthUser } = await createUserWithEmailAndPassword(auth, email, password);
     console.log(newAuthUser)
-    debugger
     if(newAuthUser){
       await createUser(newAuthUser.uid,{
         email: email,
@@ -111,6 +110,18 @@ async function doUpdateProfile(profileData) {
   }
 }
 
+// Nueva función para resetear contraseña
+const resetPassword = async (email) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    error.value = null;
+    return true;
+  } catch (err) {
+    error.value = err;
+    return false;
+  }
+};
+
 export function useAuth() {
   if (!user.value && !isAuthenticated.value) {
     initializeAuthListener();
@@ -125,5 +136,6 @@ export function useAuth() {
     logout,
     doRegister,
     doUpdateProfile,
+    resetPassword,
   };
 }
