@@ -87,7 +87,7 @@ import ProfileInfoCard from './ProfileInfoCard.vue';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
-import CreateStoryModal from '../../components/organisms/CreatePostModal.vue';
+import CreateStoryModal from '../organisms/CreateStoryModal.vue';
 import { useUsers } from '../../composable/useUsers';
 
 // Props
