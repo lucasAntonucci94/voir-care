@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { getFirestore, doc, setDoc, getDocs, updateDoc, collection, query, where, limit } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useStorage } from './useStorage'; // Ajusta la ruta según tu estructura
 import { usePosts } from '../composable/usePosts';
 
@@ -72,6 +72,7 @@ export function useUsers() {
         country: user.country || null,
         photoURLFile: user.photoURLFile|| null,
         avatar: user.avatar || null,
+        connections: user.connections || [],
         isAdmin: user.isAdmin || false,
       };
     } catch (error) {
@@ -171,6 +172,75 @@ export function useUsers() {
     }
   }
 
+  /**
+   * Agrega una conexión al array 'connections' del usuario autenticado
+   * @param {string} currentUserId - ID del usuario autenticado
+   * @param {Object} connectionData - Datos del usuario a seguir (uid, displayName, email)
+   * @returns {Promise<void>}
+   */
+  async function addConnection(currentUserId, connectionData) {
+    try {
+      const userRef = doc(db, 'users', currentUserId);
+      const connection = {
+        uid: connectionData.uid,
+        displayName: connectionData.displayName,
+        email: connectionData.email,
+        avatar: connectionData.avatar || null,
+      };
+
+      // Usamos arrayUnion para agregar la conexión al array 'connections' sin duplicados
+      await updateDoc(userRef, {
+        connections: arrayUnion(connection),
+      });
+      console.log(`Conexión con ${connectionData.displayName} agregada exitosamente`);
+    } catch (error) {
+      console.error('Error al agregar conexión:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina una conexión del array 'connections' del usuario autenticado
+   */
+  async function removeConnection(currentUserId, connectionData) {
+    try {
+      const userRef = doc(db, 'users', currentUserId);
+      const connection = {
+        uid: connectionData.uid,
+        displayName: connectionData.displayName,
+        email: connectionData.email,
+        avatar: connectionData.avatar || null,
+      };
+      await updateDoc(userRef, {
+        connections: arrayRemove(connection),
+      });
+      console.log(`Conexión con ${connectionData.displayName} eliminada exitosamente`);
+    } catch (error) {
+      console.error('Error al eliminar conexión:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene los datos de un usuario por su ID
+   * @param {string} id - ID del usuario
+   * @returns {Promise<Object>} - Datos del usuario
+   */
+  async function getUser(id) {
+    try {
+      const userRef = doc(db, 'users', id);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        return { id: userSnap.id, ...userSnap.data() };
+      } else {
+        throw new Error('Usuario no encontrado');
+      }
+    } catch (error) {
+      console.error('Error al obtener usuario:', error);
+      throw error;
+    }
+  }
+
   return {
     userProfile, // Estado reactivo opcional
     getAllUsers,
@@ -178,5 +248,8 @@ export function useUsers() {
     createUser,
     updateUser,
     loadProfileInfo,
+    addConnection,
+    removeConnection,
+    getUser
   };
 }

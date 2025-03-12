@@ -16,7 +16,7 @@
                 <h3 class="text-sm font-semibold text-gray-900">{{ getUserName(chat.user) || 'Usuario desconocido' }}</h3>
                 <span class="text-xs text-gray-400 truncate">{{ formatTimestamp(chat.created_at) }}</span>
               </div>
-              <p class="text-sm text-gray-600 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin previsualización' }}</p>
+              <p class="text-sm text-gray-600 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin mensajes' }}</p>
             </div>
             <button @click.stop="openDeleteChatModal(chat.idDoc)" class="ml-2 p-1 bg-gray-100 rounded-full text-gray-500 hover:text-red-700 hover:bg-gray-200 transition-colors duration-200">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

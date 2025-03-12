@@ -7,11 +7,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { useUsers } from '../../composable/useUsers';
 
 const auth = getAuth();
-const { loadProfileInfo } = useUsers();
+const { createUser, loadProfileInfo } = useUsers();
 
 const AUTH_ERRORS_MESSAGES = {
   'auth/invalid-email': 'El email no tiene un formato correcto.',
@@ -71,11 +72,18 @@ async function logout() {
   }
 }
 
-async function doRegister(email, password) {
+async function doRegister(displayName, email, password) {
   loading.value = true;
   error.value = null;
   try {
-    const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
+    const { user: newAuthUser } = await createUserWithEmailAndPassword(auth, email, password);
+    console.log(newAuthUser)
+    if(newAuthUser){
+      await createUser(newAuthUser.uid,{
+        email: email,
+        displayName: displayName,
+      })
+    }
     return true;
   } catch (err) {
     error.value = {
@@ -102,6 +110,18 @@ async function doUpdateProfile(profileData) {
   }
 }
 
+// Nueva función para resetear contraseña
+const resetPassword = async (email) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    error.value = null;
+    return true;
+  } catch (err) {
+    error.value = err;
+    return false;
+  }
+};
+
 export function useAuth() {
   if (!user.value && !isAuthenticated.value) {
     initializeAuthListener();
@@ -116,5 +136,6 @@ export function useAuth() {
     logout,
     doRegister,
     doUpdateProfile,
+    resetPassword,
   };
 }

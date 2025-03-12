@@ -21,7 +21,7 @@
   </template>
   
   <script setup>
-  import { ref, defineProps, watch } from 'vue';
+  import { ref, watch } from 'vue';
   import { usePrivateChats } from '../../composable/usePrivateChats';
   import { usePrivateChatsStore } from '../../stores/privateChats';
   import { useAuth } from '../../api/auth/useAuth';

@@ -12,7 +12,7 @@
       />
       <div>
         <p class="text-sm font-bold text-[#2c3e50]">{{ post?.user?.displayName || 'Anónimo' }}</p>
-        <p class="text-xs text-gray-500">{{ formatTimestamp(post?.timestamp) }}</p>
+        <p class="text-xs text-gray-500">{{ formatTimestamp(post?.created_at) }}</p>
       </div>
     </router-link>
     <div class="relative">
@@ -27,15 +27,15 @@
         class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
       >
         <ul class="py-1 text-sm text-gray-700">
-          <li v-if="post?.user?.id === user?.id || user?.isAdmin">
+          <li v-if="post?.user?.id === user?.uid || user?.isAdmin">
             <button 
-              @click="emit('edit')" 
+              @click="showEditModal" 
               class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
             >
               <i class="fas fa-pen mr-2"></i> Editar
             </button>
           </li>
-          <li v-if="post?.user?.id === user?.id || user?.isAdmin">
+          <li v-if="post?.user?.id === user?.uid || user?.isAdmin">
             <button 
               @click="showDeleteModal" 
               class="w-full text-left px-4 py-2 hover:bg-primary-transparent text-primary hover:text-primary-darker transition-all duration-200"
@@ -51,7 +51,7 @@
               <i class="fas fa-share mr-2"></i> Compartir
             </button>
           </li>
-          <li v-if="post?.user?.id !== user?.id">
+          <li v-if="post?.user?.id !== user?.uid">
             <button 
               @click="emit('report')" 
               class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
@@ -64,14 +64,14 @@
     </div>
   </div>
 
-  <!-- Modal de confirmación -->
-  <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
+  <!-- Modal de confirmación al eliminar -->
+  <div v-if="showModalDelete" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
     <div class="bg-white rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
       <h3 class="text-lg font-semibold text-gray-800 mb-4">¿Eliminar posteo?</h3>
       <p class="text-sm text-gray-600 mb-6">¿Estás seguro de que quieres eliminar este posteo? Esta acción no se puede deshacer.</p>
       <div class="flex justify-end gap-3">
         <button 
-          @click="showModal = false" 
+          @click="showModalDelete = false" 
           class="px-4 py-2 text-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
         >
           Cancelar
@@ -85,12 +85,21 @@
       </div>
     </div>
   </div>
+  
+  <!-- Modal de edicion de un post -->
+  <div v-if="showModalEdit" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
+    <div class="bg-white rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Editar posteo</h3>
+      <PostEditForm :post="post" :close-modal="closeEditModal" @update-post="handlePostUpdate" />
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useAuth } from '../../api/auth/useAuth'; // Ajusta la ruta
 import { formatTimestamp } from '../../utils/formatTimestamp'; // Ajusta la ruta
+import PostEditForm from './PostEditForm.vue';
 
 const props = defineProps(['post']);
 const emit = defineEmits(['edit', 'delete', 'share', 'report']);
@@ -98,7 +107,8 @@ const emit = defineEmits(['edit', 'delete', 'share', 'report']);
 const { user } = useAuth();
 
 // Estado para el modal
-const showModal = ref(false);
+const showModalDelete = ref(false);
+const showModalEdit = ref(false);
 
 onMounted(() => {
   console.log('PostHeader mounted');
@@ -107,12 +117,26 @@ onMounted(() => {
 
 // Mostrar el modal de confirmación
 function showDeleteModal() {
-  showModal.value = true;
+  showModalDelete.value = true;
 }
 
 // Confirmar eliminación y emitir evento
 function confirmDelete() {
   emit('delete');
-  showModal.value = false;
+  showModalDelete.value = false;
+}
+
+// Mostrar el modal de confirmación
+function showEditModal() {
+  showModalEdit.value = true;
+}
+
+function handlePostUpdate(updatedPost) {
+  emit('edit', updatedPost); // Emitir el evento al padre con el posteo actualizado
+  showModalEdit.value = false; // Cerrar el modal
+}
+
+function closeEditModal() {
+  showModalEdit.value = false;
 }
 </script>

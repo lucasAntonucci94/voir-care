@@ -36,7 +36,6 @@
     </div>
 </template>
 <script setup>
-import { defineProps } from 'vue';
 import avatarDefault from '../../assets/avatar1.jpg';
 
 // Props

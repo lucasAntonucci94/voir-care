@@ -68,7 +68,6 @@
   import { ref, onMounted, onUnmounted, watch } from 'vue';
   import { usePrivateChats } from '../../composable/usePrivateChats';
   import { usePrivateChatsStore } from '../../stores/privateChats';
-  import { defineProps } from 'vue';
   import { formatTimestamp } from '../../utils/formatTimestamp';
   import ChatMessageInput from '../atoms/ChatMessageInput.vue';
   import { useAuth } from '../../api/auth/useAuth';

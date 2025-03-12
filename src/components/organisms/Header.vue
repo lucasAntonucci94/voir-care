@@ -18,6 +18,9 @@
       </div>
       <nav class="flex flex-nowrap">
         <div class="flex items-center space-x-4">
+          <router-link v-if="!isAuthenticated" to="/login" class="flex items-center">
+            <h1 class="relative flex items-center gap-2 text-white hover:text-primary-lighter transition-colors duration-300 group">Iniciar Sesión</h1>
+          </router-link>
           <!-- <NotificationDropdown
             v-if="isAuthenticated"
             :notifications="userNotifications"

@@ -1,6 +1,5 @@
 
 <template>
-  <!-- Hero Section -->
   <section
   class="relative h-[75vh] xs:h-[60vh] sm:h-[65vh] bg-gradient-to-tr from-black via-primary to-primary text-white pt-15 md:pt-25"
   :style="{ clipPath: 'polygon(0 0, 100% 0%, 100% 100%, 0 90%)' }"
@@ -118,16 +117,9 @@
   </footer>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useAuth } from '../api/auth/useAuth';
 import CarouselAwareness from '../components/organisms/CarrouselAwareness.vue';
-const { user } = useAuth();
-
-const posts = ref([
-  { id: 1, title: 'Mi primer post', content: '¡Hola mundo!' },
-  // ... más publicaciones
-]);
 
 const features = [
   'Red Social Personalizada',
