@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg">
+  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg light:bg-white dark:bg-gray-900">
     <PostHeader :post="post" @edit="handleEditPost" @delete="deletePost" @share="sharePost" @report="reportPost" />
     <h3 class="text-lg font-bold text-[#2c3e50]">{{ post?.title }}</h3>
     <p class="text-gray-700 mt-1 text-sm">{{ post?.body }}</p>
