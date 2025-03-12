@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineEmits } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats'; // Importamos el store de chats privados
 import { useAuth } from '../../api/auth/useAuth'; // Importamos el composable de autenticación
 import { usePrivateChats } from '../../composable/usePrivateChats';

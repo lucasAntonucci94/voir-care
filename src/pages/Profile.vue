@@ -76,6 +76,7 @@
         <div class="md:col-span-2">
           <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
           <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
+            <!-- <CreatePostModal /> -->
             <PostCard v-for="post in profilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
             <p v-if="!profilePosts?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </div>
@@ -111,6 +112,7 @@ import ProfileHeader from '../components/molecules/ProfileHeader.vue';
 import ProfileInfo from '../components/molecules/ProfileInfoTab.vue';
 import avatarDefault from '../assets/avatar1.jpg';
 import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
+import CreatePostModal from '../components/organisms/CreatePostModal.vue';
 
 // Instancias
 const route = useRoute();

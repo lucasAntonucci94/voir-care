@@ -28,7 +28,6 @@ export function usePosts() {
         likes: [],
         connections: [],
       };
-      debugger
       if (imageBase64) {
         const extension = mediaType === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
         const filePath = `post/${user.email}/${data.id}.${extension}`;
@@ -36,7 +35,6 @@ export function usePosts() {
         data.imagePathFile = filePath;
         data.imageUrlFile = await getFileUrl(filePath);
       }
-      debugger
       await addDoc(postRef, data);
     } catch (err) {
       console.error('Error al grabar el post:', err);
@@ -60,7 +58,7 @@ export function usePosts() {
         imageUrlFile: imageUrlFile || null,
         imagePathFile: imagePathFile || null,
         mediaType: mediaType || null,
-        created_at: serverTimestamp(), // Actualizamos timestamp al editar
+        updated_at: serverTimestamp(), // Actualizamos timestamp al editar
       };
       await updateDoc(postDocRef, updatedData);
     } catch (err) {

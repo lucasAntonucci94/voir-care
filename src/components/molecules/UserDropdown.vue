@@ -84,7 +84,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
-import { defineProps, defineEmits } from 'vue';
+import { defineEmits } from 'vue';
 import ThemeModeButton from '../atoms/ThemeModeButton.vue';
 import avatarDefault from '../../assets/avatar1.jpg';
 

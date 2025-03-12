@@ -1,6 +1,6 @@
 <template>
   <div class="mb-4">
-    <label :for="id" class="block mb-2 text-sm font-medium text-gray-700">{{ label }}</label>
+    <label :for="id" class="block mb-2 text-sm font-medium text-[#2c3e50]">{{ label }}</label>
     <div class="relative flex items-center">
       <input
         :id="id"
@@ -9,9 +9,11 @@
         @input="updateValue"
         :placeholder="placeholder ?? `Ingrese ${label}`"
         :class="[
-          'px-3 h-11 w-full text-gray-500 placeholder-gray-500 bg-gray-50 bg-opacity-40 border rounded-lg shadow-sm outline-none ring ring-transparent focus:ring-gray-500',
-          modelValue.hasError ? 'border-red-500 focus:border-red-500 ring-red-500' : 'border-gray-200 focus:border-gray-500',
+          'mt-1 w-full px-4 py-2 bg-gray-50 border rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder-gray-400',
+          modelValue.hasError ? 'border-red-500' : 'border-gray-300',
+          disabled ? 'opacity-50 cursor-not-allowed' : ''
         ]"
+        :disabled="disabled"
         :aria-invalid="modelValue.hasError"
         :aria-describedby="modelValue.hasError ? `${id}-error` : null"
       />
@@ -40,6 +42,7 @@ const props = defineProps({
     required: true,
     validator: (value) => 'value' in value && 'hasError' in value && 'errorMessage' in value,
   },
+  disabled: { type: Boolean, default: false },
 });
 const emit = defineEmits(['update:modelValue']);
 

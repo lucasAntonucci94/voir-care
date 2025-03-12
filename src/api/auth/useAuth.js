@@ -11,7 +11,7 @@ import {
 import { useUsers } from '../../composable/useUsers';
 
 const auth = getAuth();
-const { loadProfileInfo } = useUsers();
+const { createUser, loadProfileInfo } = useUsers();
 
 const AUTH_ERRORS_MESSAGES = {
   'auth/invalid-email': 'El email no tiene un formato correcto.',
@@ -71,11 +71,20 @@ async function logout() {
   }
 }
 
-async function doRegister(email, password) {
+async function doRegister(displayName, email, password) {
   loading.value = true;
   error.value = null;
+  debugger
   try {
-    const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
+    const { user: newAuthUser } = await createUserWithEmailAndPassword(auth, email, password);
+    console.log(newAuthUser)
+    debugger
+    if(newAuthUser){
+      await createUser(newAuthUser.uid,{
+        email: email,
+        displayName: displayName,
+      })
+    }
     return true;
   } catch (err) {
     error.value = {

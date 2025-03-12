@@ -41,13 +41,14 @@
           <!-- Agregar historia y Editar perfil (inferior derecha) -->
           <div class="flex justify-center md:justify-end mt-auto">
             <div class="flex flex-col gap-2 md:flex-row md:gap-4">
-              <button 
+              <!-- <button 
                 class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
                 @click="addStory"
               >
                 <i class="fa fa-book pr-2"></i>
                 Agregar historia
-              </button>
+              </button> -->
+              <CreateStoryModal />
               <button 
                 class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" 
                 @click="editProfile"
@@ -115,13 +116,14 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref } from 'vue';
 import { useStorage } from '../../composable/useStorage';
 import ProfileForm from '../molecules/ProfileForm.vue';
 import ProfileInfoCard from './ProfileInfoCard.vue';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
+import CreateStoryModal from '../../components/organisms/CreateStoryModal .vue';
 
 
 // Props
@@ -161,7 +163,7 @@ function addConnection() {
 
 async function updateBanner(file) {
   if (!props.isOwnProfile || !file) return;
-  const filepath = `banners/${props.activeUser.email}.jpg`;
+  const filepath = `banners/${props.activeUser?.email}.jpg`;
   try {
     await uploadFile(filepath, file);
     const url = await getFileUrl(filepath);
@@ -174,6 +176,7 @@ async function updateBanner(file) {
 
 function editProfile() {
   // Inicializar el formulario con los datos actuales del usuario
+  debugger
   console.log(props.activeUser)
   showEditModal.value = true;
 }
@@ -188,7 +191,7 @@ function closeEditModal() {
 }
 
 async function sendMessage() {
-  const chatId = await getChatIdByReference(authUser.value.email, props.activeUser.email)
+  const chatId = await getChatIdByReference(authUser.value.email, props.activeUser?.email)
   privateChatsStore.setSelectedChatId(chatId);
 }
 </script>

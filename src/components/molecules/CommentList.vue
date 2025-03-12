@@ -53,7 +53,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import { defineProps } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp'; // Ruta correcta
 import { useComments } from '../../composable/useComments'; // Ruta correcta
 

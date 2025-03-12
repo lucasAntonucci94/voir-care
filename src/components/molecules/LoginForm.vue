@@ -7,7 +7,7 @@
       <InputText v-model="email.field.value" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/>
       <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
       <div class="text-right mb-8">
-        <router-link to="/forgot-password" class="inline-block text-sm font-semibold text-yellowGreen-700 hover:text-yellowGreen-600">¿Olvidaste tu contraseña?</router-link>
+        <router-link to="/forgot-password" class="inline-block text-sm font-semibold text-primary hover:text-primary-md">¿Olvidaste tu contraseña?</router-link>
       </div>
       <button type="submit" :disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-primary to-cyan-800 rounded-lg transition-all duration-300 border hover:text-gray-200 hover:border-green-700">
         <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full rounded-lg bg-cyanGreen-900 opacity-50 animate-pulse"></div>
@@ -17,7 +17,7 @@
     </form>
     <div class="text-center mt-6 text-gray-700">
       ¿No tienes una cuenta?
-      <router-link to="/register" class="text-primary hover:text-primary-darker font-semibold ml-1">Regístrate</router-link>
+      <router-link to="/register" class="text-primary hover:text-primary-md font-semibold ml-1">Regístrate</router-link>
     </div>
   </div>
 </template>

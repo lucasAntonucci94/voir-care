@@ -123,7 +123,7 @@ import { useAuth } from '../../api/auth/useAuth';
 const { user, isAuthenticated } = useAuth();
 const emit = defineEmits(['toggle']);
 
-defineProps(['show']);
+const props = defineProps(['show']);
 
 function pathLocation(isAuthenticated) {
   return isAuthenticated ? '/feed' : '/';
