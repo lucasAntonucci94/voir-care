@@ -95,16 +95,13 @@
           loadingMessages.value = true;
           console.log(privateChatsStore?.from)
           console.log(privateChatsStore?.to)
-          debugger
           const otherUser = getOtherUserEmail();
-          debugger
           if(!user?.value || !otherUser) return;	
           unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
             user.value.email,
             otherUser,
             (msgs) => {
               console.log('Mensajes recibidos:', msgs);
-              debugger
               messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
               loadingMessages.value = false;
             }
@@ -126,13 +123,15 @@
     messages.value = [];
   });
   
+  const deleteMessage = async (messageId) => {
+    console.log('Confirmando eliminación de mensaje ID:', messageId);
+    privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
+    closeDeleteModal();
+  };
+
   // Métodos
   const formatDate = (timestamp) => {
     return formatTimestamp(timestamp);
-  };
-  
-  const getUserPhoto = (email) => {
-    return `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${email}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4` || 'https://via.placeholder.com/40';
   };
   
   const getUserName = (email) => {
@@ -141,7 +140,6 @@
   
   const getOtherUserEmail = () => {
     const chatId = privateChatsStore?.selectedChatId;
-    debugger
     const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === chatId);
     return selectedChat ? Object.keys(selectedChat.user).find(u => u !== user?.value.email) : privateChatsStore?.to || null;
   };
@@ -156,12 +154,6 @@
     console.log('Cerrando modal');
     showDeleteModal.value = false;
     messageToDelete.value = null;
-  };
-  
-  const deleteMessage = async (messageId) => {
-    console.log('Confirmando eliminación de mensaje ID:', messageId);
-    privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
-    closeDeleteModal();
   };
   </script>
   

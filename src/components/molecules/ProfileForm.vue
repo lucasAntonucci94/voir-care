@@ -226,7 +226,7 @@ async function saveProfile() {
       ...editForm.value,
       photoURL: updatedPhotoUrl,
       photoURLFile: updatedPhotoUrl,
-      photopathFile: updatedPhotoPath,
+      photoPathFile: updatedPhotoPath,
     };
 
     await updateUser(profileToUpdate.uid, profileToUpdate);

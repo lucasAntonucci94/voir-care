@@ -74,7 +74,6 @@ export function usePrivateChats() {
     }
 
     async function subscribeToIncomingPrivateMessages(from, to, callback) {
-      debugger
         const ref = await getPrivateChatRef(from, to);
         const queryMessages = query(ref, orderBy('created_at'));
         return onSnapshot(queryMessages, (snapshot) => {

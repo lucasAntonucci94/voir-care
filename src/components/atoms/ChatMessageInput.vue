@@ -44,7 +44,6 @@
   // Métodos
   const sendMessage = async () => {
     if (messageText.value.trim().length === 0) return;
-    debugger
     loading.value = true;
     try {
       const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === props.selectedChatId);
