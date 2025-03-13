@@ -210,7 +210,6 @@ async function saveProfile() {
 
     if (editForm.value.newMediaBase64) {
       const dynamicPath = `profile/${props.activeUser?.email}`;
-      debugger
       const { url, path } = await uploadMedia({
         currentUrl: props.activeUser?.photoURLFile,
         currentPath: props.activeUser?.photoPathFile,

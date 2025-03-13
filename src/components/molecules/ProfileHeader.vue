@@ -140,7 +140,7 @@ const handlerAddConnection = async () => {
       avatar: props.activeUser.photoURLFile,
     };
     await addConnection(authUser.value.uid, connectionData);
-    alert(`¡Ahora sigues a ${props.activeUser.displayName}!`);
+    // alert(`¡Ahora sigues a ${props.activeUser.displayName}!`);
     authUser.value.connections.push(connectionData);
     // props.updateRefData(); // Actualizamos los datos del usuario autenticado
   } catch (error) {
@@ -166,8 +166,7 @@ const handlerRemoveConnection = async () => {
       avatar: props.activeUser.photoURLFile,
     };
     await removeConnection(authUser.value.uid, connectionData);
-    alert(`Has dejado de seguir a ${props.activeUser.displayName}.`);
-    debugger
+    // alert(`Has dejado de seguir a ${props.activeUser.displayName}.`);
     if (authUser.value.connections) {
       authUser.value.connections = authUser.value.connections.filter(
         conn => conn.uid !== connectionData.uid
@@ -204,7 +203,11 @@ function closeEditModal() {
 }
 
 async function sendMessage() {
-  const chatId = await getChatIdByReference(authUser.value.email, props.activeUser?.email);
-  privateChatsStore.setSelectedChatId(chatId);
+  if(authUser.value.email !== null && authUser.value.email !== undefined && props.activeUser?.email !== null && props.activeUser?.email !== undefined){
+    const chatId = await getChatIdByReference(authUser.value.email, props.activeUser?.email);
+    privateChatsStore.setSelectedChatId(chatId);
+    privateChatsStore.setFromEmail(authUser.value.email);
+    privateChatsStore.setToEmail(props.activeUser?.email);
+  }
 }
 </script>

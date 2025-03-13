@@ -74,6 +74,7 @@ export function usePrivateChats() {
     }
 
     async function subscribeToIncomingPrivateMessages(from, to, callback) {
+      debugger
         const ref = await getPrivateChatRef(from, to);
         const queryMessages = query(ref, orderBy('created_at'));
         return onSnapshot(queryMessages, (snapshot) => {
@@ -200,13 +201,7 @@ export function usePrivateChats() {
 
         // Ejecutar la query
         const querySnapshot = await getDocs(q);
-        // Si no hay resultados, crear un nuevo chat
-        if (querySnapshot.empty) {
-          const newChatRef = await createPrivateChatRef(authUser, activeUser); // Crear el chat
-          const chatId = newChatRef.path.split('/')[1]; // Extraer el ID del path (chats-private/{id}/messages)
-          return chatId;
-        }
-
+       
         // Filtrar los documentos para encontrar el que contiene activeUser
         const chatDoc = querySnapshot.docs.find((doc) => {
           const docData = doc.data();

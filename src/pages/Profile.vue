@@ -190,7 +190,6 @@ const checkScroll = () => {
 // Fetch de datos
 const fetchUserData = async userEmail => {
   activeUser.value = await getUserProfileByEmail(userEmail);
-  debugger
   connections.value = activeUser?.value?.connections?.filter(c => c.email !== activeUser?.email) ?? []; 
 };
 

@@ -60,7 +60,6 @@ export function useUsers() {
 
       const userDoc = snapshot.docs[0];
       const user = userDoc.data();
-      debugger
       return {
         uid: userDoc.id,
         email: user.email,

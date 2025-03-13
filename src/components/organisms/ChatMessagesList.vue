@@ -1,5 +1,5 @@
 <template>
-    <div v-if="selectedChatId" class="w-full md:w-2/3 bg-gray-100 rounded-xl shadow-xl p-5 flex flex-col h-full border border-gray-200" style="min-height: calc(100vh - 120px); max-height: 80vh; position: relative;">
+    <div v-if="privateChatsStore.selectedChatId" class="w-full md:w-2/3 bg-gray-100 rounded-xl shadow-xl p-5 flex flex-col h-full border border-gray-200" style="min-height: calc(100vh - 120px); max-height: 80vh; position: relative;">
       <h2 class="text-xl font-semibold text-gray-900 mb-5 bg-gray-200 p-3 rounded-lg flex items-center">
         <span class="mr-2">💬</span>
         Chat con {{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}
@@ -43,7 +43,7 @@
           </div>
         </div>
       </div>
-      <ChatMessageInput :selectedChatId="selectedChatId" class="mt-auto p-3 bg-gray-100 border-t border-gray-200" />
+      <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" class="mt-auto p-3 bg-gray-100 border-t border-gray-200" />
   
         <!-- Modal de confirmación integrado -->
         <div v-if="showDeleteModal" class="fixed inset-0 z-101 flex items-center justify-center">
@@ -71,13 +71,6 @@
   import { formatTimestamp } from '../../utils/formatTimestamp';
   import ChatMessageInput from '../atoms/ChatMessageInput.vue';
   import { useAuth } from '../../api/auth/useAuth';
-  // Props
-  const props = defineProps({
-    selectedChatId: {
-      type: String,
-      default: null,
-    },
-  });
   
   // Estado reactivo
   const { user } = useAuth();
@@ -90,9 +83,9 @@
   
   // Montaje y desmontaje
   onMounted(() => {
-    console.log('ChatMessagesList montado, selectedChatId:', props.selectedChatId);
+    console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
     watch(
-      () => props.selectedChatId,
+      () => privateChatsStore?.selectedChatId,
       (newChatId) => {
         if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
           unsubscribeMessages.value();
@@ -100,13 +93,18 @@
         }
         if (newChatId) {
           loadingMessages.value = true;
+          console.log(privateChatsStore?.from)
+          console.log(privateChatsStore?.to)
+          debugger
           const otherUser = getOtherUserEmail();
-          if(!user?.value && !otherUser) return;	
+          debugger
+          if(!user?.value || !otherUser) return;	
           unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
             user.value.email,
             otherUser,
             (msgs) => {
               console.log('Mensajes recibidos:', msgs);
+              debugger
               messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
               loadingMessages.value = false;
             }
@@ -142,8 +140,10 @@
   };
   
   const getOtherUserEmail = () => {
-    const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === props.selectedChatId);
-    return selectedChat ? Object.keys(selectedChat.user).find(u => u !== user?.value.email) : null;
+    const chatId = privateChatsStore?.selectedChatId;
+    debugger
+    const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === chatId);
+    return selectedChat ? Object.keys(selectedChat.user).find(u => u !== user?.value.email) : privateChatsStore?.to || null;
   };
   
   const openDeleteModal = (messageId) => {
@@ -160,7 +160,7 @@
   
   const deleteMessage = async (messageId) => {
     console.log('Confirmando eliminación de mensaje ID:', messageId);
-    privateChatsStore.deleteMessage(props.selectedChatId, messageId);
+    privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
     closeDeleteModal();
   };
   </script>

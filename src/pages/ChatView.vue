@@ -39,7 +39,7 @@
             </div>
             </div>
         </div>
-      <ChatMessagesList :selectedChatId="privateChatsStore?.selectedChatId" :deletedChatId="privateChatsStore?.deletedChatId" />
+      <ChatMessagesList />
     </div>
   </template>
   <script setup>
