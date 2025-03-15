@@ -110,11 +110,9 @@ import DogIcon from '../assets/icons/dog_1998627.png';
 import { useLocationsStore } from '../stores/locations';
 import { useGoogleMaps } from '../composable/useGoogleMaps';
 
-// Instancia del store y composable de Google Maps
 const locationsStore = useLocationsStore();
 const { loadGoogleMaps } = useGoogleMaps();
 
-// Filtros disponibles
 const filters = ref([
   { id: 'plaza', label: 'Plazas' },
   { id: 'parque', label: 'Parques' },
@@ -123,67 +121,77 @@ const filters = ref([
   { id: 'servicio', label: 'Servicios' },
 ]);
 
-// Filtros activos y estado del desplegable
 const activeFilters = ref([]);
 const isFiltersOpen = ref(false);
-// Estado de carga de ubicación
 const loadingLocation = ref(false);
 
-// Lugares filtrados según los filtros activos y excluyendo 'pending'
 const filteredLocations = computed(() => {
-  const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending);
-  debugger
+  const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
+  console.log('Filtered locations:', filtered);
   if (activeFilters?.value?.length === 0) return filtered;
-  debugger
   const aux = filtered.filter((location) => activeFilters.value.includes(location.type));
+  console.log('Filtered with active filters:', aux);
   return aux;
 });
 
-// Referencia al mapa y marcadores
 const map = ref(null);
 const markers = ref([]);
 
-// Función para togglear el desplegable de filtros
 const toggleFilters = () => {
   isFiltersOpen.value = !isFiltersOpen.value;
 };
 
-// Función para centrar el mapa en la ubicación del usuario
-const centerOnUserLocation = () => {
+const centerOnUserLocation = async () => {
   if (!navigator.geolocation) {
     alert('La geolocalización no está soportada en tu navegador.');
     return;
   }
 
   loadingLocation.value = true;
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const userLatLng = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      };
-      map.value.setCenter(userLatLng);
-      map.value.setZoom(15);
-      new google.maps.Marker({
-        position: userLatLng,
-        map: map.value,
-        title: 'Tu ubicación',
-        icon: {
-          url: 'https://img.icons8.com/?size=100&id=13800&format=png',
-          scaledSize: new google.maps.Size(40, 40),
-        },
-      });
-      loadingLocation.value = false;
-    },
-    (error) => {
-      console.error('Error al obtener la ubicación:', error);
-      alert('No se pudo obtener tu ubicación. Por favor, habilita los permisos.');
-      loadingLocation.value = false;
-    }
-  );
+  try {
+    const { Marker } = await google.maps.importLibrary('marker'); // Usar Marker en lugar de AdvancedMarkerElement
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLatLng = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        map.value.setCenter(userLatLng);
+        map.value.setZoom(15);
+        const marker = new Marker({
+          position: userLatLng,
+          map: map.value,
+          title: 'Tu ubicación',
+          icon: {
+            url: 'https://img.icons8.com/?size=100&id=13800&format=png',
+            scaledSize: new google.maps.Size(40, 40),
+          },
+        });
+        markers.value.push(marker);
+        console.log('Marcador de usuario añadido con Marker');
+        loadingLocation.value = false;
+
+        // Marcador manual de prueba
+        const testMarker = new Marker({
+          position: { lat: 37.4239163, lng: -122.0947209 },
+          map: map.value,
+          title: 'Marcador de prueba',
+        });
+        markers.value.push(testMarker);
+        console.log('Marcador de prueba añadido con Marker');
+      },
+      (error) => {
+        console.error('Error al obtener la ubicación:', error);
+        alert('No se pudo obtener tu ubicación. Por favor, habilita los permisos.');
+        loadingLocation.value = false;
+      }
+    );
+  } catch (error) {
+    console.error('Error cargando Marker:', error);
+    loadingLocation.value = false;
+  }
 };
 
-// Función para extraer etiquetas de redes sociales
 const getSocialLabel = (link) => {
   if (link.includes('instagram')) return 'Instagram';
   if (link.includes('facebook')) return 'Facebook';
@@ -191,7 +199,6 @@ const getSocialLabel = (link) => {
   return 'Red Social';
 };
 
-// Función para obtener el ícono según el tipo de lugar
 const getMarkerIcon = (type) => {
   const iconMap = {
     plaza: CatIcon,
@@ -206,7 +213,6 @@ const getMarkerIcon = (type) => {
   };
 };
 
-// Función para obtener el ícono de filtro
 const getFilterIcon = (type) => {
   const iconMap = {
     plaza: CatIcon,
@@ -218,90 +224,109 @@ const getFilterIcon = (type) => {
   return iconMap[type] || CatIcon;
 };
 
-// Función para inicializar el mapa
-const initMap = () => {
-  map.value = new google.maps.Map(document.getElementById('map'), {
-    center: { lat: -34.6037, lng: -58.3816 },
-    zoom: 12,
-    styles: [
-      { featureType: 'poi', stylers: [{ visibility: 'simplified' }] },
-      { featureType: 'poi.park', stylers: [{ visibility: 'on' }] },
-    ],
-  });
-  updateMapMarkers();
+const initMap = async () => {
+  try {
+    await loadGoogleMaps({ libraries: ['marker'] });
+    const { Map } = await google.maps.importLibrary('maps');
+    map.value = new Map(document.getElementById('map'), {
+      center: { lat: -34.59, lng: -58.5 }, // Ajustado para tus ubicaciones
+      zoom: 11,
+      mapId: '98046a6e59cbc455',
+      styles: [
+        { featureType: 'poi', stylers: [{ visibility: 'simplified' }] },
+        { featureType: 'poi.park', stylers: [{ visibility: 'on' }] },
+      ],
+    });
+    console.log('Mapa inicializado:', map.value);
+    await updateMapMarkers();
+  } catch (error) {
+    console.error('Error al inicializar el mapa:', error);
+  }
 };
 
-// Función para actualizar los marcadores en el mapa
-const updateMapMarkers = () => {
-  markers.value.forEach((marker) => marker.setMap(null));
-  markers.value = [];
+const updateMapMarkers = async () => {
+  try {
+    const { Marker } = await google.maps.importLibrary('marker'); // Usar Marker
+    console.log('Actualizando marcadores para:', filteredLocations.value);
 
-  filteredLocations.value.forEach((location) => {
-    if (location.lat && location.lng) {
-      const marker = new google.maps.Marker({
-        position: { lat: location.lat, lng: location.lng },
-        map: map.value,
-        title: location.title,
-        icon: getMarkerIcon(location.type),
-      });
+    markers.value.forEach((marker) => marker.setMap(null)); // Limpiar con setMap(null)
+    markers.value = [];
 
-      const infoWindowContent = `
-        <div class="p-4 max-w-sm">
-          <h3 class="text-lg font-bold text-gray-900">${location.title}</h3>
-          <p class="text-sm text-gray-600 mt-1">${location.detail}</p>
-          <p class="text-xs text-gray-500 mt-1">${location.address}</p>
-          ${location.phone ? `<p class="text-xs text-indigo-600 mt-1">Tel: ${location.phone}</p>` : ''}
-          ${
-            location.socialNetworkLink?.length
-              ? `<div class="flex gap-2 mt-2">${location.socialNetworkLink
-                  .map(
-                    (link) =>
-                      `<a href="${link}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-xs font-medium">${getSocialLabel(
-                        link
-                      )}</a>`
-                  )
-                  .join('')}</div>`
-              : ''
-          }
-          <img src="${location.imageUrlFile || 'https://via.placeholder.com/150'}" alt="${
-            location.title
-          }" class="w-28 h-28 object-cover mt-3 rounded-lg shadow-sm">
-        </div>
-      `;
-
-      const infoWindow = new google.maps.InfoWindow({
-        content: infoWindowContent,
-      });
-
-      marker.addListener('click', () => {
-        infoWindow.open({
-          anchor: marker,
+    filteredLocations.value.forEach((location) => {
+      if (location.lat && location.lng) {
+        console.log('Añadiendo marcador para:', location.title, location.lat, location.lng);
+        const marker = new Marker({
+          position: { lat: location.lat, lng: location.lng },
           map: map.value,
-          shouldFocus: false,
+          title: location.title,
+          icon: getMarkerIcon(location.type), // Usar ícono personalizado
         });
-      });
 
-      markers.value.push(marker);
-    }
-  });
+        const infoWindowContent = `
+          <div class="p-4 max-w-sm">
+            <h3 class="text-lg font-bold text-gray-900">${location.title}</h3>
+            <p class="text-sm text-gray-600 mt-1">${location.detail}</p>
+            <p class="text-xs text-gray-500 mt-1">${location.address}</p>
+            ${location.phone ? `<p class="text-xs text-indigo-600 mt-1">Tel: ${location.phone}</p>` : ''}
+            ${
+              location.socialNetworkLink?.length
+                ? `<div class="flex gap-2 mt-2">${location.socialNetworkLink
+                    .map(
+                      (link) =>
+                        `<a href="${link}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-xs font-medium">${getSocialLabel(
+                          link
+                        )}</a>`
+                    )
+                    .join('')}</div>`
+                : ''
+            }
+            <img src="${location.imageUrlFile || 'https://via.placeholder.com/150'}" alt="${
+              location.title
+            }" class="w-28 h-28 object-cover mt-3 rounded-lg shadow-sm">
+          </div>
+        `;
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: infoWindowContent,
+        });
+
+        marker.addListener('click', () => {
+          infoWindow.open({
+            anchor: marker,
+            map: map.value,
+            shouldFocus: false,
+          });
+        });
+
+        markers.value.push(marker);
+      } else {
+        console.warn('Ubicación sin coordenadas:', location);
+      }
+    });
+    console.log('Marcadores añadidos:', markers.value.length);
+  } catch (error) {
+    console.error('Error al actualizar marcadores:', error);
+  }
 };
 
-// Lifecycle hooks
 onMounted(async () => {
+  console.log('Montando componente...');
   locationsStore.subscribe();
-  await loadGoogleMaps(); // Cargar Google Maps antes de inicializar
-  initMap();
+  await initMap();
 });
 
 onUnmounted(() => {
+  console.log('Desmontando componente...');
   locationsStore.unsubscribe();
 });
 
-// Actualiza marcadores cuando cambien las locations o los filtros
 watch(
   () => [locationsStore?.locations?.value, activeFilters?.value],
-  () => {
-    if (map.value) updateMapMarkers();
+  async () => {
+    if (map.value) {
+      console.log('Detectado cambio en locations o filtros, actualizando marcadores...');
+      await updateMapMarkers();
+    }
   },
   { deep: true }
 );
