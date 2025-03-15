@@ -113,7 +113,7 @@ const isAddingConnection = ref(false);
 const isRemovingConnection = ref(false);
 const isEditingBanner = ref(false);
 const showEditModal = ref(false);
-const bannerUrl = ref('https://scontent.faep7-1.fna.fbcdn.net/v/t39.30808-6/468006144_10235042225423750_1721754758729309234_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHLiv8dN0LxWRWLAoantdebrW8BVSE3WC2tbwFVITdYLWPE5IcKzXsjstYJCRhTML4&_nc_ohc=h4dpp8obhPsQ7kNvgEFWjFO&_nc_oc=AdghQMM5J-uvHF2Rmsco8ZEkpWJW-fFeLzgudtB3nZO6NqLLr9A3i9BKaXhb9glG3PbjTLs2dtlcSMGnK5O0qEBw&_nc_zt=23&_nc_ht=scontent.faep7-1.fna&_nc_gid=AtJyPxfdbpgLXVow-4flfwi&oh=00_AYA6zA75nJh-mEs-Sbe2DAm0c8oq9FE4aYp8IINt2nvSpQ&oe=67C9CC8E');
+const bannerUrl = ref('https://scontent.faep6-1.fna.fbcdn.net/v/t39.30808-6/468006144_10235042225423750_1721754758729309234_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHLiv8dN0LxWRWLAoantdebrW8BVSE3WC2tbwFVITdYLWPE5IcKzXsjstYJCRhTML4&_nc_ohc=YTfaE5epKqoQ7kNvgFepJZu&_nc_oc=Adhpq5EftnTSYHqSOSjFdO0EqCnh4xN9taPitqOG0dGXPA56GUxrRd1st2SCZ0YYDZ4&_nc_zt=23&_nc_ht=scontent.faep6-1.fna&_nc_gid=Adc7k89wO7UIm_-wtlXxTlA&oh=00_AYG8dXZUYX9exaicrFQqsn6krDR2YHwSftN2_SvEn_O15Q&oe=67DA0F0E');
 
 // Computados
 const isFollowing = computed(() => {

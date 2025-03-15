@@ -1,3 +1,4 @@
+<!-- ProfileForm.vue -->
 <template>
   <form @submit.prevent="saveProfile" class="p-4 space-y-6 max-w-md mx-auto">
     <!-- Nombre de usuario -->
@@ -71,30 +72,25 @@
       />
     </div>
 
-    <!-- Género -->
+    <!-- Género (usando SelectGenre) -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Género</label>
-      <select
+      <SelectGenre
         v-model="editForm.genre"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent disabled:opacity-50"
+        label="Género"
+        id="genre"
         :disabled="isLoading"
-      >
-        <option :value="null">Seleccionar</option>
-        <option value="Masculino">Masculino</option>
-        <option value="Femenino">Femenino</option>
-        <option value="Otro">Otro</option>
-      </select>
+        class="mt-1 w-full"
+      />
     </div>
 
     <!-- País -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">País</label>
-      <input
+      <SelectCountry
         v-model="editForm.country"
-        type="text"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent placeholder-gray-400 disabled:opacity-50"
-        placeholder="País"
+        label="País"
+        id="country"
         :disabled="isLoading"
+        class="mt-1 w-full"
       />
     </div>
 
@@ -146,7 +142,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useUsers } from '../../composable/useUsers';
-import { useMediaUpload } from '../../composable/useMediaUpload'; // Nueva importación
+import { useMediaUpload } from '../../composable/useMediaUpload';
+import SelectCountry from '../atoms/SelectCountry.vue';
+import SelectGenre from '../atoms/SelectGenre.vue'; // Nueva importación
 
 // Props
 const props = defineProps({
@@ -176,10 +174,10 @@ function editProfile() {
     email: props.activeUser?.email || '',
     phoneNumber: props.activeUser?.phoneNumber || '',
     birthday: props.activeUser?.birthday ? new Date(props.activeUser?.birthday).toISOString().split('T')[0] : '',
-    genre: props.activeUser?.genre || null,
+    genre: props.activeUser?.genre || '',
     country: props.activeUser?.country || '',
-    photoURL: props.activeUser?.photoURL || '', // URL para previsualización
-    photoURLFile: props.activeUser?.photoURLFile || null, // Path o archivo existente
+    photoURL: props.activeUser?.photoURL || '',
+    photoURLFile: props.activeUser?.photoURLFile || null,
     newMediaBase64: null,
     mediaType: props.activeUser?.mediaType || '',
   };
@@ -190,8 +188,8 @@ function handlePhotoUpload(event) {
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
-      editForm.value.newMediaBase64 = reader.result; // Guardar el base64
-      editForm.value.photoURL = URL.createObjectURL(file); // Previsualización local
+      editForm.value.newMediaBase64 = reader.result;
+      editForm.value.photoURL = URL.createObjectURL(file);
       editForm.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
     };
     reader.onerror = (error) => {
