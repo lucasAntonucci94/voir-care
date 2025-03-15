@@ -9,17 +9,9 @@
       <ProfileInfoCard :activeUser="activeUser" :connections="connections" :setTabConexiones="setTabConexiones" />
       <div v-if="isOwnProfile" class="flex flex-col gap-4 h-30 w-full md:w-auto">
         <div class="hidden md:flex justify-center md:justify-end gap-2">
-          <button v-if="!isEditingBanner" @click="toggleEditBanner" class="px-4 py-2 bg-white/80 text-gray-700 rounded-full hover:bg-white transition-all shadow-md">
+          <button @click="openBannerModal" class="px-4 py-2 bg-white/80 text-gray-700 rounded-full hover:bg-white transition-all shadow-md">
             <i class="fa fa-camera pr-2"></i> Editar portada
           </button>
-          <div v-if="isEditingBanner" class="flex items-center gap-2">
-            <input type="file" @change="updateBanner($event.target.files[0])" class="px-4 py-2 bg-white/80 text-gray-700 rounded-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-primary-md" />
-            <button @click="toggleEditBanner" class="px-3 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all shadow-md">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
         </div>
         <div class="flex justify-center md:justify-end mt-auto">
           <div class="flex flex-col gap-2 md:flex-row md:gap-4">
@@ -64,6 +56,56 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal para editar el banner -->
+  <div v-if="showBannerModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold text-gray-800">Editar Portada</h2>
+        <button @click="closeBannerModal" class="text-gray-500 hover:text-gray-700">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <!-- Previsualización -->
+        <div v-if="previewUrl" class="mb-4">
+          <img :src="previewUrl" alt="Previsualización del banner" class="w-full h-32 object-cover rounded-md" />
+        </div>
+        <div v-else-if="activeUser?.bannerUrlFile" class="mb-4">
+          <img :src="activeUser.bannerUrlFile" alt="Banner actual" class="w-full h-32 object-cover rounded-md" />
+        </div>
+        <div v-else class="mb-4 text-gray-500 text-center">
+          No hay banner actual. Sube uno nuevo.
+        </div>
+
+        <!-- Input para seleccionar archivo -->
+        <input
+          type="file"
+          accept="image/*"
+          @change="handleFileChange($event.target.files[0])"
+          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-primary-md"
+        />
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-2 mt-4">
+          <button @click="closeBannerModal" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all">
+            Cancelar
+          </button>
+          <button
+            @click="saveBanner"
+            class="px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-all"
+            :disabled="!selectedFile || uploading"
+          >
+            {{ uploading ? 'Subiendo...' : 'Guardar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de edición de perfil -->
   <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between p-4 border-b">
@@ -82,13 +124,13 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useStorage } from '../../composable/useStorage';
+import { useUsers } from '../../composable/useUsers';
 import ProfileForm from '../molecules/ProfileForm.vue';
 import ProfileInfoCard from './ProfileInfoCard.vue';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateStoryModal from '../organisms/CreateStoryModal.vue';
-import { useUsers } from '../../composable/useUsers';
 
 // Props
 const props = defineProps({
@@ -105,14 +147,18 @@ const props = defineProps({
 const { uploadFile, getFileUrl } = useStorage();
 const { user: authUser } = useAuth();
 const { getChatIdByReference } = usePrivateChats();
+const { updateUserBanner } = useUsers();
 const privateChatsStore = usePrivateChatsStore();
 const { getUser, addConnection, removeConnection } = useUsers();
 
 // Estados
 const isAddingConnection = ref(false);
 const isRemovingConnection = ref(false);
-const isEditingBanner = ref(false);
 const showEditModal = ref(false);
+const showBannerModal = ref(false);
+const selectedFile = ref(null);
+const previewUrl = ref(null);
+const uploading = ref(false);
 const bannerUrl = ref('https://scontent.faep6-1.fna.fbcdn.net/v/t39.30808-6/468006144_10235042225423750_1721754758729309234_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=cc71e4&_nc_eui2=AeHLiv8dN0LxWRWLAoantdebrW8BVSE3WC2tbwFVITdYLWPE5IcKzXsjstYJCRhTML4&_nc_ohc=YTfaE5epKqoQ7kNvgFepJZu&_nc_oc=Adhpq5EftnTSYHqSOSjFdO0EqCnh4xN9taPitqOG0dGXPA56GUxrRd1st2SCZ0YYDZ4&_nc_zt=23&_nc_ht=scontent.faep6-1.fna&_nc_gid=Adc7k89wO7UIm_-wtlXxTlA&oh=00_AYG8dXZUYX9exaicrFQqsn6krDR2YHwSftN2_SvEn_O15Q&oe=67DA0F0E');
 
 // Computados
@@ -121,8 +167,50 @@ const isFollowing = computed(() => {
 });
 
 // Métodos
-function toggleEditBanner() {
-  isEditingBanner.value = !isEditingBanner.value;
+function openBannerModal() {
+  showBannerModal.value = true;
+}
+
+function closeBannerModal() {
+  showBannerModal.value = false;
+  selectedFile.value = null;
+  previewUrl.value = null;
+}
+function handleFileChange(file) {
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      selectedFile.value = e.target.result; // Guardar como Base64
+      previewUrl.value = e.target.result; // Usar Base64 para previsualización
+    };
+    reader.readAsDataURL(file); // Convertir a Base64
+  }
+}
+
+async function saveBanner() {
+  if (!props.isOwnProfile || !selectedFile.value) return;
+debugger
+  uploading.value = true;
+  try {
+    const filepath = `banners/${props.activeUser?.email}.jpg`;
+    // Subir la imagen en formato Base64 a Firebase Storage
+    await uploadFile(filepath, selectedFile.value);
+    const url = await getFileUrl(filepath);
+    
+    await updateUserBanner(props.activeUser.uid, {
+      bannerUrlFile: url,
+      bannerPathFile: filepath,
+    });
+    
+    // Actualizar el estado local
+    props.activeUser.bannerUrlFile = url;
+    closeBannerModal();
+  } catch (err) {
+    console.error('Error al actualizar el banner:', err);
+    alert('Hubo un error al subir el banner. Intenta de nuevo.');
+  } finally {
+    uploading.value = false;
+  }
 }
 
 const handlerAddConnection = async () => {
@@ -140,9 +228,7 @@ const handlerAddConnection = async () => {
       avatar: props.activeUser.photoURLFile,
     };
     await addConnection(authUser.value.uid, connectionData);
-    // alert(`¡Ahora sigues a ${props.activeUser.displayName}!`);
     authUser.value.connections.push(connectionData);
-    // props.updateRefData(); // Actualizamos los datos del usuario autenticado
   } catch (error) {
     console.error('Error al seguir al usuario:', error);
     alert('Hubo un error al intentar seguir a este usuario.');
@@ -166,13 +252,11 @@ const handlerRemoveConnection = async () => {
       avatar: props.activeUser.photoURLFile,
     };
     await removeConnection(authUser.value.uid, connectionData);
-    // alert(`Has dejado de seguir a ${props.activeUser.displayName}.`);
     if (authUser.value.connections) {
       authUser.value.connections = authUser.value.connections.filter(
         conn => conn.uid !== connectionData.uid
       );
     }
-    // props.updateRefData(); // Actualizamos los datos del usuario autenticado
   } catch (error) {
     console.error('Error al dejar de seguir al usuario:', error);
     alert('Hubo un error al intentar dejar de seguir a este usuario.');
@@ -180,19 +264,6 @@ const handlerRemoveConnection = async () => {
     isRemovingConnection.value = false;
   }
 };
-
-async function updateBanner(file) {
-  if (!props.isOwnProfile || !file) return;
-  const filepath = `banners/${props.activeUser?.email}.jpg`;
-  try {
-    await uploadFile(filepath, file);
-    const url = await getFileUrl(filepath);
-    props.activeUser.bannerUrlFile = url;
-    isEditingBanner.value = false;
-  } catch (err) {
-    console.error('Error al actualizar banner:', err);
-  }
-}
 
 function editProfile() {
   showEditModal.value = true;
@@ -203,7 +274,7 @@ function closeEditModal() {
 }
 
 async function sendMessage() {
-  if(authUser.value.email !== null && authUser.value.email !== undefined && props.activeUser?.email !== null && props.activeUser?.email !== undefined){
+  if (authUser.value.email && props.activeUser?.email) {
     const chatId = await getChatIdByReference(authUser.value.email, props.activeUser?.email);
     privateChatsStore.setSelectedChatId(chatId);
     privateChatsStore.setFromEmail(authUser.value.email);

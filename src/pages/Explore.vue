@@ -246,7 +246,7 @@ const initMap = async () => {
 
 const updateMapMarkers = async () => {
   try {
-    const { Marker } = await google.maps.importLibrary('marker'); // Usar Marker
+    const { Marker, AdvancedMarkerElement } = await google.maps.importLibrary('marker'); // Usar Marker
     console.log('Actualizando marcadores para:', filteredLocations.value);
 
     markers.value.forEach((marker) => marker.setMap(null)); // Limpiar con setMap(null)
@@ -260,6 +260,10 @@ const updateMapMarkers = async () => {
           map: map.value,
           title: location.title,
           icon: getMarkerIcon(location.type), // Usar ícono personalizado
+        });
+        const advancedMarker = new AdvancedMarkerElement({
+          map: map.value,
+          position: { lat: location.lat, lng: location.lng },
         });
 
         const infoWindowContent = `
@@ -299,6 +303,7 @@ const updateMapMarkers = async () => {
         });
 
         markers.value.push(marker);
+        markers.value.push(advancedMarker);
       } else {
         console.warn('Ubicación sin coordenadas:', location);
       }
