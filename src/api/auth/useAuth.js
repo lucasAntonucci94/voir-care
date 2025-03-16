@@ -1,4 +1,3 @@
-// composables/auth.js
 import { ref } from 'vue';
 import {
   getAuth,
@@ -7,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { useUsers } from '../../composable/useUsers';
 
@@ -24,25 +23,38 @@ const AUTH_ERRORS_MESSAGES = {
   'auth/weak-password': 'Contraseña débil, debe tener al menos 6 caracteres.',
 };
 
+// Estado reactivo
 const user = ref(null);
 const isAuthenticated = ref(false);
 const loading = ref(false);
 const error = ref(null);
 
-// Listener de autenticación
+// Clave para localStorage
+const AUTH_STORAGE_KEY = 'isAuthenticated';
+
+// Función para inicializar el estado desde localStorage
+const initializeAuthState = () => {
+  const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
+  isAuthenticated.value = storedAuth === 'true';
+};
+
+// Listener de autenticación de Firebase
 const initializeAuthListener = () => {
   onAuthStateChanged(auth, async (firebaseUser) => {
     if (firebaseUser) {
-      user.value = firebaseUser; // Solo datos de Firebase Auth
+      user.value = firebaseUser; // Datos básicos de Firebase Auth
       isAuthenticated.value = true;
-      user.value = await loadProfileInfo(firebaseUser)
+      localStorage.setItem(AUTH_STORAGE_KEY, 'true'); // Guardar en localStorage
+      user.value = await loadProfileInfo(firebaseUser); // Cargar perfil completo
     } else {
       user.value = null;
       isAuthenticated.value = false;
+      localStorage.removeItem(AUTH_STORAGE_KEY); // Limpiar localStorage
     }
   });
 };
 
+// Login
 async function login(email, password) {
   loading.value = true;
   error.value = null;
@@ -60,11 +72,13 @@ async function login(email, password) {
   }
 }
 
+// Logout
 async function logout() {
   loading.value = true;
   error.value = null;
   try {
     await signOut(auth);
+    localStorage.removeItem(AUTH_STORAGE_KEY); // Limpiar al cerrar sesión
   } catch (err) {
     error.value = err;
   } finally {
@@ -72,17 +86,18 @@ async function logout() {
   }
 }
 
+// Registro
 async function doRegister(displayName, email, password) {
   loading.value = true;
   error.value = null;
   try {
     const { user: newAuthUser } = await createUserWithEmailAndPassword(auth, email, password);
-    console.log(newAuthUser)
-    if(newAuthUser){
-      await createUser(newAuthUser.uid,{
+    console.log(newAuthUser);
+    if (newAuthUser) {
+      await createUser(newAuthUser.uid, {
         email: email,
         displayName: displayName,
-      })
+      });
     }
     return true;
   } catch (err) {
@@ -96,6 +111,7 @@ async function doRegister(displayName, email, password) {
   }
 }
 
+// Actualizar perfil
 async function doUpdateProfile(profileData) {
   loading.value = true;
   error.value = null;
@@ -110,7 +126,7 @@ async function doUpdateProfile(profileData) {
   }
 }
 
-// Nueva función para resetear contraseña
+// Resetear contraseña
 const resetPassword = async (email) => {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -123,8 +139,10 @@ const resetPassword = async (email) => {
 };
 
 export function useAuth() {
+  // Inicializar estado desde localStorage al cargar el composable
   if (!user.value && !isAuthenticated.value) {
-    initializeAuthListener();
+    initializeAuthState(); // Chequear localStorage primero
+    initializeAuthListener(); // Luego escuchar Firebase
   }
 
   return {

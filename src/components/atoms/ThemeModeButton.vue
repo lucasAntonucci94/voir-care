@@ -24,7 +24,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const isDarkMode = ref(false); // Start in light mode
+const isDarkMode = ref(false);
 
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value;
@@ -40,7 +40,3 @@ onMounted(() => {
   }
 });
 </script>
-
-<style scoped>
-/* No se necesitan estilos adicionales, todo se maneja con Tailwind */
-</style>

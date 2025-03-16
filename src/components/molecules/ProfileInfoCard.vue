@@ -8,7 +8,7 @@
                 <img 
                 v-for="connection in connections?.slice(0, 5)" 
                 :key="connection.idDoc"
-                :src="connection.photoURLFile"
+                :src="connection.avatar"
                 alt=""
                 class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
                 />
@@ -19,7 +19,7 @@
                     data-tooltip="Ver todas las conexiones"
                 >
                     <img
-                    :src="connections[5]?.photoURLFile"
+                    :src="connections[5]?.avatar"
                     class="h-8 w-8 rounded-full object-cover"
                     alt="Más conexiones"
                     />

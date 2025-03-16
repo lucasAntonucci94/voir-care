@@ -6,14 +6,15 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     state: () => ({
       chats: ref([]),
       selectedChatId: ref(null),
+      from: ref(null),
+      to: ref(null),
       loading: ref(true),
       error: ref(null),
       deletedChatId: ref([]),
-      unsubscribe: ref(null), // Usamos ref para mayor control
+      unsubscribe: ref(null),
     }),
     actions: {
       initializeSubscription(email) {
-      // Verificación más estricta: solo ignoramos si unsubscribe ya tiene un valor (suscripción activa)
         if (this.unsubscribe) {
           console.log('Ya hay una suscripción activa, ignorando...');
           return;
@@ -32,14 +33,14 @@ export const usePrivateChatsStore = defineStore('privateChats', {
           this.error.value = err.message;
           this.loading = false;
           console.error('Error subscribing to chats:', err);
-          this.unsubscribe = null; // Limpiamos en caso de error
+          this.unsubscribe = null;
         });
       },
       initializeUnsubscribe() {
-        if (this.unsubscribe) { // Check if unsubscribe is not null before calling
+        if (this.unsubscribe) {
           console.log('Cancelando suscripción a chats...');
           this.unsubscribe();
-          this.unsubscribe = null; // Set to null immediately after calling to prevent further calls
+          this.unsubscribe = null;
         } else {
           console.log('No hay suscripción activa para cancelar.');
         }
@@ -49,6 +50,12 @@ export const usePrivateChatsStore = defineStore('privateChats', {
       },
       setSelectedChatId(chatId) {
         this.selectedChatId = chatId;
+      },
+      setFromEmail(email) {
+        this.from = email;
+      },
+      setToEmail(email) {
+        this.to = email;
       },
       setDeletedChatId(chatId) {
         if (!this.deletedChatId.includes(chatId)) {

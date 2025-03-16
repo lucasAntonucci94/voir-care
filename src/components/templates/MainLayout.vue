@@ -9,7 +9,7 @@ MainLayout.vue
            @toggle="sidebarStore.toggleSidebar"
          />
           <main class="flex-grow bg-gray-50 font-poppins overflow-y-auto flex-1">
-          <div class="container mx-auto">
+          <div class=" mx-auto">
                   <router-view />
           </div>
         </main>

@@ -34,6 +34,9 @@ export function useUsers() {
           birthday: user.birthday || null,
           country: user.country || null,
           photoURLFile: user.photoURLFile|| null,
+          photoPathFile: user.photoPathFile|| null,
+          bannerUrlFile: user.bannerUrlFile || null,
+          bannerPathFile: user.bannerPathFile || null,
           avatar: user.avatar || null,
           isAdmin: user.isAdmin || false,
         });
@@ -70,9 +73,12 @@ export function useUsers() {
         genre: user.genre || null,
         birthday: user.birthday || null,
         country: user.country || null,
-        photoURLFile: user.photoURLFile|| null,
         avatar: user.avatar || null,
         connections: user.connections || [],
+        photoURLFile: user.photoURLFile|| null,
+        photoPathFile: user.photoPathFile|| null,
+        bannerUrlFile: user.bannerUrlFile || null,
+        bannerPathFile: user.bannerPathFile || null,
         isAdmin: user.isAdmin || false,
       };
     } catch (error) {
@@ -100,7 +106,10 @@ export function useUsers() {
         birthday: data.birthday || null,
         country: data.country || null,
         photoURLFile: data.photoURLFile|| null,
+        photoPathFile: data.photoURLFile|| null,
         avatar: data.avatar || null,
+        bannerUrlFile: data.bannerUrlFile || null,
+        bannerPathFile: data.bannerPathFile || null,
         isAdmin: data.isAdmin || false,
       });
     } catch (error) {
@@ -129,6 +138,9 @@ export function useUsers() {
         country: data.country ?? '',
         avatar: data.avatar || null,
         photoURLFile: data.photoURLFile || null,
+        photoPathFile: data.photoPathFile || null,
+        bannerUrlFile: data.bannerUrlFile || null,
+        bannerPathFile: data.bannerPathFile || null,
       }
       await updateDoc(docRef, userData);
       await updateUserFromPost(id, userData)
@@ -241,6 +253,25 @@ export function useUsers() {
     }
   }
 
+  /**
+   * Actualiza solo las propiedades del banner de un usuario en Firestore
+   * @param {string} id - ID del usuario
+   * @param {Object} bannerData - Datos del banner { bannerUrlFile, bannerPathFile }
+   * @returns {Promise<void>}
+   */
+  async function updateUserBanner(id, bannerData) {
+    try {
+      const docRef = doc(db, 'users', id);
+      await updateDoc(docRef, {
+        bannerUrlFile: bannerData.bannerUrlFile,
+        bannerPathFile: bannerData.bannerPathFile,
+      }); // Actualización parcial solo del banner
+    } catch (error) {
+      console.error('Error al actualizar el banner del usuario:', error);
+      throw error;
+    }
+  }
+
   return {
     userProfile, // Estado reactivo opcional
     getAllUsers,
@@ -250,6 +281,7 @@ export function useUsers() {
     loadProfileInfo,
     addConnection,
     removeConnection,
-    getUser
+    getUser,
+    updateUserBanner
   };
 }
