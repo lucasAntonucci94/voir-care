@@ -1,99 +1,110 @@
 <template>
-  <div class="min-h-screen bg-gray-50 font-poppins">
-    <ProfileHeader
-      :activeUser="activeUser"
-      :activeTab="activeTab"
-      :isOwnProfile="isOwnProfile"
-      :setTabConexiones="setTabConexiones"
-      :setTabInformation="setTabInformation"
-      :connections="connections"
-      :updateRefData="updateDataFromChild"
-    />
-    <!-- Tabs con flechas -->
-    <div class="container mx-auto mt-10 px-4 md:px-8 lg:px-16 sticky top-0 bg-white  shadow-sm">
-      <div class="relative">
-        <!-- Botón de flecha izquierda -->
-        <button
-          v-if="showArrows && canScrollLeft"
-          @click="scrollLeft"
-          class="absolute left-0 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary-md transition-colors md:hidden z-30"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        <!-- Contenedor de tabs -->
-        <div
-          ref="tabsContainer"
-          class="flex gap-2 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap md:justify-center md:overflow-x-visible"
-          @scroll="updateScrollState"
-        >
-          <button
-            v-for="tab in allTabs"
-            :key="tab"
-            @click="activeTab = tab.toLowerCase()"
-            :class="[
-              'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200',
-              activeTab === tab.toLowerCase()
-                ? 'bg-primary text-white'
-                : 'bg-gray-100 text-[#2c3e50] hover:bg-gray-200'
-            ]"
-          >
-            {{ tab }}
-          </button>
-        </div>
-
-        <!-- Botón de flecha derecha -->
-        <button
-          v-if="showArrows && canScrollRight"
-          @click="scrollRight"
-          class="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary-md transition-colors md:hidden z-30"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+  <div class="min-h-screen bg-gray-50 font-poppins relative">
+    <!-- Loader -->
+    <div v-if="!activeUser" class="flex-grow flex min-h-screen items-center justify-center bg-gray-100">
+      <div class="text-center">
+        <div class="loader mb-4"></div>
+        <p class="text-gray-600 text-lg font-medium animate-pulse">Cargando perfil...</p>
       </div>
     </div>
 
-    <!-- Contenido del perfil -->
-    <div class="container mx-auto px-4 md:px-8 lg:px-16 mt-6">
-      <div class="grid grid-cols-1 gap-6 max-w-full mx-4 md:mx-0">
-        <!-- Publicaciones -->
-        <div class="md:col-span-2">
-          <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
-          <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
-            <!-- <CreatePostModal /> -->
-            <PostCard v-for="post in profilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
-            <p v-if="!profilePosts?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
+    <!-- Contenido del perfil (solo se muestra cuando activeUser existe) -->
+    <div v-if="activeUser" class="contents">
+      <ProfileHeader
+        :activeUser="activeUser"
+        :activeTab="activeTab"
+        :isOwnProfile="isOwnProfile"
+        :setTabConexiones="setTabConexiones"
+        :setTabInformation="setTabInformation"
+        :connections="connections"
+        :updateRefData="updateDataFromChild"
+      />
+      <!-- Tabs con flechas -->
+      <div class="container mx-auto mt-10 px-4 md:px-8 lg:px-16 sticky top-0 bg-white shadow-sm">
+        <div class="relative">
+          <!-- Botón de flecha izquierda -->
+          <button
+            v-if="showArrows && canScrollLeft"
+            @click="scrollLeft"
+            class="absolute left-0 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary-md transition-colors md:hidden z-30"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <!-- Contenedor de tabs -->
+          <div
+            ref="tabsContainer"
+            class="flex gap-2 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap md:justify-center md:overflow-x-visible"
+            @scroll="updateScrollState"
+          >
+            <button
+              v-for="tab in allTabs"
+              :key="tab"
+              @click="activeTab = tab.toLowerCase()"
+              :class="[
+                'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200',
+                activeTab === tab.toLowerCase()
+                  ? 'bg-primary text-white'
+                  : 'bg-gray-100 text-[#2c3e50] hover:bg-gray-200'
+              ]"
+            >
+              {{ tab }}
+            </button>
           </div>
-          <div v-else-if="activeTab === 'información'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-            <ProfileInfo :userInfo="activeUser" />
-          </div>
-          <div v-else-if="activeTab === 'conexiones'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-            <ConnectionsTab :connections="connections" />
-          </div>
-          <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-            <p>Galería (pendiente de implementación)</p>
-          </div>
-          <div v-else-if="activeTab === 'eventos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-            <p>Eventos (pendiente de implementación)</p>
-          </div>
-          <div v-else-if="activeTab === 'grupos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-            <p>Grupos (pendiente de implementación)</p>
+
+          <!-- Botón de flecha derecha -->
+          <button
+            v-if="showArrows && canScrollRight"
+            @click="scrollRight"
+            class="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary-md transition-colors md:hidden z-30"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenido del perfil -->
+      <div class="container mx-auto px-4 md:px-8 lg:px-16 mt-6">
+        <div class="grid grid-cols-1 gap-6 max-w-full mx-4 md:mx-0">
+          <!-- Publicaciones -->
+          <div class="md:col-span-2">
+            <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
+            <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
+              <!-- <CreatePostModal /> -->
+              <PostCard v-for="post in profilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
+              <p v-if="!profilePosts?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
+            </div>
+            <div v-else-if="activeTab === 'información'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+              <ProfileInfo :userInfo="activeUser" />
+            </div>
+            <div v-else-if="activeTab === 'conexiones'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+              <ConnectionsTab :connections="connections" />
+            </div>
+            <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+              <p>Galería (pendiente de implementación)</p>
+            </div>
+            <div v-else-if="activeTab === 'eventos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+              <p>Eventos (pendiente de implementación)</p>
+            </div>
+            <div v-else-if="activeTab === 'grupos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+              <p>Grupos (pendiente de implementación)</p>
+            </div>
           </div>
         </div>
       </div>
@@ -123,10 +134,10 @@ const { getUserProfileByEmail } = useUsers();
 // Estados
 const activeUser = ref(null);
 const activeTab = ref('publicaciones');
-const tabsContainer = ref(null); // Referencia al contenedor de tabs
-const showArrows = ref(false); // Controlar visibilidad de flechas
-const canScrollLeft = ref(false); // Controlar visibilidad de flecha izquierda
-const canScrollRight = ref(false); // Controlar visibilidad de flecha derecha
+const tabsContainer = ref(null);
+const showArrows = ref(false);
+const canScrollLeft = ref(false);
+const canScrollRight = ref(false);
 const connections = ref([]);
 
 // Tabs
@@ -147,7 +158,7 @@ const activeUserEmail = computed(() => route.params.email || authUser.value?.ema
 const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.email);
 const profilePosts = computed(() => {
   if (!activeUserEmail.value || !postsStore.posts.value) return [];
-  return  postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
+  return postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
 });
 
 // Watcher
@@ -169,21 +180,19 @@ const scrollRight = () => {
   }
 };
 
-// Actualizar estado de desplazamiento
 const updateScrollState = () => {
   if (tabsContainer.value) {
     const { scrollLeft, scrollWidth, clientWidth } = tabsContainer.value;
     canScrollLeft.value = scrollLeft > 0;
-    canScrollRight.value = scrollLeft + clientWidth < scrollWidth - 1; // -1 para tolerancia
+    canScrollRight.value = scrollLeft + clientWidth < scrollWidth - 1;
   }
 };
 
-// Verificar si se necesitan flechas
 const checkScroll = () => {
   if (tabsContainer.value) {
     const { scrollWidth, clientWidth } = tabsContainer.value;
-    showArrows.value = scrollWidth > clientWidth && window.innerWidth < 768; // Mostrar flechas solo si hay overflow y es menor a md
-    updateScrollState(); // Actualizar estado inicial
+    showArrows.value = scrollWidth > clientWidth && window.innerWidth < 768;
+    updateScrollState();
   }
 };
 
@@ -202,8 +211,8 @@ onMounted(async () => {
   if (!activeUserEmail.value) return;
   await fetchUserData(activeUserEmail.value);
   postsStore.subscribe();
-  checkScroll(); // Verificar al montar
-  window.addEventListener('resize', checkScroll); // Verificar al redimensionar
+  checkScroll();
+  window.addEventListener('resize', checkScroll);
 });
 
 onUnmounted(() => {
@@ -222,5 +231,33 @@ onUnmounted(() => {
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE y Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+/* Estilos del loader */
+.loader {
+  width: 70px;
+  height: 70px;
+  border: 8px solid #e5e7eb; /* Gris claro */
+  border-top: 8px solid transparent;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #4f46e5, #7c3aed, #4f46e5); /* Degradado */
+  animation: spin 1.2s ease-in-out infinite;
+  position: relative;
+}
+
+.loader::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  background: #fff; /* Fondo blanco para el centro */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
