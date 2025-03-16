@@ -9,7 +9,7 @@
         class="flex items-center gap-3 p-2 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition"
       >
         <img
-          :src="connection.photoURLFile || avatarDefault"
+          :src="connection.avatar || avatarDefault"
           alt="Avatar"
           class="w-10 h-10 rounded-full"
         />

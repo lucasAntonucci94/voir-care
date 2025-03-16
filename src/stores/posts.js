@@ -1,16 +1,15 @@
-// stores/posts.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { usePosts } from '../composable/usePosts'; // Ruta correcta
+import { usePosts } from '../composable/usePosts';
 
 export const usePostsStore = defineStore('posts', {
   state: () => {
-    const posts = ref([]); // Definimos el ref fuera del state
-    const isLoading = ref(true); // Definimos el ref fuera del state
+    const posts = ref([]);
+    const isLoading = ref(true);
 
     return {
-      posts, // Retornamos como ref
-      isLoading, // Retornamos como ref
+      posts,
+      isLoading,
     };
   },
   actions: {
@@ -20,7 +19,7 @@ export const usePostsStore = defineStore('posts', {
       const { subscribeToIncomingPosts } = usePosts();
       this.unsubscribe = subscribeToIncomingPosts((updatedPosts) => {
         console.log('Posts recibidos desde Firebase:', updatedPosts);
-        this.posts.value = updatedPosts; // Asignamos al .value del ref
+        this.posts.value = updatedPosts;
         this.isLoading = false;
         console.log('Posts actualizados en el store:', this.posts.value);
       });
@@ -38,9 +37,9 @@ export const usePostsStore = defineStore('posts', {
       const postData = {
         user: newPostData.user,
         title: newPostData.title,
-        body: newPostData.body, // Normalizado
+        body: newPostData.body,
         categories: newPostData.categories || [],
-        imageBase64: newPostData.imageBase64, // Base64
+        imageBase64: newPostData.imageBase64,
         mediaType: newPostData.mediaType,
       };
       try {
@@ -78,7 +77,6 @@ export const usePostsStore = defineStore('posts', {
       await deletePost(postIdDoc);
       console.log('Post eliminado, esperando actualización de Firebase...');
     },
-    // Nueva acción para agregar un Like
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
       const post = this.posts.value.find(p => p.idDoc === postIdDoc);
@@ -90,7 +88,6 @@ export const usePostsStore = defineStore('posts', {
       } else {
         await addLike(postIdDoc, userData);
       }
-      // La actualización en tiempo real vendrá del suscriptor
     },
   },
 });

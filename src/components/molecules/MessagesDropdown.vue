@@ -8,10 +8,10 @@
       <i class="fa-solid fa-comment-dots text-xl"></i>
       <p class="text-sm font-medium hidden sm:block">Mensajes</p>
       <span
-        v-if="privateChatsStore?.chats?.value?.length > 0"
+        v-if="notifications.length > 0"
         class="absolute -top-1 -right-2 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs font-bold"
       >
-        {{ privateChatsStore?.chats?.value?.length > 9 ? '9+' : privateChatsStore?.chats?.value?.length }}
+        {{ notifications.length > 9 ? '9+' : notifications?.length }}
       </span>
       <!-- Tooltip (oculto en mobile) -->
       <span
@@ -32,10 +32,10 @@
         >
           <i class="fa-solid fa-times text-xl"></i>
         </button>
-        <ul v-if="privateChatsStore?.chats?.value?.length > 0" class="divide-y divide-gray-100">
+        <ul v-if="notifications?.length > 0" class="divide-y divide-gray-100">
           <!-- Lista de chats -->
           <li
-            v-for="notification in privateChatsStore?.chats?.value?.slice(0, 9)"
+            v-for="notification in notifications"
             :key="notification.id"
             class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
           >
@@ -49,10 +49,10 @@
 
           <!-- Indicador de más chats -->
           <li
-            v-if="privateChatsStore?.chats?.value?.length > 9"
+            v-if="notifications?.length > 9"
             class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
           >
-            ... and {{ privateChatsStore?.chats?.value?.length - 9 }} more
+            ... and {{ notifications?.length - 9 }} more
           </li>
 
           <!-- Botón para marcar todos como leídos -->
@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref, defineEmits, computed } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats'; // Importamos el store de chats privados
 import { useAuth } from '../../api/auth/useAuth'; // Importamos el composable de autenticación
 import { usePrivateChats } from '../../composable/usePrivateChats';
@@ -98,12 +98,20 @@ const { user } = useAuth(); // Usamos el composable de autenticación
 const { getChatIdByReference } = usePrivateChats();
 const privateChatsStore = usePrivateChatsStore();
 const router = useRouter();
+// const notifications = ref(privateChatsStore?.chats?.value);
 
 const props = defineProps({
   isOpen: {
     type: Boolean,
     required: true,
   },
+});
+
+
+// Computados
+const notifications = computed(() => {
+  
+  return privateChatsStore?.chats?.value?.slice(0, 9).filter(n => n.message !== null && n.message !== undefined) ?? [];
 });
 
 const emit = defineEmits(['toggle']);
