@@ -4,31 +4,70 @@ import { usePosts } from '../composable/usePosts';
 
 export const usePostsStore = defineStore('posts', {
   state: () => {
-    const posts = ref([]);
-    const isLoading = ref(true);
+    const posts = ref([]); // Posts globales (feed)
+    const profilePosts = ref([]); // Posts del perfil
+    const isLoading = ref(true); // Loading global
+    const isLoadingProfile = ref(true); // Loading para el perfil
+    const unsubscribeGlobal = ref(null); // Suscripción global
+    const unsubscribeProfile = ref(null); // Suscripción del perfil
 
     return {
       posts,
+      profilePosts,
       isLoading,
+      isLoadingProfile,
+      unsubscribeGlobal,
+      unsubscribeProfile,
     };
   },
   actions: {
-    // Suscribirse a los posts en tiempo real
-    subscribe() {
-      console.log('Iniciando suscripción a posts...');
+    // Suscribirse a los posts globales
+    subscribeGlobal() {
+      if (this.unsubscribeGlobal.value) {
+        console.log('Suscripción global ya activa, ignorando...');
+        return;
+      }
+      console.log('Iniciando suscripción global a posts...');
       const { subscribeToIncomingPosts } = usePosts();
-      this.unsubscribe = subscribeToIncomingPosts((updatedPosts) => {
-        console.log('Posts recibidos desde Firebase:', updatedPosts);
+      this.unsubscribeGlobal.value = subscribeToIncomingPosts((updatedPosts) => {
+        console.log('Posts globales recibidos desde Firebase:', updatedPosts);
         this.posts.value = updatedPosts;
         this.isLoading = false;
-        console.log('Posts actualizados en el store:', this.posts.value);
       });
     },
-    // Cancelar la suscripción
-    unsubscribe() {
-      if (this.unsubscribe) {
-        console.log('Cancelando suscripción a posts...');
-        this.unsubscribe();
+    // Suscribirse a los posts de un perfil específico
+    subscribeProfile(userId) {
+      if (this.unsubscribeProfile.value) {
+        console.log('Cancelando suscripción anterior del perfil...');
+        this.unsubscribeProfile.value();
+        this.unsubscribeProfile.value = null;
+      }
+      if (!userId) {
+        console.warn('No se proporcionó userId para la suscripción del perfil');
+        return;
+      }
+      console.log(`Iniciando suscripción a posts del perfil para userId: ${userId}...`);
+      const { subscribeToIncomingProfilePosts } = usePosts();
+      this.unsubscribeProfile.value = subscribeToIncomingProfilePosts(userId, (updatedPosts) => {
+        console.log('Posts del perfil recibidos desde Firebase:', updatedPosts);
+        this.profilePosts.value = updatedPosts;
+        this.isLoadingProfile = false;
+      });
+    },
+    // Cancelar suscripción global
+    unsubscribeGlobal() {
+      if (this.unsubscribeGlobal.value) {
+        console.log('Cancelando suscripción global a posts...');
+        this.unsubscribeGlobal.value();
+        this.unsubscribeGlobal.value = null;
+      }
+    },
+    // Cancelar suscripción del perfil
+    unsubscribeProfile() {
+      if (this.unsubscribeProfile.value) {
+        console.log('Cancelando suscripción a posts del perfil...');
+        this.unsubscribeProfile.value();
+        this.unsubscribeProfile.value = null;
       }
     },
     async addPost(newPostData) {
@@ -42,13 +81,7 @@ export const usePostsStore = defineStore('posts', {
         imageBase64: newPostData.imageBase64,
         mediaType: newPostData.mediaType,
       };
-      try {
-        await savePost(postData);
-        console.log('Post añadido exitosamente a Firebase');
-      } catch (error) {
-        console.error('Error al añadir el post:', error);
-        throw error;
-      }
+      await savePost(postData);
     },
     async updatePost(postId, updatedPostData) {
       console.log('Actualizando post:', postId, updatedPostData);
@@ -62,24 +95,17 @@ export const usePostsStore = defineStore('posts', {
         imagePathFile: updatedPostData.imagePathFile,
         mediaType: updatedPostData.mediaType,
       };
-      try {
-        await updatePost(postId, postData);
-        console.log('Post actualizado exitosamente en Firebase');
-      } catch (error) {
-        console.error('Error al actualizar el post:', error);
-        throw error;
-      }
+      await updatePost(postId, postData);
     },
-    // Eliminar un post
     async deletePost(postIdDoc) {
       console.log('Eliminando post con idDoc:', postIdDoc);
       const { deletePost } = usePosts();
       await deletePost(postIdDoc);
-      console.log('Post eliminado, esperando actualización de Firebase...');
     },
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
-      const post = this.posts.value.find(p => p.idDoc === postIdDoc);
+      const post = this.posts.value.find(p => p.idDoc === postIdDoc) || 
+                   this.profilePosts.value.find(p => p.idDoc === postIdDoc);
       if (!post) return;
 
       const userLiked = post.likes.some(like => like.userId === userData.id);

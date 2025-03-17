@@ -87,8 +87,8 @@
             <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
             <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
               <!-- <CreatePostModal /> -->
-              <PostCard v-for="post in profilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
-              <p v-if="!profilePosts?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
+              <PostCard v-for="post in postsStore.profilePosts.value" :key="post.id" :post="post" @delete="deletePost(post.id)" />
+              <p v-if="!postsStore.profilePosts?.value?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
             </div>
             <div v-else-if="activeTab === 'información'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
               <ProfileInfo :userInfo="activeUser" />
@@ -119,17 +119,16 @@ import { useAuth } from '../api/auth/useAuth';
 import { usePostsStore } from '../stores/posts';
 import PostCard from '../components/organisms/PostCard.vue';
 import { useUsers } from '../composable/useUsers';
+import { usePosts } from '../composable/usePosts';
 import ProfileHeader from '../components/molecules/ProfileHeader.vue';
 import ProfileInfo from '../components/molecules/ProfileInfoTab.vue';
-import avatarDefault from '../assets/avatar1.jpg';
 import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
-import CreatePostModal from '../components/organisms/CreatePostModal.vue';
-
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();
 const postsStore = usePostsStore();
 const { getUserProfileByEmail } = useUsers();
+const { subscribeToIncomingProfilePosts } = usePosts();
 
 // Estados
 const activeUser = ref(null);
@@ -156,10 +155,6 @@ const updateDataFromChild = updatedData => {
 // Computados
 const activeUserEmail = computed(() => route.params.email || authUser.value?.email);
 const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.email);
-const profilePosts = computed(() => {
-  if (!activeUserEmail.value || !postsStore.posts.value) return [];
-  return postsStore.posts.value.filter(post => post.user.email === activeUserEmail.value);
-});
 
 // Watcher
 watch(activeUserEmail, async newEmail => {
@@ -208,15 +203,17 @@ function deletePost(postId) {
 
 // Ciclo de vida
 onMounted(async () => {
+  debugger
   if (!activeUserEmail.value) return;
   await fetchUserData(activeUserEmail.value);
-  postsStore.subscribe();
+  debugger
+  postsStore.subscribeProfile(activeUser.value.uid);
   checkScroll();
   window.addEventListener('resize', checkScroll);
 });
 
 onUnmounted(() => {
-  postsStore.unsubscribe();
+  postsStore.unsubscribeProfile();
   window.removeEventListener('resize', checkScroll);
 });
 </script>
