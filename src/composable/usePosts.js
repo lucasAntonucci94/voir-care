@@ -247,6 +247,7 @@ export function usePosts() {
    * @returns {function} - Función para cancelar la suscripción
    */
   function subscribeToIncomingProfilePosts(idUser, callback) {
+    debugger
     try {
       const q = query(postRef, where('user.id', '==', idUser), orderBy('created_at', 'desc'));
       return onSnapshot(q, (snapshot) => {
@@ -255,14 +256,15 @@ export function usePosts() {
           return {
             idDoc: doc.id,
             id: post.id,
-            user: post.user,
             title: post.title,
             body: post.body,
-            image: post.image,
+            user: post.user,
+            categories: post.categories,
             created_at: post.created_at,
             imagePathFile: post.imagePathFile,
-            imageUrlFile: post.imageUrlFile ?? null,
-            mediaType: post.mediaType ?? null,
+            imageUrlFile: post.imageUrlFile,
+            likes: post.likes || [],
+            mediaType: post.mediaType || 'image',
           };
         });
         callback(posts);
