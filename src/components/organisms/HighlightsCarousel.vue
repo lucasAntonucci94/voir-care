@@ -340,12 +340,20 @@ const formatDate = (isoString) => {
     : 'Fecha no disponible';
 };
 
+// Listener para la tecla "Escape"
+const handleKeydown = (event) => {
+  if (event.key === 'Escape' && showViewModal.value) {
+    closeViewModal();
+  }
+};
+
 // Ciclo de vida
 onMounted(() => {
   reelsStore.subscribeToReels();
   if (carouselSection.value) {
     carouselSection.value.addEventListener('wheel', handleCarouselWheel, { passive: false });
   }
+  window.addEventListener('keydown', handleKeydown);
   updateArrowVisibility();
 });
 
@@ -354,6 +362,7 @@ onUnmounted(() => {
   if (carouselSection.value) {
     carouselSection.value.removeEventListener('wheel', handleCarouselWheel);
   }
+  window.removeEventListener('keydown', handleKeydown)
   document.body.style.overflow = ''; // Asegurar que se restaure al desmontar
 });
 </script>
