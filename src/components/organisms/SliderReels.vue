@@ -135,7 +135,6 @@
   });
   
   onUnmounted(() => {
-    // No necesitamos remover eventos aquí porque se manejan directamente en el template
   });
   </script>
   

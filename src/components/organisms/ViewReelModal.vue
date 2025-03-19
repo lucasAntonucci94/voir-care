@@ -1,70 +1,70 @@
 <template>
     <div
       v-if="visible"
-      class="fixed inset-0 bg-black/80 flex items-center justify-center z-101 transition-opacity duration-300 overflow-y-auto"
-      @wheel="handleModalWheel"
+      class="fixed inset-0 bg-black/90 z-101 transition-opacity duration-300 overflow-hidden"
       @click.self="closeModal"
       tabindex="0"
       ref="viewModal"
     >
-      <div
-        class="relative flex w-full max-w-4xl sm:max-w-3xl xs:max-w-[95%] bg-white rounded-xl shadow-2xl transform transition-all duration-200"
-      >
-        <!-- Contenido multimedia (centro) -->
-        <div class="flex-1 flex items-center justify-center p-4 relative">
-          <div v-if="reel.mediaType === 'image'" class="media-container">
+      <div class="flex h-full w-full">
+        <!-- Contenido multimedia (centro, full height) -->
+        <div class="flex-1 flex items-center justify-center relative">
+          <div v-if="reel?.mediaType === 'image'" class="media-container">
             <img
               :src="reel.mediaUrl"
               :alt="reel.title"
-              class="max-w-full max-h-[80vh] rounded-lg object-contain"
+              class="max-w-full max-h-full object-contain rounded-lg"
             />
           </div>
-          <div v-else-if="reel.mediaType === 'video'" class="media-container">
+          <div v-else-if="reel?.mediaType === 'video'" class="media-container">
             <video
               :src="reel.mediaUrl"
               controls
-              class="max-w-full max-h-[80vh] rounded-lg object-contain"
+              autoplay
+              class="max-w-full max-h-full object-contain rounded-lg"
             ></video>
           </div>
   
-          <!-- Flechas de navegación dentro del contenedor multimedia -->
+          <!-- Flechas de navegación -->
           <button
             v-if="hasPreviousReel"
             @click.stop="previousReel"
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white p-3 rounded-full hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 z-10"
+            class="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-2 md:p-3 rounded-full hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 z-20"
             aria-label="Reel anterior"
           >
-            <i class="fa-solid fa-chevron-left text-xl"></i>
+            <i class="fa-solid fa-chevron-left text-lg md:text-xl"></i>
           </button>
           <button
             v-if="hasNextReel"
             @click.stop="nextReel"
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white p-3 rounded-full hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 z-10"
+            class="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-2 md:p-3 rounded-full hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200 z-20"
             aria-label="Siguiente reel"
           >
-            <i class="fa-solid fa-chevron-right text-xl"></i>
+            <i class="fa-solid fa-chevron-right text-lg md:text-xl"></i>
           </button>
         </div>
   
-        <!-- Columna derecha con datos -->
-        <div class="w-80 sm:w-72 xs:w-64 bg-gray-50 p-4 flex flex-col justify-between relative">
+        <!-- Panel de metadatos (lateral en desktop, inferior en mobile) -->
+        <div
+          class="w-full md:w-80 bg-gray-900/80 md:bg-gray-50 text-white md:text-gray-800 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto"
+        >
           <div>
-            <h3 class="text-xl font-bold mb-4 text-gray-800">{{ reel.title }}</h3>
-            <div class="text-sm text-gray-600 space-y-2">
-              <p><span class="font-semibold">Subido por:</span> {{ reel.user.displayName }}</p>
-              <p><span class="font-semibold">Fecha:</span> {{ formatDate(reel.createdAt) }}</p>
-              <p><span class="font-semibold">Visualizaciones:</span> {{ reel.views }}</p>
-              <p><span class="font-semibold">Me gusta:</span> {{ reel.likes.length }}</p>
+            <h3 class="text-lg md:text-xl font-semibold mb-2 md:mb-4">{{ reel?.title }}</h3>
+            <div class="text-sm space-y-1 md:space-y-2">
+              <p><span class="font-medium">Subido por:</span> {{ reel?.user?.displayName }}</p>
+              <p><span class="font-medium">Fecha:</span> {{ formatDate(reel?.createdAt) }}</p>
+              <p><span class="font-medium">Visualizaciones:</span> {{ reel?.views }}</p>
+              <p><span class="font-medium">Me gusta:</span> {{ reel?.likes?.length }}</p>
             </div>
           </div>
   
-          <!-- Botón de cierre (esquina superior derecha) -->
+          <!-- Botón de cierre -->
           <button
             @click="closeModal"
-            class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+            class="absolute top-2 right-2 text-gray-300 md:text-gray-600 hover:text-white md:hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
             aria-label="Cerrar modal"
           >
-            <i class="fa-solid fa-times text-2xl"></i>
+            <i class="fa-solid fa-times text-xl md:text-2xl"></i>
           </button>
         </div>
       </div>
@@ -82,7 +82,7 @@
     },
     reel: {
       type: Object,
-      required: true,
+      default: null,
     },
     reels: {
       type: Array,
@@ -95,21 +95,22 @@
   // Estado
   const viewModal = ref(null);
   
-  // Funciones
-  const handleModalWheel = (event) => {
-    event.stopPropagation(); // Evitar que el evento de rueda llegue al carrusel
-  };
-  
-  const closeModal = () => {
-    emit('close');
-  };
-  
+  // Computados
   const currentReelIndex = computed(() => {
     return props.reel ? props.reels.findIndex((r) => r.id === props.reel.id) : -1;
   });
   
   const hasPreviousReel = computed(() => currentReelIndex.value > 0);
   const hasNextReel = computed(() => currentReelIndex.value < props.reels.length - 1);
+  
+  // Funciones
+  const handleModalWheel = (event) => {
+    event.stopPropagation();
+  };
+  
+  const closeModal = () => {
+    emit('close');
+  };
   
   const previousReel = () => {
     if (hasPreviousReel.value) {
@@ -137,31 +138,59 @@
   onMounted(() => {
     nextTick(() => {
       if (viewModal.value && props.visible) {
-        viewModal.value.focus(); // Dar foco al modal cuando se abre
+        viewModal.value.focus();
       }
     });
   });
   </script>
   
   <style scoped>
-  /* Contenedor de medios en el modal */
+  /* Transición del modal */
+  .fixed {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Contenedor de medios */
   .media-container {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    max-height: 70vh; /* Limitar altura máxima */
+    height: 100vh;
   }
   
-  /* Estilo para mejorar la transición del modal */
-  .fixed {
-    transition: opacity 0.3s ease-in-out;
-  }
-  
-  /* Media queries para móviles */
-  @media (max-width: 640px) {
+  /* Estilos responsivos */
+  @media (max-width: 768px) {
     .media-container {
-      max-height: 50vh; /* Reducir altura máxima en móviles */
+      height: calc(100vh - 10rem); /* Deja espacio para el panel inferior */
     }
+  
+    .flex {
+      flex-direction: column;
+    }
+  
+    .w-80 {
+      width: 100%;
+      max-height: 10rem; /* Limita la altura del panel inferior en mobile */
+    }
+  }
+  
+  /* Scroll en el panel de metadatos */
+  .overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 3px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
   }
   </style>
