@@ -247,7 +247,6 @@ export function usePosts() {
    * @returns {function} - Función para cancelar la suscripción
    */
   function subscribeToIncomingProfilePosts(idUser, callback) {
-    debugger
     try {
       const q = query(postRef, where('user.id', '==', idUser), orderBy('created_at', 'desc'));
       return onSnapshot(q, (snapshot) => {

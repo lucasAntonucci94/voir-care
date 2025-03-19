@@ -17,7 +17,6 @@ export const useReelsStore = defineStore('reels', {
   actions: {
     // Suscribirse a los reels en tiempo real
     subscribeToReels() {
-        debugger
       if (this.unsubscribe) {
         console.log('Suscripción a reels ya activa, ignorando...');
         return;
@@ -26,7 +25,6 @@ export const useReelsStore = defineStore('reels', {
       const { subscribeToIncomingReels } = useReels();
       this.unsubscribe = subscribeToIncomingReels((updatedReels) => {
         console.log('Reels recibidos desde Firebase:', updatedReels);
-        debugger
         this.reels = updatedReels;
         this.isLoading = false;
       });
@@ -43,7 +41,6 @@ export const useReelsStore = defineStore('reels', {
 
     // Añadir un nuevo reel
     async addReel(newReelData) {
-        debugger
       console.log('Añadiendo nuevo reel:', newReelData);
       const { saveReel } = useReels();
       const reelData = {
