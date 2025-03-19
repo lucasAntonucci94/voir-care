@@ -103,7 +103,6 @@ const toggleFaq = (index) => {
 
 // Función para togglear FAQs
 const handleChat = () => {
-  debugger
   openChat.value = true;
 };
 </script>

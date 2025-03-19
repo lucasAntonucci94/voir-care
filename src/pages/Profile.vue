@@ -203,10 +203,8 @@ function deletePost(postId) {
 
 // Ciclo de vida
 onMounted(async () => {
-  debugger
   if (!activeUserEmail.value) return;
   await fetchUserData(activeUserEmail.value);
-  debugger
   postsStore.subscribeProfile(activeUser.value.uid);
   checkScroll();
   window.addEventListener('resize', checkScroll);

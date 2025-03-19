@@ -2,7 +2,7 @@
   <div class="flex flex-1 overflow-hidden">
     <main class="flex-grow py-10 bg-gray-50 min-h-screen font-poppins overflow-y-auto">
       <div class="container mx-auto px-4">
-        <HighlightsCarousel />
+        <CarrouselReels />
         <CreatePostModal />
         <section class="space-y-6 flex flex-col items-center">
           <template v-if="postsStore.isLoading">
@@ -26,7 +26,7 @@
 import { onMounted, onUnmounted } from 'vue';
 import CreatePostModal from '../components/organisms/CreatePostModal.vue';
 import PostCard from '../components/organisms/PostCard.vue';
-import HighlightsCarousel from '../components/organisms/HighlightsCarousel.vue';
+import CarrouselReels from '../components/organisms/CarrouselReels.vue';
 import { usePostsStore } from '../stores/posts';
 import { useAuth } from '../api/auth/useAuth';
 

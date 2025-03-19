@@ -27,7 +27,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
           if (this.deletedChatId.length > 0) {
             updatedChats = updatedChats.filter(chat => !this.deletedChatId.includes(chat.idDoc));
           }
-          this.chats.value = updatedChats;
+          this.chats.value = updatedChats ?? [];
           this.loading = false;
         }, (err) => {
           this.error.value = err.message;
