@@ -1,0 +1,197 @@
+<template>
+    <div
+      v-if="visible"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300"
+      @click.self="closeModal"
+    >
+      <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl relative transform transition-all duration-200">
+        <!-- Botón de cierre en la esquina superior derecha -->
+        <button
+          @click="closeModal"
+          class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary rounded-full p-1 transition-colors"
+          aria-label="Cerrar modal"
+        >
+          <i class="fa-solid fa-times text-xl"></i>
+        </button>
+  
+        <h3 class="text-xl font-semibold mb-5 text-gray-800">Subir Nuevo Reel</h3>
+        <form @submit.prevent="uploadReel">
+          <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Título</label>
+            <input
+              v-model="newReel.title"
+              type="text"
+              class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+              placeholder="Escribe un título..."
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">Archivo (imagen/video)</label>
+            <input
+              type="file"
+              accept="image/*,video/*"
+              @change="handleFileUpload"
+              class="w-full p-2 border border-gray-300 rounded-lg text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-opacity-90 transition-colors duration-200"
+              required
+            />
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-200"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary transition-colors duration-200 flex items-center"
+              :disabled="isLoading"
+            >
+              <span v-if="!isLoading">Subir</span>
+              <span v-else class="flex items-center">
+                <svg class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Subiendo...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, defineProps, defineEmits } from 'vue';
+  import { useReelsStore } from '../../stores/reels';
+  import { useAuth } from '../../api/auth/useAuth';
+  import { fileToBase64 } from '../../utils/fileToBase64';
+  
+  // Props y eventos
+  const props = defineProps({
+    visible: {
+      type: Boolean,
+      required: true,
+    },
+  });
+  
+  const emit = defineEmits(['close']);
+  
+  // Estado
+  const reelsStore = useReelsStore();
+  const { user: authUser } = useAuth();
+  const newReel = ref({ title: '', base64: null, mediaType: '', thumbnailBase64: null });
+  const isLoading = ref(false);
+  
+  // Generar thumbnail para videos
+  const generateVideoThumbnail = (file) => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.src = URL.createObjectURL(file);
+      video.addEventListener('loadeddata', () => {
+        video.currentTime = 1; // Tomar el frame a 1 segundo
+      });
+      video.addEventListener('seeked', () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 160;
+        canvas.height = 90;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg'));
+      });
+      video.addEventListener('error', (error) => reject(error));
+    });
+  };
+  
+  // Manejo de subida de archivo
+  const handleFileUpload = async (event) => {
+    try {
+      const file = event.target.files[0];
+      const { base64, mediaType } = await fileToBase64(event);
+      if (base64) {
+        newReel.value.base64 = base64;
+        newReel.value.mediaType = mediaType;
+        newReel.value.thumbnailBase64 = mediaType === 'image' ? base64 : await generateVideoThumbnail(file);
+      }
+    } catch (error) {
+      console.error('Error al procesar archivo o generar thumbnail:', error);
+    }
+  };
+  
+  // Subida del reel
+  const uploadReel = async () => {
+    isLoading.value = true;
+    if (!newReel.value.title || !newReel.value.base64 || !newReel.value.thumbnailBase64 || !authUser.value) {
+      isLoading.value = false;
+      return;
+    }
+  
+    const user = {
+      uid: authUser.value.uid,
+      displayName: authUser.value.displayName || authUser.value.email,
+      photoURL: authUser.value.photoURL || null,
+    };
+  
+    await reelsStore.addReel({
+      user,
+      title: newReel.value.title,
+      file: newReel.value.base64,
+      mediaType: newReel.value.mediaType,
+      thumbnail: newReel.value.thumbnailBase64,
+    });
+  
+    newReel.value = { title: '', base64: null, mediaType: '', thumbnailBase64: null };
+    emit('close');
+    isLoading.value = false;
+  };
+  
+  // Cerrar modal
+  const closeModal = () => {
+    emit('close');
+  };
+  </script>
+  
+  <style scoped>
+  /* Transición suave para el modal */
+  .fixed {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Mejorar la apariencia del modal */
+  .rounded-xl {
+    border-radius: 1rem;
+  }
+  
+  .shadow-2xl {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Ajustar inputs y botones */
+  input:focus {
+    outline: none;
+  }
+  
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Animación de entrada del modal */
+  .transform {
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  </style>

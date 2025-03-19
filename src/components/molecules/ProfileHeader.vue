@@ -189,7 +189,6 @@ function handleFileChange(file) {
 
 async function saveBanner() {
   if (!props.isOwnProfile || !selectedFile.value) return;
-debugger
   uploading.value = true;
   try {
     const filepath = `banners/${props.activeUser?.email}.jpg`;

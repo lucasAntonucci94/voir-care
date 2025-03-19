@@ -221,7 +221,6 @@ const getFilterIcon = (type) => {
 };
 
 const deleteAllMarkers = () => {
-  debugger
   // Verificamos que haya marcadores para eliminar
   if (markers.value.length > 0) {
     console.log('Eliminando todos los marcadores. Total antes:', markers.value.length);
