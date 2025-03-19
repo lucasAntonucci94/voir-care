@@ -9,8 +9,9 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 import { useUsers } from '../../composable/useUsers';
+import { firebaseApp } from '../../api/firebase/config';
 
-const auth = getAuth();
+const auth = getAuth(firebaseApp);
 const { createUser, loadProfileInfo } = useUsers();
 
 const AUTH_ERRORS_MESSAGES = {
@@ -44,8 +45,8 @@ const initializeAuthListener = () => {
     if (firebaseUser) {
       user.value = firebaseUser; // Datos básicos de Firebase Auth
       isAuthenticated.value = true;
-      localStorage.setItem(AUTH_STORAGE_KEY, 'true'); // Guardar en localStorage
-      user.value = await loadProfileInfo(firebaseUser); // Cargar perfil completo
+      localStorage.setItem(AUTH_STORAGE_KEY, 'true'); // Guardo en localStorage para asi poder mantener el estado autenticado cuando se reinicia la app. Por unos segundos pierde la autenticacion reactiva genenrando un mal fucionamiento en al redireccion.
+      user.value = await loadProfileInfo(firebaseUser); // Cargar perfil completo, datos de collection users
     } else {
       user.value = null;
       isAuthenticated.value = false;
