@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import { getFirestore, doc, setDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { useStorage } from './useStorage'; // Ajusta la ruta según tu estructura
+import { useStorage } from './useStorage';
 import { usePosts } from '../composable/usePosts';
 
 const db = getFirestore();
