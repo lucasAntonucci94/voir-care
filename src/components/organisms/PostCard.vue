@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg light:bg-white dark:bg-gray-900">
+  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-900  text-[#2c3e50] dark:text-white">
     <PostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
-    <h3 class="text-lg font-bold text-[#2c3e50]">{{ post?.title }}</h3>
-    <p class="text-gray-700 mt-1 text-sm">{{ post?.body }}</p>
+    <h3 class="text-lg font-bold">{{ post?.title }}</h3>
+    <p class="mt-1 text-sm">{{ post?.body }}</p>
     <div v-if="post?.imageUrlFile" class="mt-3">
       <img
         v-if="post?.mediaType === 'image'"
@@ -24,7 +24,7 @@
         {{ category.name }}
       </span>
     </div>
-    <div class="flex justify-between mt-3 text-sm text-gray-600">
+    <div class="flex justify-between mt-3 text-sm text-gray-600 dark:text-white">
       <button
         @click="toggleLike"
         :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"

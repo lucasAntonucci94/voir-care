@@ -3,7 +3,7 @@
   <div class="flex items-center justify-between mb-3">
     <router-link 
       :to="`/profile/${post?.user?.email}`" 
-      class="flex items-center gap-3 hover:bg-gray-100 rounded transition-colors"
+      class="flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
     >
       <img 
         :src="post?.user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
@@ -11,26 +11,26 @@
         class="w-10 h-10 rounded-full border border-gray-200"
       />
       <div>
-        <p class="text-sm font-bold text-[#2c3e50]">{{ post?.user?.displayName || 'Anónimo' }}</p>
-        <p class="text-xs text-gray-500">{{ formatTimestamp(post?.created_at) }}</p>
+        <p class="text-sm font-bold text-[#2c3e50] dark:text-white">{{ post?.user?.displayName || 'Anónimo' }}</p>
+        <p class="text-xs text-gray-500 dark:text-white">{{ formatTimestamp(post?.created_at) }}</p>
       </div>
     </router-link>
     <div class="relative">
       <button 
         @click="post.showMenu = !post.showMenu" 
-        class="text-gray-600 hover:text-primary focus:outline-none transition-colors duration-200"
+        class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200"
       >
         <i class="fas fa-ellipsis-h"></i>
       </button>
       <div 
         v-if="post.showMenu" 
-        class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10"
+        class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-900 border border-gray-200 rounded-lg shadow-lg z-10"
       >
-        <ul class="py-1 text-sm text-gray-700">
+        <ul class="py-1 text-sm text-gray-700  dark:text-gray-200">
           <li v-if="post?.user?.id === user?.uid || user?.isAdmin">
             <button 
               @click="showEditModal" 
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-gray-100   transition-all duration-200"
             >
               <i class="fas fa-pen mr-2"></i> Editar
             </button>
@@ -46,7 +46,7 @@
           <li>
             <button 
               @click="emit('share')" 
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
               <i class="fas fa-share mr-2"></i> Compartir
             </button>
