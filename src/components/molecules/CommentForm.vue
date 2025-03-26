@@ -19,8 +19,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useAuth } from '../../api/auth/useAuth'; // Ajusta la ruta según tu estructura
-import { useComments } from '../../composable/useComments'; // Ajusta la ruta
+import { useAuth } from '../../api/auth/useAuth';
+import { useComments } from '../../composable/useComments';
 import Button from '../atoms/Button.vue';
 
 const props =defineProps({

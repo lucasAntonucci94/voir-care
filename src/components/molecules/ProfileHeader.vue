@@ -58,15 +58,17 @@
   </div>
 
   <!-- Modal para editar el banner -->
-  <div v-if="showBannerModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between p-4 border-b">
-        <h2 class="text-lg font-semibold text-gray-800">Editar Portada</h2>
-        <button @click="closeBannerModal" class="text-gray-500 hover:text-gray-700">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+  <div v-if="showBannerModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-y-auto">
+      <div class="sticky top-0 bg-white z-10 p-4 border-b">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-800">Editar Portada</h2>
+          <button @click="closeBannerModal" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
       <div class="p-4">
         <!-- Previsualización -->
@@ -95,7 +97,7 @@
           </button>
           <button
             @click="saveBanner"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-all"
+            class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all"
             :disabled="!selectedFile || uploading"
           >
             {{ uploading ? 'Subiendo...' : 'Guardar' }}
@@ -106,17 +108,21 @@
   </div>
 
   <!-- Modal de edición de perfil -->
-  <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between p-4 border-b">
-        <h2 class="text-lg font-semibold text-gray-800">Editar Perfil</h2>
-        <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+  <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white z-10 p-4 border-b">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-800">Editar Perfil</h2>
+          <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
-      <ProfileForm :activeUser="activeUser" :closeEditModal="closeEditModal" :updateRefData="updateRefData" />
+      <div class="p-4">
+        <ProfileForm :activeUser="activeUser" :closeEditModal="closeEditModal" :updateRefData="updateRefData" />
+      </div>
     </div>
   </div>
 </template>
@@ -132,6 +138,7 @@ import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateStoryModal from '../organisms/CreateStoryModal.vue';
 import BannerDefault from '../../assets/darkwallpaper.jpg'
+
 // Props
 const props = defineProps({
   activeUser: { type: Object, required: true },
@@ -169,13 +176,16 @@ const isFollowing = computed(() => {
 // Métodos
 function openBannerModal() {
   showBannerModal.value = true;
+  document.body.style.overflow = 'hidden'; // Fija el fondo
 }
 
 function closeBannerModal() {
   showBannerModal.value = false;
   selectedFile.value = null;
   previewUrl.value = null;
+  document.body.style.overflow = ''; // Restaura el scroll del body
 }
+
 function handleFileChange(file) {
   if (file) {
     const reader = new FileReader();
@@ -192,7 +202,6 @@ async function saveBanner() {
   uploading.value = true;
   try {
     const filepath = `banners/${props.activeUser?.email}.jpg`;
-    // Subir la imagen en formato Base64 a Firebase Storage
     await uploadFile(filepath, selectedFile.value);
     const url = await getFileUrl(filepath);
     
@@ -201,7 +210,6 @@ async function saveBanner() {
       bannerPathFile: filepath,
     });
 
-    // Actualizar el estado local
     props.activeUser.bannerUrlFile = url;
     closeBannerModal();
   } catch (err) {
@@ -266,10 +274,12 @@ const handlerRemoveConnection = async () => {
 
 function editProfile() {
   showEditModal.value = true;
+  document.body.style.overflow = 'hidden'; // Fija el fondo
 }
 
 function closeEditModal() {
   showEditModal.value = false;
+  document.body.style.overflow = ''; // Restaura el scroll del body
 }
 
 async function sendMessage() {
@@ -281,3 +291,24 @@ async function sendMessage() {
   }
 }
 </script>
+
+<style scoped>
+/* Estilos para el scroll del modal */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+</style>
