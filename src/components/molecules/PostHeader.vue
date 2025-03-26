@@ -53,10 +53,18 @@
           </li>
           <li v-if="post?.user?.id !== user?.uid">
             <button 
-              @click="emit('report')" 
+              @click="handleReport" 
               class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
             >
               <i class="fas fa-flag mr-2"></i> Reportar
+            </button>
+          </li>
+          <li v-if="post?.user?.id !== user?.uid">
+            <button 
+              @click="handleHidePost" 
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
+            >
+              <i class="fas fa-flag mr-2"></i> Ocultar
             </button>
           </li>
         </ul>
@@ -86,25 +94,38 @@
     </div>
   </div>
   
-  <!-- Modal de edicion de un post -->
-  <div v-if="showModalEdit" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
-    <div class="bg-white rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Editar posteo</h3>
-      <PostEditForm :post="post" :close-modal="closeEditModal" @update-post="handlePostUpdate" />
+  <!-- Modal de edición de un post -->
+  <div v-if="showModalEdit" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white z-10 p-6 border-b">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-800">Editar posteo</h3>
+          <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="p-6">
+        <PostEditForm :post="post" :close-modal="closeEditModal" @update-post="handlePostUpdate" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useAuth } from '../../api/auth/useAuth'; // Ajusta la ruta
-import { formatTimestamp } from '../../utils/formatTimestamp'; // Ajusta la ruta
+import { useAuth } from '../../api/auth/useAuth';
+import { formatTimestamp } from '../../utils/formatTimestamp';
 import PostEditForm from './PostEditForm.vue';
+import { useReports } from '../../composable/useReports';
 
 const props = defineProps(['post']);
-const emit = defineEmits(['edit', 'delete', 'share', 'report']);
+const emit = defineEmits(['delete', 'share', 'report']);
 
 const { user } = useAuth();
+const { saveReport } = useReports();
 
 // Estado para el modal
 const showModalDelete = ref(false);
@@ -126,17 +147,50 @@ function confirmDelete() {
   showModalDelete.value = false;
 }
 
-// Mostrar el modal de confirmación
+// Confirmar eliminación y emitir evento
+function handleReport() {
+  saveReport(props.post.id, user.value.uid, 'Reportado desde un post');
+}
+
+// Confirmar eliminación y emitir evento
+function handleHidePost() {
+  // hidePost(props.post.id, user.value.uid, 'Se oculto el post');
+}
+
+// Mostrar el modal de edición
 function showEditModal() {
   showModalEdit.value = true;
+  document.body.style.overflow = 'hidden'; // Fija el fondo
 }
 
 function handlePostUpdate(updatedPost) {
-  emit('edit', updatedPost); // Emitir el evento al padre con el posteo actualizado
-  showModalEdit.value = false; // Cerrar el modal
+  showModalEdit.value = false;
+  document.body.style.overflow = ''; // Restaura el scroll del body
 }
 
 function closeEditModal() {
   showModalEdit.value = false;
+  document.body.style.overflow = ''; // Restaura el scroll del body
 }
 </script>
+
+<style scoped>
+/* Estilos para el scroll del modal */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+</style>

@@ -184,7 +184,7 @@ async function savePost() {
     };
 
     await postsStore.updatePost(updatedPost.idDoc, updatedPost);
-    emit('update-post', updatedPost);
+    // emit('update-post', updatedPost);
     props.closeModal();
   } catch (error) {
     console.error('Error al actualizar el post:', error);
