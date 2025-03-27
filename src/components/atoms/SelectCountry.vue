@@ -53,7 +53,7 @@
   <style scoped>
   select {
     appearance: none;
-    background-image: url("../../assets/icons/down.png");
+    background-image: var(--select-down-arrow-bg);
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 1.5em;

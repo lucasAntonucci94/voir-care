@@ -48,7 +48,7 @@
   <style scoped>
   select {
     appearance: none;
-    background-image: url("../../assets/icons/down.png");
+    background-image: var(--select-down-arrow-bg);
     /* background-image: url("../../assets/icons/down-white.png"); */
     background-repeat: no-repeat;
     background-position: right 0.75rem center;

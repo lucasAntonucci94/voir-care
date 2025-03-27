@@ -21,7 +21,7 @@
             <input
               v-model="newReel.title"
               type="text"
-              class="w-full dark:text-white p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:focus:ring-secondary dark:focus:border-secondary transition-colors duration-200"
+              class="w-full dark:text-white p-2.5 border border-gray-300 dark:border-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:focus:ring-secondary dark:focus:border-secondary transition-colors duration-200"
               placeholder="Escribe un título..."
               required
             />
@@ -32,7 +32,7 @@
               type="file"
               accept="image/*,video/*"
               @change="handleFileUpload"
-              class="w-full p-2 border border-gray-300 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200"
+              class="w-full p-2 border border-gray-300  dark:border-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200"
               required
             />
           </div>

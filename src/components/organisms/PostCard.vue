@@ -20,7 +20,7 @@
       ></video>
     </div>
     <div class="flex gap-2 mt-2 flex-wrap">
-      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 px-2 py-1 rounded-full">
+      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full">
         {{ category.name }}
       </span>
     </div>
@@ -28,12 +28,12 @@
       <button
         @click="toggleLike"
         :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-        class="hover:text-primary transition-colors flex items-center gap-1"
+        class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1"
         :disabled="!user"
       >
         <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
       </button>
-      <button @click="post.showComments = !post.showComments" class="hover:text-primary transition-colors">
+      <button @click="post.showComments = !post.showComments" class="hover:text-primary dark:hover:text-secondary transition-colors">
         {{ comments?.length ?? 0 }} Comentarios
       </button>
     </div>
@@ -76,7 +76,7 @@
             <button
               @click="toggleLike"
               :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-              class="hover:text-primary transition-colors flex items-center gap-1 mb-4"
+              class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1 mb-4"
               :disabled="!user"
             >
               <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta

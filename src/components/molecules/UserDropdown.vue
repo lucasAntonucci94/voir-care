@@ -2,14 +2,14 @@
   <div class="relative">
     <button
       @click="toggle"
-      class="relative flex items-center gap-2 text-white hover:text-primary-lighter transition-colors duration-300 group"
+      class="relative flex items-center gap-2 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300 group"
       title="Usuario"
     >
       <i class="fa-solid fa-user text-xl"></i>
       <span class="text-sm font-medium hidden sm:block">{{ user?.displayName  ?? (user?.email || 'Cuenta') }}</span>
       <!-- Tooltip (oculto en mobile) -->
       <span
-        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden sm:group-hover:block bg-primary-darker text-white text-xs font-medium py-1 px-2 rounded-lg shadow-md pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden sm:group-hover:block bg-primary-md dark:bg-secondary-md text-white text-xs font-medium py-1 px-2 rounded-lg shadow-md pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100"
       >
         Menú Usuario
       </span>

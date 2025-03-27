@@ -9,7 +9,7 @@
     />
     <Button 
       type="submit" 
-      class="flex items-center justify-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-teal-600 transition-all duration-200"
+      class="flex items-center justify-center px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200"
     >
       <i class="fas fa-paper-plane"></i>
       <!-- <span class="pl-2">Enviar</span> -->

@@ -6,7 +6,12 @@
         v-model="editForm.title"
         type="text"
         placeholder="Título de tu publicación"
-        class="w-full p-3 border hover:bg-gray-100 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="
+        w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg 
+        bg-gray-50 text-gray-700 hover:bg-gray-100 
+        dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 
+        focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary dark:focus:bg-gray-600 focus:border-transparent
+         transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="isLoading"
         required
       />
@@ -17,7 +22,12 @@
       <textarea
         v-model="editForm.body"
         placeholder="¿Qué quieres compartir?"
-        class="w-full p-3 hover:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="
+        w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg 
+        bg-gray-50 text-gray-700 hover:bg-gray-100 
+        dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 
+        focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary dark:focus:bg-gray-600 focus:border-transparent
+         transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         :disabled="isLoading"
         required
       ></textarea>
@@ -30,7 +40,15 @@
         accept="image/*,video/*"
         @change="handleMediaUpload"
         :disabled="isLoading"
-        class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full p-2.5 
+        bg-gray-50 dark:bg-gray-700
+        hover:bg-gray-100  dark:hover:bg-gray-600
+        border border-gray-200 dark:border-gray-800 rounded-lg 
+        text-sm text-gray-600  dark:text-gray-300 
+        file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
+        file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark:hover:file:bg-secondary-md 
+        transition-all duration-200 cursor-pointer
+        disabled:opacity-50 disabled:cursor-not-allowed"
       />
     </div>
 
@@ -55,7 +73,7 @@
       <label
         v-for="category in categories"
         :key="category.id"
-        class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+        class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
       >
         <input
           :id="'filter_' + category.id"
@@ -63,7 +81,7 @@
           v-model="editForm.categories"
           :value="category"
           :disabled="isLoading"
-          class="custom-checkbox hover:bg-gray-100"
+          class="custom-checkbox hover:bg-gray-100 dark:hover:bg-gray-700"
         />
         <span class="font-medium">{{ category.name }}</span>
       </label>
@@ -74,14 +92,14 @@
       <button
         type="button"
         @click="closeModal"
-        class="px-5 py-2 text-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
+        class="px-5 py-2 text-gray-500 dark:text-gray-300 dark:bg-gray-700 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-600 transition-all duration-200"
       >
         Cancelar
       </button>
       <button
         :disabled="isLoading"
         type="submit"
-        class="relative px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-teal-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-teal-400 disabled:cursor-not-allowed"
+        class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-teal-400 disabled:cursor-not-allowed"
       >
         <span v-if="!isLoading">Guardar</span>
         <span v-else class="flex items-center gap-2">
@@ -215,13 +233,13 @@ async function savePost() {
 }
 
 .custom-checkbox:checked {
-  background-color: #02bcae;
-  border-color: #02bcae;
+  background-color: var(--checkbox-bg);
+  border-color: var(--checkbox-bg);
 }
 
 .custom-checkbox:checked:hover {
-  background-color: #019a8e;
-  border-color: #019a8e;
+  background-color: var(--checkbox-bg);
+  border-color: var(--checkbox-bg);
 }
 
 .custom-checkbox:checked::after {
