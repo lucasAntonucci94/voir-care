@@ -58,11 +58,11 @@
 
   <!-- Modal para editar el banner -->
   <div v-if="showBannerModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4 overflow-hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-y-auto">
-      <div class="sticky top-0 bg-white z-10 p-4 border-b">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md overflow-y-auto">
+      <div class="sticky top-0 z-10 p-4 border-b">
         <div class="flex items-center justify-between">
-          <h2 class="text-lg font-semibold text-gray-800">Editar Portada</h2>
-          <button @click="closeBannerModal" class="text-gray-500 hover:text-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Portada</h2>
+          <button @click="closeBannerModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300  dark:hover:text-gray-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -77,7 +77,7 @@
         <div v-else-if="activeUser?.bannerUrlFile" class="mb-4">
           <img :src="activeUser.bannerUrlFile" alt="Banner actual" class="w-full h-32 object-cover rounded-md" />
         </div>
-        <div v-else class="mb-4 text-gray-500 text-center">
+        <div v-else class="mb-4 text-gray-500 dark:text-gray-300 text-center">
           No hay banner actual. Sube uno nuevo.
         </div>
 
@@ -86,7 +86,7 @@
           type="file"
           accept="image/*"
           @change="handleFileChange($event.target.files[0])"
-          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md"
+          class="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark: hover:file:bg-secondary-md"
         />
 
         <!-- Botones -->
@@ -108,11 +108,11 @@
 
   <!-- Modal de edición de perfil -->
   <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4 overflow-hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md h-[90vh] overflow-y-auto">
-      <div class="sticky top-0 bg-white z-10 p-4 border-b">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 z-10 p-4 border-b bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between">
-          <h2 class="text-lg font-semibold text-gray-800">Editar Perfil</h2>
-          <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700">
+          <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Perfil</h2>
+          <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>

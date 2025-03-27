@@ -10,7 +10,7 @@
     </button>
   </section>
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
-    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
       <!-- Overlay de carga -->
       <div 
         v-if="isLoading" 
@@ -18,7 +18,7 @@
       >
         <div class="w-8 h-8 border-4 border-primary dark:border-secondary border-t-transparent rounded-full animate-spin"></div>
       </div>
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">Crear Nueva Publicación</h2>
+      <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Crear Nueva Publicación</h2>
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
         <div>
@@ -26,7 +26,7 @@
             v-model="newPost.title" 
             type="text" 
             placeholder="Título de tu publicación"
-            class="w-full p-3 border  hover:bg-gray-100 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-3 border  hover:bg-gray-100 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent  dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-300 bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="isLoading"
             required 
           />
@@ -36,7 +36,7 @@
           <textarea 
             v-model="newPost.description" 
             placeholder="¿Qué quieres compartir?" 
-            class="w-full p-3 hover:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-3 hover:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-300 bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="isLoading"
             required 
           ></textarea>
@@ -48,7 +48,7 @@
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
             :disabled="isLoading"
-            class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary dark:hover:file:bg-secondary-md file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer  dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-300 bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
           />
         </div>
         <!-- Previsualización -->
@@ -71,7 +71,7 @@
           <label
             v-for="category in categories"
             :key="category.id"
-            class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+            class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer"
           >
             <input
               :id="'filter_' + category.id"
@@ -79,9 +79,9 @@
               v-model="newPost.categories"
               :value="category"
               :disabled="isLoading"
-              class="custom-checkbox hover:bg-gray-100"
+              class="custom-checkbox hover:bg-gray-100 dark:hover:bg-gray-700"
             />
-            <span class="font-medium">{{ category.name }}</span>
+            <span class="font-medium dark:text-white dark:hover:text-gray-300">{{ category.name }}</span>
           </label>
         </div>
         <!-- Botones -->
@@ -89,7 +89,7 @@
           <button 
             type="button" 
             @click="showModal = false" 
-            class="px-5 py-2 text-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
+            class="px-5 py-2 text-gray-500 dark:text-gray-100 dark:bg-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
           >
             Cancelar
           </button>

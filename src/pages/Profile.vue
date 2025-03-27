@@ -93,13 +93,13 @@
             <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" />
             <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" />
             
-            <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+            <div v-else-if="activeTab === 'galería'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
               <p>Galería (pendiente de implementación)</p>
             </div>
-            <div v-else-if="activeTab === 'eventos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+            <div v-else-if="activeTab === 'eventos'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
               <p>Eventos (pendiente de implementación)</p>
             </div>
-            <div v-else-if="activeTab === 'grupos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+            <div v-else-if="activeTab === 'grupos'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
               <p>Grupos (pendiente de implementación)</p>
             </div>
           </div>
