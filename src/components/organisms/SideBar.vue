@@ -1,8 +1,8 @@
 <template>
   <aside :class="[
-    'bg-gray-100 w-64 p-6 shadow-lg transition-transform duration-300 fixed top-0 bottom-0 z-100',
+    'bg-gray-100  dark:bg-gray-800 w-64 p-6 shadow-lg transition-transform duration-300 fixed top-0 bottom-0 z-100',
     show ? 'translate-x-0' : '-translate-x-full',
-    'md:bg-white md:w-72 md:shadow-none md:static md:translate-x-0'
+    'md:w-72 md:shadow-none md:static md:translate-x-0'
   ]">
     <!-- Cruz de cierre en móvil -->
     <button 
@@ -21,10 +21,10 @@
         class="w-12 h-12 rounded-full border-2 border-gray-200 object-cover"
       />
       <div>
-        <p class="text-base font-semibold text-[#2c3e50] tracking-tight">
+        <p class="text-gray-800 dark:text-gray-200 font-semibold">
           {{ user?.displayName || user?.email || 'Usuario' }}
         </p>
-        <p class="text-xs text-gray-500">{{user?.isAdmin ? 'Administrador' :'Miembro'}}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">{{user?.isAdmin ? 'Administrador' :'Miembro'}}</p>
       </div>
     </router-link>
 
@@ -32,8 +32,8 @@
     <nav class="space-y-2">
       <router-link 
         :to="pathLocation(isAuthenticated)" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
-        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-white"
         @click="emit('toggle')"
       >
         <i class="fas fa-home w-5 text-center"></i>
@@ -41,8 +41,8 @@
       </router-link>
       <router-link v-if="!isAuthenticated"
         to="/login" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
-        active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-white"
         @click="emit('toggle')"
       >
         <i class="fas fa-compass w-5 text-center"></i>
@@ -50,7 +50,7 @@
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/explorar" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
         active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
@@ -59,7 +59,7 @@
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/profile" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
         active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
@@ -68,7 +68,7 @@
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/chats" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
         active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >
@@ -77,7 +77,7 @@
       </router-link>
       <router-link 
         to="/faqs" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
         active-class="bg-primary text-white hover:bg-primary-darker hover:text-white"
         @click="emit('toggle')"
       >

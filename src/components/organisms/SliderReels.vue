@@ -20,14 +20,14 @@
         <!-- Card para agregar nuevo reel -->
         <div
           v-if="isAuthenticated"
-          class="min-w-[160px] bg-gray-50 p-3 rounded-lg shadow-md snap-center border border-gray-200 hover:shadow-lg hover:bg-gray-100 transition-all duration-200 cursor-pointer"
+          class="min-w-[160px] bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:hover:bg-gray-800 p-3 rounded-lg shadow-md snap-center border border-gray-200 hover:shadow-lg hover:bg-gray-100 transition-all duration-200 cursor-pointer"
           @click="emit('show-upload')"
         >
           <div class="w-full h-24 flex flex-col items-center justify-center">
-            <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-8 h-8 text-gray-500 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <p class="mt-2 text-sm text-gray-600 font-medium text-center">Agregar Reel</p>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-100 font-medium text-center">Agregar Reel</p>
           </div>
         </div>
   
@@ -35,7 +35,7 @@
         <div
           v-for="reel in reels"
           :key="reel.id"
-          class="min-w-[160px] bg-white p-3 rounded-lg shadow-md snap-center border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer"
+          class="min-w-[160px] bg-white dark:bg-gray-800 dark:border-gray-800 p-3 rounded-lg shadow-md snap-center border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer"
           @click="emit('open-reel', reel)"
         >
           <img
@@ -44,7 +44,7 @@
             class="w-full h-24 rounded-lg object-cover"
             loading="lazy"
           />
-          <p class="mt-2 text-sm text-gray-700 font-bold text-center">{{ reel.title }}</p>
+          <p class="mt-2 text-sm text-gray-700 dark:text-gray-300 font-bold text-center">{{ reel.title }}</p>
         </div>
       </div>
   

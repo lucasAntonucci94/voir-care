@@ -8,7 +8,7 @@ MainLayout.vue
           :show="sidebarStore.showSidebar"
            @toggle="sidebarStore.toggleSidebar"
          />
-          <main class="flex-grow bg-gray-50 font-poppins overflow-y-auto flex-1">
+        <main class="flex-grow bg-gray-50 dark:bg-gray-900 font-poppins overflow-y-auto flex-1">
           <div class=" mx-auto">
                   <router-view />
           </div>

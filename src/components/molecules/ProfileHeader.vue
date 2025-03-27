@@ -1,4 +1,3 @@
-<!-- ProfileHeader.vue -->
 <template>
   <div class="relative w-full h-38 md:h-64 overflow-hidden">
     <img :src="activeUser?.bannerUrlFile ?? bannerUrl" alt="Banner" class="w-full h-full object-cover" />
@@ -27,7 +26,7 @@
           <button 
             v-if="!isFollowing" 
             @click="handlerAddConnection" 
-            class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md hover:text-gray-10 transition-all shadow-md"
+            class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md hover:text-gray-10 transition-all shadow-md"
             :disabled="isAddingConnection"
           >
             <i class="fa fa-user-plus pr-2"></i>
@@ -45,7 +44,7 @@
         </div>
         <div class="flex justify-center md:justify-end mt-auto">
           <div class="flex flex-col gap-2 md:flex-row md:gap-4">
-            <router-link class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md hover:text-gray-10 transition-all shadow-md" to="/chats" @click="sendMessage">
+            <router-link class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md hover:text-gray-10 transition-all shadow-md" to="/chats" @click="sendMessage">
               <i class="fa fa-message pr-2"></i> Enviar Mensaje
             </router-link>
             <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" @click="setTabInformation">
@@ -87,7 +86,7 @@
           type="file"
           accept="image/*"
           @change="handleFileChange($event.target.files[0])"
-          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-primary-md"
+          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md"
         />
 
         <!-- Botones -->
@@ -97,7 +96,7 @@
           </button>
           <button
             @click="saveBanner"
-            class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all"
+            class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-all"
             :disabled="!selectedFile || uploading"
           >
             {{ uploading ? 'Subiendo...' : 'Guardar' }}

@@ -24,13 +24,13 @@
       </button>
       <div 
         v-if="post.showMenu" 
-        class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-900 border border-gray-200 rounded-lg shadow-lg z-10"
+        class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
       >
         <ul class="py-1 text-sm text-gray-700  dark:text-gray-200">
           <li v-if="post?.user?.id === user?.uid || user?.isAdmin">
             <button 
               @click="showEditModal" 
-              class="w-full text-left px-4 py-2 hover:bg-gray-100   transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800 transition-all duration-200"
             >
               <i class="fas fa-pen mr-2"></i> Editar
             </button>
@@ -38,7 +38,7 @@
           <li v-if="post?.user?.id === user?.uid || user?.isAdmin">
             <button 
               @click="showDeleteModal" 
-              class="w-full text-left px-4 py-2 hover:bg-primary-transparent text-primary hover:text-primary-darker transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-primary-transparent text-primary hover:text-primary-darker dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-primary transition-all duration-200"
             >
               <i class="fas fa-trash mr-2"></i> Eliminar
             </button>
@@ -46,7 +46,7 @@
           <li>
             <button 
               @click="emit('share')" 
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800 transition-all duration-200"
             >
               <i class="fas fa-share mr-2"></i> Compartir
             </button>
@@ -54,7 +54,7 @@
           <li v-if="post?.user?.id !== user?.uid">
             <button 
               @click="handleReport" 
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800 transition-all duration-200"
             >
               <i class="fas fa-flag mr-2"></i> Reportar
             </button>
@@ -62,7 +62,7 @@
           <li v-if="post?.user?.id !== user?.uid">
             <button 
               @click="handleHidePost" 
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 transition-all duration-200"
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800 transition-all duration-200"
             >
               <i class="fas fa-flag mr-2"></i> Ocultar
             </button>

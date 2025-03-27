@@ -7,6 +7,12 @@
   --color-primary-md: #019a8e;
   --color-primary-darker: #01746a;  
   --color-primary-transparent: #0ef2df29;
+
+  --color-secondary-lighter: #bc9102;  
+  --color-secondary: #F28C38;
+  --color-secondary-md: #9f7c07;
+  --color-secondary-darker: #9f7c07;  
+  --color-secondary-transparent: #bc9102;
 }
 
 @custom-variant light (&:where(.light, .light *));

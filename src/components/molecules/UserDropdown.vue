@@ -11,18 +11,18 @@
       <span
         class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden sm:group-hover:block bg-primary-darker text-white text-xs font-medium py-1 px-2 rounded-lg shadow-md pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100"
       >
-        {{ user?.displayName ?? 'Usuario' }}
+        Menú Usuario
       </span>
     </button>
     <transition name="dropdown">
       <div
         v-if="isOpen"
-        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-72 md:w-80 lg:w-96 h-full sm:h-auto max-h-[calc(100vh-4rem)] bg-white shadow-lg rounded-none sm:rounded-lg z-20 overflow-y-auto flex flex-col"
+        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-72 md:w-80 lg:w-96 h-full sm:h-auto max-h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 shadow-lg rounded-none sm:rounded-lg z-20 overflow-y-auto flex flex-col"
       >
         <!-- Botón de cierre (solo mobile) -->
         <button
           @click="toggle"
-          class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-primary transition-colors md:hidden"
+          class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-primary  dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-primary-lighter transition-colors md:hidden"
         >
           <i class="fa-solid fa-times text-xl"></i>
         </button>
@@ -35,14 +35,14 @@
               class="w-12 h-12 rounded-full object-cover"
             />
             <div class="flex-1">
-              <p class="text-lg font-semibold text-gray-900 truncate">{{ user?.displayName ?? (user?.email || 'Usuario') }}</p>
-              <p class="text-sm text-gray-500 truncate">{{ user?.email ?? '' }}</p>
+              <p class="text-lg font-semibold text-gray-900 dark:text-gray-100  truncate">{{ user?.displayName ?? (user?.email || 'Usuario') }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-300 truncate">{{ user?.email ?? '' }}</p>
             </div>
           </div>
           <router-link
             to="/profile"
             @click="toggle"
-            class="block w-full mt-3 text-center font-medium py-2 px-4 text-white bg-primary hover:bg-primary-darker rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+            class="block w-full mt-3 text-center font-medium py-2 px-4  text-white bg-primary hover:bg-primary-darker dark:bg-secondary dark:hover:bg-secondary-darker rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <i class="fa-solid fa-user-circle text-sm"></i>
             Ver Perfil
@@ -54,7 +54,7 @@
             <ThemeModeButton />
           </li>
           <router-link v-if="isAuthenticated" to="/adm" @click="toggle">
-            <li class="block px-7 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2">
+            <li class="block px-7 py-3 text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 flex items-center gap-2">
               <i class="fa-solid fa-shield-alt text-sm"></i>
               Panel de Administrador
             </li>
@@ -67,10 +67,10 @@
           </router-link>
         </ul>
         <!-- Cerrar Sesión -->
-        <div v-if="isAuthenticated" class="p-2 sm:p-0 bg-gray-50 sm:bg-transparent">
+        <div v-if="isAuthenticated" class="p-2 sm:p-0 sm:bg-transparent">
           <button
             @click="doLogout"
-            class="w-full font-medium py-2 px-4 text-white bg-primary hover:bg-primary-darker rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+            class="w-full font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2  text-white bg-primary hover:bg-primary-darker dark:bg-secondary dark:hover:bg-secondary-darker"
           >
             <i class="fa-solid fa-sign-out-alt text-sm"></i>
             Cerrar Sesión

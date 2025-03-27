@@ -46,10 +46,10 @@
   
         <!-- Panel de metadatos (lateral en desktop, inferior en mobile) -->
         <div
-          class="w-full md:w-80 bg-gray-900/80 md:bg-gray-50 text-white md:text-gray-800 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto"
+          class="w-full md:w-80 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300  md:text-gray-800 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto"
         >
           <div>
-            <h3 class="text-lg md:text-xl font-semibold mb-2 md:mb-4">{{ reel?.title }}</h3>
+            <h3 class="text-lg md:text-xl dark:text-white font-semibold mb-2 md:mb-4">{{ reel?.title }}</h3>
             <div class="text-sm space-y-1 md:space-y-2">
               <p><span class="font-medium">Subido por:</span> {{ reel?.user?.displayName }}</p>
               <p><span class="font-medium">Fecha:</span> {{ formatDate(reel?.createdAt) }}</p>
@@ -61,7 +61,7 @@
           <!-- Botón de cierre -->
           <button
             @click="closeModal"
-            class="absolute top-2 right-2 text-gray-300 md:text-gray-600 hover:text-white md:hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+            class="absolute top-2 right-2 text-gray-300 md:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:text-white md:hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
             aria-label="Cerrar modal"
           >
             <i class="fa-solid fa-times text-xl md:text-2xl"></i>
