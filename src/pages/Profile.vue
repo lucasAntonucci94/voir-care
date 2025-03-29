@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-50 font-poppins relative">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 font-poppins relative">
     <!-- Loader -->
     <div v-if="!activeUser" class="flex-grow flex min-h-screen items-center justify-center bg-gray-100">
       <div class="text-center">
         <div class="loader mb-4"></div>
-        <p class="text-gray-600 text-lg font-medium animate-pulse">Cargando perfil...</p>
+        <p class="text-gray-600 dark:text-gray-200 text-lg font-medium animate-pulse">Cargando perfil...</p>
       </div>
     </div>
 
@@ -20,13 +20,13 @@
         :updateRefData="updateDataFromChild"
       />
       <!-- Tabs con flechas -->
-      <div class="container mx-auto mt-10 px-4 md:px-8 lg:px-16 sticky top-0 bg-white shadow-sm">
+      <div class="container mx-auto mt-10 px-4 md:px-8 lg:px-16 sticky top-0 bg-white dark:bg-gray-800 shadow-sm">
         <div class="relative">
           <!-- Botón de flecha izquierda -->
           <button
             v-if="showArrows && canScrollLeft"
             @click="scrollLeft"
-            class="absolute left-0 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary-md transition-colors md:hidden z-30"
+            class="absolute left-0 top-1/2 -translate-y-1/2 bg-primary dark:bg-secondary text-white p-2 rounded-full shadow-md hover:bg-primary-md dark:hover:bg-secondary-md transition-colors md:hidden z-30"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -52,8 +52,8 @@
               :class="[
                 'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200',
                 activeTab === tab.toLowerCase()
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-[#2c3e50] hover:bg-gray-200'
+                  ? 'bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white'
+                  : 'bg-gray-100  dark:bg-gray-700 text-gray-800  dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
               ]"
             >
               {{ tab }}
@@ -80,7 +80,7 @@
       </div>
 
       <!-- Contenido del perfil -->
-      <div class="container mx-auto px-4 md:px-8 lg:px-16 mt-6">
+      <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
         <div class="grid grid-cols-1 gap-6 max-w-full mx-4 md:mx-0">
           <!-- Publicaciones -->
           <div class="md:col-span-2">
@@ -90,19 +90,16 @@
               <PostCard v-for="post in postsStore.profilePosts.value" :key="post.id" :post="post" @delete="deletePost(post.id)" />
               <p v-if="!postsStore.profilePosts?.value?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
             </div>
-            <div v-else-if="activeTab === 'información'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-              <ProfileInfo :userInfo="activeUser" />
-            </div>
-            <div v-else-if="activeTab === 'conexiones'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-              <ConnectionsTab :connections="connections" />
-            </div>
-            <div v-else-if="activeTab === 'galería'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+            <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" />
+            <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" />
+            
+            <div v-else-if="activeTab === 'galería'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
               <p>Galería (pendiente de implementación)</p>
             </div>
-            <div v-else-if="activeTab === 'eventos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+            <div v-else-if="activeTab === 'eventos'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
               <p>Eventos (pendiente de implementación)</p>
             </div>
-            <div v-else-if="activeTab === 'grupos'" class="bg-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
+            <div v-else-if="activeTab === 'grupos'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
               <p>Grupos (pendiente de implementación)</p>
             </div>
           </div>

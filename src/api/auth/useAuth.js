@@ -47,6 +47,7 @@ const initializeAuthListener = () => {
       isAuthenticated.value = true;
       localStorage.setItem(AUTH_STORAGE_KEY, 'true'); // Guardo en localStorage para asi poder mantener el estado autenticado cuando se reinicia la app. Por unos segundos pierde la autenticacion reactiva genenrando un mal fucionamiento en al redireccion.
       user.value = await loadProfileInfo(firebaseUser); // Cargar perfil completo, datos de collection users
+      debugger
     } else {
       user.value = null;
       isAuthenticated.value = false;
@@ -93,7 +94,7 @@ async function doRegister(displayName, email, password) {
   error.value = null;
   try {
     const { user: newAuthUser } = await createUserWithEmailAndPassword(auth, email, password);
-    console.log(newAuthUser);
+    // console.log(newAuthUser);
     if (newAuthUser) {
       await createUser(newAuthUser.uid, {
         email: email,

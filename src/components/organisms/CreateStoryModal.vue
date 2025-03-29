@@ -2,7 +2,7 @@
 <template>
   <section>
     <button 
-      class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-all shadow-md" 
+      class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-all shadow-md" 
       @click="showModal = true" 
     >
       <i class="fa fa-book pr-2"></i>
@@ -10,23 +10,23 @@
     </button>
   </section>
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
-    <div class="bg-white rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
       <!-- Overlay de carga -->
-      <div 
+      <!-- <div 
         v-if="isLoading" 
-        class="absolute inset-0 bg-gray-200/50 rounded-xl flex items-center justify-center z-10 transition-opacity duration-200"
+        class="absolute inset-0 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex items-center justify-center z-10 transition-opacity duration-200"
       >
-        <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-      </div>
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6 tracking-tight">Crear Nueva Publicación</h2>
+        <div class="w-8 h-8 border-4 border-primary dark:border-secondary border-t-transparent rounded-full animate-spin"></div>
+      </div> -->
+      <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Crear Nueva Publicación</h2>
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
         <div>
           <input 
             v-model="newPost.title" 
             type="text" 
-            placeholder="Título de tu publicación" 
-            class="w-full p-3 border  hover:bg-gray-100 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            placeholder="Título de tu publicación"
+            class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent  dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 dark:hover:text-gray-300 bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="isLoading"
             required 
           />
@@ -36,7 +36,7 @@
           <textarea 
             v-model="newPost.description" 
             placeholder="¿Qué quieres compartir?" 
-            class="w-full p-3 hover:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 dark:hover:text-gray-300 bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="isLoading"
             required 
           ></textarea>
@@ -48,7 +48,7 @@
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
             :disabled="isLoading"
-            class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary dark:hover:file:bg-secondary-md file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer  dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 dark:hover:text-gray-300 bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
           />
         </div>
         <!-- Previsualización -->
@@ -71,7 +71,7 @@
           <label
             v-for="category in categories"
             :key="category.id"
-            class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+            class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer"
           >
             <input
               :id="'filter_' + category.id"
@@ -79,9 +79,9 @@
               v-model="newPost.categories"
               :value="category"
               :disabled="isLoading"
-              class="custom-checkbox hover:bg-gray-100"
+              class="custom-checkbox hover:bg-gray-100 dark:hover:bg-gray-600 dark:focus:bg-gray-600"
             />
-            <span class="font-medium">{{ category.name }}</span>
+            <span class="font-medium dark:text-white dark:hover:text-gray-300">{{ category.name }}</span>
           </label>
         </div>
         <!-- Botones -->
@@ -89,18 +89,18 @@
           <button 
             type="button" 
             @click="showModal = false" 
-            class="px-5 py-2 text-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
+            class="px-5 py-2 text-gray-500 dark:text-gray-100 dark:bg-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
           >
             Cancelar
           </button>
           <button 
             :disabled="isLoading"
             type="submit" 
-            class="relative px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-teal-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-teal-400 disabled:cursor-not-allowed"
+            class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
           >
             <span v-if="!isLoading">Publicar</span>
             <span v-else class="flex items-center gap-2">
-              <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span class="w-4 h-4 border-2 border-white dark:border-gray-800 border-t-transparent rounded-full animate-spin"></span>
               Publicando...
             </span>
           </button>
@@ -171,15 +171,15 @@ async function createPost() {
 
   const postData = {
     user: {
-      id: user.value.uid || user.value.id,
-      displayName: user.value.displayName || 'No ha definido un displayName',
-      firstName: user.value.firstName || 'No ha definido un nombre',
-      lastName: user.value.lastName || 'No ha definido un apellido',
-      email: user.value.email || 'No ha definido un correo',
-      phoneNumber: user.value.phoneNumber || 'No ha definido un número de teléfono',
-      birthday: user.value.birthday || 'No ha definido una fecha de nacimiento',
-      genre: user.value.genre || 'No ha definido un género',
-      country: user.value.country || 'No ha definido un país',
+      id: user.value.uid || user.value.id || null,
+      displayName: user.value.displayName || null,
+      firstName: user.value.firstName || null,
+      lastName: user.value.lastName || null,
+      email: user.value.email || null,
+      phoneNumber: user.value.phoneNumber || null,
+      birthday: user.value.birthday || null,
+      genre: user.value.genre || null,
+      country: user.value.country || null,
       photoURL: user.value.photoURL || null,
       photoURLFile: user.value.photoURLFile || null,
     },
@@ -212,13 +212,13 @@ async function createPost() {
 <style>
 /* Estilo del checkbox personalizado */
 .custom-checkbox {
-  appearance: none; /* Elimina el estilo nativo del navegador */
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 16px; /* Tamaño del checkbox */
+  width: 16px;
   height: 16px;
-  border: 2px solid #d1d5db; /* Borde gris (border-gray-300) */
-  border-radius: 4px; /* Esquinas redondeadas */
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
   position: relative;
   cursor: pointer;
   outline: none;
@@ -232,14 +232,14 @@ async function createPost() {
 
 /* Fondo y tilde cuando está seleccionado */
 .custom-checkbox:checked {
-  background-color: #02bcae; /* Usa tu color bg-primary */
-  border-color: #02bcae; /* Borde del mismo color */
+  background-color: var(--checkbox-bg);
+  border-color: var(--checkbox-bg);
 }
 
 /* Fondo y tilde cuando está seleccionado */
 .custom-checkbox:checked:hover {
-  background-color: #019a8e; /* Usa tu color bg-primary */
-  border-color: #019a8e; /* Borde del mismo color */
+  background-color:  var(--checkbox-bg);
+  border-color:  var(--checkbox-bg);
 }
 
 /* Crear el tilde personalizado con ::after */
@@ -250,13 +250,13 @@ async function createPost() {
   top: 1px;
   width: 4px;
   height: 8px;
-  border: solid white; /* Tilde blanco */
+  border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
 /* Efecto de foco */
 .custom-checkbox:focus {
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5); /* focus:ring-primary con opacity-50 */
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
 }
 </style>

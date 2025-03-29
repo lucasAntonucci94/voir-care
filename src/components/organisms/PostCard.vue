@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-900  text-[#2c3e50] dark:text-white">
+  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800  text-[#2c3e50] dark:text-white">
     <PostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
     <h3 class="text-lg font-bold">{{ post?.title }}</h3>
     <p class="mt-1 text-sm">{{ post?.body }}</p>
@@ -20,7 +20,7 @@
       ></video>
     </div>
     <div class="flex gap-2 mt-2 flex-wrap">
-      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 px-2 py-1 rounded-full">
+      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full">
         {{ category.name }}
       </span>
     </div>
@@ -28,12 +28,12 @@
       <button
         @click="toggleLike"
         :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-        class="hover:text-primary transition-colors flex items-center gap-1"
+        class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1"
         :disabled="!user"
       >
         <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
       </button>
-      <button @click="post.showComments = !post.showComments" class="hover:text-primary transition-colors">
+      <button @click="post.showComments = !post.showComments" class="hover:text-primary dark:hover:text-secondary transition-colors">
         {{ comments?.length ?? 0 }} Comentarios
       </button>
     </div>
@@ -69,14 +69,14 @@
         </div>
 
         <!-- Panel lateral de comentarios -->
-        <div class="w-full md:w-80 bg-gray-900/80 md:bg-gray-50 text-white md:text-gray-800 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto">
+        <div class="w-full md:w-80 bg-gray-900/80 md:bg-gray-50 dark:bg-gray-800 text-white md:text-gray-800 dark:text-gray-300 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto">
           <div>
             <h3 class="text-lg md:text-xl font-semibold mb-2">{{ post?.title }}</h3>
             <p class="text-sm md:text-base mb-4">{{ post?.body }}</p>
             <button
               @click="toggleLike"
               :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-              class="hover:text-primary transition-colors flex items-center gap-1 mb-4"
+              class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1 mb-4"
               :disabled="!user"
             >
               <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta

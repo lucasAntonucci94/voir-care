@@ -3,11 +3,11 @@
   <form @submit.prevent="saveProfile" class="p-4 space-y-6 max-w-md mx-auto">
     <!-- Nombre de usuario -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Nombre de usuario</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
       <input
         v-model="editForm.displayName"
         type="text"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent placeholder-gray-400 disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
         placeholder="Nombre de usuario"
         :disabled="isLoading"
       />
@@ -15,11 +15,11 @@
 
     <!-- Nombre -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Nombre</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
       <input
         v-model="editForm.firstName"
         type="text"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent placeholder-gray-400 disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
         placeholder="Nombre"
         :disabled="isLoading"
       />
@@ -27,11 +27,11 @@
 
     <!-- Apellido -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Apellido</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
       <input
         v-model="editForm.lastName"
         type="text"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent placeholder-gray-400 disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
         placeholder="Apellido"
         :disabled="isLoading"
       />
@@ -39,11 +39,11 @@
 
     <!-- Email -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Email</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
       <input
         v-model="editForm.email"
         type="email"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent placeholder-gray-400 disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
         placeholder="Correo electrónico"
         :disabled="isLoading"
       />
@@ -51,11 +51,11 @@
 
     <!-- Teléfono -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Teléfono</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
       <input
         v-model="editForm.phoneNumber"
         type="tel"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent placeholder-gray-400 disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50"
         placeholder="Número de teléfono"
         :disabled="isLoading"
       />
@@ -63,11 +63,11 @@
 
     <!-- Fecha de nacimiento -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Fecha de nacimiento</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de nacimiento</label>
       <input
         v-model="editForm.birthday"
         type="date"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-[#3498db] focus:border-transparent disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50"
         :disabled="isLoading"
       />
     </div>
@@ -96,19 +96,19 @@
 
     <!-- Foto de perfil -->
     <div>
-      <label class="block text-sm font-medium text-[#2c3e50]">Foto de perfil</label>
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto de perfil</label>
       <input
         type="file"
         accept="image/*"
         @change="handlePhotoUpload"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary file:text-white hover:file:bg-primary-md disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark:hover:file:bg-secondary-md disabled:opacity-50"
         :disabled="isLoading"
       />
       <img
         v-if="editForm.photoURL"
         :src="editForm.photoURL"
         alt="Vista previa"
-        class="mt-2 w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+        class="mt-2 w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-800"
       />
     </div>
 
@@ -118,14 +118,14 @@
         type="button"
         @click="closeEditModal"
         :disabled="isLoading"
-        class="px-4 py-2 bg-gray-200 text-[#2c3e50] rounded-full hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Cancelar
       </button>
       <button
         type="submit"
         :disabled="isLoading"
-        class="px-4 py-2 bg-primary text-white rounded-full hover:bg-primary-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
       >
         <span v-if="isLoading">
           <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">

@@ -8,11 +8,11 @@
         :id="id"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
-        class="block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-full text-[#2c3e50] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200"
+        class="block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent transition-colors duration-200"
         :class="{ 'border-red-500': hasError }"
       >
-        <option value="" disabled selected>Selecciona un país</option>
-        <option v-for="country in countries" :key="country.code" :value="country.name">
+        <option class="text-gray-600 dark:text-gray-400" value="" disabled selected>Selecciona un país</option>
+        <option v-for="country in countries" :key="country.code" :value="country.name" class="text-gray-800 dark:text-gray-200">
           {{ country.name }}
         </option>
       </select>
@@ -51,10 +51,9 @@
   </script>
   
   <style scoped>
-  /* Opcional: ajustes adicionales si Tailwind no cubre algo específico */
   select {
-    appearance: none; /* Quita el estilo nativo del navegador */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    appearance: none;
+    background-image: var(--select-down-arrow-bg);
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     background-size: 1.5em;
