@@ -164,19 +164,23 @@ export function useUsers() {
         : Promise.resolve(null);
 
       const userProfilePromise = getUserProfileByEmail(firebaseUser.email);
+      const hiddenPostsPromise = getHiddenPostsForUser(firebaseUser.uid);
 
-      const [photoURLFile, profile] = await Promise.all([
+      const [photoURLFile, profile, hiddenPosts] = await Promise.all([
         photoURLFilePromise,
         userProfilePromise,
+        hiddenPostsPromise,
       ]);
 
       const combinedData = {
         ...firebaseUser, // Datos de Firebase Auth
         photoURLFile,    // URL de la imagen desde Storage
         ...profile,      // Datos adicionales de Firestore
+        hiddenPosts,
       };
 
       userProfile.value = combinedData; // Actualizamos el estado reactivo
+      debugger
       return combinedData;
     } catch (error) {
       console.error('Error al cargar el perfil del usuario:', error);
@@ -268,6 +272,21 @@ export function useUsers() {
       }); // Actualización parcial solo del banner
     } catch (error) {
       console.error('Error al actualizar el banner del usuario:', error);
+      throw error;
+    }
+  }
+
+  async function getHiddenPostsForUser(userId) {
+    try {
+      const hiddenPostsRef = collection(db, 'users', userId, 'hiddenPosts');
+      const snapshot = await getDocs(hiddenPostsRef);
+      const hiddenPosts = [];
+      snapshot.forEach((doc) => {
+        hiddenPosts.push({ id: doc.id, ...doc.data() });
+      });
+      return hiddenPosts;
+    } catch (error) {
+      console.error('Error al obtener los hiddenPosts:', error);
       throw error;
     }
   }

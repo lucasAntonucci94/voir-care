@@ -2,7 +2,7 @@
   <div class="relative">
     <button
       @click="toggle"
-      class="relative flex items-center gap-2 text-white hover:text-primary-lighter transition-colors duration-300 group"
+      class="relative flex items-center gap-2 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300 group"
       title="Mensajes"
     >
       <i class="fa-solid fa-comment-dots text-xl"></i>
@@ -15,7 +15,7 @@
       </span>
       <!-- Tooltip (oculto en mobile) -->
       <span
-        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden sm:group-hover:block bg-primary-darker text-white text-xs font-medium py-1 px-2 rounded-lg shadow-md pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden sm:group-hover:block bg-primary-darker dark:bg-secondary-darker text-white text-xs font-medium py-1 px-2 rounded-lg shadow-md pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100"
       >
         Mensajes
       </span>
@@ -23,21 +23,21 @@
     <transition name="dropdown">
       <div
         v-if="isOpen"
-        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-72 md:w-80 lg:w-96 h-full sm:h-auto max-h-[calc(100vh-4rem)] bg-white shadow-lg rounded-none sm:rounded-lg z-20 overflow-y-auto flex flex-col pt-12 sm:pt-0"
+        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-72 md:w-80 lg:w-96 h-full sm:h-auto max-h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 shadow-lg rounded-none sm:rounded-lg z-20 overflow-y-auto flex flex-col pt-12 sm:pt-0"
       >
         <!-- Botón de cierre (solo mobile) -->
         <button
           @click="toggle"
-          class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-primary transition-colors md:hidden"
+          class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary transition-colors md:hidden"
         >
           <i class="fa-solid fa-times text-xl"></i>
         </button>
-        <ul v-if="notifications?.length > 0" class="divide-y divide-gray-100">
+        <ul v-if="notifications?.length > 0" class="">
           <!-- Lista de chats -->
           <li
             v-for="notification in notifications"
             :key="notification.id"
-            class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
+            class="px-4 py-3 text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors duration-200"
           >
             <button
               @click="handleChatClick(notification.user)"
@@ -50,7 +50,7 @@
           <!-- Indicador de más chats -->
           <li
             v-if="notifications?.length > 9"
-            class="px-4 py-3 text-gray-900 hover:bg-gray-50 transition-colors duration-200"
+            class="px-4 py-3 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
           >
             ... and {{ notifications?.length - 9 }} more
           </li>
@@ -59,7 +59,7 @@
           <li>
             <button
               @click="markAllAsRead"
-              class="w-full text-primary font-medium py-2 px-4 bg-gray-100 hover:bg-gray-200 hover:text-primary-darker rounded-t-lg transition-colors duration-200 flex items-center justify-center gap-2"
+              class="w-full text-primary dark:text-secondary font-medium py-2 px-4 bg-gray-100 hover:bg-gray-200 hover:text-primary-darker dark:bg-gray-700 hover:bg-gray-600 hover:text-secondary-lighter rounded-t-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <i class="fa-solid fa-check text-sm"></i>
               Marcar todos como leídos
@@ -71,7 +71,7 @@
             <router-link
               to="/chats"
               @click="toggle"
-              class="block w-full text-center text-white font-medium py-2 px-4 bg-primary hover:bg-primary-darker rounded-b-lg transition-colors duration-200 flex items-center justify-center gap-2"
+              class="block w-full text-center text-white font-medium py-2 px-4 bg-primary hover:bg-primary-darker dark:bg-secondary dark:hover:bg-secondary-darker rounded-b-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <i class="fa-solid fa-comments text-sm"></i>
               Ver todos los mensajes

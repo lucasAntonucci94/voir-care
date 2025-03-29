@@ -4,35 +4,35 @@
       class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300"
       @click.self="closeModal"
     >
-      <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl relative transform transition-all duration-200">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-md shadow-2xl relative transform transition-all duration-200">
         <!-- Botón de cierre en la esquina superior derecha -->
         <button
           @click="closeModal"
-          class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary rounded-full p-1 transition-colors"
+          class="absolute top-3 right-3 text-gray-500 dark:text-gray-100 dark:hover:text-gray-300 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary rounded-full p-1 transition-colors"
           aria-label="Cerrar modal"
         >
           <i class="fa-solid fa-times text-xl"></i>
         </button>
   
-        <h3 class="text-xl font-semibold mb-5 text-gray-800">Subir Nuevo Reel</h3>
+        <h3 class="text-xl font-semibold mb-5 text-gray-800 dark:text-gray-200">Subir Nuevo Reel</h3>
         <form @submit.prevent="uploadReel">
           <div class="mb-5">
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Título</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Título</label>
             <input
               v-model="newReel.title"
               type="text"
-              class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+              class="w-full dark:text-white p-2.5 border border-gray-300 dark:border-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:focus:ring-secondary dark:focus:border-secondary transition-colors duration-200"
               placeholder="Escribe un título..."
               required
             />
           </div>
           <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Archivo (imagen/video)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Archivo (imagen/video)</label>
             <input
               type="file"
               accept="image/*,video/*"
               @change="handleFileUpload"
-              class="w-full p-2 border border-gray-300 rounded-lg text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-opacity-90 transition-colors duration-200"
+              class="w-full p-2 border border-gray-300  dark:border-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200"
               required
             />
           </div>
@@ -40,13 +40,13 @@
             <button
               type="button"
               @click="closeModal"
-              class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-200"
+              class="px-4 py-2 bg-gray-200 text-gray-700 dark:text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-200"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary transition-colors duration-200 flex items-center"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-opacity-90 focus:outline-none transition-colors duration-200 flex items-center"
               :disabled="isLoading"
             >
               <span v-if="!isLoading">Subir</span>

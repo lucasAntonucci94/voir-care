@@ -1,6 +1,6 @@
 <!-- Header.vue -->
 <template>
-  <header class="bg-primary text-white p-4 relative shadow-md transition-all duration-300" ref="headerRef">
+  <header class=" text-white bg-primary dark:bg-secondary p-4 relative shadow-md transition-all duration-300" ref="headerRef">
     <div class="container mx-auto flex flex-wrap justify-between items-center md:py-3">
       <div class="flex items-center mb-2 md:mb-0">
         <!-- Botón hamburguesa solo visible en móvil y en la ruta /feed -->

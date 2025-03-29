@@ -11,7 +11,7 @@ export function useReports() {
    * @param {{postId: string, userId: string, reason: string}} data
    * @returns {Promise<void>}
    */
-  async function saveReport(postId, userId, reason = 'No especificado') {
+  async function saveReport(postId, userId, reason = 'No especificado', description) {
     debugger
     try {
       const reportData = {
@@ -19,6 +19,7 @@ export function useReports() {
         postId,
         userId,
         reason,
+        description,
         created_at: serverTimestamp(),
         status: 'pending',
       };

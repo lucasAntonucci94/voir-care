@@ -7,6 +7,12 @@
   --color-primary-md: #019a8e;
   --color-primary-darker: #01746a;  
   --color-primary-transparent: #0ef2df29;
+
+  --color-secondary-lighter: #F6AC6F;   
+  --color-secondary: #F28C38;
+  --color-secondary-md: #D8690E;
+  --color-secondary-darker: #A8510B;  
+  --color-secondary-transparent: #F28C3829;
 }
 
 @custom-variant light (&:where(.light, .light *));
@@ -15,6 +21,9 @@
 /* Your other custom styles go here */
 /* Any other custom styles you have */
 :root {
+  --tooltip-bg: var(--color-primary);
+  --checkbox-bg: var(--color-primary);
+  --select-down-arrow-bg: url("./assets/icons/down.png");
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -28,6 +37,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.dark {
+  --tooltip-bg: var(--color-secondary);
+  --checkbox-bg: var(--color-secondary);
+  --select-down-arrow-bg: url("./assets/icons/down-white.png");
+}
+
 .bg-login{
   background-image: url("./assets/wallwhite.jpg");
   /* background-image: url("./assets/darkwallpaper.jpg"); */
