@@ -63,5 +63,5 @@
   const props = defineProps({
     userInfo: { type: Object, required: true },
   });
-  console.log(props.userInfo);
+  // console.log(props.userInfo);
   </script>

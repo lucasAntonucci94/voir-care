@@ -96,7 +96,7 @@
           <button 
             :disabled="isLoading"
             type="submit" 
-            class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-teal-600 transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-teal-400 disabled:cursor-not-allowed"
+            class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
           >
             <span v-if="!isLoading">Publicar</span>
             <span v-else class="flex items-center gap-2">

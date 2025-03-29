@@ -10,7 +10,7 @@
           </template>
           <template v-else>
             <PostCard
-              v-for="post in postsStore.posts.value"
+              v-for="post in visiblePosts"
               :key="post.idDoc"
               :post="post"
             />
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, computed } from 'vue';
 import CreatePostModal from '../components/organisms/CreatePostModal.vue';
 import PostCard from '../components/organisms/PostCard.vue';
 import CarrouselReels from '../components/organisms/CarrouselReels.vue';
@@ -33,6 +33,12 @@ import { useAuth } from '../api/auth/useAuth';
 const { user } = useAuth();
 const postsStore = usePostsStore();
 
+const visiblePosts = computed(() => {
+  console.log(user.value.hiddenPosts)
+  return postsStore.posts.value?.filter(post => 
+    !user.value?.hiddenPosts?.some(hidden => hidden.postId === post.id)
+  );
+});
 onMounted(() => {
   console.log('Feed.vue montado, iniciando suscripción global...');
   postsStore.subscribeGlobal(); // Suscripción global

@@ -12,12 +12,12 @@
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
     <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
       <!-- Overlay de carga -->
-      <div 
+      <!-- <div 
         v-if="isLoading" 
-        class="absolute inset-0 bg-gray-200/50 rounded-xl flex items-center justify-center z-10 transition-opacity duration-200"
+        class="absolute inset-0 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex items-center justify-center z-10 transition-opacity duration-200"
       >
         <div class="w-8 h-8 border-4 border-primary dark:border-secondary border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      </div> -->
       <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Crear Nueva Publicación</h2>
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
@@ -96,7 +96,7 @@
           <button 
             :disabled="isLoading"
             type="submit" 
-            class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-teal-400 disabled:cursor-not-allowed"
+            class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
           >
             <span v-if="!isLoading">Publicar</span>
             <span v-else class="flex items-center gap-2">

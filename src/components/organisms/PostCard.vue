@@ -69,7 +69,7 @@
         </div>
 
         <!-- Panel lateral de comentarios -->
-        <div class="w-full md:w-80 bg-gray-900/80 md:bg-gray-50 text-white md:text-gray-800 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto">
+        <div class="w-full md:w-80 bg-gray-900/80 md:bg-gray-50 dark:bg-gray-800 text-white md:text-gray-800 dark:text-gray-300 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto">
           <div>
             <h3 class="text-lg md:text-xl font-semibold mb-2">{{ post?.title }}</h3>
             <p class="text-sm md:text-base mb-4">{{ post?.body }}</p>
