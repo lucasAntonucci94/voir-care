@@ -15,7 +15,7 @@
                 <button
                     v-if="connections?.length > 5"
                     @click="setTabConexiones"
-                    class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary transition group"
+                    class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary dark:hover:ring-secondary transition group"
                     data-tooltip="Ver todas las conexiones"
                 >
                     <img
@@ -59,10 +59,9 @@ const props = defineProps({
   left: 50%;
   transform: translateX(-50%);
   padding: 0.25rem 0.5rem;
-  background-color: #02bcae;
+  background-color: var(--tooltip-bg);
   font-weight: 700;
   color: white;
-  text-align: center;
   font-size: 0.75rem;
   border-radius: 0.25rem;
   white-space: nowrap;
@@ -73,14 +72,12 @@ const props = defineProps({
 [data-tooltip]:hover::before {
   content: '';
   position: absolute;
-  bottom: 115%; /* Ajuste para alinear con el tooltip */
+  bottom: 115%;
   left: 50%;
   transform: translateX(-50%);
-  width: 0;
-  height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid #02bcae;
+  border-top: 5px solid var(--tooltip-bg);
   z-index: 11;
 }
 </style>

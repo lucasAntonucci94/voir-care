@@ -1,12 +1,7 @@
 <template>
   <button
     @click="toggleTheme"
-    :class="[
-      'w-full flex items-center justify-between gap-2 py-2 px-4 rounded-lg transition-colors duration-200',
-      !isDarkMode
-      ? 'text-gray-900 bg-white hover:bg-gray-50 hover:text-primary'
-      : 'text-white bg-primary hover:bg-primary-darker'
-    ]"
+    class="w-full flex items-center justify-between gap-2 py-2 px-4 rounded-lg transition-colors duration-200 text-white bg-primary hover:bg-primary-darker dark:bg-secondary dark:hover:bg-secondary-darker"
   >
     <span class="flex items-center gap-2">
       <i :class="['fa-solid', isDarkMode ? 'fa-sun' : 'fa-moon', 'text-sm']"></i>
@@ -14,8 +9,8 @@
     </span>
     <i
       :class="[
-        'fa-solid fa-toggle-on text-sm',
-        isDarkMode ? 'text-white' : 'text-primary'
+        'fa-solid text-sm text-white',
+        isDarkMode ? 'fa-toggle-on' : 'fa-toggle-off'
       ]"
     ></i>
   </button>

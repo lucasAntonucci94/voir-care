@@ -292,7 +292,21 @@ export function usePosts() {
     }
   }
 
-  // Devolvemos las funciones para usarlas en los componentes
+  async function hidePost(userId, postId) {
+    try {
+      debugger
+      const hiddenPostsRef = collection(db, 'users', userId, 'hiddenPosts');
+      await addDoc(hiddenPostsRef, {
+        postId,
+        created_at: serverTimestamp(),
+      });
+      return true
+    } catch (err) {
+      console.error('Error al ocultar el post:', err);
+      return false
+    }
+  }
+
   return {
     savePost,
     subscribeToIncomingPosts,
@@ -305,5 +319,6 @@ export function usePosts() {
     reloadPostImage,
     addLike,
     removeLike,
+    hidePost,
   };
 }
