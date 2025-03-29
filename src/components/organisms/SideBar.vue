@@ -46,10 +46,12 @@
       </router-link>
       <router-link v-if="!isAuthenticated"
         to="/login" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-secondary rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
+        text-gray-700 hover:bg-gray-200 hover:text-primary 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
         active-class="
         bg-primary text-white hover:bg-primary-md hover:text-gray-300 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-gray-100
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
         "
         @click="emit('toggle')"
       >
@@ -58,10 +60,12 @@
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/explorar" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-secondary rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
+        text-gray-700 hover:bg-gray-200 hover:text-primary 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
         active-class="
         bg-primary text-white hover:bg-primary-md hover:text-gray-300 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-gray-100
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
         "
         @click="emit('toggle')"
       >
@@ -70,10 +74,12 @@
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/profile" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-secondary rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
+        text-gray-700 hover:bg-gray-200 hover:text-primary 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
         active-class="
         bg-primary text-white hover:bg-primary-md hover:text-gray-300 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-gray-100
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
         "
         @click="emit('toggle')"
       >
@@ -82,10 +88,12 @@
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/chats" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-secondary   rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
+        text-gray-700 hover:bg-gray-200 hover:text-primary 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
         active-class="
         bg-primary text-white hover:bg-primary-md hover:text-gray-300 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-gray-100
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
         "
         @click="emit('toggle')"
       >
@@ -94,10 +102,12 @@
       </router-link>
       <router-link 
         to="/faqs" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:hover:bg-gray-600 dark:hover:text-secondary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
+        text-gray-700 hover:bg-gray-200 hover:text-primary 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
         active-class="
         bg-primary text-white hover:bg-primary-md hover:text-gray-300 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-gray-100
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
         "
         @click="emit('toggle')"
       >
@@ -106,10 +116,12 @@
       </router-link>
       <router-link 
         to="/groups" 
-        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:hover:bg-gray-600 dark:hover:text-secondary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
+        text-gray-700 hover:bg-gray-200 hover:text-primary 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
         active-class="
         bg-primary text-white hover:bg-primary-md hover:text-gray-300 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-gray-100
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
         "
         @click="emit('toggle')"
       >
