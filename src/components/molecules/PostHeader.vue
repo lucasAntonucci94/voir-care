@@ -136,7 +136,7 @@
     <!-- Sección para seleccionar el motivo -->
     <label class="block mb-2 text-gray-700 dark:text-gray-300">Motivo del reporte:</label>
     <select v-model="selectedReportReason" class="w-full mb-4 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 focus:border-primary dark:focus:border-secondary rounded-lg px-3 py-2">
-      <option value="" disabled>Seleccione un motivo</option>
+      <option value="" disabled selected>Seleccione un motivo</option>
       <option value="Contenido inapropiado">Contenido inapropiado</option>
       <option value="Spam">Spam</option>
       <option value="Información errónea">Información errónea</option>
@@ -149,7 +149,7 @@
 
     <div class="flex justify-end gap-3">
       <button 
-        @click="closeModal" 
+        @click="showModalReport = false" 
         class="px-4 py-2 text-gray-500 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-200 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
       >
         Cancelar
@@ -235,7 +235,7 @@ const showModalDelete = ref(false);
 const showModalHide = ref(false);
 const showModalEdit = ref(false);
 const showModalReport = ref(false);
-const selectedReportReason = ref(null);
+const selectedReportReason = ref('');
 const reportDescription = ref('');
 
 onMounted(() => {

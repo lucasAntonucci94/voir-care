@@ -8,6 +8,7 @@ import Faqs from '../pages/Faqs.vue';
 import Explore from '../pages/Explore.vue';
 import LandingPage from '../pages/LandingPage.vue';
 import ChatView from '../pages/ChatView.vue';
+import Groups from '../pages/GroupsPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -63,6 +64,14 @@ const routes = [
         path: '/chats/:idChat?',
         name: 'chats',
         component: ChatView,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/groups',
+        name: 'groups',
+        component: Groups,
         meta: {
             requiresAuth: true,
         }

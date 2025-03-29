@@ -104,6 +104,18 @@
         <i class="fas fa-question w-5 text-center"></i>
         <span class="text-sm font-medium">Faqs</span>
       </router-link>
+      <router-link 
+        to="/groups" 
+        class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-primary dark:hover:bg-gray-600 dark:hover:text-secondary dark:bg-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+        active-class="
+        bg-primary text-white hover:bg-primary-md hover:text-gray-300 
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-gray-100
+        "
+        @click="emit('toggle')"
+      >
+        <i class="fas fa-users w-5 text-center"></i>
+        <span class="text-sm font-medium">Grupos</span>
+      </router-link>
     </nav>
 
     <!-- Sección "Explorar" -->
