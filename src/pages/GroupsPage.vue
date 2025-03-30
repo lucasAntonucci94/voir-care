@@ -1,7 +1,5 @@
 <template>
   <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- El sidebar ya existe en tu MainLayout -->
-    <!-- Contenido principal -->
     <div class="flex-1 overflow-y-auto">
       <!-- Encabezado interno de la sección Grupos -->
       <div class="bg-white dark:bg-gray-800 shadow-sm">
@@ -34,9 +32,9 @@
         </div>
       </div>
 
-      <!-- Contenido de cada tab -->
+      <!-- Contenido de tab -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
-        <!-- Tab: Feed -->
+        <!-- Tab: GroupsFeed -->
         <div v-if="activeTab === 'feed'">
           <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Feed de Grupos</h2>
           <div class="space-y-6">
@@ -60,7 +58,17 @@
         <!-- Tab: Tus Grupos -->
         <div v-else-if="activeTab === 'yourGroups'">
           <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Grupos</h2>
-          <!-- Aquí tus tarjetas de grupos -->
+          <div v-if="groupsStore.groups.length">
+            <div 
+              v-for="group in groupsStore.groups" 
+              :key="group.idDoc" 
+              class="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
+            >
+              <h3 class="font-bold text-[#2c3e50] dark:text-white">{{ group.title }}</h3>
+              <p class="text-gray-700 dark:text-gray-300">{{ group.description }}</p>
+            </div>
+          </div>
+          <p v-else class="text-center text-gray-500">No perteneces a ningún grupo.</p>
         </div>
       </div>
     </div>
@@ -249,18 +257,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import PostCard from '../components/organisms/PostCard.vue'
-import { useGroups } from '../composable/useGroups'
 import { useAuth } from '../api/auth/useAuth'
 import { useMediaUpload } from '../composable/useMediaUpload';
 import { newGuid } from '../utils/newGuid';
+import { useGroupsStore } from '../stores/groups'
 
-const { createGroup, isCreating } = useGroups()
 const { uploadMedia, isUploading } = useMediaUpload();
 const { user } = useAuth()
+const groupsStore  = useGroupsStore()
+
+// Estado
 const showModalCreate = ref(false);
-// Estado del formulario
 const isLoading = ref(false)
 const newGroup = ref({
   title: '',
@@ -311,15 +320,6 @@ const groups = ref([
 // Supongamos que el usuario ya es miembro de los grupos 1 y 2
 const userMembership = ref(['1', '2'])
 
-// Grupos a los que pertenece el usuario
-const userGroups = computed(() =>
-  groups.value.filter(group => userMembership.value.includes(group.id))
-)
-
-// Grupos disponibles para descubrir
-const discoverGroups = computed(() =>
-  groups.value.filter(group => !userMembership.value.includes(group.id))
-)
 
 // Datos mock para posteos en grupos (incluimos la propiedad groupId para saber a qué grupo pertenece cada post)
 const posts = ref([
@@ -425,8 +425,7 @@ async function handleCreateGroup() {
       members: [ownerId], // Miembros iniciales (el creador)
     }
     debugger
-    // Llama al composable para persistir en Firebase
-    await createGroup(groupData)
+    await groupsStore.createGroup(groupData)
     debugger
     // Cierra el modal
     closeModalCreate()
@@ -468,6 +467,20 @@ function handleMediaUpload(event) {
   }
 }
 
+
+// Iniciar suscripción al montar el componente
+onMounted(() => {
+  console.log(user.value)
+  debugger
+  // if(user.value){
+  //   groupsStore.subscribeUserGroups(user.value.uid)
+  // }
+})
+
+// Cancelar suscripción al desmontar el componente
+onUnmounted(() => {
+  // groupsStore.unsubscribeGroups()
+})
 </script>
 
 <style scoped>

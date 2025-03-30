@@ -1,4 +1,3 @@
-// /composables/useGroups.js
 import { ref } from 'vue'
 import {
   getFirestore,
@@ -10,6 +9,7 @@ import {
   serverTimestamp,
   doc,
   deleteDoc,
+  where,
 } from 'firebase/firestore'
 
 const db = getFirestore();
@@ -18,14 +18,9 @@ const groupsRef = collection(db, 'groups')
 export function useGroups() {
   const isCreating = ref(false)
 
-  /**
-   * Crea un nuevo grupo en Firestore.
-   * @param {Object} groupData - Datos del grupo a crear.
-   * @returns {Promise<void>}
-   */
   async function createGroup(groupData) {
     try {
-        debugger
+      debugger
       isCreating.value = true
       await addDoc(groupsRef, {
         ...groupData,
@@ -39,11 +34,6 @@ export function useGroups() {
     }
   }
 
-  /**
-   * Se suscribe a los grupos en tiempo real.
-   * @param {function} callback - Función que recibe un array de grupos.
-   * @returns {function} - Función para cancelar la suscripción.
-   */
   function subscribeToGroups(callback) {
     try {
       const q = query(groupsRef, orderBy('createdAt', 'desc'))
@@ -64,10 +54,34 @@ export function useGroups() {
   }
 
   /**
-   * Elimina un grupo por su ID de documento.
-   * @param {string} idDoc - ID del documento en Firestore.
-   * @returns {Promise<void>}
+   * Se suscribe a los grupos en los que el usuario (authUser.uid) es miembro.
+   * @param {string} uid - El uid del usuario autenticado.
+   * @param {function} callback - Función que recibe un array de grupos.
+   * @returns {function} - Función para cancelar la suscripción.
    */
+  function subscribeToUserGroups(uid, callback) {
+    try {
+      const q = query(
+        groupsRef,
+        where('members', 'array-contains', uid),
+        orderBy('createdAt', 'desc')
+      )
+      return onSnapshot(q, (snapshot) => {
+        const groups = snapshot.docs.map((docSnap) => {
+          const group = docSnap.data()
+          return {
+            idDoc: docSnap.id,
+            ...group,
+          }
+        })
+        callback(groups)
+      })
+    } catch (error) {
+      console.error('Error al suscribirse a grupos del usuario:', error)
+      throw error
+    }
+  }
+
   async function deleteGroup(idDoc) {
     try {
       const docRef = doc(db, 'groups', idDoc)
@@ -82,6 +96,7 @@ export function useGroups() {
     isCreating,
     createGroup,
     subscribeToGroups,
+    subscribeToUserGroups,
     deleteGroup,
   }
 }
