@@ -294,7 +294,6 @@ export function usePosts() {
 
   async function hidePost(userId, postId) {
     try {
-      debugger
       const hiddenPostsRef = collection(db, 'users', userId, 'hiddenPosts');
       await addDoc(hiddenPostsRef, {
         postId,

@@ -8,14 +8,14 @@
       <ProfileInfoCard :activeUser="activeUser" :connections="connections" :setTabConexiones="setTabConexiones" />
       <div v-if="isOwnProfile" class="flex flex-col gap-4 h-30 w-full md:w-auto">
         <div class="hidden md:flex justify-center md:justify-end gap-2">
-          <button @click="openBannerModal" class="px-4 py-2 bg-white/80 text-gray-700 rounded-full hover:bg-white transition-all shadow-md">
+          <button @click="openBannerModal" class="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700/80 dark:text-gray-300 dark:hover:bg-gray-500 dark:hover:text-gray-100 rounded-full transition-all shadow-md">
             <i class="fa fa-camera pr-2"></i> Editar portada
           </button>
         </div>
         <div class="flex justify-center md:justify-end mt-auto">
           <div class="flex flex-col gap-2 md:flex-row md:gap-4">
             <CreateStoryModal />
-            <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all shadow-md" @click="editProfile">
+            <button class="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-500 dark:hover:text-gray-100 rounded-full transition-all shadow-md" @click="editProfile">
               <i class="fa fa-edit pr-2"></i> Editar perfil
             </button>
           </div>
