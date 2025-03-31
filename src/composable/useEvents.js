@@ -21,7 +21,6 @@ export function useEvents() {
 
   async function createEvent(eventData) {
     try {
-      debugger
       isCreating.value = true
       await addDoc(eventsRef, {
         ...eventData,
@@ -35,6 +34,11 @@ export function useEvents() {
     }
   }
 
+  /**
+   * Se suscribe a todos los grupos.
+   * @param {function} callback - Función que recibe un array de grupos.
+   * @returns {function} - Función para cancelar la suscripción.
+   */
   function subscribeToEvents(callback) {
     try {
       const q = query(eventsRef, orderBy('createdAt', 'desc'))
@@ -83,9 +87,12 @@ export function useEvents() {
     }
   }
 
+  /**
+   * Se suscribe a los 20 grupos más próximos.
+   * @param {function} callback - Función que recibe un array de grupos.
+   * @returns {function} - Función para cancelar la suscripción.
+   */
   function subscribeToUpcomingEvents(callback) {
-    debugger
-
     try {
       const now = new Date()
       const q = query(

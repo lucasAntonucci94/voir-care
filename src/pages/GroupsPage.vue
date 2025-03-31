@@ -497,19 +497,10 @@ function handleMediaUpload(event) {
 
 
 // // Iniciar suscripción al montar el componente
-// onMounted(() => {
-//   console.log(user.value)
-//   debugger
-//   // if(user.value){
-//   //   groupsStore.subscribeUserGroups(user.value.uid)
-//   // }
-// })
-// Suscribirse a los grupos del usuario cuando esté autenticado
 watch(
   () => user.value,
   (newUser) => {
     if (newUser && newUser.uid) {
-      debugger
       groupsStore.subscribeUserGroups(newUser.uid)
     }
   },

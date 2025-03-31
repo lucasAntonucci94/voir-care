@@ -20,7 +20,6 @@ export function useGroups() {
 
   async function createGroup(groupData) {
     try {
-      debugger
       isCreating.value = true
       await addDoc(groupsRef, {
         ...groupData,

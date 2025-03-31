@@ -146,20 +146,15 @@
 
     <!-- Sección "Explorar" -->
     <div class="mt-8">
-      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Descubrir</h3>
+      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Descubrir</h3>
       <ul class="space-y-2">
         <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-200 rounded-md transition-colors">
-            Eventos
-          </a>
-        </li>
-        <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-200 rounded-md transition-colors">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-200 dark:hover:text-secondary dark:hover:bg-gray-700 rounded-md transition-colors">
             Adopciones
           </a>
         </li>
         <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:text-primary hover:bg-gray-200 rounded-md transition-colors">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-200 dark:hover:text-secondary dark:hover:bg-gray-700 rounded-md transition-colors">
             Educación
           </a>
         </li>

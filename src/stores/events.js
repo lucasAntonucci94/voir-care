@@ -16,7 +16,6 @@ export const useEventsStore = defineStore('events', {
     actions: {
     // Suscribirse a los eventos en los que el usuario es miembro
     subscribeUserEvents(uid) {
-        debugger
         if (this.unsubscribeUser) {
             console.log('Suscripción ya activa, ignorando...')
             return
@@ -25,7 +24,6 @@ export const useEventsStore = defineStore('events', {
         const { subscribeToUserEvents } = useEvents()
         this.unsubscribeUser = subscribeToUserEvents(uid, (events) => {
             this.events.value = events
-            debugger
             this.isLoading = false
         })
     },
@@ -39,7 +37,6 @@ export const useEventsStore = defineStore('events', {
     },
     // Suscribirse a los eventos en los que el usuario es miembro
     subscribeAllEvents() {
-        debugger
         if (this.unsubscribeAll) {
             console.log('Suscripción ya activa, ignorando...')
             return
@@ -48,7 +45,6 @@ export const useEventsStore = defineStore('events', {
         const { subscribeToEvents } = useEvents()
         this.unsubscribeAll = subscribeToEvents((events) => {
             this.allEvents.value = events
-            debugger
             this.isLoading = false
         })
     },
@@ -62,7 +58,6 @@ export const useEventsStore = defineStore('events', {
     },
     // Suscripción a eventos próximos
     subscribeUpcomingEvents() {
-        debugger
     if (this.unsubscribeUpcoming) {
         console.log('Suscripción ya activa (próximos), ignorando...')
         return
@@ -71,7 +66,6 @@ export const useEventsStore = defineStore('events', {
     const { subscribeToUpcomingEvents } = useEvents()
     this.unsubscribeUpcoming = subscribeToUpcomingEvents((events) => {
         this.upcomingEvents.value = events
-        debugger
         this.isLoading = false
     })
     },
@@ -85,7 +79,6 @@ export const useEventsStore = defineStore('events', {
     },
     // Crear un nuevo evento
     async createEvent(eventData) {
-        debugger
         const { createEvent } = useEvents()
         this.isCreating = true
         try {
