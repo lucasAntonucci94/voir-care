@@ -5,14 +5,13 @@
       v-model="comment" 
       type="text" 
       placeholder="Escribe un comentario..." 
-      class="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200" 
+      class="w-full p-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 text-gray-700 dark:text-gray-300 placeholder-gray-400 transition-all duration-200" 
     />
     <Button 
       type="submit" 
       class="flex items-center justify-center px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200"
     >
       <i class="fas fa-paper-plane"></i>
-      <!-- <span class="pl-2">Enviar</span> -->
     </Button>
   </form>
 </template>
