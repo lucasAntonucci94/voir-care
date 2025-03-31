@@ -180,7 +180,7 @@ export function useUsers() {
       };
 
       userProfile.value = combinedData; // Actualizamos el estado reactivo
-      debugger
+
       return combinedData;
     } catch (error) {
       console.error('Error al cargar el perfil del usuario:', error);

@@ -10,7 +10,7 @@
       <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña" :disabled="isLoading" />
       <InputPassword v-model="confirmPassword.field.value" label="Confirmar Contraseña" id="confirmpassword" placeholder="Ingresa nuevamente tu contraseña" :disabled="isLoading" />
 
-      <button type="submit" :disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-primary to-cyan-800 dark: bg-gradient-to-br bg-secondary to-orange-800 rounded-lg transition-all duration-300 border dark:border-gray-800 hover:text-gray-200 hover:border-primary-lighter hover:border-secondary-lighter">
+      <button type="submit" :disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-primary to-cyan-800 dark:bg-gradient-to-br dark:bg-secondary dark:to-orange-800 rounded-lg transition-all duration-300 border dark:border-gray-800 hover:text-gray-200 hover:border-primary-lighter hover:border-secondary-lighter">
         <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full rounded-lg bg-cyanGreen-900 opacity-50 animate-pulse"></div>
         <span v-if="isLoading">Registrando...</span>
         <span v-else>Registrar</span>
