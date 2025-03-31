@@ -12,7 +12,6 @@ export const useGroupsStore = defineStore('groups', {
   actions: {
     // Suscribirse a los grupos en los que el usuario es miembro
     subscribeUserGroups(uid) {
-        debugger
       if (this.unsubscribe) {
         console.log('Suscripción ya activa, ignorando...')
         return
@@ -26,7 +25,7 @@ export const useGroupsStore = defineStore('groups', {
     },
     // Cancelar la suscripción
     unsubscribeGroups() {
-      if (this.unsubscribe.value) {
+      if (this.unsubscribe) {
         console.log('Cancelando suscripción a grupos...')
         this.unsubscribe()
         this.unsubscribe = null
@@ -34,7 +33,6 @@ export const useGroupsStore = defineStore('groups', {
     },
     // Crear un nuevo grupo
     async createGroup(groupData) {
-        debugger
       const { createGroup } = useGroups()
       this.isCreating = true
       try {

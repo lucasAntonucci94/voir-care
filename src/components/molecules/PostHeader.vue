@@ -258,7 +258,6 @@ async function handleReport() {
   if (!selectedReportReason.value) return  // evita enviar si no se selecciona motivo
 
   isLoading.value = true
-  debugger
   const response = await saveReport(props.post.id, user.value.uid, selectedReportReason.value, reportDescription.value);
   if(response){
     isLoading.value = false

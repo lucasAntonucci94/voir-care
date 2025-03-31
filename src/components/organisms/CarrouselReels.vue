@@ -6,14 +6,14 @@
       :reels="reelsStore.reels"
       :is-authenticated="isAuthenticated"
       :is-view-modal-open="showViewModal"
-      @show-upload="showUploadModal = true"
+      @show-upload="openCreateModal"
       @open-reel="openViewModal"
     />
 
     <!-- Modal para subir reel -->
     <CreateReelModal
-      :visible="showUploadModal"
-      @close="showUploadModal = false"
+      :visible="showCreateModal"
+      @close="closeCreateModal"
     />
 
     <!-- Modal para visualizar reel -->
@@ -39,17 +39,25 @@ import SliderReels from './SliderReels.vue';
 const { isAuthenticated } = useAuth();
 const reelsStore = useReelsStore();
 const carouselSection = ref(null);
-const showUploadModal = ref(false);
+const showCreateModal = ref(false);
 const showViewModal = ref(false);
 const selectedReel = ref(null);
 
+// Manejo del modal de creación
+const openCreateModal = () => {
+  showCreateModal.value = true;
+  document.body.style.overflow = 'hidden';
+};
+const closeCreateModal = () => {
+  showCreateModal.value = false;
+  document.body.style.overflow = '';
+};
 // Manejo del modal de visualización
 const openViewModal = (reel) => {
   selectedReel.value = reel;
   showViewModal.value = true;
   document.body.style.overflow = 'hidden';
 };
-
 const closeViewModal = () => {
   showViewModal.value = false;
   document.body.style.overflow = '';

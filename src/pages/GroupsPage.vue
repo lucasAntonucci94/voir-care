@@ -37,7 +37,7 @@
         <!-- Tab: GroupsFeed -->
         <div v-if="activeTab === 'feed'">
           <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Feed de Grupos</h2>
-          <div class="space-y-6">
+          <div class="space-y-6 flex flex-col items-center">
             <PostCard
               v-for="post in feedPosts"
               :key="post.idDoc"
@@ -57,15 +57,16 @@
 
         <!-- Tab: Tus Grupos -->
         <div v-else-if="activeTab === 'yourGroups'">
-          <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Grupos</h2>
-          <div v-if="groupsStore.groups.length">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tus Grupos</h2>
+          <div v-if="groupsStore.groups.value.length > 0" class="flex flex-wrap gap-1 justify-center align-center">
             <div 
-              v-for="group in groupsStore.groups" 
+              v-for="group in groupsStore.groups.value" 
               :key="group.idDoc" 
               class="mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow"
             >
-              <h3 class="font-bold text-[#2c3e50] dark:text-white">{{ group.title }}</h3>
+              <h3 class="font-bold text-gray-900 dark:text-white">{{ group.title }}</h3>
               <p class="text-gray-700 dark:text-gray-300">{{ group.description }}</p>
+              <img :src="group.media" :alt="group.title" class="w-50">
             </div>
           </div>
           <p v-else class="text-center text-gray-500">No perteneces a ningún grupo.</p>
@@ -257,12 +258,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import PostCard from '../components/organisms/PostCard.vue'
 import { useAuth } from '../api/auth/useAuth'
 import { useMediaUpload } from '../composable/useMediaUpload';
 import { newGuid } from '../utils/newGuid';
 import { useGroupsStore } from '../stores/groups'
+import ImageToDelete from '../assets/bg/bg-cat2.jpg'
 
 const { uploadMedia, isUploading } = useMediaUpload();
 const { user } = useAuth()
@@ -293,27 +295,59 @@ const activeTab = ref('feed')
 const groups = ref([
   {
     id: '1',
-    title: 'Cuidado Animal',
-    description: 'Grupo dedicado al cuidado y bienestar animal.',
-    imageUrl: 'https://via.placeholder.com/150',
+    idDoc: '1',
+    title: 'Rescate Animal 1',
+    description: 'Grupo para coordinar rescates y emergencias.',
+    imageUrl: ImageToDelete, // la URL o base64 si subiste a storage
     privacy: 'public',
-    ownerId: 'user1'
+    categories: [],
+    ownerId: 'user2', // id del usuario creador
+    media: ImageToDelete, // URL de la imagen o video subido
+    mediaPath: 'filePath', // Path de la imagen o video subido
+    mediaType: 'image', // Tipo de media (imagen o video)
+    members: ['user1'], // Miembros iniciales (el creador)
   },
   {
     id: '2',
-    title: 'Adopciones',
-    description: 'Encuentra animales para adoptar y comparte experiencias.',
-    imageUrl: 'https://via.placeholder.com/150',
+    idDoc: '2',
+    title: 'Rescate Animal 2',
+    description: 'Grupo para coordinar rescates y emergencias.',
+    imageUrl: ImageToDelete, // la URL o base64 si subiste a storage
     privacy: 'public',
-    ownerId: 'user2'
+    categories: [],
+    ownerId: 'user2', // id del usuario creador
+    media: ImageToDelete, // URL de la imagen o video subido
+    mediaPath: 'filePath', // Path de la imagen o video subido
+    mediaType: 'image', // Tipo de media (imagen o video)
+    members: ['user2'], // Miembros iniciales (el creador)
   },
   {
     id: '3',
-    title: 'Rescate Animal',
+    idDoc: '3',
+    title: 'Rescate Animal 3',
     description: 'Grupo para coordinar rescates y emergencias.',
-    imageUrl: 'https://via.placeholder.com/150',
+    imageUrl: ImageToDelete, // la URL o base64 si subiste a storage
     privacy: 'public',
-    ownerId: 'user3'
+    categories: [],
+    ownerId: 'user3', // id del usuario creador
+    media: ImageToDelete, // URL de la imagen o video subido
+    mediaPath: 'filePath', // Path de la imagen o video subido
+    mediaType: 'image', // Tipo de media (imagen o video)
+    members: ['user3'], // Miembros iniciales (el creador)
+  },
+  {
+    id: '4',
+    idDoc: '4',
+    title: 'Rescate Animal 4',
+    description: 'Grupo para coordinar rescates y emergencias.',
+    imageUrl: ImageToDelete, // la URL o base64 si subiste a storage
+    privacy: 'public',
+    categories: [],
+    ownerId: 'user3', // id del usuario creador
+    media: ImageToDelete, // URL de la imagen o video subido
+    mediaPath: 'filePath', // Path de la imagen o video subido
+    mediaType: 'image', // Tipo de media (imagen o video)
+    members: ['user3'], // Miembros iniciales (el creador)
   }
 ])
 
@@ -393,13 +427,11 @@ const closeModalCreate = () => {
 async function handleCreateGroup() {
   isLoading.value = true
   try {
-    debugger
     const ownerId = user.value?.uid || user.value?.id || null
     let updatedPhotoUrl = null;
     let updatedPhotoPath = null;
     if (newGroup.value.newMediaBase64) {
       const dynamicPath = `groups/${ownerId}/${newGuid()}`;
-      debugger
       const { url, path } = await uploadMedia({
         currentUrl: null,
         currentPath: null,
@@ -410,7 +442,6 @@ async function handleCreateGroup() {
       updatedPhotoUrl = url;
       updatedPhotoPath = path;
     }
-    debugger
     // Crea el objeto de grupo que vas a enviar
     const groupData = {
       title: newGroup.value.title,
@@ -424,9 +455,7 @@ async function handleCreateGroup() {
       mediaType: newGroup.value.mediaType || null, // Tipo de media (imagen o video)
       members: [ownerId], // Miembros iniciales (el creador)
     }
-    debugger
     await groupsStore.createGroup(groupData)
-    debugger
     // Cierra el modal
     closeModalCreate()
   } catch (error) {
@@ -449,7 +478,6 @@ function resetForm() {
   }
 }
 
-
 // Manejo de subida de media (imagen/video)
 function handleMediaUpload(event) {
   const file = event.target.files[0];
@@ -468,14 +496,26 @@ function handleMediaUpload(event) {
 }
 
 
-// Iniciar suscripción al montar el componente
-onMounted(() => {
-  console.log(user.value)
-  debugger
-  // if(user.value){
-  //   groupsStore.subscribeUserGroups(user.value.uid)
-  // }
-})
+// // Iniciar suscripción al montar el componente
+// onMounted(() => {
+//   console.log(user.value)
+//   debugger
+//   // if(user.value){
+//   //   groupsStore.subscribeUserGroups(user.value.uid)
+//   // }
+// })
+// Suscribirse a los grupos del usuario cuando esté autenticado
+watch(
+  () => user.value,
+  (newUser) => {
+    if (newUser && newUser.uid) {
+      debugger
+      groupsStore.subscribeUserGroups(newUser.uid)
+    }
+  },
+  { immediate: true }
+)
+
 
 // Cancelar suscripción al desmontar el componente
 onUnmounted(() => {
