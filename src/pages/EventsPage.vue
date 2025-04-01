@@ -12,8 +12,9 @@
             + Crear Evento
           </button>
         </div>
-        <!-- Tabs específicos para eventos -->
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
+      </div>
+       <!-- Tabs específicos para eventos -->
+       <div class="container mx-auto px-4 md:px-8 lg:px-16">
           <div class="mt-4 flex gap-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
             <button
               v-for="tab in tabs"
@@ -30,12 +31,12 @@
             </button>
           </div>
         </div>
-      </div>
-
       <!-- Contenido de cada tab -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
         <!-- Próximos Eventos -->
         <UpcomingEventsTab v-if="activeTab === 'upcoming'" />
+        <!-- Próximos Eventos -->
+        <CalendarEventsTab v-else-if="activeTab === 'calendar'" />
         <!-- Descubrir Eventos -->
         <DiscoverEventsTab v-else-if="activeTab === 'discover'" />
         <!-- Tus Eventos -->
@@ -73,6 +74,7 @@ import CreateEventModal from '../components/organisms/CreateEventModal.vue'
 import UpcomingEventsTab from '../components/molecules/UpcomingEventsTab.vue'
 import DiscoverEventsTab from '../components/molecules/DiscoverEventsTab.vue'
 import UserEventsTab from '../components/molecules/UserEventsTab.vue'
+import CalendarEventsTab from '../components/molecules/CalendarEventsTab.vue'
 
 const { user } = useAuth()
 const eventsStore  = useEventsStore()
@@ -84,6 +86,7 @@ const isLoading = ref(false)
 // Definición de las tabs
 const tabs = [
   { id: 'upcoming', label: 'Proximamente' },
+  { id: 'calendar', label: 'Calendario' },
   { id: 'discover', label: 'Descubrir' },
   { id: 'userEvents', label: 'Tus Eventos' },
 ]
@@ -107,7 +110,7 @@ watch(activeTab, (tab) => {
     eventsStore.unsubscribeUpcomingEvents()
   }
 
-  if (tab === 'discover') {
+  if (['discover', 'calendar'].includes(tab)) {
     eventsStore.subscribeAllEvents()
   } else {
     eventsStore.unsubscribeAllEvents()
