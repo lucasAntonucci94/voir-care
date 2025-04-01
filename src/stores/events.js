@@ -100,6 +100,17 @@ export const useEventsStore = defineStore('events', {
         throw error
         }
     },
+    // Busca evento por idDoc
+    async findEventById(idDoc) {
+        debugger
+        const { findById } = useEvents()
+        try {
+            return await findById(idDoc)
+        } catch (error) {
+            console.error('Error al eliminar evento:', error)
+            throw error
+        }
+    },
 },
     // getters: {
     //     getEvents() {

@@ -21,7 +21,7 @@ export function usePosts() {
         title,
         body,
         categories: categories || [],
-        created_at: serverTimestamp() + 5,
+        created_at: serverTimestamp(),
         imagePathFile: null,
         imageUrlFile: null,
         mediaType: mediaType || null,

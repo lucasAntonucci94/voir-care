@@ -10,6 +10,7 @@ import LandingPage from '../pages/LandingPage.vue';
 import ChatView from '../pages/ChatView.vue';
 import Groups from '../pages/GroupsPage.vue';
 import Events from '../pages/EventsPage.vue';
+import EventDetail from '../pages/EventDetail.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -81,6 +82,14 @@ const routes = [
         path: '/events',
         name: 'events',
         component: Events,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/event/:idEvent?',
+        name: 'eventDetail',
+        component: EventDetail,
         meta: {
             requiresAuth: true,
         }

@@ -1,7 +1,14 @@
 <template>
+  <div>
     <div class="p-4 bg-white dark:bg-gray-800 dark:text-gray-300 rounded-lg shadow-md">
       <FullCalendar ref="calendarRef" :options="calendarOptions" />
     </div>
+    <ShowEventModal
+    :event="selectedEvent"
+    :visible="showModal"
+    @close="closeModal"
+    />
+  </div>
   </template>
   
   <script setup>
@@ -9,9 +16,12 @@
   import { useEventsStore } from '../../stores/events';
   import FullCalendar from '@fullcalendar/vue3';
   import dayGridPlugin from '@fullcalendar/daygrid';
+  import ShowEventModal from '../organisms/ShowEventModal.vue';
   
   const eventsStore = useEventsStore();
   const calendarRef = ref(null);
+  const showModal = ref(false)
+  const selectedEvent = ref(null)
 
   // Mapear los eventos al formato requerido por FullCalendar
   const calendarEvents = computed(() =>
@@ -20,9 +30,12 @@
       title: event.title,
       start: event.startTime?.toDate(),
       end: event.endTime ? event.endTime.toDate() : null,
+      extendedProps: {
+        ...event
+      }
     }))
   );
-  console.log('Eventos calendar del store:', calendarEvents);
+
   const calendarOptions = {
     plugins: [dayGridPlugin],
     initialView: 'dayGridMonth',
@@ -45,10 +58,17 @@
     }
   },
   eventClick: function(info) {
-    // Aquí puedes manejar el clic en el evento, por ejemplo, abrir un modal con más detalles
-    console.log('Evento clicado:', info.event.title);
+    const evento = info.event.extendedProps
+    selectedEvent.value = evento
+    showModal.value = true
+    document.body.style.overflow = 'hidden';
   },
   };
+
+  const closeModal = () => {
+    showModal.value = false
+    document.body.style.overflow = '';
+  }
 
   watch(calendarEvents, async (newEvents) => {
     await nextTick(); // coloco nextTick para que el DOM se actualice antes de acceder a la API del calendar.
@@ -69,6 +89,5 @@
   </script>
   
   <style scoped>
-  /* Puedes agregar estilos personalizados aquí si es necesario */
   </style>
   

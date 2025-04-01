@@ -12,7 +12,7 @@
       />
       <div>
         <p class="text-sm font-bold text-[#2c3e50] dark:text-white">{{ post?.user?.displayName || 'Anónimo' }}</p>
-        <p class="text-xs text-gray-500 dark:text-white">{{ formatTimestamp(post?.created_at) }}</p>
+        <p class="text-xs text-gray-500 dark:text-white">{{ post?.created_at != null ? formatTimestamp(post?.created_at) : null }}</p>
       </div>
     </router-link>
     <div class="relative">
@@ -239,6 +239,8 @@ const selectedReportReason = ref('');
 const reportDescription = ref('');
 
 onMounted(() => {
+  console.log(props.post)
+  debugger
 });
 
 // Mostrar el modal de confirmación

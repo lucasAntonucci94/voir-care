@@ -202,7 +202,7 @@ function deletePost(postId) {
 onMounted(async () => {
   if (!activeUserEmail.value) return;
   await fetchUserData(activeUserEmail.value);
-  postsStore.subscribeProfile(activeUser.value.uid);
+  postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
   checkScroll();
   window.addEventListener('resize', checkScroll);
 });
