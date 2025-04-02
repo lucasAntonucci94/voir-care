@@ -1,102 +1,206 @@
 <template>
-    <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800 text-[#2c3e50] dark:text-white">
-      <!-- Encabezado del evento -->
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold">{{ event?.title }}</h3>
-        <!-- Botón para inscribirse (RSVP) -->
+  <div
+    class="bg-gray-100 dark:bg-gray-700 rounded-xl shadow-md overflow-hidden w-full max-w-sm border border-gray-200 dark:border-gray-600 transition hover:shadow-lg  cursor-pointer"
+  >
+    <!-- Media -->
+    <div v-if="event?.media" class="h-40 w-full relative">
+      <img
+        v-if="event?.mediaType === 'image'"
+        :src="event?.media"
+        alt="Media del Evento"
+        class="w-full h-full object-cover"
+        @click="openMediaModal"
+      />
+      <video
+        v-else-if="event?.mediaType === 'video'"
+        :src="event?.media"
+        class="w-full h-full object-cover"
+        controls
+        @click="openMediaModal"
+        />
+
+    </div>
+
+    <!-- Contenido -->
+    <div class="p-4 space-y-3 text-sm text-gray-800 dark:text-gray-200">
+      <!-- Header -->
+      <div class="flex justify-between items-start">
+        <div>
+          <h3 class="text-lg font-semibold">{{ event?.title }}</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            {{ event.location?.address || 'Ubicación no definida' }}
+          </p>
+        </div>
+
         <button
-          class="px-3 py-1 bg-primary text-white rounded hover:bg-primary-md transition-colors"
+          v-if="event.ownerId === user?.uid || event.ownerId === user?.id || user?.isAdmin"
+          class="text-red-500 hover:text-red-600"
+          @click="handleDelete"
+        >
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+
+      <!-- Fechas -->
+      <div class="flex flex-col gap-1">
+        <span><strong>Inicio:</strong> {{ formattedStartTime }}</span>
+        <span v-if="event?.endTime"><strong>Fin:</strong> {{ formattedEndTime }}</span>
+        <span v-if="event?.capacity"><strong>Capacidad:</strong> {{ event.capacity }}</span>
+      </div>
+
+      <!-- Descripción corta -->
+      <p class="line-clamp-3 text-xs text-gray-600 dark:text-gray-300">
+        {{ event.description }}
+      </p>
+    </div>
+
+   <!-- Acción + Categorías -->
+    <div class="p-4 pt-0 flex items-center justify-between flex-wrap gap-y-2">
+      <!-- Categorías -->
+      <div class="flex flex-wrap gap-2">
+        <span
+          v-for="category in event.categories"
+          :key="category.id"
+          class="text-xs px-2 py-1 rounded-full bg-teal-200 text-teal-900 dark:bg-teal-600 dark:text-white"
+        >
+          {{ category.name }}
+        </span>
+      </div>
+
+      <!-- Botón -->
+      <div>
+        <button
+          v-if="event.ownerId !== user?.uid"
+          class="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-md transition"
           @click="handleRSVP"
           :disabled="!user"
         >
           {{ rsvpLabel }}
         </button>
-      </div>
-      <!-- Descripción -->
-      <p class="mt-1 text-sm">{{ event?.description }}</p>
-      <!-- Media (Imagen o Video) -->
-      <div v-if="event?.media" class="mt-3">
-        <img
-          v-if="event?.mediaType === 'image'"
-          :src="event?.media"
-          alt="Media del Evento"
-          class="w-full h-48 object-cover rounded-lg cursor-pointer"
-          @click="openMediaModal"
-        />
-        <video
-          v-else-if="event?.mediaType === 'video'"
-          :src="event?.media"
-          controls
-          class="w-full h-48 rounded-lg cursor-pointer"
-          @click="openMediaModal"
-        ></video>
-      </div>
-      <!-- Detalles del Evento -->
-      <div class="flex flex-col mt-3 space-y-1 text-sm">
-        <div>
-          <span class="font-semibold">Inicio:</span> {{ formattedStartTime }}
-        </div>
-        <div v-if="event?.endTime">
-          <span class="font-semibold">Fin:</span> {{ formattedEndTime }}
-        </div>
-        <div>
-          <span class="font-semibold">Ubicación:</span> {{ event?.location?.address || 'No definida' }}
-        </div>
-        <div v-if="event?.capacity">
-          <span class="font-semibold">Capacidad:</span> {{ event?.capacity }}
-        </div>
-      </div>
-      <!-- Categorías -->
-      <div class="flex gap-2 mt-2 flex-wrap">
-        <span
-          v-for="category in event?.categories"
-          :key="category.id"
-          class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full"
+        <button
+          v-else
+          class="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-md transition"
+          @click="openEditModal"
         >
-          {{ category.name }}
-        </span>
+          Editar
+        </button>
       </div>
-      
-      <!-- Modal para visualizar la media en grande -->
-      <div
-        v-if="showMediaModal"
-        class="fixed inset-0 bg-black/90 z-101 transition-opacity duration-300 overflow-hidden"
-        @click.self="closeMediaModal"
-      >
-        <div class="flex h-full w-full">
-          <div class="flex-1 flex items-center justify-center relative">
-            <div v-if="event?.mediaType === 'image'" class="media-container">
-              <img
-                :src="event?.media"
-                alt="Media del Evento"
-                class="max-w-full max-h-full object-contain rounded-lg"
-              />
-            </div>
-            <div v-else-if="event?.mediaType === 'video'" class="media-container">
-              <video
-                :src="event?.media"
-                controls
-                autoplay
-                class="max-w-full max-h-full object-contain rounded-lg"
-              ></video>
-            </div>
+    </div>
+
+    <!-- Modal para visualizar la media en grande -->
+    <MediaViewerModal
+      :visible="showMediaModal"
+      :media="{ src: event.media, type: event.mediaType }"
+      @close="closeMediaModal"
+    />
+
+    <!-- Modal de confirmación de eliminación -->
+    <GenericConfirmModal 
+      :visible="showDeleteModal"
+      title="¿Eliminar evento?"
+      message="Esta acción no se puede deshacer. ¿Querés continuar?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteModal"
+      @confirmed="confirmDelete"
+    />
+    
+    <!-- Modal de edición de evento -->
+    <EditEventModal
+      :visible="showEditModal"
+      :event="selectedEvent"
+      @cancel="closeEditModal"
+      @submit="submitEdit"
+    />
+    <!-- <div
+      v-if="showEditModal"
+      class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4"
+    >
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-xl relative">
+        <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+          Editar Evento
+        </h3>
+
+        <div class="space-y-3">
+          <input
+            v-model="editForm.title"
+            type="text"
+            placeholder="Título"
+            class="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"
+          />
+
+          <textarea
+            v-model="editForm.description"
+            rows="3"
+            placeholder="Descripción"
+            class="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"
+          ></textarea>
+
+          <div class="flex gap-3">
+            <input
+              v-model="editForm.startTime"
+              type="datetime-local"
+              class="w-full px-3 py-2 rounded border text-sm dark:bg-gray-700 dark:text-white"
+            />
+            <input
+              v-model="editForm.endTime"
+              type="datetime-local"
+              class="w-full px-3 py-2 rounded border text-sm dark:bg-gray-700 dark:text-white"
+            />
           </div>
-          <button
-            @click="closeMediaModal"
-            class="absolute top-2 right-2 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+
+          <select
+            v-model="editForm.privacy"
+            class="w-full px-3 py-2 rounded border text-sm dark:bg-gray-700 dark:text-white"
           >
-            <i class="fa-solid fa-times text-xl"></i>
+            <option value="public">Público</option>
+            <option value="private">Privado</option>
+          </select>
+
+          <input
+            v-model="editForm.capacity"
+            type="number"
+            placeholder="Capacidad"
+            class="w-full px-3 py-2 rounded border text-sm dark:bg-gray-700 dark:text-white"
+          />
+
+          <input
+            v-model="editForm.location.address"
+            type="text"
+            placeholder="Ubicación"
+            class="w-full px-3 py-2 rounded border text-sm dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+          <button
+            class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500"
+            @click="closeEditModal"
+          >
+            Cancelar
+          </button>
+          <button
+            class="px-4 py-2 rounded bg-primary text-white hover:bg-primary-md"
+            @click="submitEdit"
+          >
+            Guardar cambios
           </button>
         </div>
       </div>
-    </div>
-  </template>
+    </div> -->
+
+  </div>
+</template>
   
   <script setup>
   import { ref, computed } from 'vue'
   import { useAuth } from '../../api/auth/useAuth'
   import { formatTimestamp } from '../../utils/formatTimestamp'
-
+  import { useEventsStore } from '../../stores/events'
+  import MediaViewerModal from '../../components/molecules/MediaViewerModal.vue'
+  import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue'
+  import EditEventModal from './EditEventModal.vue'
+  
   const props = defineProps({
     event: {
       type: Object,
@@ -106,8 +210,18 @@
   
   const { user } = useAuth()
   const showMediaModal = ref(false)
-  
-  // Computed para formatear las fechas (se asume que startTime y endTime son convertibles a Date)
+  const showDeleteModal = ref(false)
+  const eventsStore = useEventsStore()
+  const showEditModal = ref(false)
+  const selectedEvent = ref({
+    title: '',
+    description: '',
+    startTime: '',
+    endTime: '',
+    privacy: 'public',
+    capacity: 0,
+    location: { address: '' }
+  })
   const formattedStartTime = computed(() => {
     if (!props.event.startTime) return 'No definida'
     
@@ -139,7 +253,37 @@
   }
   function closeMediaModal() {
     showMediaModal.value = false
+    console.log('showMediaModal.value después de cerrar:', showMediaModal.value);
     document.body.style.overflow = ''
+  }
+  
+  // Funciones para abrir y cerrar el modal de eliminacion
+  function handleDelete() {
+    showDeleteModal.value = true
+    document.body.style.overflow = 'hidden'
+  }
+  function closeDeleteModal() {
+    showDeleteModal.value = false
+    document.body.style.overflow = ''
+  }
+  function confirmDelete() {
+    eventsStore.deleteEvent(props.event.idDoc)
+    closeDeleteModal()
+  }
+
+  // Funciones para abrir y cerrar el modal de edicion
+  function openEditModal() {
+    selectedEvent.value = { ...props.event }
+    showEditModal.value = true
+    document.body.style.overflow = 'hidden'
+  }
+  function closeEditModal() {
+    showEditModal.value = false
+    document.body.style.overflow = ''
+  }
+  function submitEdit(updatedEvent) {
+    // eventsStore.updateEvent(updatedEvent.idDoc, updatedEvent)
+    closeEditModal()
   }
   </script>
   

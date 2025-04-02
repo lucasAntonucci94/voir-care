@@ -12,8 +12,9 @@
             + Crear Evento
           </button>
         </div>
-        <!-- Tabs específicos para eventos -->
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
+      </div>
+       <!-- Tabs específicos para eventos -->
+       <div class="container mx-auto px-4 md:px-8 lg:px-16">
           <div class="mt-4 flex gap-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
             <button
               v-for="tab in tabs"
@@ -30,43 +31,20 @@
             </button>
           </div>
         </div>
-      </div>
-
       <!-- Contenido de cada tab -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
         <!-- Próximos Eventos -->
-        <div v-if="activeTab === 'upcoming'">
-          <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Próximos Eventos</h2>
-          <div v-if="eventsStore.upcomingEvents?.value?.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center align-center">
-            <EventCard
-            v-for="event in eventsStore?.upcomingEvents?.value"
-            :key="event.idDoc"
-            :event="event"
-            />
-            </div>
-            <p v-else class="text-center text-gray-500">
-              No estás suscripto a ningún evento.
-            </p>
-        </div>
+        <UpcomingEventsTab v-if="activeTab === 'upcoming'" />
+        <!-- Próximos Eventos -->
+        <CalendarEventsTab v-else-if="activeTab === 'calendar'" />
         <!-- Descubrir Eventos -->
-        <div v-else-if="activeTab === 'discover'">
-          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Descubrir</h2>
-          <!-- Muestra los eventos a los que el usuario está suscripto -->
-          <div v-if="eventsStore.allEvents?.value?.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center align-center">
-            <EventCard
-            v-for="event in eventsStore?.allEvents?.value"
-            :key="event.idDoc"
-            :event="event"
-            />
-            </div>
-            <p v-else class="text-center text-gray-500">
-              No estás suscripto a ningún evento.
-            </p>
-        </div>
+        <DiscoverEventsTab v-else-if="activeTab === 'discover'" />
+        <!-- Tus Eventos -->
+        <UserEventsTab v-else-if="activeTab === 'userEvents'" />
         <!-- Eventos Destacados -->
-        <div v-else-if="activeTab === 'featured'">
+        <!-- <FeaturedEventsTab v-else-if="activeTab === 'featured'" /> -->
+        <!-- <div v-else-if="activeTab === 'featured'">
           <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Eventos Destacados</h2>
-          <!-- Se puede mostrar eventos con alta interacción o recomendados -->
           <EventCard
             v-for="event in featuredEvents"
             :key="event.idDoc"
@@ -75,25 +53,10 @@
           <p v-if="featuredEvents.length === 0" class="text-center text-gray-500">
             No hay eventos destacados.
           </p>
-        </div>
-        <!-- Tus Eventos -->
-        <div v-else-if="activeTab === 'userEvents'">
-          <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4">Tus Eventos</h2>
-          <!-- Muestra los eventos a los que el usuario está suscripto -->
-          <div v-if="eventsStore.events?.value?.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center align-center">
-            <EventCard
-            v-for="event in eventsStore?.events?.value"
-            :key="event.idDoc"
-            :event="event"
-            />
-            </div>
-            <p v-else class="text-center text-gray-500">
-              No estás suscripto a ningún evento.
-            </p>
-          </div>
-        </div>
+        </div> -->
+       
       </div>
-
+    </div>
     <!-- Modal para crear evento -->
     <CreateEventModal
       :visible="showModalCreate"
@@ -108,6 +71,11 @@ import { useAuth } from '../api/auth/useAuth'
 import { useEventsStore } from '../stores/events'
 import EventCard from '../components/organisms/EventCard.vue'
 import CreateEventModal from '../components/organisms/CreateEventModal.vue'
+import UpcomingEventsTab from '../components/molecules/UpcomingEventsTab.vue'
+import DiscoverEventsTab from '../components/molecules/DiscoverEventsTab.vue'
+import UserEventsTab from '../components/molecules/UserEventsTab.vue'
+import CalendarEventsTab from '../components/molecules/CalendarEventsTab.vue'
+
 const { user } = useAuth()
 const eventsStore  = useEventsStore()
 
@@ -118,6 +86,7 @@ const isLoading = ref(false)
 // Definición de las tabs
 const tabs = [
   { id: 'upcoming', label: 'Proximamente' },
+  { id: 'calendar', label: 'Calendario' },
   { id: 'discover', label: 'Descubrir' },
   { id: 'userEvents', label: 'Tus Eventos' },
 ]
@@ -141,7 +110,7 @@ watch(activeTab, (tab) => {
     eventsStore.unsubscribeUpcomingEvents()
   }
 
-  if (tab === 'discover') {
+  if (['discover', 'calendar'].includes(tab)) {
     eventsStore.subscribeAllEvents()
   } else {
     eventsStore.unsubscribeAllEvents()

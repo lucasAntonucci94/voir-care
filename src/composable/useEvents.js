@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   addDoc,
+  getDoc,
   onSnapshot,
   query,
   orderBy,
@@ -21,7 +22,6 @@ export function useEvents() {
 
   async function createEvent(eventData) {
     try {
-      debugger
       isCreating.value = true
       await addDoc(eventsRef, {
         ...eventData,
@@ -35,6 +35,11 @@ export function useEvents() {
     }
   }
 
+  /**
+   * Se suscribe a todos los grupos.
+   * @param {function} callback - Función que recibe un array de grupos.
+   * @returns {function} - Función para cancelar la suscripción.
+   */
   function subscribeToEvents(callback) {
     try {
       const q = query(eventsRef, orderBy('createdAt', 'desc'))
@@ -83,9 +88,12 @@ export function useEvents() {
     }
   }
 
+  /**
+   * Se suscribe a los 20 grupos más próximos.
+   * @param {function} callback - Función que recibe un array de grupos.
+   * @returns {function} - Función para cancelar la suscripción.
+   */
   function subscribeToUpcomingEvents(callback) {
-    debugger
-
     try {
       const now = new Date()
       const q = query(
@@ -117,6 +125,27 @@ export function useEvents() {
     }
   }
 
+  async function findById(idDoc) {
+    debugger
+
+    try {
+      const docRef = doc(db, 'events', idDoc)
+      const docSnap = await getDoc(docRef)
+      if( !docSnap.exists()) {
+        console.error('El evento no existe')
+        throw new Error('Evento no encontrado')
+      }
+      
+      return {
+        idDoc: docSnap.id,
+        ...docSnap.data(),
+      }
+    } catch (error) {
+      console.error('Error al eliminar evento:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createEvent,
@@ -124,5 +153,6 @@ export function useEvents() {
     subscribeToUserEvents,
     subscribeToUpcomingEvents,
     deleteEvent,
+    findById,
   }
 }
