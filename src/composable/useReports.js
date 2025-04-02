@@ -12,7 +12,6 @@ export function useReports() {
    * @returns {Promise<void>}
    */
   async function saveReport(postId, userId, reason = 'No especificado', description) {
-    debugger
     try {
       const reportData = {
         reportId: newGuid(),

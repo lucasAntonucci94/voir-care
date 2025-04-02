@@ -38,14 +38,14 @@
         <div v-if="activeTab === 'feed'">
           <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Feed de Grupos</h2>
           <div class="space-y-6 flex flex-col items-center">
-            <PostCard
+            <!-- <PostCard
               v-for="post in feedPosts"
               :key="post.idDoc"
               :post="post"
             />
             <p v-if="feedPosts.length === 0" class="text-center text-gray-500">
               No hay publicaciones en tu feed.
-            </p>
+            </p> -->
           </div>
         </div>
 
@@ -497,19 +497,10 @@ function handleMediaUpload(event) {
 
 
 // // Iniciar suscripción al montar el componente
-// onMounted(() => {
-//   console.log(user.value)
-//   debugger
-//   // if(user.value){
-//   //   groupsStore.subscribeUserGroups(user.value.uid)
-//   // }
-// })
-// Suscribirse a los grupos del usuario cuando esté autenticado
 watch(
   () => user.value,
   (newUser) => {
     if (newUser && newUser.uid) {
-      debugger
       groupsStore.subscribeUserGroups(newUser.uid)
     }
   },
