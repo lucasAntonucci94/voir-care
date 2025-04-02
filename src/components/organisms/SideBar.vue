@@ -70,7 +70,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-compass w-5 text-center"></i>
-        <span class="text-sm font-medium">Explorar</span>
+        <span class="text-sm font-medium">Explorar (próximamente)</span>
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/profile" 
@@ -112,7 +112,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-question w-5 text-center"></i>
-        <span class="text-sm font-medium">Faqs</span>
+        <span class="text-sm font-medium">Faqs (próximamente)</span>
       </router-link>
       <router-link 
         to="/groups" 
@@ -126,7 +126,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-users w-5 text-center"></i>
-        <span class="text-sm font-medium">Grupos</span>
+        <span class="text-sm font-medium">Grupos (próximamente)</span>
       </router-link>
       <router-link 
         to="/events" 
@@ -146,16 +146,16 @@
 
     <!-- Sección "Explorar" -->
     <div class="mt-8">
-      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Descubrir</h3>
+      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Otros</h3>
       <ul class="space-y-2">
         <li>
           <a href="#" class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-200 dark:hover:text-secondary dark:hover:bg-gray-700 rounded-md transition-colors">
-            Adopciones
+            Adopciones (próximamente)
           </a>
         </li>
         <li>
           <a href="#" class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-200 dark:hover:text-secondary dark:hover:bg-gray-700 rounded-md transition-colors">
-            Educación
+            Educación (próximamente)
           </a>
         </li>
       </ul>

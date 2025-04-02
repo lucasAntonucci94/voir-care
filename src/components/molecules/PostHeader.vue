@@ -27,6 +27,15 @@
         class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
       >
         <ul class="py-1 text-sm text-gray-700  dark:text-gray-200">
+          
+          <li>
+            <button 
+              @click="emit('share')" 
+              class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+            >
+              <i class="fas fa-share mr-2"></i> Compartir
+            </button>
+          </li>
           <li v-if="post?.user?.id === user?.uid || user?.isAdmin">
             <button 
               @click="showEditModal" 
@@ -41,14 +50,6 @@
               class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
             >
               <i class="fas fa-trash mr-2"></i> Eliminar
-            </button>
-          </li>
-          <li>
-            <button 
-              @click="emit('share')" 
-              class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-            >
-              <i class="fas fa-share mr-2"></i> Compartir
             </button>
           </li>
           <li v-if="post?.user?.id !== user?.uid">
@@ -79,7 +80,7 @@
       <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">¿Estás seguro de que quieres ocultar esta publicación?</p>
       <div class="flex justify-end gap-3">
         <button 
-          @click="showModalHide = false" 
+          @click="closeHideModal" 
           class="px-4 py-2 text-gray-500 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-200 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
         >
           Cancelar
@@ -99,34 +100,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Modal de confirmación para repostar un post -->
-  <!-- <div v-if="showModalReport" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300 mb-4">¿Desea reportar esta publicación?</h3>
-      <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">¿Estás seguro de que quieres reportar esta publicación?</p>
-      <div class="flex justify-end gap-3">
-        <button 
-          @click="showModalReport = false" 
-          class="px-4 py-2 text-gray-500 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-200 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
-        >
-          Cancelar
-        </button>
-        <button
-          :disabled="isLoading"
-          type="submit"
-          @click="handleReport" 
-          class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
-        >
-          <span v-if="!isLoading">Reportar</span>
-          <span v-else class="flex items-center gap-2">
-            <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            Reportando...
-          </span>
-        </button>
-      </div>
-    </div>
-  </div> -->
   <!-- Modal de confirmación para reportar un post -->
 <div v-if="showModalReport" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
   <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
@@ -149,7 +122,7 @@
 
     <div class="flex justify-end gap-3">
       <button 
-        @click="showModalReport = false" 
+        @click="closeReportModal" 
         class="px-4 py-2 text-gray-500 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-200 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
       >
         Cancelar
@@ -240,7 +213,6 @@ const reportDescription = ref('');
 
 onMounted(() => {
   console.log(props.post)
-  debugger
 });
 
 // Mostrar el modal de confirmación
@@ -253,7 +225,6 @@ function confirmDelete() {
   emit('delete');
   showModalDelete.value = false;
 }
-
 
 // Confirmar report
 async function handleReport() {
@@ -272,22 +243,21 @@ async function handleReport() {
   }
 }
 
-
 // Mostrar el modal de report
 function showReportModal() {
   showModalReport.value = true;
-  document.body.style.overflow = 'hidden'; // Fija el fondo
+  document.body.style.overflow = 'hidden';
 }
 // Mostrar el modal de edición
 function showEditModal() {
   showModalEdit.value = true;
-  document.body.style.overflow = 'hidden'; // Fija el fondo
+  document.body.style.overflow = 'hidden';
 }
 
 // Mostrar el modal de edición
 function showHideModal() {
   showModalHide.value = true;
-  document.body.style.overflow = 'hidden'; // Fija el fondo
+  document.body.style.overflow = 'hidden';
 }
 
 // Confirmar eliminación y emitir evento
@@ -305,14 +275,26 @@ async function handleHidePost() {
   }
 }
 
+// Cerra modal reportar post
+async function closeReportModal() {
+  showModalReport.value = false
+  document.body.style.overflow = '';
+}
+
+// Ceeerra modal ocultar post
+async function closeHideModal() {
+  showModalHide.value = false
+  document.body.style.overflow = '';
+}
+
 function handlePostUpdate(updatedPost) {
   showModalEdit.value = false;
-  document.body.style.overflow = ''; // Restaura el scroll del body
+  document.body.style.overflow = '';
 }
 
 function closeEditModal() {
   showModalEdit.value = false;
-  document.body.style.overflow = ''; // Restaura el scroll del body
+  document.body.style.overflow = '';
 }
 </script>
 

@@ -102,7 +102,6 @@ export const useEventsStore = defineStore('events', {
     },
     // Busca evento por idDoc
     async findEventById(idDoc) {
-        debugger
         const { findById } = useEvents()
         try {
             return await findById(idDoc)

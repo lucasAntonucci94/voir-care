@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
+    <div v-if="visible"  @click.stop="closeModal" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <!-- Encabezado del modal -->
         <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
@@ -258,6 +258,7 @@
   async function handleCreateEvent() {
     isLoading.value = true
     try {
+      validateForm(newEvent.value)
       const ownerId = user.value?.uid || user.value?.id || null
       let updatedPhotoUrl = null
       let updatedPhotoPath = null
@@ -293,6 +294,7 @@
       closeModal()
     } catch (error) {
       console.error('Error al crear evento:', error)
+      alert('Error al crear evento:'+ error)
     } finally {
       isLoading.value = false
     }
@@ -311,6 +313,42 @@
       endTime: '',
       location: { address: '', lat: null, lng: null },
       capacity: null
+    }
+  }
+  
+  function validateForm() {
+    if(!newEvent.value.title) {
+      throw new Error('El título es obligatorio')
+    }
+    if(!newEvent.value.description) {
+      throw new Error('La descripción es obligatoria')
+    }
+    if(!newEvent.value.startTime) {
+      throw new Error('La fecha y hora de inicio son obligatorias')
+    }
+    if(newEvent.value.endTime && new Date(newEvent.value.startTime) >= new Date(newEvent.value.endTime)) {
+      throw new Error('La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio')
+    }
+    if(newEvent.value.capacity && newEvent.value.capacity < 0) {
+      throw new Error('La capacidad debe ser un número positivo')
+    }
+    if(!newEvent.value.location.address) {
+      throw new Error('La ubicación es obligatoria')
+    }
+    if(!newEvent.value.media) {
+      throw new Error('Debe cargarle una portada al evento.')
+    }
+    // if(newEvent.value.location.address && !newEvent.value.location.lat) {
+    //   throw new Error('La ubicación es obligatoria')
+    // }
+    // if(newEvent.value.location.lat && !newEvent.value.location.address) {
+    //   throw new Error('La dirección es obligatoria')
+    // }
+    if(newEvent.value.categories.length === 0) {
+      throw new Error('Debes seleccionar al menos una categoría')
+    }
+    if(newEvent.value.privacy !== 'public' && newEvent.value.privacy !== 'private') {
+      throw new Error('La privacidad debe ser pública o privada')
     }
   }
   
