@@ -69,7 +69,8 @@ export function useEvents() {
     try {
       const q = query(
         eventsRef,
-        where('members', 'array-contains', uid),
+        where('ownerId', '==', uid),
+        // where('members', 'array-contains', uid),
         orderBy('createdAt', 'desc')
       )
       return onSnapshot(q, (snapshot) => {

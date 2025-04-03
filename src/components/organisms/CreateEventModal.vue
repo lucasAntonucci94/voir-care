@@ -287,7 +287,11 @@
         endTime: newEvent.value.endTime ? new Date(newEvent.value.endTime) : null,
         location: newEvent.value.location,
         capacity: newEvent.value.capacity,
-        members: [ownerId]
+        attendees: {
+          going: [ownerId],
+          interested: [],
+          notInterested: []
+        },
       }
       await eventsStore.createEvent(eventData)
       emits('eventCreated', eventData)

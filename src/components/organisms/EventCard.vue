@@ -3,7 +3,6 @@
   class="bg-gray-100 dark:bg-gray-700 rounded-xl shadow-md overflow-hidden w-full max-w-sm border border-gray-200 dark:border-gray-600 transition hover:shadow-lg  cursor-pointer"
   @click="goToDetail"
   >
-  <!-- @click="openShowModal" -->
     <!-- Media -->
     <div v-if="event?.media" class="h-40 w-full relative">
       <img
@@ -12,15 +11,12 @@
         alt="Media del Evento"
         class="w-full h-full object-cover"
         />
-        <!-- @click="openMediaModal" -->
       <video
         v-else-if="event?.mediaType === 'video'"
         :src="event?.media"
         class="w-full h-full object-cover"
         controls
         />
-        <!-- @click="openMediaModal" -->
-
     </div>
 
     <!-- Contenido -->
@@ -33,7 +29,6 @@
             {{ event.location?.address || 'Ubicación no definida' }}
           </p>
         </div>
-
         <button
           v-if="event.ownerId === user?.uid || event.ownerId === user?.id || user?.isAdmin"
           class="text-red-500 hover:text-red-600"
@@ -48,7 +43,7 @@
         <span><strong>Inicio:</strong> {{ formattedStartTime }}</span>
         <span v-if="event?.endTime"><strong>Fin:</strong> {{ formattedEndTime }}</span>
         <!-- <span v-if="event?.capacity"><strong>Capacidad:</strong> {{ event.capacity }}</span> -->
-        <span v-if="event?.capacity"><strong>Participantes:</strong> {{ event.members.length }}</span>
+        <span v-if="event?.capacity"><strong>Participantes:</strong> {{ event?.members?.length }}</span>
       </div>
 
       <!-- Descripción corta -->
