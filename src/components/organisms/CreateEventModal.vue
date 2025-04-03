@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible"  @click.stop="closeModal" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
+    <div v-if="visible"  class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <!-- Encabezado del modal -->
         <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">

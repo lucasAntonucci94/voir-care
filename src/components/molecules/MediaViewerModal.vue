@@ -33,7 +33,7 @@
   </template>
   
   <script setup>
-  import { ref, watch } from 'vue'
+  import { watch } from 'vue'
   const props=  defineProps({
     visible: {
       type: Boolean,

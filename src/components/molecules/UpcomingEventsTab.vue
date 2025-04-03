@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="totalEvents !== 0">
       <h2 class="text-lg font-semibold text-gray-700 dark:text-white mb-4 sr-only">Próximos Eventos</h2>
   
       <template v-for="([key, label]) in Object.entries(sections)" :key="key">
@@ -27,10 +27,10 @@
       </template>
   
       <!-- Si no hay NINGÚN evento en ninguna sección -->
-      <p v-if="totalEvents === 0" class="text-center text-gray-500 mt-6">
-        No hay eventos próximos.
-      </p>
     </div>
+    <p v-else class="text-center text-gray-500 mt-6">
+      No hay eventos próximos.
+    </p>
   </template>
   
   

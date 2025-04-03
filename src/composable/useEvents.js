@@ -126,8 +126,6 @@ export function useEvents() {
   }
 
   async function findById(idDoc) {
-    debugger
-
     try {
       const docRef = doc(db, 'events', idDoc)
       const docSnap = await getDoc(docRef)
