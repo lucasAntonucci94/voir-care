@@ -70,10 +70,10 @@
         <button
           v-if="event.ownerId !== user?.uid"
           class="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-md transition"
-          @click.stop="handleRSVP"
+          @click.stop="handleAttendance"
           :disabled="!user"
         >
-          {{ rsvpLabel }}
+          {{ attendanceLabel }}
         </button>
         <button
           v-else
@@ -148,17 +148,21 @@
     return formatTimestamp(props.event.endTime)
   })
   
-  // Estado y lógica para el RSVP (inscripción)
-  const isRSVPed = ref(false)
-  const rsvpLabel = computed(() => (isRSVPed.value ? 'Inscrito' : 'Inscribirse'))
-  
-  function handleRSVP() {
+  // Estado y lógica para el Attendance (inscripción)
+  const isGoing = computed(() => {
+    return props.event?.attendees?.going?.includes(user.value?.uid)
+  })
+  const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar asistencia' : 'Asistiré'))
+
+  async function handleAttendance() {
     if (!user.value) {
       console.log('Usuario no autenticado')
       return
     }
-    // Aquí implementarías la lógica para inscribirse/cancelar inscripción en el evento.
-    isRSVPed.value = !isRSVPed.value
+    debugger
+    const status = isGoing.value ? null : 'going' // si ya está, lo quitamos
+    await eventsStore.setUserAttendanceStatus(props.event.idDoc, user.value.uid, status)
+    console.log(`Usuario ${isGoing.value ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${props.event.idDoc},  ${props.event.title}`)
   }
   
   // Funciones para abrir y cerrar el modal de eliminacion
@@ -170,8 +174,8 @@
     showDeleteModal.value = false
     document.body.style.overflow = ''
   }
-  function confirmDelete() {
-    eventsStore.deleteEvent(props.event.idDoc)
+  async function confirmDelete() {
+    await eventsStore.deleteEvent(props.event.idDoc)
     closeDeleteModal()
   }
 

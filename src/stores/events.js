@@ -110,6 +110,16 @@ export const useEventsStore = defineStore('events', {
             throw error
         }
     },
+    // Busca evento por idDoc
+    async setUserAttendanceStatus(idDoc, userId, status) {
+        const { setUserAttendanceStatus } = useEvents()
+        try {
+            return await setUserAttendanceStatus(idDoc, userId, status)
+        } catch (error) {
+            console.error('Error al eliminar evento:', error)
+            throw error
+        }
+    },
 },
     // getters: {
     //     getEvents() {

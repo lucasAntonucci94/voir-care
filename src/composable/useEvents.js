@@ -12,6 +12,9 @@ import {
   deleteDoc,
   where,
   limit,
+  arrayUnion,
+  arrayRemove,
+  updateDoc,
 } from 'firebase/firestore'
 
 const db = getFirestore();
@@ -145,6 +148,20 @@ export function useEvents() {
     }
   }
 
+  async function setUserAttendanceStatus(idDoc, userId, status) {
+    const docRef = doc(db, 'events', idDoc)
+  
+    const updateData = {}
+  
+    if (status === 'going') {
+      updateData['attendees.going'] = arrayUnion(userId)
+    } else {
+      updateData['attendees.going'] = arrayRemove(userId)
+    }
+  
+    await updateDoc(docRef, updateData)
+  }
+
   return {
     isCreating,
     createEvent,
@@ -153,5 +170,6 @@ export function useEvents() {
     subscribeToUpcomingEvents,
     deleteEvent,
     findById,
+    setUserAttendanceStatus,
   }
 }

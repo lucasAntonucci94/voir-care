@@ -61,10 +61,11 @@
         <!-- Acciones -->
         <div class="flex justify-between items-center mt-6">
           <button
-            @click.stop="handleRSVP"
-            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-md transition"
+            v-if="event.ownerId !== user?.uid"
+            class="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-md transition"
+            @click.stop="handleAttendance"
           >
-            Inscribirse
+            {{ attendanceLabel }}
           </button>
 
           <router-link
@@ -81,16 +82,53 @@
 </template>
 
 <script setup>
+import { ref, computed, watch } from 'vue'
 import { formatTimestamp } from '../../utils/formatTimestamp'
+import { useAuth } from '../../api/auth/useAuth'
+import { useEventsStore } from '../../stores/events'
+const { user } = useAuth()
+const eventsStore = useEventsStore()
 
+// Propiedades del componente
 const props = defineProps({
   event: { type: Object, required: true },
   visible: { type: Boolean, default: false }
 })
+const internalEvent = ref({ ...props.event })
+
+watch(() => props.event, (newVal) => {
+  internalEvent.value = { ...newVal }
+})
+
+// Estado y lógica para el Attendance (inscripción)
+const isGoing = computed(() => {
+  return internalEvent?.value.attendees?.going?.includes(user.value?.uid)
+})
+const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar asistencia' : 'Asistiré'))
 
 const emit = defineEmits(['close'])
 
-function handleRSVP() {
-  alert(`Inscrito al evento: ${props.event.title}`)
+async function handleAttendance() {
+  if (!user.value) {
+    console.log('Usuario no autenticado')
+    return
+  }
+  const status = isGoing.value ? null : 'going'
+  await eventsStore.setUserAttendanceStatus(internalEvent.value.idDoc, user.value.uid, status)
+  console.log(`Usuario ${isGoing.value ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${internalEvent.value.idDoc},  ${internalEvent.value.title}`)
+  // Esto es para reflejar correctamente el dato en al vista
+  if (!internalEvent.value.attendees) internalEvent.value.attendees = { going: [] }
+
+  if (status === 'going') {
+    if (!internalEvent.value.attendees.going.includes(user.value.uid)) {
+      internalEvent.value.attendees.going.push(user.value.uid)
+    }
+  } else {
+    internalEvent.value.attendees.going = internalEvent.value.attendees.going.filter(
+      id => id !== user.value.uid
+    )
+  }
+  console.log(`Usuario ${status ? 'inscrito' : 'removido'} del evento: ${internalEvent.value.title}`)
 }
+
 </script>
