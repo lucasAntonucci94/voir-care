@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible"  @click.stop="closeModal" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
+    <div v-if="visible"  class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <!-- Encabezado del modal -->
         <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
@@ -113,13 +113,9 @@
               <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Ubicación
               </label>
-              <input
-                v-model="newEvent.location.address"
-                id="eventLocation"
-                type="text"
-                placeholder="Dirección del evento"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 transition-all duration-200"
-                :disabled="isLoading"
+              <GeolocationInput
+                v-model="newEvent.location"
+                placeholder="Ingresá una dirección"
               />
             </div>
   
@@ -212,6 +208,7 @@
   import { newGuid } from '../../utils/newGuid'
   import { useEventsStore } from '../../stores/events'
   import { useAuth } from '../../api/auth/useAuth'
+import GeolocationInput from '../atoms/GeolocationInput.vue'
   
   const emits = defineEmits(['close', 'eventCreated'])
   const props = defineProps({
@@ -227,11 +224,16 @@
   
   const isLoading = ref(false)
   const categories = ref([
-    { id: 'cat1', name: 'Educación' },
-    { id: 'cat2', name: 'Cultural' },
-    { id: 'cat3', name: 'Social' }
+    { id: 'adopcion', name: 'Adopción' },
+    { id: 'educacion', name: 'Educación' },
+    { id: 'salud', name: 'Salud y Bienestar' },
+    { id: 'recreativo', name: 'Recreativo' },
+    { id: 'competencia', name: 'Concursos y Muestras' },
+    { id: 'voluntariado', name: 'Voluntariado' },
+    { id: 'beneficencia', name: 'Solidarios' },
+    { id: 'otros', name: 'Otros' }
   ])
-  
+    
   const newEvent = ref({
     title: '',
     description: '',
@@ -287,7 +289,11 @@
         endTime: newEvent.value.endTime ? new Date(newEvent.value.endTime) : null,
         location: newEvent.value.location,
         capacity: newEvent.value.capacity,
-        members: [ownerId]
+        attendees: {
+          going: [ownerId],
+          interested: [],
+          notInterested: []
+        },
       }
       await eventsStore.createEvent(eventData)
       emits('eventCreated', eventData)

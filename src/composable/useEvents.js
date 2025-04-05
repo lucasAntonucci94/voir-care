@@ -12,6 +12,9 @@ import {
   deleteDoc,
   where,
   limit,
+  arrayUnion,
+  arrayRemove,
+  updateDoc,
 } from 'firebase/firestore'
 
 const db = getFirestore();
@@ -69,7 +72,8 @@ export function useEvents() {
     try {
       const q = query(
         eventsRef,
-        where('members', 'array-contains', uid),
+        where('ownerId', '==', uid),
+        // where('members', 'array-contains', uid),
         orderBy('createdAt', 'desc')
       )
       return onSnapshot(q, (snapshot) => {
@@ -126,8 +130,6 @@ export function useEvents() {
   }
 
   async function findById(idDoc) {
-    debugger
-
     try {
       const docRef = doc(db, 'events', idDoc)
       const docSnap = await getDoc(docRef)
@@ -146,6 +148,20 @@ export function useEvents() {
     }
   }
 
+  async function setUserAttendanceStatus(idDoc, userId, status) {
+    const docRef = doc(db, 'events', idDoc)
+  
+    const updateData = {}
+  
+    if (status === 'going') {
+      updateData['attendees.going'] = arrayUnion(userId)
+    } else {
+      updateData['attendees.going'] = arrayRemove(userId)
+    }
+  
+    await updateDoc(docRef, updateData)
+  }
+
   return {
     isCreating,
     createEvent,
@@ -154,5 +170,6 @@ export function useEvents() {
     subscribeToUpcomingEvents,
     deleteEvent,
     findById,
+    setUserAttendanceStatus,
   }
 }

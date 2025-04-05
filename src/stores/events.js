@@ -58,16 +58,16 @@ export const useEventsStore = defineStore('events', {
     },
     // Suscripción a eventos próximos
     subscribeUpcomingEvents() {
-    if (this.unsubscribeUpcoming) {
-        console.log('Suscripción ya activa (próximos), ignorando...')
-        return
-    }
-    console.log('Suscribiendo a eventos próximos...')
-    const { subscribeToUpcomingEvents } = useEvents()
-    this.unsubscribeUpcoming = subscribeToUpcomingEvents((events) => {
-        this.upcomingEvents.value = events
-        this.isLoading = false
-    })
+        if (this.unsubscribeUpcoming) {
+            console.log('Suscripción ya activa (próximos), ignorando...')
+            return
+        }
+        console.log('Suscribiendo a eventos próximos...')
+        const { subscribeToUpcomingEvents } = useEvents()
+        this.unsubscribeUpcoming = subscribeToUpcomingEvents((events) => {
+            this.upcomingEvents.value = events
+            this.isLoading = false
+        })
     },
     // Cancelar suscripción de eventos próximos
     unsubscribeUpcomingEvents() {
@@ -82,22 +82,22 @@ export const useEventsStore = defineStore('events', {
         const { createEvent } = useEvents()
         this.isCreating = true
         try {
-        await createEvent(eventData)
+            await createEvent(eventData)
         } catch (error) {
-        console.error('Error al crear evento:', error)
-        throw error
+            console.error('Error al crear evento:', error)
+            throw error
         } finally {
-        this.isCreating = false
+            this.isCreating = false
         }
     },
     // Eliminar un evento por idDoc
     async deleteEvent(idDoc) {
         const { deleteEvent } = useEvents()
         try {
-        await deleteEvent(idDoc)
+            await deleteEvent(idDoc)
         } catch (error) {
-        console.error('Error al eliminar evento:', error)
-        throw error
+            console.error('Error al eliminar evento:', error)
+            throw error
         }
     },
     // Busca evento por idDoc
@@ -105,6 +105,16 @@ export const useEventsStore = defineStore('events', {
         const { findById } = useEvents()
         try {
             return await findById(idDoc)
+        } catch (error) {
+            console.error('Error al eliminar evento:', error)
+            throw error
+        }
+    },
+    // Busca evento por idDoc
+    async setUserAttendanceStatus(idDoc, userId, status) {
+        const { setUserAttendanceStatus } = useEvents()
+        try {
+            return await setUserAttendanceStatus(idDoc, userId, status)
         } catch (error) {
             console.error('Error al eliminar evento:', error)
             throw error

@@ -92,7 +92,7 @@
       const video = document.createElement('video');
       video.src = URL.createObjectURL(file);
       video.addEventListener('loadeddata', () => {
-        video.currentTime = 1; // Tomar el frame a 1 segundo
+        video.currentTime = 1; // Toma el frame en el segundo 1
       });
       video.addEventListener('seeked', () => {
         const canvas = document.createElement('canvas');
@@ -128,11 +128,10 @@
       isLoading.value = false;
       return;
     }
-  
     const user = {
       uid: authUser.value.uid,
       displayName: authUser.value.displayName || authUser.value.email,
-      photoURL: authUser.value.photoURL || null,
+      photoURL: authUser.value.photoURLFile || null,
     };
   
     await reelsStore.addReel({

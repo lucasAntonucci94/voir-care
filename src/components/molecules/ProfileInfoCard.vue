@@ -13,13 +13,13 @@
                 class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
                 />
                 <button
-                    v-if="connections?.length > 5"
                     @click="setTabConexiones"
                     class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary dark:hover:ring-secondary transition group"
                     data-tooltip="Ver todas las conexiones"
                 >
                     <img
-                    :src="connections[5]?.avatar"
+                    :src="connections[5]?.avatar ?? avatarDefault"
+                    :alt="connections[5]?.displayName || 'Más conexiones'"
                     class="h-8 w-8 rounded-full object-cover"
                     alt="Más conexiones"
                     />

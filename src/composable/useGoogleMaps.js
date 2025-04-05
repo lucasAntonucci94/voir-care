@@ -29,8 +29,9 @@ export function useGoogleMaps() {
         resolve();
       } else {
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=${libraries.join(',')}`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=beta&libraries=${libraries.join(',')}`;
         script.async = true;
+        script.defer = true;
         script.onload = () => {
           geocoder = new window.google.maps.Geocoder();
           isGoogleMapsLoaded.value = true;
