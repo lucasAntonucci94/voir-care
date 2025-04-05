@@ -132,6 +132,7 @@
       uid: authUser.value.uid,
       displayName: authUser.value.displayName || authUser.value.email,
       photoURL: authUser.value.photoURLFile || null,
+      email: authUser.value.email || null,
     };
   
     await reelsStore.addReel({

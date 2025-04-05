@@ -46,7 +46,7 @@
 
       <!-- Panel de metadatos: lateral con avatar y botón de like -->
       <div
-        class="w-full md:w-96 bg-gradient-to-b from-gray-800/90 to-gray-900 text-white p-6 flex flex-col justify-between relative rounded-t-2xl md:rounded-l-2xl shadow-2xl overflow-y-auto"
+        class="w-full md:w-96 bg-gray-100 dark:bg-gray-800 text-white p-6 flex flex-col justify-between relative rounded-t-2xl md:rounded-l-2xl shadow-2xl overflow-y-auto"
       >
         <div class="space-y-6">
           <!-- Sección del usuario con avatar -->
@@ -54,32 +54,32 @@
             <img
               :src="reel?.user?.photoURL || 'https://via.placeholder.com/40'"
               alt="User avatar"
-              class="w-12 h-12 rounded-full object-cover border-2 border-indigo-500 shadow-md"
+              class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md"
             />
             <div>
-              <p class="text-lg font-semibold text-indigo-300">{{ reel?.user?.displayName }}</p>
-              <p class="text-xs text-gray-400">{{ formatTimestamp(reel?.createdAt) }}</p>
+              <p class="text-lg font-semibold text-primary dark:text-secondary">{{ reel?.user?.displayName }}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400">{{ formatTimestamp(reel?.createdAt) }}</p>
             </div>
           </div>
 
           <!-- Título del reel -->
-          <h3 class="text-2xl font-bold text-white tracking-tight">{{ reel?.title }}</h3>
+          <h3 class="text-2xl font-bold text-gray-600 dark:text-white tracking-tight">{{ reel?.title }}</h3>
 
           <!-- Estadísticas -->
           <div class="text-sm space-y-4">
             <p class="flex items-center space-x-2">
-              <span class="font-semibold text-gray-300">Visualizaciones:</span>
-              <span class="text-gray-100 flex items-center">
+              <span class="font-semibold text-gray-600 dark:text-gray-300">Visualizaciones:</span>
+              <span class="text-gray-600 dark:text-gray-100 flex items-center">
                 {{ reel?.views }}
-                <i class="fa-solid fa-eye text-indigo-400 ml-2"></i>
+                <i class="fa-solid fa-eye text-primary dark:text-secondary ml-2"></i>
               </span>
             </p>
             <div class="flex items-center space-x-2">
-              <span class="font-semibold text-gray-300">Me gusta:</span>
-              <span class="text-gray-100">{{ reel?.likes?.length }}</span>
+              <span class="font-semibold text-gray-600 dark:text-gray-300">Me gusta:</span>
+              <span class="text-gray-600 dark:text-gray-100">{{ reel?.likes?.length }}</span>
               <button
                 @click="toggleLike"
-                class="ml-2 p-2 bg-red-600/20 text-red-400 rounded-full hover:bg-red-600/40 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                class="ml-2 p-2 bg-red-300/20 dark:bg-red-600/20 text-red-400 rounded-full hover:bg-red-400/40 dark:hover:bg-red-600/40 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
                 aria-label="Toggle like"
               >
                 <i class="fa-solid fa-heart text-lg"></i>

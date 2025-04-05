@@ -138,7 +138,6 @@ function handleMediaUpload(event) {
 
   if (!file) return;
 
-  debugger
   const validTypes = ['image/', 'video/'];
   const isValid = validTypes.some(type => file.type.startsWith(type));
 
@@ -147,7 +146,6 @@ function handleMediaUpload(event) {
     event.target.value = ''; // limpia el input
     return;
   }
-  debugger
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {

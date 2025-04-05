@@ -159,7 +159,6 @@
       console.log('Usuario no autenticado')
       return
     }
-    debugger
     const status = isGoing.value ? null : 'going' // si ya está, lo quitamos
     await eventsStore.setUserAttendanceStatus(props.event.idDoc, user.value.uid, status)
     console.log(`Usuario ${isGoing.value ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${props.event.idDoc},  ${props.event.title}`)
