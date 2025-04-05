@@ -1,113 +1,90 @@
 <template>
-  <section class="explore-section bg-white rounded-2xl shadow-2xl overflow-hidden">
-    <!-- Filtros y Botón de Geolocalización -->
-    <div class="filters-container p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-gray-900">Explorar Lugares</h2>
+  <section class="explore-section rounded-2xl shadow-2xl overflow-hidden">
+    <!-- Header con título y acciones -->
+    <div class="flex justify-between items-center px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Explorar lugares</h2>
+      <div class="flex gap-2">
         <button
           @click="centerOnUserLocation"
-          class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-full text-sm font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-md"
+          class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-full text-sm font-semibold hover:bg-indigo-700 transition"
           :disabled="loadingLocation"
         >
           <svg v-if="loadingLocation" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z" />
           </svg>
           <span>{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
         </button>
         <button
           @click="deleteAllMarkers"
-          class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-full text-sm font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-md"
+          class="px-4 py-2 bg-red-500 text-white rounded-full text-sm font-semibold hover:bg-red-600 transition"
         >
-          <span>Delete Markers</span>
+          Borrar marcadores
         </button>
       </div>
-      <div class="filter-options">
-        <button
-          @click="toggleFilters"
-          class="w-full flex justify-between items-center p-3 bg-white rounded-lg shadow-sm hover:bg-gray-100 transition-all duration-200"
-        >
-          <span class="text-sm font-semibold text-gray-700">Filtros</span>
-          <svg
-            :class="{ 'rotate-180': isFiltersOpen }"
-            class="h-5 w-5 text-gray-500 transition-transform duration-200"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        <div
-          v-show="isFiltersOpen"
-          class="mt-2 bg-white rounded-lg shadow-md p-4 flex flex-col gap-3"
-        >
+    </div>
+
+    <!-- Layout principal: filtros + mapa -->
+    <div class="md:grid md:grid-cols-[280px_1fr]">
+      <!-- Filtros -->
+      <aside class="p-6 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Filtrar por tipo</h3>
+        <div class="flex flex-col gap-3">
           <label
             v-for="filter in filters"
             :key="filter.id"
-            class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-50 transition-all duration-200 cursor-pointer"
+            class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer"
           >
             <input
               type="checkbox"
               :value="filter.id"
               v-model="activeFilters"
-              class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              class="accent-indigo-600"
             />
-            <img :src="getFilterIcon(filter.id)" class="h-6 w-6" alt="Icono de filtro" />
-            <span class="text-sm text-gray-700 flex-1">{{ filter.label }}</span>
+            <img :src="getFilterIcon(filter.id)" class="h-5 w-5" />
+            <span>{{ filter.label }}</span>
           </label>
         </div>
+      </aside>
+
+      <!-- Mapa -->
+      <div class="relative h-[70vh]">
+        <div v-if="locationsStore.isLoading" class="absolute inset-0 flex items-center justify-center bg-white/70 z-10">
+          <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z" />
+          </svg>
+        </div>
+        <div id="map" class="w-full h-full"></div>
       </div>
     </div>
 
-    <!-- Mapa -->
-    <div class="map-container relative h-[60vh] md:h-[70vh] w-full">
-      <div v-if="locationsStore.isLoading" class="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75">
-        <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z"></path>
-        </svg>
-      </div>
-      <div id="map" class="w-full h-full"></div>
-    </div>
-
-    <!-- Lista de lugares (visible solo en mobile) -->
-    <div class="locations-list p-6 bg-gray-50 md:hidden">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Lugares Cercanos</h3>
+    <!-- Lista de lugares solo en mobile -->
+    <div class="md:hidden p-6 bg-gray-100 dark:bg-gray-900">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lugares cercanos</h3>
       <ul class="space-y-4">
         <li
           v-for="location in filteredLocations"
           :key="location.id"
-          class="flex items-start gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+          class="flex items-start gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
         >
           <img
             :src="location.imageUrlFile || 'https://via.placeholder.com/150'"
-            :alt="location.title"
-            class="w-16 h-16 object-cover rounded-md shadow-sm"
+            alt="Imagen del lugar"
+            class="w-16 h-16 object-cover rounded-md"
           />
           <div class="flex-1">
-            <h4 class="text-base font-semibold text-gray-900">{{ location.title }}</h4>
-            <p class="text-sm text-gray-600">{{ location.detail }}</p>
-            <p class="text-xs text-gray-500 mt-1">{{ location.address }}</p>
+            <h4 class="text-base font-semibold text-gray-800 dark:text-white">{{ location.title }}</h4>
+            <p class="text-sm text-gray-600 dark:text-gray-300">{{ location.detail }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ location.address }}</p>
             <p v-if="location.phone" class="text-xs text-indigo-600 mt-1">Tel: {{ location.phone }}</p>
-            <div v-if="location.socialNetworkLink?.length" class="flex gap-2 mt-2">
-              <a
-                v-for="(link, index) in location.socialNetworkLink"
-                :key="index"
-                :href="link"
-                target="_blank"
-                class="text-indigo-600 hover:text-indigo-800 text-xs font-medium"
-              >
-                {{ getSocialLabel(link) }}
-              </a>
-            </div>
           </div>
         </li>
       </ul>
     </div>
   </section>
 </template>
+
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';

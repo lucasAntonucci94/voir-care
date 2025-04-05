@@ -113,13 +113,9 @@
               <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Ubicación
               </label>
-              <input
-                v-model="newEvent.location.address"
-                id="eventLocation"
-                type="text"
-                placeholder="Dirección del evento"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 transition-all duration-200"
-                :disabled="isLoading"
+              <GeolocationInput
+                v-model="newEvent.location"
+                placeholder="Ingresá una dirección"
               />
             </div>
   
@@ -212,6 +208,7 @@
   import { newGuid } from '../../utils/newGuid'
   import { useEventsStore } from '../../stores/events'
   import { useAuth } from '../../api/auth/useAuth'
+import GeolocationInput from '../atoms/GeolocationInput.vue'
   
   const emits = defineEmits(['close', 'eventCreated'])
   const props = defineProps({
@@ -227,11 +224,16 @@
   
   const isLoading = ref(false)
   const categories = ref([
-    { id: 'cat1', name: 'Educación' },
-    { id: 'cat2', name: 'Cultural' },
-    { id: 'cat3', name: 'Social' }
+    { id: 'adopcion', name: 'Adopción' },
+    { id: 'educacion', name: 'Educación' },
+    { id: 'salud', name: 'Salud y Bienestar' },
+    { id: 'recreativo', name: 'Recreativo' },
+    { id: 'competencia', name: 'Concursos y Muestras' },
+    { id: 'voluntariado', name: 'Voluntariado' },
+    { id: 'beneficencia', name: 'Solidarios' },
+    { id: 'otros', name: 'Otros' }
   ])
-  
+    
   const newEvent = ref({
     title: '',
     description: '',

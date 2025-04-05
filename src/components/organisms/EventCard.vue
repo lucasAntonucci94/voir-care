@@ -43,7 +43,7 @@
         <span><strong>Inicio:</strong> {{ formattedStartTime }}</span>
         <span v-if="event?.endTime"><strong>Fin:</strong> {{ formattedEndTime }}</span>
         <!-- <span v-if="event?.capacity"><strong>Capacidad:</strong> {{ event.capacity }}</span> -->
-        <span v-if="event?.capacity"><strong>Participantes:</strong> {{ event?.members?.length }}</span>
+        <span><strong>Participantes:</strong> {{ event?.attendance?.going?.length || 0 }}</span>
       </div>
 
       <!-- Descripción corta -->
