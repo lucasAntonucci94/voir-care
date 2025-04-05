@@ -51,7 +51,7 @@ const notOwnedEvents = computed(() =>
 const { filteredEvents, filterEventsByCategory } = useUpcomingEventFilters(notOwnedEvents)
 
 const sections = {
-  all: 'Todos',
+  all: 'Cualquier Fecha',
   today: 'Hoy',
   tomorrow: 'Mañana',
   thisWeek: 'Esta semana',

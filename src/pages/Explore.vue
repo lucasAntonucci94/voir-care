@@ -82,6 +82,7 @@ function deleteAllMarkers() {
   debugger
   exploreMapRef.value?.deleteAllMarkers()
 }
+
 const filters = ref([
   { id: 'plaza', label: 'Plazas' },
   { id: 'parque', label: 'Parques' },

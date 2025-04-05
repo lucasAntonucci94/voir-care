@@ -2,7 +2,7 @@
   <div>
     <!-- Header -->
     <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
-      <h2 class="text-xl font-semibold text-gray-700 dark:text-white">Calendario de eventos</h2>
+      <h2 class="text-xl font-semibold text-gray-700 dark:text-white sr-only">Calendario de eventos</h2>
       <!-- Filtros de eventos -->
       <EventFilters
         v-model="searchQuery"
