@@ -18,15 +18,12 @@ export function useReels() {
       const extension = mediaType === 'image' ? 'jpg' : 'mp4';
       const filePath = `reels/${user.uid}/${newGuid()}.${extension}`;
       const thumbnailPath = `reels/${user.uid}/${newGuid()}_thumb.jpg`;
-
       // Subir archivo principal (base64) a Storage
       await uploadFile(filePath, file);
       const mediaUrl = await getFileUrl(filePath);
-
       // Subir thumbnail (base64) a Storage
       await uploadFile(thumbnailPath, thumbnail);
       const thumbnailUrl = await getFileUrl(thumbnailPath);
-
       // Datos del reel
       const reelData = {
         id: newGuid(),
@@ -46,7 +43,6 @@ export function useReels() {
         isPublic: true,
         status: 'active',
       };
-
       // Guardar en Firestore
       await addDoc(reelsRef, reelData);
     } catch (err) {

@@ -31,11 +31,23 @@
   const isMapReady = ref(false)
   let AdvancedMarkerElement = null
   
-  onMounted(async () => {
-  await initMap()
-  isMapReady.value = true
-  emit('map-ready')
-})
+//   onMounted(async () => {
+//   await initMap()
+//   isMapReady.value = true
+//   emit('map-ready')
+// })
+onMounted(async () => {
+  await initMap();
+  emit('map-ready');
+
+  watch(locationIds, async (newVal, oldVal) => {
+    console.log('WatchInit', newVal, oldVal);
+    if (!map.value || !AdvancedMarkerElement || !props.locations?.length) return;
+    console.log('UpdateMapMarkers', newVal, oldVal);
+    await updateMapMarkers();
+    console.log('Watchends');
+  }, { immediate: true });
+});
   
   onBeforeUnmount(() => {
     deleteAllMarkers()
@@ -47,17 +59,16 @@
   )
   
   // Usamos watch sobre la cadena de IDs para actualizar los markers solo cuando cambian
-  watch(
-  [locationIds, isMapReady],
-  async ([newIds, ready]) => {
-    console.log('Watch:', newIds, ready)
-    if (!ready || !props.locations?.length) return
-    await updateMapMarkers()
-    console.log('Watch ends')
-  },
-  { immediate: true }
-)
-  
+//   watch(
+//   [locationIds, isMapReady],
+//   async ([newIds, ready]) => {
+//     console.log('Watch:', newIds, ready)
+//     if (!ready || !props.locations?.length) return
+//     await updateMapMarkers()
+//     console.log('Watch ends')
+//   },
+//   { immediate: true }
+// )
   async function initMap() {
     console.log('InitMap')
     try {

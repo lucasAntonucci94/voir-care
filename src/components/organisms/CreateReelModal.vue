@@ -128,11 +128,10 @@
       isLoading.value = false;
       return;
     }
-  
     const user = {
       uid: authUser.value.uid,
       displayName: authUser.value.displayName || authUser.value.email,
-      photoURL: authUser.value.photoURL || null,
+      photoURL: authUser.value.photoURLFile || null,
     };
   
     await reelsStore.addReel({
