@@ -7,7 +7,7 @@
   <div class="container mx-auto px-4 font-poppins">
     <div class="flex flex-col items-start gap-5 px-5 md:px-10 lg:px-40 xl:px-50">
       <p class="text-1xl font-bold text-blue-100">Explora la conexion total</p>
-      <!-- <img src="../assets/icons/logoVoir.png" alt="Logo de Voir" class="w-40" /> -->
+      <!-- <img src="../assets/icons/logoGreen.png" alt="Logo de Voir" class="w-40" /> -->
       <h1 class="text-2xl md:text-3xl lg:text-5xl font-bold mb-0">Une Comunidad, Servicios y Educación en un Solo Lugar</h1>
       <p class="text-lg mb-0">Descubre cómo esta plataforma transforma la interacción entre amantes de los animales, ofreciendo un espacio único para conectar, compartir y aprender.</p>
       <router-link to="register" class="inline-block px-12 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
@@ -22,7 +22,7 @@
       <h2 class="text-4xl font-bold text-gray-800 mb-10 ">Características Destacadas</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-2xl mx-auto ">
         <div v-for="(feature, index) in features" :key="index" class="feature-item flex items-center p-2.5 bg-gray-100 rounded text-gray-600 text-base">
-          <img src="../assets/icons/logoVoir.png" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" />
+          <img src="../assets/icons/logoGreen.png" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" />
           <!-- <img :src="`https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4?text=Logo${index + 1}`" alt="Feature Logo" class="w-10 h-10 mr-3 rounded" /> -->
            <p>
              {{ feature }}
