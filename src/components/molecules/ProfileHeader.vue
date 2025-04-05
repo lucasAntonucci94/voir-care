@@ -82,25 +82,41 @@
         </div>
 
         <!-- Input para seleccionar archivo -->
-        <input
-          type="file"
-          accept="image/*"
-          @change="handleFileChange($event.target.files[0])"
-          class="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark: hover:file:bg-secondary-md"
-        />
-
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Archivo (imagen/video)</label>
+            <input
+              type="file"
+              accept="image/*,video/*"
+              @change="handleFileChange($event)"
+              :class="[
+                'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+                errorBannerFileMessage ? 'border-red-500' : 'border-gray-300  dark:border-gray-800'
+              ]"
+              :disabled="isLoading"
+              required
+            />
+            <!-- Mensaje de error -->
+            <p v-if="errorBannerFileMessage" class="text-red-500 text-sm mt-1">{{ errorBannerFileMessage }}</p>
+          </div>
         <!-- Botones -->
         <div class="flex justify-end gap-2 mt-4">
-          <button @click="closeBannerModal" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all">
+          <button @click="closeBannerModal" :disabled="uploading" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-all">
             Cancelar
           </button>
           <button
-            @click="saveBanner"
-            class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-all"
-            :disabled="!selectedFile || uploading"
-          >
-            {{ uploading ? 'Subiendo...' : 'Guardar' }}
-          </button>
+              @click="saveBanner"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-all"
+              :disabled="!selectedFile && uploading"
+            >
+              <span v-if="!uploading">Guardar</span>
+              <span v-else class="flex items-center">
+                <svg class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Guardando...
+              </span>
+            </button>
         </div>
       </div>
     </div>
@@ -166,6 +182,7 @@ const selectedFile = ref(null);
 const previewUrl = ref(null);
 const uploading = ref(false);
 const bannerUrl = ref(BannerDefault);
+const errorBannerFileMessage = ref('');
 
 // Computados
 const isFollowing = computed(() => {
@@ -185,15 +202,22 @@ function closeBannerModal() {
   document.body.style.overflow = ''; // Restaura el scroll del body
 }
 
-function handleFileChange(file) {
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      selectedFile.value = e.target.result; // Guardar como Base64
-      previewUrl.value = e.target.result; // Usar Base64 para previsualización
-    };
-    reader.readAsDataURL(file); // Convertir a Base64
+function handleFileChange(event) {
+  errorBannerFileMessage.value = ''; // Reiniciar mensaje de error
+
+  const file = event.target.files[0];
+  if (!file) return
+  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+    errorBannerFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+    event.target.value = ''; // Limpiar el input
+    return;
   }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    selectedFile.value = e.target.result; // Guardar como Base64
+    previewUrl.value = e.target.result; // Usar Base64 para previsualización
+  };
+  reader.readAsDataURL(file); // Convertir a Base64
 }
 
 async function saveBanner() {
