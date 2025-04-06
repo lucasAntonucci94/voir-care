@@ -100,7 +100,6 @@
   
   // Verificar si el usuario es admin o propietario
   const isAdmin = (group) => {
-    debugger
     return group.ownerId === user.value.uid || group.admins.includes(user.value.uid);
   };
   

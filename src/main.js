@@ -5,6 +5,9 @@ import router from './router/router';
 import App from './App.vue';
 import './style.css'
 
+// if (typeof process === 'undefined') {
+//   window.process = { env: {} }
+// }
 // Verifico tema dela web en localstorage
 const savedTheme = localStorage.getItem('theme') || 'light';
 if (savedTheme === 'dark') {

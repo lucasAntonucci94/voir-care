@@ -114,7 +114,6 @@ const handleGroupCreated = (groupData) => {
 // Suscribirse a los grupos del usuario
 // Suscripciones según el tab seleccionado
 watch(activeTab, (tab) => {
-  debugger
   // Si se muestra el feed de grupos (posts de grupos suscriptos)
   // if (tab === 'feed' && user.value?.uid) {
   //   groupsStore.subscribeUserGroupFeed(user.value.uid)

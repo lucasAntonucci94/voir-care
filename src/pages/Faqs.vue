@@ -41,27 +41,14 @@
         </div>
       </div>
     </div>
-
-    <!-- Sección de Contacto -->
-    <div class="max-w-3xl mx-auto mt-10 text-center">
-      <p class="text-base sm:text-lg text-gray-600 mb-4">
-        ¿Tenés más dudas? Unite a nuestra comunidad o escribinos.
-      </p>
-      <button
-        class="px-6 py-3 bg-[#F28C38] text-white rounded-full text-sm font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-md"
-        @click="handleChat"
-      >
-        Contactanos
-      </button>
-    </div>
     <!-- Componente de Chat en Vivo -->
-    <SupportChat :isOpen="openChat" />
+    <SupportChatBot :isOpen="openChat" />
   </section>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import SupportChat from '../components/organisms/SupportChat.vue'; // Importar el nuevo componente
+import SupportChatBot from '../components/organisms/SupportChatBot.vue'; // Importar el nuevo componente
 
 // Lista de FAQs
 const faqs = ref([
@@ -99,10 +86,5 @@ const openChat = ref(false);
 // Función para togglear FAQs
 const toggleFaq = (index) => {
   openFaq.value = openFaq.value === index ? null : index;
-};
-
-// Función para togglear FAQs
-const handleChat = () => {
-  openChat.value = true;
 };
 </script>
