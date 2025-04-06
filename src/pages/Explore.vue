@@ -79,7 +79,6 @@ function centerOnUserLocation() {
 }
 
 function deleteAllMarkers() {
-  debugger
   exploreMapRef.value?.deleteAllMarkers()
 }
 

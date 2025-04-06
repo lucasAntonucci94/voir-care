@@ -72,6 +72,7 @@ const calendarOptions = {
   locale: 'es',
   aspectRatio: 1.7,
   dayMaxEventRows: true,
+  dayMaxEvents: 3, // Máximo de eventos visibles antes de mostrar "+more"
   fixedWeekCount: false,
   displayEventEnd: true,
   headerToolbar: {
@@ -79,11 +80,21 @@ const calendarOptions = {
     center: 'title',
     right: 'dayGridMonth,dayGridWeek,dayGridDay',
   },
+  firstDay: 1, // Comienza la semana en lunes (0 = domingo, 1 = lunes)
+  buttonText: { // Personaliza el texto de los botones
+    today: 'Hoy',
+    month: 'Mes',
+    week: 'Semana',
+    day: 'Día'
+  },
+  dayHeaderFormat: { weekday: 'long' }, // Nombres completos de los días en la vista semanal/diaria
+  moreLinkClick: 'popover', // Controla el comportamiento del enlace "+more" (popover)
+  eventDisplay: 'block', // Muestra los eventos como bloques
   eventContent: function(arg) {
     return {
       html: `
-        <div class="px-2 py-1 bg-primary text-white rounded text-xs text-center">
-          ${arg.event.title}
+        <div class="px-2 py-1 font-semibold bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded text-xs text-center">
+          ${arg.event.title} 
         </div>
       `
     };
@@ -93,6 +104,39 @@ const calendarOptions = {
     selectedEvent.value = evento;
     showModal.value = true;
     document.body.style.overflow = 'hidden';
+  },
+  // defino tooltip para hover en evento
+  eventMouseEnter: function(info) {
+    // Crear el elemento tooltip
+    const tooltip = document.createElement('div');
+    tooltip.innerHTML = `<strong>${info.event.title}</strong>`;
+    tooltip.className = 'fc-tooltip'; // Clase para estilos personalizados
+    document.body.appendChild(tooltip);
+
+    // Función para actualizar la posición del tooltip
+    const updateTooltipPosition = (e) => {
+      tooltip.style.left = (e.pageX + 10) + 'px';
+      tooltip.style.top = (e.pageY + 10) + 'px';
+    };
+
+    // Posicionar inicialmente el tooltip
+    updateTooltipPosition(info.jsEvent);
+
+    // Actualizar la posición cuando el mouse se mueva sobre el elemento del evento
+    info.el.addEventListener('mousemove', updateTooltipPosition);
+
+    // Guardar referencias en el elemento para luego eliminarlas
+    info.el._tooltip = tooltip;
+    info.el._tooltipUpdate = updateTooltipPosition;
+  },
+  eventMouseLeave: function(info) {
+    // Eliminar el tooltip y el listener cuando el mouse salga del evento
+    if (info.el._tooltip) {
+      info.el.removeEventListener('mousemove', info.el._tooltipUpdate);
+      info.el._tooltip.remove();
+      info.el._tooltip = null;
+      info.el._tooltipUpdate = null;
+    }
   },
 };
 

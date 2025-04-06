@@ -24,6 +24,7 @@ export function useGroups() {
       await addDoc(groupsRef, {
         ...groupData,
         createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       })
     } catch (error) {
       console.error('Error creando grupo:', error)

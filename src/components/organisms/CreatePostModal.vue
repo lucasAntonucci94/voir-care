@@ -40,9 +40,14 @@
             type="file" 
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
+            :class="[
+              'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+              errorFileMessage ? 'border-red-500' : 'border-gray-300  dark:border-gray-800'
+            ]"
             :disabled="isLoading"
-            class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark:hover:file:bg-secondary-md transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
-          />
+            />
+            <!-- Mensaje de error -->
+            <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
         </div>
         <!-- Previsualización -->
         <div v-if="newPost?.media" class="mt-2">
@@ -114,6 +119,7 @@ const { user } = useAuth();
 const postsStore = usePostsStore();
 const showModal = ref(false);
 const isLoading = ref(false);
+const errorFileMessage = ref('');
 
 const newPost = ref({
   user: null,
@@ -138,16 +144,12 @@ function handleMediaUpload(event) {
 
   if (!file) return;
 
-  debugger
-  const validTypes = ['image/', 'video/'];
-  const isValid = validTypes.some(type => file.type.startsWith(type));
-
-  if (!isValid) {
-    alert('Solo se permiten imágenes y videos.');
-    event.target.value = ''; // limpia el input
-    return;
-  }
-  debugger
+  if (!file) return
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+        event.target.value = ''; // Limpiar el input
+        return;
+      }
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {

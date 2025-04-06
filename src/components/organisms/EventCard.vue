@@ -17,6 +17,12 @@
         class="w-full h-full object-cover"
         controls
         />
+        <span
+          class="absolute top-2 right-2 px-2 py-1 text-xs font-semibold text-white rounded-full"
+          :class="event.privacy === 'public' ? 'bg-green-500' : 'bg-red-500'"
+        >
+          {{ event.privacy === 'public' ? 'Público' : 'Privado' }}
+        </span>
     </div>
 
     <!-- Contenido -->
@@ -99,6 +105,7 @@
   
   <!-- Modal de edición de evento -->
   <EditEventModal
+    v-if="selectedEvent && showEditModal"
     :visible="showEditModal"
     :event="selectedEvent"
     @cancel="closeEditModal"
@@ -159,7 +166,6 @@
       console.log('Usuario no autenticado')
       return
     }
-    debugger
     const status = isGoing.value ? null : 'going' // si ya está, lo quitamos
     await eventsStore.setUserAttendanceStatus(props.event.idDoc, user.value.uid, status)
     console.log(`Usuario ${isGoing.value ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${props.event.idDoc},  ${props.event.title}`)

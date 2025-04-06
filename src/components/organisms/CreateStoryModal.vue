@@ -11,13 +11,6 @@
   </section>
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
     <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
-      <!-- Overlay de carga -->
-      <!-- <div 
-        v-if="isLoading" 
-        class="absolute inset-0 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex items-center justify-center z-10 transition-opacity duration-200"
-      >
-        <div class="w-8 h-8 border-4 border-primary dark:border-secondary border-t-transparent rounded-full animate-spin"></div>
-      </div> -->
       <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Crear Nueva Publicación</h2>
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
@@ -47,9 +40,14 @@
             type="file" 
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
+            :class="[
+              'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+              errorFileMessage ? 'border-red-500' : 'border-gray-300  dark:border-gray-800'
+            ]"
             :disabled="isLoading"
-            class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary dark:hover:file:bg-secondary-md file:text-white hover:file:bg-teal-600 transition-all duration-200 cursor-pointer  dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 dark:hover:text-gray-300 bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-          />
+            />
+            <!-- Mensaje de error -->
+            <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
         </div>
         <!-- Previsualización -->
         <div v-if="newPost?.media" class="mt-2">
@@ -88,7 +86,7 @@
         <div class="flex justify-end gap-3">
           <button 
             type="button" 
-            @click="showModal = false" 
+            @click="showModal = false;errorFileMessage = ''" 
             class="px-5 py-2 text-gray-500 dark:text-gray-100 dark:bg-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
           >
             Cancelar
@@ -121,7 +119,7 @@ const { user } = useAuth();
 const postsStore = usePostsStore();
 const showModal = ref(false);
 const isLoading = ref(false);
-
+const errorFileMessage = ref('');
 const newPost = ref({
   user: null,
   title: '',
@@ -142,17 +140,22 @@ watch(showModal, (newValue) => {
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      newPost.value.media = reader.result;
-      newPost.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
-    };
-    reader.onerror = (error) => {
-      console.error('Error al leer el archivo:', error);
-    };
-    reader.readAsDataURL(file);
+
+  if (!file) return
+  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+    event.target.value = ''; // Limpiar el input
+    return;
   }
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    newPost.value.media = reader.result;
+    newPost.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
+  };
+  reader.onerror = (error) => {
+    console.error('Error al leer el archivo:', error);
+  };
+  reader.readAsDataURL(file);
 }
 
 async function createPost() {

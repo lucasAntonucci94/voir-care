@@ -31,6 +31,7 @@ export function useReels() {
           uid: user.uid,
           displayName: user.displayName || user.email,
           photoURL: user.photoURL || null,
+          email: user.email || null,
         },
         title,
         mediaUrl,
