@@ -90,6 +90,20 @@ export const useEventsStore = defineStore('events', {
             this.isCreating = false
         }
     },
+    // Crear un nuevo evento
+    async editEvent(idDoc, eventData) {
+        debugger
+        const { updateEvent } = useEvents()
+        this.isCreating = true
+        try {
+            await updateEvent(idDoc, eventData)
+        } catch (error) {
+            console.error('Error al crear evento:', error)
+            throw error
+        } finally {
+            this.isCreating = false
+        }
+    },
     // Eliminar un evento por idDoc
     async deleteEvent(idDoc) {
         const { deleteEvent } = useEvents()
@@ -121,24 +135,4 @@ export const useEventsStore = defineStore('events', {
         }
     },
 },
-    // getters: {
-    //     getEvents() {
-    //         return this.events
-    //     },
-    //     isLoadingEvents() {
-    //         return this.isLoading
-    //     },
-    //     isCreatingEvent() {
-    //         return this.isCreating
-    //     },
-    // },
-    // persist: {
-        // enabled: true,
-        // strategies: [
-        //   {
-        //     key: 'events',
-        //     storage: localStorage,
-        //   },
-        // ],
-    //   },
 })

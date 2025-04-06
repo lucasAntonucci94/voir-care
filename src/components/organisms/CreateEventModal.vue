@@ -214,7 +214,7 @@
   import { newGuid } from '../../utils/newGuid'
   import { useEventsStore } from '../../stores/events'
   import { useAuth } from '../../api/auth/useAuth'
-import GeolocationInput from '../atoms/GeolocationInput.vue'
+  import GeolocationInput from '../atoms/GeolocationInput.vue'
   
   const emits = defineEmits(['close', 'eventCreated'])
   const props = defineProps({

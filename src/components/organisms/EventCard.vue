@@ -105,6 +105,7 @@
   
   <!-- Modal de edición de evento -->
   <EditEventModal
+    v-if="selectedEvent && showEditModal"
     :visible="showEditModal"
     :event="selectedEvent"
     @cancel="closeEditModal"
