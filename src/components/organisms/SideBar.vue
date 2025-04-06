@@ -126,7 +126,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-users w-5 text-center"></i>
-        <span class="text-sm font-medium">Grupos (próximamente)</span>
+        <span class="text-sm font-medium">Grupos</span>
       </router-link>
       <router-link 
         to="/events" 

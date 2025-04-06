@@ -37,7 +37,18 @@ export function useEvents() {
       isCreating.value = false
     }
   }
-
+  async function updateEvent(idDoc, eventData) {
+    try {
+      const docRef = doc(db, 'events', idDoc)
+      await updateDoc(docRef, {
+        ...eventData,
+        updatedAt: serverTimestamp()
+      })
+    } catch (error) {
+      console.error('Error actualizando evento:', error)
+      throw error
+    }
+  }
   /**
    * Se suscribe a todos los grupos.
    * @param {function} callback - Función que recibe un array de grupos.
@@ -165,6 +176,7 @@ export function useEvents() {
   return {
     isCreating,
     createEvent,
+    updateEvent,
     subscribeToEvents,
     subscribeToUserEvents,
     subscribeToUpcomingEvents,

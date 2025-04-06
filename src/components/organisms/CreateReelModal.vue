@@ -23,6 +23,7 @@
               type="text"
               class="w-full dark:text-white p-2.5 border border-gray-300 dark:border-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:focus:ring-secondary dark:focus:border-secondary transition-colors duration-200"
               placeholder="Escribe un título..."
+              :disabled="isLoading"
               required
             />
           </div>
@@ -32,9 +33,15 @@
               type="file"
               accept="image/*,video/*"
               @change="handleFileUpload"
-              class="w-full p-2 border border-gray-300  dark:border-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200"
+              :class="[
+                'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+                errorFileMessage ? 'border-red-500' : 'border-gray-300  dark:border-gray-800'
+              ]"
+              :disabled="isLoading"
               required
             />
+            <!-- Mensaje de error -->
+            <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
           </div>
           <div class="flex justify-end space-x-3">
             <button
@@ -85,7 +92,8 @@
   const { user: authUser } = useAuth();
   const newReel = ref({ title: '', base64: null, mediaType: '', thumbnailBase64: null });
   const isLoading = ref(false);
-  
+  const errorFileMessage = ref('')
+
   // Generar thumbnail para videos
   const generateVideoThumbnail = (file) => {
     return new Promise((resolve, reject) => {
@@ -110,12 +118,19 @@
   const handleFileUpload = async (event) => {
     try {
       const file = event.target.files[0];
+      if (!file) return
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+        event.target.value = ''; // Limpiar el input
+        return;
+      }
       const { base64, mediaType } = await fileToBase64(event);
       if (base64) {
         newReel.value.base64 = base64;
         newReel.value.mediaType = mediaType;
         newReel.value.thumbnailBase64 = mediaType === 'image' ? base64 : await generateVideoThumbnail(file);
       }
+      errorFileMessage.value = "";
     } catch (error) {
       console.error('Error al procesar archivo o generar thumbnail:', error);
     }
@@ -132,6 +147,7 @@
       uid: authUser.value.uid,
       displayName: authUser.value.displayName || authUser.value.email,
       photoURL: authUser.value.photoURLFile || null,
+      email: authUser.value.email || null,
     };
   
     await reelsStore.addReel({
@@ -149,6 +165,8 @@
   
   // Cerrar modal
   const closeModal = () => {
+    errorFileMessage.value = "";
+    newReel.value = { title: '', base64: null, mediaType: '', thumbnailBase64: null };
     emit('close');
   };
   </script>

@@ -101,9 +101,14 @@
         type="file"
         accept="image/*"
         @change="handlePhotoUpload"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark:hover:file:bg-secondary-md disabled:opacity-50"
+        :class="[
+          'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+          errorBannerFileMessage ? 'border-red-500' : 'border-gray-300  dark:border-gray-800'
+        ]"
         :disabled="isLoading"
+        required
       />
+      <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
       <img
         v-if="editForm.photoURL"
         :src="editForm.photoURL"
@@ -160,6 +165,7 @@ const { uploadMedia, isUploading } = useMediaUpload();
 // Estados
 const editForm = ref({});
 const isLoading = ref(false);
+const errorFileMessage = ref('');
 
 onMounted(() => {
   editProfile();
@@ -184,7 +190,16 @@ function editProfile() {
 }
 
 function handlePhotoUpload(event) {
+  errorFileMessage.value = ''; // Reiniciar mensaje de error
   const file = event.target.files[0];
+
+  if (!file) return
+  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+    event.target.value = ''; // Limpiar el input
+    return;
+  }
+
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {

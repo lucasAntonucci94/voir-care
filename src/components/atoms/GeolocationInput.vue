@@ -4,6 +4,7 @@
         ref="inputRef"
         type="text"
         :placeholder="placeholder"
+        :value="modelValue?.address"
         class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
       />
     </div>
@@ -46,6 +47,7 @@
         fields: ['formatted_address', 'geometry']
     }
     autocomplete = new google.maps.places.Autocomplete(inputRef.value, options)
+    // autocomplete = new google.maps.places.Autocomplete(inputRef.value, options)
   
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace()

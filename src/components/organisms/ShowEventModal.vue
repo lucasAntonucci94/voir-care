@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4">
+  <div v-if="visible" class="fixed inset-0 z-101 bg-black/70 flex items-center justify-center px-4">
     <div class="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-2xl w-full max-w-2xl relative">
 
       <!-- Media del evento -->
