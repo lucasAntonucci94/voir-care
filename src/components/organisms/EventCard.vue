@@ -17,6 +17,12 @@
         class="w-full h-full object-cover"
         controls
         />
+        <span
+          class="absolute top-2 right-2 px-2 py-1 text-xs font-semibold text-white rounded-full"
+          :class="event.privacy === 'public' ? 'bg-green-500' : 'bg-red-500'"
+        >
+          {{ event.privacy === 'public' ? 'Público' : 'Privado' }}
+        </span>
     </div>
 
     <!-- Contenido -->

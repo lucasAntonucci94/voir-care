@@ -64,6 +64,51 @@
   overflow: hidden;
 }
 
+/* ESTILOS PARA EL CALENDAR DE EXPLORE */
+/* Estilo base para el popup */
+.fc-more-popover {
+  background-color: #ffffff; /* Fondo claro por defecto */
+  color: #333333; /* Texto oscuro por defecto */
+  border: 1px solid #e5e7eb; /* Borde sutil */
+  border-radius: 0.5rem; /* Bordes redondeados */
+}
+
+/* Estilo para modo oscuro */
+.dark .fc-more-popover {
+  background-color: #1f2937; /* Fondo gris oscuro (Tailwind: gray-800) */
+  color: #e5e7eb; /* Texto gris claro (Tailwind: gray-200) */
+  border-color: #374151; /* Borde gris oscuro (Tailwind: gray-700) */
+}
+
+/* Estilo para el título del popup */
+.fc-more-popover .fc-popover-title {
+  background-color: #f3f4f6; /* Fondo claro para el título */
+  color: #1f2937; /* Texto oscuro */
+  padding: 0.5rem;
+  font-weight: 600;
+}
+
+.dark .fc-more-popover .fc-popover-title {
+  background-color: #4b4b4b00; /* Fondo más oscuro para el título en modo oscuro */
+  color: #ffffff; /* Texto blanco */
+}
+
+/* Estilo para los eventos dentro del popup */
+.fc-more-popover .fc-event {
+  color: #ffffff; /* Texto blanco para los eventos */
+}
+
+.fc-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
 /* 
 a {
   font-weight: 500;

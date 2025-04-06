@@ -367,6 +367,7 @@ import GeolocationInput from '../atoms/GeolocationInput.vue'
   }
   
   function handleMediaUpload(event) {
+    errorFileMessage.value = ''
     const file = event.target.files[0];
 
     if (!file) return

@@ -66,10 +66,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onUnmounted, watch } from 'vue'
 import { useAuth } from '../api/auth/useAuth'
 import { useEventsStore } from '../stores/events'
-import EventCard from '../components/organisms/EventCard.vue'
 import CreateEventModal from '../components/organisms/CreateEventModal.vue'
 import UpcomingEventsTab from '../components/molecules/UpcomingEventsTab.vue'
 import DiscoverEventsTab from '../components/molecules/DiscoverEventsTab.vue'
@@ -81,7 +80,6 @@ const eventsStore  = useEventsStore()
 
 // Estado
 const showModalCreate = ref(false);
-const isLoading = ref(false)
 
 // Definición de las tabs
 const tabs = [
@@ -102,7 +100,7 @@ const closeModalCreate = () => {
   document.body.style.overflow = '';
 }
 
-// Suscribirse a los eventossegun el tab seleccionado
+// Suscribirse a los eventos segun el tab seleccionado. Para no hacer una suscripcion global. o evitar multiple suscripciones.
 watch(activeTab, (tab) => {
   if (tab === 'upcoming') {
     eventsStore.subscribeUpcomingEvents()

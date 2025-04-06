@@ -46,6 +46,7 @@
         fields: ['formatted_address', 'geometry']
     }
     autocomplete = new google.maps.places.Autocomplete(inputRef.value, options)
+    // autocomplete = new google.maps.places.Autocomplete(inputRef.value, options)
   
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace()
