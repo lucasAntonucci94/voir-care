@@ -11,6 +11,7 @@ import ChatView from '../pages/ChatView.vue';
 import Groups from '../pages/GroupsPage.vue';
 import Events from '../pages/EventsPage.vue';
 import EventDetail from '../pages/EventDetail.vue';
+import NotFound from '../pages/NotFound.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -94,6 +95,11 @@ const routes = [
             requiresAuth: true,
         }
       },
+      {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: NotFound
+      }
     ],
   },
 ];
