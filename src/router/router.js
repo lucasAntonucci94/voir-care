@@ -96,7 +96,7 @@ const routes = [
         }
       },
       {
-        path: '/:pathMatch(.*)*',
+        path: '/:pathMatch(.*)*', //este path es para capturar cualquier ruta que no exista
         name: 'NotFound',
         component: NotFound
       }
