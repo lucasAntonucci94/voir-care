@@ -40,7 +40,7 @@
         <!-- Descubrir Eventos -->
         <DiscoverEventsTab v-else-if="activeTab === 'discover'" />
         <!-- Tus Eventos -->
-        <UserEventsTab v-else-if="activeTab === 'userEvents'" />
+        <UserEventsTab v-else-if="activeTab === 'userEvents'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
         <!-- Eventos Destacados -->
         <!-- <FeaturedEventsTab v-else-if="activeTab === 'featured'" /> -->
         <!-- <div v-else-if="activeTab === 'featured'">
@@ -99,7 +99,10 @@ const closeModalCreate = () => {
   showModalCreate.value = false
   document.body.style.overflow = '';
 }
-
+// Funciones para abrir y cerrar la modal
+const setDiscoverTab = () => {
+  activeTab.value = 'discover'
+}
 // Suscribirse a los eventos segun el tab seleccionado. Para no hacer una suscripcion global. o evitar multiple suscripciones.
 watch(activeTab, (tab) => {
   if (tab === 'upcoming') {

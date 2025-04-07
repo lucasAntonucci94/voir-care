@@ -148,11 +148,11 @@
   }
   const formattedStartTime = computed(() => {
     if (!props.event.startTime) return 'No definida'
-    return formatTimestamp(props.event.startTime)
+    return formatTimestamp(props.event.startTime, { includeTime: true })
   })
   const formattedEndTime = computed(() => {
     if (!props.event.endTime) return ''
-    return formatTimestamp(props.event.endTime)
+    return formatTimestamp(props.event.endTime, { includeTime: true })
   })
   
   // Estado y lógica para el Attendance (inscripción)
@@ -196,6 +196,7 @@
     document.body.style.overflow = ''
   }
   function submitEdit(updatedEvent) {
+    debugger
     // eventsStore.updateEvent(updatedEvent.idDoc, updatedEvent)
     closeEditModal()
   }
