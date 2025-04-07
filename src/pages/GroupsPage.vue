@@ -40,7 +40,7 @@
         <div v-if="activeTab === 'feed'">
           <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Feed de Grupos</h2>
           <div class="space-y-6 flex flex-col items-center">
-            <span>Still Working on this</span>
+            <span class="dark:text-white">Still Working on this</span>
           </div>
         </div>
 
