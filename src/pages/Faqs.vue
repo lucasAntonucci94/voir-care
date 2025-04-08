@@ -1,9 +1,9 @@
 <template>
-  <section class="faq-section bg-[#F9FAFB] min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+  <section class="bg-white dark:bg-gray-800 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <!-- Encabezado -->
     <div class="max-w-4xl mx-auto mb-12 text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold text-[#333333] mb-4 font-abril">Preguntas Frecuentes</h1>
-      <p class="text-lg sm:text-xl text-[#666666] font-poppins">
+      <h1 class="text-4xl sm:text-5xl font-bold text-gray-700 dark:text-gray-300 mb-4 font-abril">Preguntas Frecuentes</h1>
+      <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-poppins">
         Encuentra respuestas a tus dudas sobre nuestra comunidad dedicada al cuidado y bienestar animal. ¿No ves lo que buscas? ¡Chatea con nosotros!
       </p>
     </div>
@@ -16,7 +16,7 @@
           :key="index"
           @click="activeTab = index"
           class="px-4 py-2 rounded-full font-semibold text-sm sm:text-base transition-colors font-poppins"
-          :class="activeTab === index ? 'bg-[#F4A261] text-white' : 'bg-white text-[#333333] shadow-md hover:bg-[#A8D5BA] hover:text-white'"
+          :class="activeTab === index ? 'bg-primary dark:bg-secondary text-white hover:bg-primary-md dark:hover:bg-secondary-md' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600'"
         >
           {{ tab.name }}
         </button>
@@ -28,28 +28,24 @@
       <div
         v-for="(faq, index) in filteredFaqs"
         :key="index"
-        class="bg-white rounded-lg shadow-md overflow-hidden"
+        class="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden"
       >
         <button
           @click="toggleFaq(index)"
           class="w-full flex justify-between items-center p-5 text-left focus:outline-none"
-          :class="{ 'bg-[#A8D5BA]/20': openFaq === index }"
+          :class="{ 'bg-primary/20 dark:bg-secondary/20': openFaq === index }"
         >
-          <span class="text-base sm:text-lg font-semibold text-[#333333] font-poppins">{{ faq.question }}</span>
-          <svg
-            :class="{ 'rotate-180': openFaq === index }"
-            class="h-5 w-5 text-[#F4A261] transition-transform duration-200"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
+          <span class="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 font-poppins">{{ faq.question }}</span>
+          <i :class="[
+            'fa-solid fa-chevron-down h-5 w-5 text-primary dark:text-secondary transition-transform duration-200',
+            { 'rotate-180': openFaq === index }
+          ]"
+        ></i>
+
         </button>
         <div
           v-show="openFaq === index"
-          class="p-5 text-sm sm:text-base text-[#666666] border-t border-gray-200 font-poppins"
+          class="p-5 text-sm sm:text-base text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-500 font-poppins"
         >
           {{ faq.answer }}
         </div>
@@ -208,10 +204,7 @@ const toggleFaq = (index) => {
 </script>
 
 <style scoped>
-/* Ajustes visuales */
-.faq-section {
-  background-color: #F9FAFB; /* Fondo claro para coherencia con el landing page */
-}
+
 
 .font-poppins {
   font-family: 'Poppins', sans-serif;
