@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full p-6 flex flex-col md:flex-row bg-gray-50 dark:bg-gray-700" style="min-height: calc(100vh - 120px);">
+    <div class="w-full p-6 flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900" style="min-height: calc(100vh - 100px);">
       <div class="w-full md:w-1/3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 mb-5 md:mb-0 md:mr-5 overflow-y-auto" style="max-height: 80vh;">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-5 border-b border-gray-200 dark:border-gray-600 pb-2">Chats</h2>
         <div v-if="privateChatsStore?.loading" class="flex justify-center">

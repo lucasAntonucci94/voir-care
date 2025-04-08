@@ -70,7 +70,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-compass w-5 text-center"></i>
-        <span class="text-sm font-medium">Explorar (próximamente)</span>
+        <span class="text-sm font-medium">Explorar (trabajando ando)</span>
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/profile" 
@@ -112,9 +112,9 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-question w-5 text-center"></i>
-        <span class="text-sm font-medium">Faqs (próximamente)</span>
+        <span class="text-sm font-medium">Faqs (trabajando ando)</span>
       </router-link>
-      <router-link 
+      <router-link v-if="isAuthenticated"
         to="/groups" 
         class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
         text-gray-700 hover:bg-gray-200 
@@ -126,9 +126,9 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-users w-5 text-center"></i>
-        <span class="text-sm font-medium">Grupos</span>
+        <span class="text-sm font-medium">Grupos (trabajando ando)</span>
       </router-link>
-      <router-link 
+      <router-link v-if="isAuthenticated"
         to="/events" 
         class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
         text-gray-700 hover:bg-gray-200 
@@ -137,7 +137,6 @@
         bg-primary text-white hover:bg-primary-md hover:text-gray-100 
         dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
         "
-        @click="emit('toggle')"
       >
         <i class="fas fa-calendar w-5 text-center"></i>
         <span class="text-sm font-medium">Eventos</span>
@@ -147,18 +146,32 @@
     <!-- Sección "Explorar" -->
     <div class="mt-8">
       <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Otros</h3>
-      <ul class="space-y-2">
-        <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-200 dark:hover:text-secondary dark:hover:bg-gray-700 rounded-md transition-colors">
-            Adopciones (próximamente)
-          </a>
-        </li>
-        <li>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-200 dark:hover:text-secondary dark:hover:bg-gray-700 rounded-md transition-colors">
-            Educación (próximamente)
-          </a>
-        </li>
-      </ul>
+      <router-link v-if="isAuthenticated" 
+        to="/education" 
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors mb-2
+        text-gray-700 hover:bg-gray-200 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="
+        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
+        "
+      >
+        <i class="fas fa-book-open w-5 text-center"></i>
+        <span class="text-sm font-medium">Educación (trabajando ando)</span>
+    </router-link>
+      <router-link v-if="isAuthenticated" 
+        to="/adopcion" 
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
+        text-gray-700 hover:bg-gray-200 
+        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="
+        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
+        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
+        "
+      >
+        <i class="fas fa-dog w-5 text-center"></i>
+        <span class="text-sm font-medium">Adopcion (trabajando ando)</span>
+    </router-link>
     </div>
   </aside>
   <!-- Fondo semitransparente para cerrar en móvil -->

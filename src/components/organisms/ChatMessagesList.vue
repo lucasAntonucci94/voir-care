@@ -4,7 +4,7 @@
         <span class="mr-2">💬</span>
         Chat con {{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}
       </h2>
-      <div v-if="loadingMessages" class="flex justify-center bg-gray-50 py-6">
+      <div v-if="loadingMessages" class="flex justify-center bg-gray-50 dark:bg-gray-800 py-6">
         <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
       <div v-else-if="messages.length === 0" class="text-center text-gray-700 bg-gray-50 dark:text-gray-300 dark:bg-gray-700 py-6 italic">
