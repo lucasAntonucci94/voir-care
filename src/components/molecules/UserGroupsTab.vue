@@ -78,6 +78,12 @@
         >
           Crea tu primer grupo
         </button>
+        <button
+          class="mt-4 px-4 py-2 ml-3 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
+          @click="navigateToDiscoverGroup"
+          >
+          Descubre un grupo
+        </button>
       </div>
     </div>
   </template>
@@ -87,12 +93,13 @@
   import { useRouter } from 'vue-router';
   import { computed } from 'vue';
   import { useAuth } from '../../api/auth/useAuth';
+import { se } from 'date-fns/locale';
 
   const groupsStore = useGroupsStore();
   const router = useRouter();
   const { user } = useAuth();
 
-  const emit = defineEmits(['open-create-modal']);
+  const emit = defineEmits(['open-create-modal','open-discover-tab']);
 
   // Determinar el rol del usuario en el grupo
   const roleLabel = (group) => {
@@ -119,8 +126,11 @@
   };
   
   const navigateToCreateGroup = () => {
-    console.log("Crear grupo")
     emit('open-create-modal')
+  };
+  
+  const navigateToDiscoverGroup = () => {
+    emit('open-discover-tab')
   };
   </script>
   

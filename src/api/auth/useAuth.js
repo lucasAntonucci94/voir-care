@@ -93,7 +93,6 @@ async function doRegister(displayName, email, password) {
   error.value = null;
   try {
     const { user: newAuthUser } = await createUserWithEmailAndPassword(auth, email, password);
-    // console.log(newAuthUser);
     if (newAuthUser) {
       await createUser(newAuthUser.uid, {
         email: email,

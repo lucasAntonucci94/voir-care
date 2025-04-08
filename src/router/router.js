@@ -11,6 +11,8 @@ import ChatView from '../pages/ChatView.vue';
 import Groups from '../pages/GroupsPage.vue';
 import Events from '../pages/EventsPage.vue';
 import EventDetail from '../pages/EventDetail.vue';
+import NotFound from '../pages/NotFound.vue';
+import EducationPage from '../pages/EducationPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -93,6 +95,19 @@ const routes = [
         meta: {
             requiresAuth: true,
         }
+      },
+      {
+        path:  '/education',
+        name: 'education',
+        component: EducationPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/:pathMatch(.*)*', //este path es para capturar cualquier ruta que no exista
+        name: 'NotFound',
+        component: NotFound
       },
     ],
   },

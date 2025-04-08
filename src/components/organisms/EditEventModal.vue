@@ -201,6 +201,9 @@
 import { ref, watch } from 'vue'
 import GeolocationInput from '../atoms/GeolocationInput.vue'
 import { useEventsStore } from '../../stores/events'
+import { useMediaUpload } from '../../composable/useMediaUpload'
+import { newGuid } from '../../utils/newGuid'
+import { useAuth } from '../../api/auth/useAuth'
 
 const props = defineProps({
   visible: {
@@ -215,6 +218,8 @@ const props = defineProps({
 
 const emit = defineEmits(['cancel', 'submit'])
 const eventsStore = useEventsStore()
+const { uploadMedia } = useMediaUpload()
+const { user } = useAuth()
 const editForm = ref({ ...props.event })
 const errorFileMessage = ref('');
 
@@ -247,13 +252,28 @@ function handleCancel() {
 }
 
 async function handleSubmit() {
-  // Preparamos los datos para la actualización:
-  // Convertimos las fechas del string "datetime-local" a objetos Date.
+  // Convertir las fechas del input a objetos Date
   const eventData = {
     ...editForm.value,
     startTime: editForm.value.startTime ? new Date(editForm.value.startTime) : null,
     endTime: editForm.value.endTime ? new Date(editForm.value.endTime) : null,
   }
+  debugger
+  // Si se seleccionó una nueva media, la cargamos a storage
+  if (editForm.value.newMediaBase64) {
+    const ownerId = user.value?.uid || user.value?.id || editForm.value.ownerId
+    const dynamicPath = `events/${ownerId}/${newGuid()}`
+    const { url, path } = await uploadMedia({
+      currentUrl: editForm.value.media,
+      currentPath: editForm.value.mediaPath,
+      newMediaBase64: editForm.value.newMediaBase64,
+      mediaType: editForm.value.mediaType,
+      dynamicPath,
+    })
+    eventData.media = url || null
+    eventData.mediaPath = path || null
+  }
+  
   try {
     debugger
     await eventsStore.editEvent(editForm.value.idDoc, eventData)
