@@ -8,13 +8,9 @@
 - ¡Hola! Bienvenid@ a la comunidad de Voir. ¿En qué puedo ayudarte hoy?
 - ¡Hola! Soy tu asistente para todo lo relacionado con animales domésticos. ¿Qué necesitas saber?
 
-+ (ayuda|soporte)
++ *(ayuda|soporte)*
 - ¡Claro que sí! Puedo ayudarte con temas como adopción, cuidado de mascotas, eventos o cualquier duda sobre animales. ¿Qué te gustaría saber?
 - Estoy aquí para ayudarte con información sobre animales y eventos. ¿En qué puedo colaborar?
-
-+ adoptar
-- ¡Qué lindo que estés pensando en adoptar! ¿Te gustaría recibir consejos o información sobre refugios?
-- Sobre adopción, te recomiendo revisar nuestras guías o la sección de eventos para encontrar jornadas de adopción cerca de ti.
 
 + *adoptar*
 - ¡Qué lindo que estés pensando en adoptar! ¿Necesitas consejos o información sobre refugios?

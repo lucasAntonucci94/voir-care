@@ -40,14 +40,7 @@
         <div v-if="activeTab === 'feed'">
           <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Feed de Grupos</h2>
           <div class="space-y-6 flex flex-col items-center">
-            <!-- <PostCard
-              v-for="post in feedPosts"
-              :key="post.idDoc"
-              :post="post"
-            />
-            <p v-if="feedPosts.length === 0" class="text-center text-gray-500">
-              No hay publicaciones en tu feed.
-            </p> -->
+            <span class="dark:text-white">Still Working on this</span>
           </div>
         </div>
 
@@ -58,7 +51,7 @@
         <DiscoverGroupsTab v-else-if="activeTab === 'discover'" />
 
         <!-- Tab: Tus Grupos -->
-        <UserGroupsTab v-else-if="activeTab === 'yourGroups'" @open-create-modal="handleModalCreate" />
+        <UserGroupsTab v-else-if="activeTab === 'yourGroups'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
       </div>
     </div>
 
@@ -101,6 +94,11 @@ const handleModalCreate = () => {
   document.body.style.overflow = 'hidden'
 }
 
+// Funciones para abrir y cerrar la modal
+const setDiscoverTab = () => {
+  activeTab.value = 'discover'
+}
+
 const closeModalCreate = () => {
   showModalCreate.value = false
   document.body.style.overflow = ''
@@ -111,7 +109,6 @@ const handleGroupCreated = (groupData) => {
   console.log('Grupo creado:', groupData)
 }
 
-// Suscribirse a los grupos del usuario
 // Suscripciones según el tab seleccionado
 watch(activeTab, (tab) => {
   // Si se muestra el feed de grupos (posts de grupos suscriptos)

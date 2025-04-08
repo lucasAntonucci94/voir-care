@@ -6,7 +6,8 @@
         <CreatePostModal />
         <section class="space-y-6 flex flex-col items-center">
           <template v-if="postsStore.isLoading">
-            <p class="text-center text-gray-500">Cargando publicaciones...</p>
+            <img src="../assets/loaders/pawOrange.gif" alt="">
+            <p class="text-center text-primary dark:text-secondary animate-pulse">Cargando publicaciones...</p>
           </template>
           <template v-else>
             <PostCard

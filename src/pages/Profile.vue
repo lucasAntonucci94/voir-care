@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900 font-poppins relative">
     <!-- Loader -->
-    <div v-if="!activeUser" class="flex-grow flex min-h-screen items-center justify-center bg-gray-100">
+    <div v-if="!activeUser" class="flex-grow flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div class="text-center">
-        <div class="loader mb-4"></div>
-        <p class="text-gray-600 dark:text-gray-200 text-lg font-medium animate-pulse">Cargando perfil...</p>
+        <img src="../assets/loaders/pawOrange.gif" alt="">
+        <p class="text-primary dark:text-secondary text-lg font-medium animate-pulse">Cargando perfil...</p>
       </div>
     </div>
 

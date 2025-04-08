@@ -38,8 +38,8 @@
 
         <!-- Info principal -->
         <div class="text-sm grid grid-cols-2 gap-4 mb-4 text-gray-700 dark:text-gray-200">
-          <div><strong>Inicio:</strong> {{ formatTimestamp(event.startTime) }}</div>
-          <div><strong>Fin:</strong> {{ formatTimestamp(event.endTime) }}</div>
+          <div><strong>Inicio:</strong> {{ formatTimestamp(event.startTime, { includeTime: true }) }}</div>
+          <div><strong>Fin:</strong> {{ formatTimestamp(event.endTime, { includeTime: true }) }}</div>
           <div><strong>Ubicación:</strong> {{ event.location?.address || 'No definida' }}</div>
           <div v-if="event.price"><strong>Precio:</strong> ${{ event.price }}</div>
           <div><strong>Capacidad:</strong> {{ event.capacity || 'Ilimitada' }}</div>
