@@ -40,7 +40,7 @@
               @click.stop="openDeleteModal(msg.idDoc)"
               class="absolute top-2 right-2 p-1 rounded-full text-gray-500 hover:text-red-700 transition-colors duration-200 z-10"
             >
-              <i class="fa-solid fa-trash w-4 h-4"></i>
+              <i class="fa-solid fa-trash-can w-4 h-4"></i>
             </button>
           </div>
         </div>

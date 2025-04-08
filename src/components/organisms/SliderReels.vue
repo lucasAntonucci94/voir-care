@@ -4,10 +4,10 @@
       <button
         v-if="showLeftArrow"
         @click="scrollLeft"
-        class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full z-10 hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-300 dark:bg-gray-800 bg-opacity-60 text-gray-600 dark:text-white w-10 h-10 flex items-center justify-center rounded-full z-10 hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
         aria-label="Desplazar carrusel a la izquierda"
       >
-        <i class="fa-solid fa-chevron-left text-xl"></i>
+        <i class="fa-solid fa-chevron-left text-lg"></i>
       </button>
   
       <!-- Contenido del carrusel -->
@@ -20,14 +20,14 @@
         <!-- Card para agregar nuevo reel -->
         <div
           v-if="isAuthenticated"
-          class="min-w-[160px] bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:hover:bg-gray-800 p-3 rounded-lg shadow-md snap-center border border-gray-200 hover:shadow-lg hover:bg-gray-100 transition-all duration-200 cursor-pointer"
+          class="min-w-[160px] bg-gray-50 dark:bg-gray-700 dark:border-gray-800 dark:hover:bg-gray-800 p-4 rounded-lg shadow-md snap-center border border-gray-200 hover:shadow-lg hover:bg-gray-100 transition-all duration-200 cursor-pointer"
           @click="emit('show-upload')"
         >
-          <div class="w-full h-24 flex flex-col items-center justify-center">
-            <svg class="w-8 h-8 text-gray-500 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            <p class="mt-2 text-sm text-gray-600 dark:text-gray-100 font-medium text-center">Agregar Reel</p>
+          <div class="w-full h-24 flex flex-col items-center justify-center gap-2">
+            <div class="flex items-center justify-center w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full">
+              <i class="fa-solid fa-plus text-xl text-gray-500 dark:text-gray-100"></i>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-100 font-medium text-center">Agregar Reel</p>
           </div>
         </div>
   
@@ -52,7 +52,7 @@
       <button
         v-if="showRightArrow"
         @click="scrollRight"
-        class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full z-10 hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
+        class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-300 dark:bg-gray-800 bg-opacity-60 text-gray-600 dark:text-white w-10 h-10 flex items-center justify-center rounded-full z-10 hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-200"
         aria-label="Desplazar carrusel a la derecha"
       >
         <i class="fa-solid fa-chevron-right text-xl"></i>

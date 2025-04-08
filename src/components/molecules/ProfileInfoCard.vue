@@ -24,11 +24,7 @@
                     alt="Más conexiones"
                     />
                     <div class="absolute inset-0 bg-gray-800/70 rounded-full flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="white">
-                        <circle cx="4" cy="12" r="2" />
-                        <circle cx="12" cy="12" r="2" />
-                        <circle cx="20" cy="12" r="2" />
-                    </svg>
+                        <i class="fa-solid fa-ellipsis w-3 h-3 text-white"></i>
                     </div>
                 </button>
             </div>

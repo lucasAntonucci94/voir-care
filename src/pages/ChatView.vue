@@ -19,7 +19,7 @@
               <p class="text-sm text-gray-600 dark:text-gray-300 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin mensajes' }}</p>
             </div>
             <button @click.stop="openDeleteChatModal(chat.idDoc)" class="ml-2 p-1 text-gray-500 hover:text-red-700 transition-colors duration-200">
-              <i class="fa-solid fa-trash w-4 h-4"></i>
+              <i class="fa-solid fa-trash-can w-4 h-4"></i>
             </button>
           </div>
         </div>

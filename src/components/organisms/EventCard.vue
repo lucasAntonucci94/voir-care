@@ -40,7 +40,7 @@
           class="text-red-500 hover:text-red-600"
           @click.stop="handleDelete"
         >
-          <i class="fa-solid fa-trash"></i>
+          <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
 
