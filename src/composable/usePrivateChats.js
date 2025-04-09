@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { doc, getFirestore, addDoc,  FieldPath, collection, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
+import { doc, getFirestore, addDoc,  updateDoc, increment, FieldPath,  collection, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../api/auth/useAuth';
 
 
@@ -17,10 +17,16 @@ const privateRefCache = ref([]);
 export function usePrivateChats() {
     // Funciones internas
     async function createPrivateChatRef(from, to) {
-      const users = { [from]: true, [to]: true };
+      const users = [from,to];
+      const chatKey = [from, to].sort().join('_');
       const docRef = await addDoc(privateChatRef, {
         users,
+        chatKey,
         created_at: serverTimestamp(),
+        unreadCount: {
+          [from]: 0,
+          [to]: 0
+        }
       });
       const id = docRef.id;
       const chatRef = collection(db, `/chats-private/${id}/messages`);
@@ -30,11 +36,18 @@ export function usePrivateChats() {
     }
 
     async function getPrivateChatRef(from, to) {
-      const users = { [from]: true, [to]: true };
+      // const users = { [from]: true, [to]: true };
+      const users = [from,to];
       const cachedRef = getCachedRef(from, to);
       if (cachedRef) return cachedRef;
 
-      const queryChat = query(privateChatRef, where('users', '==', users), limit(1));
+      const chatKey = [from, to].sort().join('_');
+      const queryChat = query(
+        privateChatRef,
+        where('chatKey', '==', chatKey),
+        limit(1)
+      );
+      // const queryChat = query(privateChatRef, where('users', '==', users), limit(1));
       const snap = await getDocs(queryChat);
 
       if(snap.empty) {
@@ -45,7 +58,6 @@ export function usePrivateChats() {
       const chatRef = collection(db, `/chats-private/${id}/messages`);
 
       addRefToCache(users, chatRef);
-
       return chatRef;
     }
 
@@ -54,23 +66,57 @@ export function usePrivateChats() {
     }
 
     function getCachedRef(from, to) {
-      return privateRefCache.value.find(
-       (refData) => refData.users[from] && refData.users[to]
-    )?.ref || null;
+      return privateRefCache.value.find(refData =>
+        refData.users.includes(from) && refData.users.includes(to)
+      )?.ref || null;
     }
 
     // Funciones públicas
     async function savePrivateMessage(from, to, message) {
       const currentChatRef = await getPrivateChatRef(from, to);
+      const chatId = currentChatRef.path.split('/')[1]; // Extraer chatId
+      const senderEmail = user?.value?.email ?? from;
+    
       await addDoc(currentChatRef, {
         message,
         user: {
-          email: user?.value?.email ?? from,
+          email: senderEmail,
           displayName: user?.value?.displayName,
           photoURLFile: user?.value?.photoURLFile
         },
         created_at: serverTimestamp(),
+        readBy: [senderEmail]
       });
+    
+      // Incrementar unreadCount del receptor
+      const chatDocRef = doc(db, 'chats-private', chatId);
+      await updateDoc(chatDocRef, new FieldPath('unreadCount', to), increment(1));
+    }
+
+    async function markMessagesAsRead(chatId, userEmail) {
+      const messagesRef = collection(db, 'chats-private', chatId, 'messages');
+      const q = query(messagesRef, where('readBy', 'array-contains', userEmail));
+      const snapshot = await getDocs(q);
+  
+      let unreadCountReduction = 0;
+      const updates = snapshot.docs.map(async (msgDoc) => {
+        const msgData = msgDoc.data();
+        if (!msgData.readBy.includes(userEmail)) {
+          await updateDoc(doc(messagesRef, msgDoc.id), {
+            readBy: arrayUnion(userEmail)
+          });
+          unreadCountReduction++;
+        }
+      });
+  
+      await Promise.all(updates);
+  
+      if (unreadCountReduction > 0) {
+        const chatDocRef = doc(db, 'chats-private', chatId);
+        await updateDoc(chatDocRef, {
+          [`unreadCount.${userEmail}`]: increment(-unreadCountReduction)
+        });
+      }
     }
 
     async function subscribeToIncomingPrivateMessages(from, to, callback) {
@@ -84,6 +130,7 @@ export function usePrivateChats() {
               message: message.message,
               user: message.user,
               created_at: message.created_at,
+              readBy: message.readBy
             };
         }
         );
@@ -139,11 +186,10 @@ export function usePrivateChats() {
    * @returns 
    */
     async function getChatsByEmail(email) {
-      const fieldPath = new FieldPath('users', email);
       try {
         const q = query(
           privateChatRef,
-          where(fieldPath, '==', true),
+          where('users', 'array-contains', email),
           orderBy('created_at', 'desc'),
           limit(1)
         );
@@ -168,13 +214,13 @@ export function usePrivateChats() {
           const latestMessage = messagesSnapshot.docs[0].data();
           return {
             idDoc: chatId,
-            user: chatData.users,
+            users: chatData.users,
             created_at: chatData.created_at,
             message: latestMessage,
-        };
-      }
+          };
+        }
 
-         return null;
+        return null;
       } catch (err) {
         console.error('Error al obtener el último chat:', err);
         return null;
@@ -189,44 +235,30 @@ export function usePrivateChats() {
      */
     async function getChatIdByReference(authUser, activeUser) {
       try {
-        const fieldPath = new FieldPath('users', authUser);
-
-        // Busca primero por usuario autenticado
+        const chatKey = [authUser, activeUser].sort().join('_');
         const q = query(
           privateChatRef,
-          where(fieldPath, '==', true),
-          orderBy('created_at', 'desc')
+          where('chatKey', '==', chatKey)
         );
-
-        // Ejecutar la query
+    
         const querySnapshot = await getDocs(q);
-       
-        // Filtrar los documentos para encontrar el que contiene activeUser
-        const chatDoc = querySnapshot.docs.find((doc) => {
-          const docData = doc.data();
-          return docData.users && docData.users[activeUser] === true;
-        });
-
-        // Si no existe el chat entre los dos usuarios, crearlo
-        if (!chatDoc) {
-          const newChatRef = await createPrivateChatRef(authUser, activeUser); // Crear el chat
-          const chatId = newChatRef.path.split('/')[1]; // Extraer el ID del path
-          return chatId;
+    
+        if (querySnapshot.empty) {
+          const newChatRef = await createPrivateChatRef(authUser, activeUser);
+          return newChatRef.path.split('/')[1]; // Extraer el ID del path
         }
-
-        // Retornar el ID del chat existente
-        return chatDoc.id;
+    
+        return querySnapshot.docs[0].id; // Retornar el ID del chat existente
       } catch (err) {
         console.error('Error al obtener o crear el chatId por referencia:', err);
-        throw err; // Lanzar error para manejarlo en el llamador si es necesario
+        throw err;
       }
     }
 
     function subscribeToPrivateChats(email, callback) {
-      const fieldPath = new FieldPath('users', email);
       const q = query(
         privateChatRef,
-        where(fieldPath, '==', true),
+        where('users', 'array-contains', email),
         orderBy('created_at', 'desc')
       );
       const updatedChats = [];
@@ -236,10 +268,10 @@ export function usePrivateChats() {
           const chatData = doc.data();
           const chatId = doc.id;
           
-          // Validar el diccionario users
+          // Validar que users sea un array válido
           if (!isValidUsers(chatData.users)) {
             console.warn(`Chat ${chatId} tiene referencias inválidas y será omitido`);
-            continue; // Saltar este chat si tiene valores inválidos
+            continue;
           }
     
           const messagesQuery = query(
@@ -256,9 +288,10 @@ export function usePrivateChats() {
     
           updatedChats.push({
             idDoc: chatId,
-            user: chatData.users,
+            users: chatData.users,
             created_at: chatData.created_at,
             message: latestMessage,
+            unreadCount: chatData.unreadCount
           });
         }
         callback(filterUniqueChats(updatedChats));
@@ -266,30 +299,24 @@ export function usePrivateChats() {
         console.error('Error subscribing to private chats:', err);
       });
     
-      return unsubscribe; // Por si necesitas cancelar la suscripción
+      return unsubscribe;
     }
 
-    // Función auxiliar para validar el diccionario users
+    // Función auxiliar para validar el array users
     function isValidUsers(users) {
-      if (!users || typeof users !== 'object' || Object.keys(users).length === 0) {
+      if (!Array.isArray(users) || users.length === 0) {
         return false;
       }
 
-      return Object.entries(users).every(([email, value]) => {
-        // Verificar que el email no sea null, undefined, vacío y sea un string válido
-        const isValidEmail = 
-          email !== null && 
-          email !== undefined && 
-          typeof email === 'string' && 
-          email.trim() !== '' && 
-          email.includes('@'); // Opcional: verificar que sea un email básico
-
-        // Verificar que el valor sea estrictamente true (no null, undefined ni false)
-        const isValidValue = value === true;
-
-        return isValidEmail && isValidValue;
-      });
+      return users.every(email => 
+        email !== null && 
+        email !== undefined && 
+        typeof email === 'string' && 
+        email.trim() !== '' && 
+        email.includes('@')
+      );
     }
+
     /**
      * Metodo para quitar duplicados
      * @param {*} chats 
@@ -315,6 +342,7 @@ export function usePrivateChats() {
     deleteChat,
     deleteChatMessage,
     privateRefCache,
-    getChatIdByReference
+    getChatIdByReference,
+    markMessagesAsRead
   };
 }

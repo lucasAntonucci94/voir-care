@@ -86,6 +86,9 @@
   // Montaje y desmontaje
   onMounted(() => {
     console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
+    if (privateChatsStore?.selectedChatId) {
+      usePrivateChats().markMessagesAsRead(privateChatsStore?.selectedChatId, user.value.email);
+    }
     watch(
       () => privateChatsStore?.selectedChatId,
       (newChatId) => {
@@ -108,6 +111,7 @@
               loadingMessages.value = false;
             }
           );
+          usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
         } else {
           messages.value = [];
         }
@@ -142,8 +146,11 @@
   
   const getOtherUserEmail = () => {
     const chatId = privateChatsStore?.selectedChatId;
-    const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === chatId);
-    return selectedChat ? Object.keys(selectedChat.user).find(u => u !== user?.value.email) : privateChatsStore?.to || null;
+    const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === chatId);
+
+    return selectedChat
+      ? selectedChat.users.find(email => email !== user?.value.email)
+      : privateChatsStore?.to || null;
   };
   
   const openDeleteModal = (messageId) => {

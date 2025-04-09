@@ -13,7 +13,7 @@
             <img :src="getUserPhoto(chat) || AvatarImage" alt="User avatar" class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105" />
             <div class="flex-1">
               <div class="flex justify-between items-center">
-                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">{{ getUserName(chat.user) || 'Usuario desconocido' }}</h3>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">{{ getUserName(chat.users) || 'Usuario desconocido' }}</h3>
                 <span class="text-xs text-gray-400 dark:text-gray-300 truncate">{{ formatTimestamp(chat.created_at) }}</span>
               </div>
               <p class="text-sm text-gray-600 dark:text-gray-300 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin mensajes' }}</p>
@@ -74,13 +74,15 @@
 
   // TO DO: Refactorizar estos métodos a un archivo de utilidades y obtener imagen de firebase
   const getUserPhoto = (chat) => {
-    if(!chat) return null;
-    const selectedEmail = Object.keys(chat.user)?.find(u => u !== userAuth?.value?.email);
-    return `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4` || 'https://via.placeholder.com/40';
+    if (!chat) return null;
+    const selectedEmail = chat.users.find(email => email !== userAuth?.value?.email);
+    return selectedEmail
+      ? `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4`
+      : 'https://via.placeholder.com/40';
   };
   // TO DO: Refactorizar estos métodos a un archivo de utilidades y que obtenga el displayName del usuario o email.
-  const getUserName = (user) => {
-    const selectedEmail = Object.keys(user)?.find(u => u !== userAuth?.value?.email);
+  const getUserName = (usersArray) => {
+    const selectedEmail = usersArray.find(email => email !== userAuth?.value?.email);
     return selectedEmail?.split('@')[0].replace('.', ' ');
   };
   </script>

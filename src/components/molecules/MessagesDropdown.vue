@@ -40,10 +40,10 @@
             class="px-4 py-3 text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors duration-200"
           >
             <button
-              @click="handleChatClick(notification.user)"
+              @click="handleChatClick(notification.users)"
               class="w-full text-left focus:outline-none"
             >
-              {{ getOtherUserEmail(notification?.user) + ': ' + notification?.message?.message }}
+              {{ getOtherUserEmail(notification?.users) + ': ' + notification?.message?.message }}
             </button>
           </li>
 
@@ -98,7 +98,6 @@ const { user } = useAuth(); // Usamos el composable de autenticación
 const { getChatIdByReference } = usePrivateChats();
 const privateChatsStore = usePrivateChatsStore();
 const router = useRouter();
-// const notifications = ref(privateChatsStore?.chats?.value);
 
 const props = defineProps({
   isOpen: {
@@ -110,7 +109,6 @@ const props = defineProps({
 
 // Computados
 const notifications = computed(() => {
-  
   return privateChatsStore?.chats?.value?.slice(0, 9).filter(n => n.message !== null && n.message !== undefined) ?? [];
 });
 
@@ -125,8 +123,8 @@ function markAllAsRead() {
   console.log('Marcar todos como leídos');
 }
 
-const getOtherUserEmail = (userDictionary) => {
-  return userDictionary ? Object.keys(userDictionary).find(u => u !== user?.value.email) : null;
+const getOtherUserEmail = (usersArray) => {
+  return usersArray ? usersArray.find(email => email !== user?.value.email) : null;
 };
 
 

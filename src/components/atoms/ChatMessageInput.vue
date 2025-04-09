@@ -46,8 +46,8 @@
     if (messageText.value.trim().length === 0) return;
     loading.value = true;
     try {
-      const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === props.selectedChatId);
-      const otherUser = Object.keys(selectedChat.user).find(u => u !== user?.value.email);
+      const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === props.selectedChatId);
+      const otherUser = selectedChat.users.find(email => email !== user?.value.email);
       await savePrivateMessage(user?.value.email, otherUser, messageText.value);
       messageText.value = ''; // Limpiar el input después de enviar
     } catch (err) {
@@ -56,6 +56,7 @@
       loading.value = false;
     }
   };
+
   
   // Limpiar el input si el chat seleccionado cambia o se pierde
   watch(() => props.selectedChatId, () => {

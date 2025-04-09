@@ -256,7 +256,6 @@ async function handleSubmit() {
     startTime: editForm.value.startTime ? new Date(editForm.value.startTime) : null,
     endTime: editForm.value.endTime ? new Date(editForm.value.endTime) : null,
   }
-  debugger
   // Si se seleccionó una nueva media, la cargamos a storage
   if (editForm.value.newMediaBase64) {
     const ownerId = user.value?.uid || user.value?.id || editForm.value.ownerId
