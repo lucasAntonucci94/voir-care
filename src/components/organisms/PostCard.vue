@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800  text-[#2c3e50] dark:text-white">
+  <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800 text-[#2c3e50] dark:text-white">
     <PostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
-    <h3 class="text-lg font-bold">{{ post?.title }}</h3>
-    <p class="mt-1 text-sm">{{ post?.body }}</p>
+    <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>
+    <p class="mt-1 text-sm text-ellipsis">{{ post?.body }}</p>
     <div v-if="post?.imageUrlFile" class="mt-3">
       <img
         v-if="post?.mediaType === 'image'"
@@ -71,8 +71,8 @@
         <!-- Panel lateral de comentarios -->
         <div class="w-full md:w-80 bg-gray-900/80 md:bg-gray-50 dark:bg-gray-800 text-white md:text-gray-800 dark:text-gray-300 p-4 md:p-6 flex flex-col justify-between absolute bottom-0 md:static h-40 md:h-auto md:max-h-full overflow-y-auto">
           <div>
-            <h3 class="text-lg md:text-xl font-semibold mb-2">{{ post?.title }}</h3>
-            <p class="text-sm md:text-base mb-4">{{ post?.body }}</p>
+            <h3 class="text-lg md:text-xl font-semibold mb-2 text-ellipsis">{{ post?.title }}</h3>
+            <p class="text-sm md:text-base mb-4 text-ellipsis">{{ post?.body }}</p>
             <button
               @click="toggleLike"
               :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
@@ -81,13 +81,13 @@
             >
               <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
             </button>
-            <hr class="border-t border-gray-300 md:border-gray-400 mb-4" />
+            <hr class="border-t border-gray-300 dark:border-gray-700 md:border-gray-400 mb-4" />
             <CommentList :post="post" />
             <CommentForm :idPost="post.idDoc" />
           </div>
           <button
             @click="closeMediaModal"
-            class="absolute top-2 right-2 text-gray-300 md:text-gray-600 hover:text-white md:hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+            class="absolute top-2 right-2 text-gray-300 md:text-gray-600 hover:text-white md:hover:text-gray-800  dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
             aria-label="Cerrar modal"
           >
             <i class="fa-solid fa-times text-xl md:text-2xl"></i>
@@ -173,6 +173,18 @@ function closeMediaModal() {
   height: 100vh;
 }
 
+/* Estilos para controlar el desbordamiento del título y el cuerpo */
+.text-ellipsis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+h3.text-ellipsis,
+p.text-ellipsis {
+  max-width: 100%;
+}
 /* Estilos responsivos */
 @media (max-width: 768px) {
   .media-container {

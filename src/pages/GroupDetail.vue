@@ -1,0 +1,331 @@
+<template>
+    <div v-if="loading" class="flex items-center justify-center h-screen">
+      <p class="text-lg text-gray-500 dark:text-gray-300">Cargando grupo...</p>
+    </div>
+    <div v-else-if="!group" class="flex items-center justify-center h-screen">
+      <p class="text-lg text-red-500 dark:text-red-400">Grupo no encontrado.</p>
+    </div>
+    <div v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+      <!-- Banner -->
+      <div class="relative w-full h-64 md:h-96 overflow-hidden">
+        <template v-if="group.media?.type === 'image' && group.media?.url">
+          <img
+            :src="group.media.url"
+            alt="Banner del grupo"
+            class="w-full h-full object-cover"
+          />
+        </template>
+        <template v-else-if="group.media?.type === 'video' && group.media?.url">
+          <video
+            :src="group.media.url"
+            controls
+            class="w-full h-full object-cover"
+          ></video>
+        </template>
+        <template v-else>
+          <img
+            :src="defaultGroupBanner"
+            alt="Banner por defecto"
+            class="w-full h-full object-cover"
+          />
+        </template>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
+        <div class="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+            {{ group.title }}
+          </h1>
+          <p class="mt-2 text-sm sm:text-base text-gray-200">
+            Creado por {{ group.ownerId }}
+          </p>
+        </div>
+      </div>
+  
+      <!-- Navegación de Tabs -->
+      <div class="container mx-auto px-4 md:px-8 py-6">
+        <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
+          <nav class="flex overflow-x-auto" role="tablist">
+            <button
+              v-for="tab in tabs"
+              :key="tab.id"
+              @click="activeTab = tab.id"
+              :class="[
+                'px-4 py-2 whitespace-nowrap text-sm font-medium focus:outline-none',
+                activeTab === tab.id
+                  ? 'border-b-2 border-primary dark:border-secondary text-primary dark:text-secondary'
+                  : 'text-gray-600 dark:text-gray-300',
+              ]"
+              :aria-selected="activeTab === tab.id ? 'true' : 'false'"
+              role="tab"
+            >
+              {{ tab.label }}
+            </button>
+          </nav>
+        </div>
+  
+        <!-- Contenido de la pestaña seleccionada -->
+        <div>
+          <!-- Pestaña "Información" -->
+          <div v-if="activeTab === 'info'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Columna izquierda: Detalles -->
+            <div class="lg:col-span-2 space-y-6">
+              <!-- Card de Detalles -->
+              <div
+                class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+              >
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                  Detalles del Grupo
+                </h2>
+                <ul class="space-y-4 text-gray-600 dark:text-gray-300">
+                  <li class="flex items-center gap-3">
+                    <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
+                    <span><strong>Descripción:</strong> {{ group.description || 'Sin descripción' }}</span>
+                  </li>
+                  <li class="flex items-center gap-3">
+                    <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
+                    <span><strong>Privacidad:</strong> {{ group.privacy || 'Público' }}</span>
+                  </li>
+                  <li class="flex items-center gap-3">
+                    <i class="fas fa-tags text-primary dark:text-secondary text-xl"></i>
+                    <span><strong>Categorías:</strong> {{ group.categories?.join(', ') || 'Ninguna' }}</span>
+                  </li>
+                  <li class="flex items-center gap-3">
+                    <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
+                    <span><strong>Creado el:</strong> {{ formatTimestamp(group.createdAt) }}</span>
+                  </li>
+                  <li class="flex items-center gap-3">
+                    <i class="fas fa-users text-primary dark:text-secondary text-xl"></i>
+                    <span><strong>Miembros:</strong> {{ group.members?.length || 0 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3">
+                    <i class="fas fa-bullhorn text-primary dark:text-secondary text-xl"></i>
+                    <span><strong>Actividad reciente:</strong> {{ recentActivityMock }}</span>
+                  </li>
+                  <li v-if="group.rules" class="flex items-center gap-3">
+                    <i class="fas fa-book text-primary dark:text-secondary text-xl"></i>
+                    <span><strong>Reglas:</strong> {{ group.rules }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+  
+            <!-- Columna derecha: Acciones, Creador, Miembros -->
+            <div class="space-y-6">
+              <!-- Card de Acciones -->
+              <div
+                class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+              >
+                <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Acciones</h2>
+                <div class="flex flex-col gap-3">
+                  <button
+                    class="px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-colors duration-200"
+                  >
+                    Unirse al grupo
+                  </button>
+                  <button
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+                  >
+                    Invitar amigos
+                  </button>
+                  <button
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+                  >
+                    Compartir grupo
+                  </button>
+                </div>
+              </div>
+  
+              <!-- Card de Creador -->
+              <div
+                class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+              >
+                <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
+                  Creador
+                </h2>
+                <div class="flex items-center gap-4">
+                  <img
+                    :src="ownerMock.photoURL"
+                    alt="Creador"
+                    class="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <a
+                      :href="ownerMock.link"
+                      target="_blank"
+                      rel="nofollow noreferrer"
+                      class="text-lg font-semibold text-primary dark:text-secondary hover:underline"
+                    >
+                      {{ ownerMock.name }}
+                    </a>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                      {{ ownerMock.location }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Card de Miembros -->
+              <div
+                class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+              >
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Miembros</h2>
+                  <a
+                    href="#"
+                    class="text-sm text-primary dark:text-secondary hover:underline"
+                  >
+                    Ver todos
+                  </a>
+                </div>
+                <ul v-if="membersDetails.length" class="space-y-4">
+                  <li
+                    v-for="member in membersDetails.slice(0, 3)"
+                    :key="member.id"
+                    class="flex items-center gap-3"
+                  >
+                    <img
+                      :src="member.photoURL"
+                      alt="Miembro"
+                      class="w-10 h-10 rounded-full object-cover"
+                    />
+                    <span class="text-sm text-gray-600 dark:text-gray-300">{{ member.name }}</span>
+                  </li>
+                </ul>
+                <p v-else class="text-sm text-gray-600 dark:text-gray-400">
+                  No hay miembros para mostrar.
+                </p>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Pestaña "Conversación" -->
+          <div v-else-if="activeTab === 'conversation'" class="text-sm text-gray-600 dark:text-gray-300">
+            <p>Aquí se mostrarán los posteos del grupo (próximamente).</p>
+          </div>
+  
+          <!-- Pestaña "Destacados" -->
+          <div v-else-if="activeTab === 'highlights'" class="text-sm text-gray-600 dark:text-gray-300">
+            <p>Aquí se mostrarán los posteos destacados (próximamente).</p>
+          </div>
+  
+          <!-- Pestaña "Personas" -->
+          <div v-else-if="activeTab === 'people'" class="text-sm text-gray-600 dark:text-gray-300">
+            <p>Lista completa de miembros del grupo (próximamente).</p>
+          </div>
+  
+          <!-- Pestaña "Eventos" -->
+          <div v-else-if="activeTab === 'events'" class="text-sm text-gray-600 dark:text-gray-300">
+            <p>Eventos organizados por este grupo (próximamente).</p>
+          </div>
+  
+          <!-- Pestaña "Multimedia" -->
+          <div v-else-if="activeTab === 'multimedia'" class="text-sm text-gray-600 dark:text-gray-300">
+            <p>Galería de fotos y videos compartidos en el grupo (próximamente).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { formatTimestamp } from '../utils/formatTimestamp'
+  import { useGroupsStore } from '../stores/groups'
+  import defaultAvatar from '../assets/avatar1.jpg'
+  import defaultGroupBanner from '../assets/wallwhite.jpg'
+  
+  const route = useRoute()
+  const { findGroupById } = useGroupsStore()
+  
+  const group = ref(null)
+  const loading = ref(true)
+  const membersDetails = ref([])
+  
+  // Mock para datos no incluidos en groupData
+  const ownerMock = {
+    name: 'Juan Pérez',
+    photoURL: defaultAvatar,
+    link: '#',
+    location: 'Ciudad, País'
+  }
+  const recentActivityMock = '5 publicaciones hoy'
+  const locationMock = {
+    address: '123 Calle Principal, Ciudad, País' // Mockeado, ya que no está en groupData
+  }
+  
+  // Definir las pestañas
+  const tabs = [
+    { id: 'info', label: 'Información' },
+    { id: 'conversation', label: 'Conversación' },
+    { id: 'highlights', label: 'Destacados' },
+    { id: 'people', label: 'Personas' },
+    { id: 'events', label: 'Eventos' },
+    { id: 'multimedia', label: 'Multimedia' }
+  ]
+  const activeTab = ref('info')
+  
+  // Mock para detalles de miembros
+  const fetchUserById = async (userId) => {
+    return {
+      id: userId,
+      name: `Usuario ${userId}`,
+      photoURL: defaultAvatar
+    }
+  }
+  
+  onMounted(async () => {
+    const id = route.params.idGroup
+    if (id) {
+      try {
+        debugger
+        group.value = await findGroupById(id)
+  
+        // Fetch mockeado de detalles de miembros
+        if (group.value?.members?.length) {
+          const userPromises = group.value.members.map(async (userId) => {
+            return await fetchUserById(userId)
+          })
+          membersDetails.value = await Promise.all(userPromises)
+        }
+      } catch (error) {
+        console.error('Error al cargar grupo:', error)
+      }
+    }
+    loading.value = false
+  })
+  </script>
+  
+  <style scoped>
+  .container {
+    max-width: 1200px;
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Estilo para el mapa */
+  iframe {
+    border: 0;
+  }
+  
+  /* Ajustes para pantallas pequeñas */
+  @media (max-width: 640px) {
+    .text-2xl {
+      font-size: 1.25rem;
+    }
+  
+    .text-xl {
+      font-size: 1.125rem;
+    }
+  
+    .h-64 {
+      height: 16rem;
+    }
+  
+    .px-4 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+  </style>

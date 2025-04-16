@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   addDoc,
+  updateDoc,
   onSnapshot,
   query,
   orderBy,
@@ -10,6 +11,7 @@ import {
   doc,
   deleteDoc,
   where,
+  getDoc,
 } from 'firebase/firestore'
 
 const db = getFirestore();
@@ -34,6 +36,19 @@ export function useGroups() {
     }
   }
 
+  async function updateGroup(idDoc, groupData) {
+    try {
+      const docRef = doc(db, 'groups', idDoc)
+      await updateDoc(docRef, {
+        ...groupData,
+        updatedAt: serverTimestamp()
+      })
+    } catch (error) {
+      console.error('Error actualizando evento:', error)
+      throw error
+    }
+  }
+  
   function subscribeToGroups(callback) {
     try {
       const q = query(groupsRef, orderBy('createdAt', 'desc'))
@@ -92,11 +107,33 @@ export function useGroups() {
     }
   }
 
+  async function findById(idDoc) {
+    debugger
+    try {
+      const docRef = doc(db, 'groups', idDoc)
+      const docSnap = await getDoc(docRef)
+      if( !docSnap.exists()) {
+        console.error('El grupo no existe')
+        throw new Error('Grupo no encontrado')
+      }
+      
+      return {
+        idDoc: docSnap.id,
+        ...docSnap.data(),
+      }
+    } catch (error) {
+      console.error('Error al buscar grupo por ID:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createGroup,
     subscribeToGroups,
     subscribeToUserGroups,
     deleteGroup,
+    findById,
+    updateGroup,
   }
 }

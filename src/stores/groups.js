@@ -54,7 +54,6 @@ export const useGroupsStore = defineStore('groups', {
         this.unsubscribeAll = null
       }
     },
-
     // Crear un nuevo grupo
     async createGroup(groupData) {
       const { createGroup } = useGroups()
@@ -68,6 +67,19 @@ export const useGroupsStore = defineStore('groups', {
         this.isCreating = false
       }
     },
+    // Crear un nuevo evento
+    async editGroup(idDoc, groupData) {
+        const { updateGroup } = useGroups()
+        this.isCreating = true
+        try {
+            await updateGroup(idDoc, groupData)
+        } catch (error) {
+            console.error('Error al crear grupo:', error)
+            throw error
+        } finally {
+            this.isCreating = false
+        }
+    },
     // Eliminar un grupo por idDoc
     async deleteGroup(idDoc) {
       const { deleteGroup } = useGroups()
@@ -76,6 +88,17 @@ export const useGroupsStore = defineStore('groups', {
       } catch (error) {
         console.error('Error al eliminar grupo:', error)
         throw error
+      }
+    },
+    // Busca evento por idDoc
+    async findGroupById(idDoc) {
+      debugger
+      const { findById } = useGroups()
+      try {
+          return await findById(idDoc)
+      } catch (error) {
+          console.error(`Error al buscar grupo con id: ${ idDoc }`, error)
+          throw error
       }
     },
   },

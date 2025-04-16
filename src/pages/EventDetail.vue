@@ -67,6 +67,10 @@
               <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Detalles</h2>
               <ul class="space-y-4 text-gray-600 dark:text-gray-300">
                 <li class="flex items-center gap-3">
+                  <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
+                  <span><strong>Descripción:</strong> {{ event.description }}</span>
+                </li>
+                <li class="flex items-center gap-3">
                   <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Inicio:</strong> {{ formatTimestamp(event.startTime, { includeTime: true }) }}</span>
                 </li>

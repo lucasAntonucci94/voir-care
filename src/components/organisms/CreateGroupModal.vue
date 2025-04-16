@@ -258,7 +258,7 @@
   }
   
   function validateForm() {
-    if (!newGroup.value.title) {
+    if (!newGroup.value.title && newGroup.value.title.trim() === '') {
       throw new Error('El título es obligatorio')
     }
     if (!newGroup.value.description) {

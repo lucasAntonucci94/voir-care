@@ -94,6 +94,7 @@ export function usePrivateChats() {
     }
 
     async function markMessagesAsRead(chatId, userEmail) {
+      debugger
       const messagesRef = collection(db, 'chats-private', chatId, 'messages');
       const q = query(messagesRef, where('readBy', 'array-contains', userEmail));
       const snapshot = await getDocs(q);
@@ -149,17 +150,30 @@ export function usePrivateChats() {
     }
 
     /**
-     * Elimina un chat por su ID.
-     * @param {string} id - ID del chat
-     * @returns {Promise<void>}
-     */
+     * Elimina un chat junto con su subcolección de mensajes.
+     * @param {string} chatId - ID del chat
+     */
     async function deleteChat(chatId) {
       try {
-        const docRef = doc(db, 'chats-private', chatId);
-         await deleteDoc(docRef);
+        const chatRef = doc(db, 'chats-private', chatId);
+        const messagesRef = collection(chatRef, 'messages');
+
+        // Obtener todos los mensajes del chat
+        const messagesSnap = await getDocs(messagesRef);
+
+        // Eliminar cada mensaje individualmente
+        const deletePromises = messagesSnap.docs.map((messageDoc) =>
+          deleteDoc(messageDoc.ref)
+        );
+        await Promise.all(deletePromises);
+
+        // Eliminar el documento del chat
+        await deleteDoc(chatRef);
+
+        console.log('Chat y mensajes eliminados correctamente.');
       } catch (err) {
-        console.error('Error al eliminar post:', err);
-         throw err;
+        console.error('Error al eliminar el chat y sus mensajes:', err);
+        throw err;
       }
     }
   
@@ -333,6 +347,14 @@ export function usePrivateChats() {
       });
     };
 
+    const resetUnreadCount = async (chatId, userEmail) => {
+      const chatDocRef = doc(db, 'chats-private', chatId);
+      await updateDoc(chatDocRef, {
+        [`unreadCount.${userEmail}`]: 0
+      });
+    };
+
+    
   return {
     savePrivateMessage,
     subscribeToIncomingPrivateMessages,

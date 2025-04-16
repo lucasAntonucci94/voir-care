@@ -54,7 +54,7 @@
             <button
               type="submit"
               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-opacity-90 focus:outline-none transition-colors duration-200 flex items-center"
-              :disabled="isLoading"
+              :disabled="isLoading || errorFileMessage !== '' || !newReel.title"
             >
               <span v-if="!isLoading">Subir</span>
               <span v-else class="flex items-center">
@@ -69,7 +69,7 @@
   </template>
   
   <script setup>
-  import { ref, defineProps, defineEmits } from 'vue';
+  import { ref, defineEmits } from 'vue';
   import { useReelsStore } from '../../stores/reels';
   import { useAuth } from '../../api/auth/useAuth';
   import { fileToBase64 } from '../../utils/fileToBase64';

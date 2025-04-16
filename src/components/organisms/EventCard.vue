@@ -83,7 +83,7 @@
         </button>
         <button
           v-else
-          class="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-md transition"
+          class="px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded hover:bg-primary-md dark:hover:bg-secondary-md transition"
           @click.stop="openEditModal"
         >
           Editar

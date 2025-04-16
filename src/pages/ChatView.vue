@@ -39,6 +39,7 @@
       <ChatMessagesList />
     </div>
   </template>
+  
   <script setup>
   import { ref } from 'vue';
   import { usePrivateChatsStore } from '../stores/privateChats';
@@ -78,7 +79,8 @@
     const selectedEmail = chat.users.find(email => email !== userAuth?.value?.email);
     return selectedEmail
       ? `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4`
-      : 'https://via.placeholder.com/40';
+      // ? `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4`
+      : AvatarImage;
   };
   // TO DO: Refactorizar estos métodos a un archivo de utilidades y que obtenga el displayName del usuario o email.
   const getUserName = (usersArray) => {

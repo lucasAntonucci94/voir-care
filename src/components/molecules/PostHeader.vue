@@ -6,7 +6,7 @@
       class="flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
     >
       <img 
-        :src="post?.user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
+        :src="post?.user?.photoURLFile || DefaultAvatar" 
         alt="Avatar" 
         class="w-10 h-10 rounded-full border border-gray-200  hover:border-primary"
       />
@@ -190,6 +190,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp';
 import PostEditForm from './PostEditForm.vue';
 import { useReports } from '../../composable/useReports';
 import { usePosts } from '../../composable/usePosts';
+import DefaultAvatar from '../../assets/avatar1.jpg'
 
 const props = defineProps(['post']);
 const emit = defineEmits(['delete', 'share', 'report']);

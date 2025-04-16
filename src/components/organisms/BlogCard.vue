@@ -1,6 +1,6 @@
 <template>
     <div
-      class="bg-gray-100 dark:bg-gray-700 rounded-xl shadow-md overflow-hidden w-full border border-gray-200 dark:border-gray-600 transition hover:shadow-lg cursor-pointer"
+      class="bg-gray-100 dark:bg-gray-700 rounded-xl shadow-md overflow-hidden w-full border border-gray-200 dark:border-gray-600 transition hover:shadow-lg  hover:-translate-y-1 cursor-pointer"
       @click="goToPostDetail"
     >
       <!-- Imagen -->
@@ -31,17 +31,11 @@
             {{ category }}
           </span>
         </div>
-        <button
-          class="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-md transition"
-        >
-          Leer más
-        </button>
       </div>
     </div>
   </template>
   
   <script setup>
-  import { defineProps } from 'vue';
   import { useRouter } from 'vue-router';
   
   const props = defineProps({
@@ -50,10 +44,9 @@
       required: true,
     },
   });
-  
   const router = useRouter();
   
   const goToPostDetail = () => {
-    // router.push(`/blog/${props.post.id}`);
-  };
+    router.push(`/blog/${props.post.id}`)
+  }
   </script>

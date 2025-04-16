@@ -9,10 +9,14 @@ import Explore from '../pages/Explore.vue';
 import LandingPage from '../pages/LandingPage.vue';
 import ChatView from '../pages/ChatView.vue';
 import Groups from '../pages/GroupsPage.vue';
+import GroupDetail from '../pages/GroupDetail.vue';
 import Events from '../pages/EventsPage.vue';
 import EventDetail from '../pages/EventDetail.vue';
 import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
+import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
+import ReportsPage from '../pages/admin/ReportsPage.vue';
+import BlogDetailPage from '../pages/BlogDetail.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -81,6 +85,14 @@ const routes = [
         }
       },
       {
+        path:  '/group/:idGroup?',
+        name: 'groupDetail',
+        component: GroupDetail,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
         path: '/events',
         name: 'events',
         component: Events,
@@ -100,6 +112,30 @@ const routes = [
         path:  '/education',
         name: 'education',
         component: EducationPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/blog/:idBlog?',
+        name: 'blogDetail',
+        component: BlogDetailPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/dashboard',
+        name: 'dashboard',
+        component: AdminDashboardPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/reports',
+        name: 'reports',
+        component: ReportsPage,
         meta: {
             requiresAuth: true,
         }

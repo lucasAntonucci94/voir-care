@@ -63,7 +63,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import ExploreFilters from '../components/molecules/ExploreFilters.vue';
-import ExploreMap from '../components/molecules/ExploreMap.vue';
+import ExploreMap from '../components/molecules/ExploreMapOld.vue';
+// import ExploreMap from '../components/molecules/ExploreMap.vue';
 import { useLocationsStore } from '../stores/locations';
 
 const locationsStore = useLocationsStore();

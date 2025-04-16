@@ -61,7 +61,7 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, onUnmounted, watch, defineProps, defineEmits, nextTick } from 'vue';
+  import { ref, onMounted, onUnmounted, watch, defineEmits, nextTick } from 'vue';
   
   // Props y eventos
   const props = defineProps({

@@ -1,4 +1,3 @@
-<!-- CreatePostModal.vue -->
 <template>
   <section class="flex justify-center mb-6">
     <input 
@@ -15,7 +14,10 @@
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
         <div>
+          <label for="post-title" class="sr-only">Título</label>
           <input 
+            id="post-title"
+            name="title"
             v-model="newPost.title" 
             type="text" 
             placeholder="Título de tu publicación" 
@@ -23,20 +25,28 @@
             :disabled="isLoading"
             required 
           />
+          <p v-if="formErrors.title" class="text-red-500 text-sm mt-1">{{ formErrors.title }}</p>
         </div>
         <!-- Descripción -->
         <div>
+          <label for="post-description" class="sr-only">Título</label>
           <textarea 
+            id="post-description"
+            name="description"
             v-model="newPost.description" 
             placeholder="¿Qué quieres compartir?" 
             class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
             :disabled="isLoading"
             required 
           ></textarea>
+          <p v-if="formErrors.description" class="text-red-500 text-sm mt-1">{{ formErrors.description }}</p>
         </div>
         <!-- Input de archivo -->
         <div class="relative">
+          <label for="post-media" class="sr-only">Imagen o video</label>
           <input 
+            id="post-media"
+            name="media"
             type="file" 
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
@@ -65,7 +75,8 @@
           ></video>
         </div>
         <!-- Categorías -->
-        <div class="flex flex-wrap gap-3">
+        <fieldset class="flex flex-wrap gap-3" :aria-describedby="formErrors.categories ? 'categories-error' : null">
+          <legend class="sr-only">Categorías</legend>
           <label
             v-for="category in categories"
             :key="category.id"
@@ -73,20 +84,25 @@
           >
             <input
               :id="'filter_' + category.id"
+              name="'categories"
               type="checkbox"
               v-model="newPost.categories"
               :value="category"
               :disabled="isLoading"
               class="custom-checkbox hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800"
+              :aria-invalid="!!formErrors.categories"
             />
             <span class="font-medium">{{ category.name }}</span>
           </label>
-        </div>
+        </fieldset>
+        <p v-if="formErrors.categories" id="categories-error" class="text-red-500 text-sm mt-2">
+          {{ formErrors.categories }}
+        </p>
         <!-- Botones -->
         <div class="flex justify-end gap-3">
           <button 
             type="button" 
-            @click="showModal = false" 
+            @click="handleCloseModal" 
             class="px-5 py-2 text-gray-500 dark:bg-gray-500 dark:text-gray-100 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
           >
             Cancelar
@@ -120,6 +136,7 @@ const postsStore = usePostsStore();
 const showModal = ref(false);
 const isLoading = ref(false);
 const errorFileMessage = ref('');
+const formErrors = ref({});
 
 const newPost = ref({
   user: null,
@@ -164,6 +181,10 @@ function handleMediaUpload(event) {
 }
 
 async function createPost() {
+  if (!validatePostForm()) {
+    isLoading.value = false;
+    return;
+  }
   isLoading.value = true;
   if (!newPost.value.title || !newPost.value.description) {
     console.error('Título y descripción son obligatorios');
@@ -214,6 +235,47 @@ async function createPost() {
   } finally {
     isLoading.value = false;
   }
+}
+
+function validatePostForm() {
+  const errors = {};
+
+  // Título requerido
+  if (!newPost.value.title || newPost.value.title.trim() === '') {
+    errors.title = 'El título es obligatorio';
+  }
+
+  // Descripción requerida
+  if (!newPost.value.description || newPost.value.description.trim() === '') {
+    errors.description = 'La descripción es obligatoria';
+  }
+
+  // Media opcional
+  // if (!newPost.value.media) {
+  //   errors.media = 'Debes subir una imagen o video';
+  // }
+
+  // Al menos una categoría
+  if (!newPost.value.categories || newPost.value.categories.length === 0) {
+    errors.categories = 'Selecciona al menos una categoría';
+  }
+
+  formErrors.value = errors;
+  return Object.keys(errors).length === 0;
+}
+
+function handleCloseModal() {
+  showModal.value = false;
+  newPost.value = {
+    user: null,
+    title: '',
+    description: '',
+    media: null,
+    mediaType: '',
+    categories: [],
+  };
+  errorFileMessage.value = '';
+  formErrors.value = {};
 }
 </script>
 

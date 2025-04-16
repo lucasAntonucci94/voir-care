@@ -104,7 +104,8 @@
           <button
               @click="saveBanner"
               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-all"
-              :disabled="!selectedFile && uploading"
+              :disabled="(!selectedFile && uploading) || errorBannerFileMessage !== ''"
+              :class="{'opacity-50 cursor-not-allowed': (!selectedFile && uploading) || errorBannerFileMessage !== ''}"
             >
               <span v-if="!uploading">Guardar</span>
               <span v-else class="flex items-center">

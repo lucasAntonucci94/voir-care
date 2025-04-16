@@ -15,6 +15,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     }),
     actions: {
       initializeSubscription(email) {
+        debugger
         if (this.unsubscribe) {
           console.log('Ya hay una suscripción activa, ignorando...');
           return;
@@ -24,7 +25,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         const { subscribeToPrivateChats } = usePrivateChats();
         this.unsubscribe = subscribeToPrivateChats(email, (updatedChats) => {
           console.log('Chats actualizados:', updatedChats);
-          if (this.deletedChatId.length > 0) {
+          if (this.deletedChatId.length > 0) { //hago esto ya que reacciona primero la suscripcion y luego el deleteChat, por lo que el registro no es quitado del chat
             updatedChats = updatedChats.filter(chat => !this.deletedChatId.includes(chat.idDoc));
           }
           this.chats.value = updatedChats ?? [];
@@ -46,7 +47,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         }
         this.chats.value = [];
         this.loading = true;
-
+        this.selectedChatId = null;
       },
       setSelectedChatId(chatId) {
         this.selectedChatId = chatId;
@@ -58,19 +59,20 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         this.to = email;
       },
       setDeletedChatId(chatId) {
+        debugger
         if (!this.deletedChatId.includes(chatId)) {
           this.deletedChatId.push(chatId);
         }
       },
       async deleteChat(chatId) {
         try {
+          this.setDeletedChatId(chatId);
           const { deleteChat } = usePrivateChats();
           await deleteChat(chatId);
           this.chats.value = this.chats.value
           if (this.selectedChatId === chatId) {
             this.selectedChatId = null;
           }
-          this.setDeletedChatId(chatId);
         } catch (err) {
            this.error.value = err.message;
            console.error('Error deleting chat:', err);
