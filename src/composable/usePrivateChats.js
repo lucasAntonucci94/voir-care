@@ -94,7 +94,6 @@ export function usePrivateChats() {
     }
 
     async function markMessagesAsRead(chatId, userEmail) {
-      debugger
       const messagesRef = collection(db, 'chats-private', chatId, 'messages');
       const q = query(messagesRef, where('readBy', 'array-contains', userEmail));
       const snapshot = await getDocs(q);

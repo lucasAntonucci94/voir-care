@@ -272,7 +272,6 @@ async function handleSubmit() {
   }
   
   try {
-    debugger
     await eventsStore.editEvent(editForm.value.idDoc, eventData)
     emit('submit', eventData)
   } catch (error) {

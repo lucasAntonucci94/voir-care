@@ -12,6 +12,8 @@ import {
   deleteDoc,
   where,
   getDoc,
+  arrayUnion,
+  arrayRemove, 
 } from 'firebase/firestore'
 
 const db = getFirestore();
@@ -108,7 +110,6 @@ export function useGroups() {
   }
 
   async function findById(idDoc) {
-    debugger
     try {
       const docRef = doc(db, 'groups', idDoc)
       const docSnap = await getDoc(docRef)
@@ -127,6 +128,40 @@ export function useGroups() {
     }
   }
 
+  /**
+   * Agrega un usuario al grupo
+   * @param {string} groupId 
+   * @param {string} userId 
+   */
+  async function joinGroup(groupId, userId) {
+    try {
+      const groupRef = doc(db, 'groups', groupId)
+      await updateDoc(groupRef, {
+        members: arrayUnion(userId),
+      })
+    } catch (error) {
+      console.error('Error al unirse al grupo:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Elimina un usuario del grupo
+   * @param {string} groupId 
+   * @param {string} userId 
+   */
+  async function leaveGroup(groupId, userId) {
+    try {
+      const groupRef = doc(db, 'groups', groupId)
+      await updateDoc(groupRef, {
+        members: arrayRemove(userId),
+      })
+    } catch (error) {
+      console.error('Error al salir del grupo:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createGroup,
@@ -135,5 +170,7 @@ export function useGroups() {
     deleteGroup,
     findById,
     updateGroup,
+    joinGroup,
+    leaveGroup,
   }
 }

@@ -92,12 +92,33 @@ export const useGroupsStore = defineStore('groups', {
     },
     // Busca evento por idDoc
     async findGroupById(idDoc) {
-      debugger
       const { findById } = useGroups()
       try {
           return await findById(idDoc)
       } catch (error) {
           console.error(`Error al buscar grupo con id: ${ idDoc }`, error)
+          throw error
+      }
+    },
+    // Me uno al grupo seleecionado por idDoc y userId
+    async joinGroup(groupId, userId) {
+      debugger
+      const { joinGroup } = useGroups()
+      try {
+          return await joinGroup(groupId, userId)
+      } catch (error) {
+          console.error(`Error al unirse al grupo con id: ${ idDoc }`, error)
+          throw error
+      }
+    },
+    // salgo del grupo seleecionado por idDoc y userId
+    async leaveGroup(groupId, userId) {
+      debugger
+      const { leaveGroup } = useGroups()
+      try {
+          return await leaveGroup(groupId, userId)
+      } catch (error) {
+          console.error(`Error al unirse al grupo con id: ${ idDoc }`, error)
           throw error
       }
     },

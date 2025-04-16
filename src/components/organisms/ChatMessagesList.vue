@@ -87,7 +87,6 @@
   onMounted(() => {
     console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
     if (privateChatsStore?.selectedChatId) {
-      debugger
       usePrivateChats().markMessagesAsRead(privateChatsStore?.selectedChatId, user.value.email);
     }
     watch(

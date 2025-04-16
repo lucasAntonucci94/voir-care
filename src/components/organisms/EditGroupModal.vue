@@ -163,7 +163,6 @@
   async function handleUpdateGroup() {
     isLoading.value = true
     try {
-        debugger
       validateForm()
       let updatedUrl = editableGroup.value.media.url
       let updatedPath = editableGroup.value.media.path

@@ -63,6 +63,18 @@
       <!-- Acciones -->
       <div class="p-5 pt-0 flex justify-end items-center">
         <button
+          v-if="!isAdmin(group)"
+          @click.stop="toggleMembership"
+          class="px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center gap-2"
+          :class="isMember ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
+        >
+          <i
+            :class="isMember ? 'fas fa-check-circle' : 'fas fa-plus-circle'"
+            class="text-white text-sm"
+          ></i>
+          {{ isMember ? 'Salir del grupo' : 'Unirme al grupo' }}
+        </button>
+        <button
           v-if="isAdmin(group)"
           class="px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded hover:bg-primary-md dark:hover:bg-secondary-md transition"
           @click.stop="editGroup(group)"
@@ -95,7 +107,7 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuth } from '../../api/auth/useAuth'
   import { useGroupsStore } from '../../stores/groups'
@@ -123,6 +135,8 @@
   function isAdmin(group) {
     return group.ownerId === user.value?.uid || user.value?.isAdmin
   }
+
+  const isMember = computed(() => props.group.members?.includes(user.value?.uid))
   
   function roleLabel(group) {
     if (group.ownerId === user.value?.uid || group.admins?.includes(user.value?.uid)) return 'Administrador'
@@ -164,6 +178,26 @@
   function handleGroupUpdated(updatedGroup) {
     // Podés hacer algo con los datos actualizados si querés (e.g. actualizar en el array de grupos)
     closeEditModal()
+  }
+
+  // Funcion toggle para gestion la suscripcion al grupo
+  async function toggleMembership() {
+    const groupId = props.group.idDoc
+    const userId = user.value?.uid
+    debugger
+    try {
+      if (isMember.value) {
+        await groupsStore.leaveGroup(groupId, userId)
+        // Reflejar el cambio localmente
+        // props.group.members = props.group.members.filter(id => id !== userId)
+      } else {
+        await groupsStore.joinGroup(groupId, userId)
+        // Reflejar el cambio localmente
+        // props.group.members.push(userId)
+      }
+    } catch (err) {
+      console.error('Error al cambiar la membresía del grupo:', err)
+    }
   }
   </script>
   

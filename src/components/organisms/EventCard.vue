@@ -196,7 +196,6 @@
     document.body.style.overflow = ''
   }
   function submitEdit(updatedEvent) {
-    debugger
     // eventsStore.updateEvent(updatedEvent.idDoc, updatedEvent)
     closeEditModal()
   }

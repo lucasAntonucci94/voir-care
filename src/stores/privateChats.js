@@ -15,7 +15,6 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     }),
     actions: {
       initializeSubscription(email) {
-        debugger
         if (this.unsubscribe) {
           console.log('Ya hay una suscripción activa, ignorando...');
           return;
@@ -59,7 +58,6 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         this.to = email;
       },
       setDeletedChatId(chatId) {
-        debugger
         if (!this.deletedChatId.includes(chatId)) {
           this.deletedChatId.push(chatId);
         }

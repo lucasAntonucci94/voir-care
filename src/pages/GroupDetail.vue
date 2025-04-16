@@ -117,17 +117,26 @@
                 <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Acciones</h2>
                 <div class="flex flex-col gap-3">
                   <button
-                    class="px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-colors duration-200"
+                    v-if="!isAdmin"
+                    @click="toggleMembership"
+                    class="px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center gap-2"
+                    :class="isMember ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
                   >
-                    Unirse al grupo
+                    <i
+                      :class="isMember ? 'fas fa-check-circle' : 'fas fa-plus-circle'"
+                      class="text-white text-sm"
+                    ></i>
+                    {{ isMember ? 'Salir del grupo' : 'Unirme al grupo' }}
                   </button>
                   <button
                     class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
-                  >
+                    disabled
+                    >
                     Invitar amigos
                   </button>
                   <button
                     class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+                    disabled
                   >
                     Compartir grupo
                   </button>
@@ -227,20 +236,24 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, watch } from 'vue'
   import { useRoute } from 'vue-router'
   import { formatTimestamp } from '../utils/formatTimestamp'
   import { useGroupsStore } from '../stores/groups'
   import defaultAvatar from '../assets/avatar1.jpg'
   import defaultGroupBanner from '../assets/wallwhite.jpg'
-  
+  import { useAuth } from '../api/auth/useAuth'
+
   const route = useRoute()
-  const { findGroupById } = useGroupsStore()
+  const groupsStore = useGroupsStore()
   
   const group = ref(null)
   const loading = ref(true)
   const membersDetails = ref([])
-  
+  const { user } = useAuth()
+  const isMember = ref(false)
+  const isAdmin = ref(false)
+
   // Mock para datos no incluidos en groupData
   const ownerMock = {
     name: 'Juan Pérez',
@@ -277,11 +290,12 @@
     const id = route.params.idGroup
     if (id) {
       try {
+        group.value = await groupsStore.findGroupById(id)
+        isMember.value = group.value?.members?.includes(user.value?.uid) || false
+        isAdmin.value = group.value?.ownerId === user.value?.uid || false
         debugger
-        group.value = await findGroupById(id)
-  
-        // Fetch mockeado de detalles de miembros
         if (group.value?.members?.length) {
+          debugger
           const userPromises = group.value.members.map(async (userId) => {
             return await fetchUserById(userId)
           })
@@ -292,7 +306,39 @@
       }
     }
     loading.value = false
+
   })
+  watch( //ya que el grupo se setean en onmounted, se necesita un watcher para que se actualice el valor de isMember correctamente.
+    () => group.value,
+    () => group?.members,
+    (members) => {
+      if(!user.value) {
+        debugger
+        var comaw = true
+      }
+      isMember.value = members?.includes(user.value?.uid) || false
+    },
+    // { immediate: true }
+  )
+
+  async function toggleMembership() {
+    const groupId = group.value?.idDoc
+    const userId = user.value?.uid
+    debugger
+    try {
+      if (isMember.value) {
+        await groupsStore.leaveGroup(groupId, userId)
+        group.value.members = group.value.members.filter(id => id !== userId)
+        isMember.value = false;
+      } else {
+        await groupsStore.joinGroup(groupId, userId)
+        group.value.members.push(userId)
+        isMember.value = true;
+      }
+    } catch (err) {
+      console.error('Error al cambiar la membresía del grupo:', err)
+    }
+  }
   </script>
   
   <style scoped>
