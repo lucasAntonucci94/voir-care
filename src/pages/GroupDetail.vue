@@ -65,7 +65,7 @@
 
       <!-- Contenido de la pestaña seleccionada -->
       <div>
-        <!-- Pestaña "Información" -->
+        <!-- Section Detalle del grupo -->
         <div v-if="activeTab === 'info'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Columna izquierda: Detalles -->
           <div class="lg:col-span-2 space-y-6">
@@ -87,7 +87,10 @@
                 </li>
                 <li class="flex items-center gap-3">
                   <i class="fas fa-tags text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Categorías:</strong> {{ group.categories?.join(', ') || 'Ninguna' }}</span>
+                  <span>
+                    <strong>Categorías:</strong> 
+                    {{ group.categories?.length ? group.categories.map(cat => cat.name).join(', ') : 'Ninguna' }}
+                  </span>
                 </li>
                 <li class="flex items-center gap-3">
                   <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
@@ -107,12 +110,33 @@
                 </li>
               </ul>
             </div>
+            <div
+              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+            >
+              <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                Publicaciones Destacadas
+              </h2>
+              <ul class="space-y-4 text-gray-600 dark:text-gray-300">
+                <li class="flex items-center gap-3">
+                  <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
+                  <span><strong>Se:</strong></span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
+                  <span><strong>Esta:</strong></span>
+                </li>
+                <li class="flex items-center gap-3">
+                  <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
+                  <span><strong>Trabajando:</strong></span>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <!-- Columna derecha: Acciones, Creador, Miembros -->
           <div class="space-y-6">
             <!-- Card de Acciones -->
-            <div
+            <section
               class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
             >
               <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Acciones</h2>
@@ -120,7 +144,7 @@
                 <button
                   v-if="!isAdmin"
                   @click="toggleMembership"
-                  class="px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center gap-2"
+                  class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2"
                   :class="isMember ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
                 >
                   <i
@@ -130,78 +154,75 @@
                   {{ isMember ? 'Salir del grupo' : 'Unirme al grupo' }}
                 </button>
                 <button
-                  class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+                  class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
                   disabled
                 >
                   Invitar amigos
                 </button>
-                <button
-                  class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
-                  disabled
-                >
-                  Compartir grupo
-                </button>
               </div>
-            </div>
+            </section>
 
-            <!-- Card de Creador -->
-            <div
-              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+            <!-- Card de Creador y Miembros -->
+            <section
+              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700"
             >
-              <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
-                Creador
-              </h2>
-              <div class="flex items-center gap-4">
-                <img
-                  :src="ownerDetails.photoURLFile || defaultAvatar"
-                  alt="Creador"
-                  class="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <router-link
-                    :to="`/profile/${ownerDetails.email}`"
-                    class="text-lg font-semibold text-primary dark:text-secondary hover:underline"
-                  >
-                    {{ ownerDetails.displayName || 'Anónimo' }}
-                  </router-link>
-                  <!-- <p class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ ownerDetails.location || 'Ubicación desconocida' }}
-                  </p> -->
-                </div>
-              </div>
-            </div>
-
-            <!-- Card de Miembros -->
-            <div
-              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
-            >
-              <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Miembros</h2>
-                <button
-                  @click="activeTab = 'members'"
-                  class="text-sm text-primary dark:text-secondary hover:underline"
-                >
-                  Ver todos
-                </button>
-              </div>
-              <ul v-if="membersDetails.length" class="space-y-4">
-                <li
-                  v-for="member in membersDetails.slice(0, 3)"
-                  :key="member.id"
-                  class="flex items-center gap-3"
-                >
+              <!-- Sección de Creador -->
+              <div class="mb-4">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
+                <div class="flex items-center gap-3 mt-2">
                   <img
-                    :src="member.photoURLFile || defaultAvatar"
-                    alt="Miembro"
+                    :src="ownerDetails.photoURLFile || defaultAvatar"
+                    alt="Creador"
                     class="w-10 h-10 rounded-full object-cover"
                   />
-                  <span class="text-sm text-gray-600 dark:text-gray-300">{{ member.displayName || 'Anónimo' }}</span>
-                </li>
-              </ul>
-              <p v-else class="text-sm text-gray-600 dark:text-gray-400">
-                No hay miembros para mostrar.
-              </p>
-            </div>
+                  <div>
+                    <router-link
+                      :to="ownerDetails.email ? `/profile/${ownerDetails.email}` : '#'"
+                      class="text-sm font-medium text-primary dark:text-secondary hover:underline"
+                    >
+                      {{ ownerDetails.displayName || 'Anónimo' }}
+                    </router-link>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Separador -->
+              <hr class="border-gray-200 dark:border-gray-700 mb-4" />
+
+              <!-- Sección de Miembros -->
+              <div>
+                <div class="flex justify-between items-center mb-3">
+                  <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Miembros</h2>
+                  <button
+                    @click="activeTab = 'members'"
+                    class="text-sm text-primary dark:text-secondary hover:underline"
+                  >
+                    Ver todos
+                  </button>
+                </div>
+                <div v-if="membersLoading" class="text-center text-gray-500 dark:text-gray-400 text-sm">
+                  Cargando miembros...
+                </div>
+                <ul v-else-if="membersDetails.length" class="space-y-3">
+                  <li
+                    v-for="member in membersDetails.slice(0, 3)"
+                    :key="member.id"
+                    class="flex items-center gap-3"
+                  >
+                    <img
+                      :src="member.photoURLFile || defaultAvatar"
+                      alt="Miembro"
+                      class="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span class="text-sm text-gray-600 dark:text-gray-300">{{ member.displayName || 'Anónimo' }}</span>
+                  </li>
+                </ul>
+                <p v-else class="text-sm text-gray-600 dark:text-gray-400">
+                  No hay miembros para mostrar.
+                </p>
+              </div>
+            </section>
+
           </div>
         </div>
 
@@ -287,10 +308,10 @@ onMounted(async () => {
       if (group.value?.members?.length) {
         const userPromises = group.value.members.map(async (userId) => {
           try {
-            const awdad = await usersStore.getUser(userId)
-            debugger
-            return awdad
-            // return await usersStore.getUser(userId)
+            // if(group.value.ownerId === userId) {
+            //   return null // No incluir al propietario en la lista de miembros
+            // }
+            return await usersStore.getUser(userId)
           } catch (error) {
             console.warn(`No se pudo obtener el usuario con ID ${userId}:`, error)
             return null
