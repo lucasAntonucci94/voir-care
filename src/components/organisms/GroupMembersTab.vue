@@ -66,9 +66,6 @@ const props = defineProps({
   members: { type: Array, required: true },
 })
 
-const aawdaw = props.members
-debugger
-
 const showModal = ref(false)
 const selectedUser = ref(null)
 

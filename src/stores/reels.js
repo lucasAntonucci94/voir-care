@@ -1,3 +1,4 @@
+// src/store/reels.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useReels } from '../composable/useReels';
@@ -29,16 +30,14 @@ export const useReelsStore = defineStore('reels', {
         this.isLoading = false;
       });
     },
-
     // Cancelar la suscripción
     unsubscribeFromReels() {
-      if (this.unsubscribe?.value) {
+      if (this.unsubscribe) {
         console.log('Cancelando suscripción a reels...');
-        this.unsubscribe.value();
-        this.unsubscribe.value = null;
+        this.unsubscribe();
+        this.unsubscribe = null;
       }
     },
-
     // Añadir un nuevo reel
     async addReel(newReelData) {
       console.log('Añadiendo nuevo reel:', newReelData);
@@ -52,26 +51,34 @@ export const useReelsStore = defineStore('reels', {
       };
       await saveReel(reelData);
     },
-
     // Eliminar un reel
     async deleteReel(reelIdDoc) {
       console.log('Eliminando reel con idDoc:', reelIdDoc);
       const { deleteReel } = useReels();
       await deleteReel(reelIdDoc);
     },
-
     // Toggle like en un reel
     async toggleLike(reelIdDoc, userData) {
-      const { addLike, removeLike } = useReels();
-      const reel = this.reels.value.find((r) => r.idDoc === reelIdDoc);
-      if (!reel) return;
-
-      const userLiked = reel.likes.some((like) => like.userId === userData.id);
-      if (userLiked) {
-        await removeLike(reelIdDoc, userData);
-      } else {
-        await addLike(reelIdDoc, userData);
+      try {
+        const { addLike, removeLike } = useReels();
+        const reel = this.reels.find((r) => r.idDoc === reelIdDoc);
+        if (!reel) throw new Error('Reel no encontrado');
+    
+        const userLiked = reel.likes.some((like) => like.userId === userData.uid);
+        if (userLiked) {
+          await removeLike(reelIdDoc, userData);
+        } else {
+          await addLike(reelIdDoc, userData);
+        }
+    
+        // 💡 Buscar el reel actualizado luego del cambio
+        const updatedReel = this.reels.find((r) => r.idDoc === reelIdDoc);
+        debugger
+        return { ...updatedReel }; // devolver copia para generar nueva referencia reactiva
+      } catch (err) {
+        console.error('Error al alternar like:', err);
+        throw err;
       }
-    },
+    },    
   },
 });

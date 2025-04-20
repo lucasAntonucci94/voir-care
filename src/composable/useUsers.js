@@ -244,7 +244,6 @@ export function useUsers() {
    */
   async function getUser(id) {
     try {
-      debugger
       const userRef = doc(db, 'users', id);
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {

@@ -1,4 +1,4 @@
-import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, query, orderBy, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, query, orderBy, serverTimestamp, arrayUnion, arrayRemove, updateDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { newGuid } from '../utils/newGuid';
 
@@ -9,7 +9,7 @@ const reelsRef = collection(db, 'reels');
 export function useReels() {
   /**
    * Guarda un reel en Firestore y sube el archivo a Firebase Storage.
-   * @param {{user: Object, title: string, file: File}} data
+   * @param {{user: Object, title: string, file: File, mediaType: string, thumbnail: File}} data
    * @returns {Promise<void>}
    */
   async function saveReel({ user, title, file, mediaType, thumbnail }) {
@@ -18,10 +18,10 @@ export function useReels() {
       const extension = mediaType === 'image' ? 'jpg' : 'mp4';
       const filePath = `reels/${user.uid}/${newGuid()}.${extension}`;
       const thumbnailPath = `reels/${user.uid}/${newGuid()}_thumb.jpg`;
-      // Subir archivo principal (base64) a Storage
+      // Subir archivo principal a Storage
       await uploadFile(filePath, file);
       const mediaUrl = await getFileUrl(filePath);
-      // Subir thumbnail (base64) a Storage
+      // Subir thumbnail a Storage
       await uploadFile(thumbnailPath, thumbnail);
       const thumbnailUrl = await getFileUrl(thumbnailPath);
       // Datos del reel
@@ -96,7 +96,7 @@ export function useReels() {
     try {
       const docRef = doc(db, 'reels', idDoc);
       await deleteDoc(docRef);
-      // Nota: Podrías también eliminar el archivo de Storage aquí si es necesario
+      // Nota: Podrías eliminar el archivo de Storage aquí si es necesario
     } catch (err) {
       console.error('Error al eliminar reel:', err);
       throw err;
@@ -113,7 +113,7 @@ export function useReels() {
     try {
       const docRef = doc(db, 'reels', reelIdDoc);
       const likeData = {
-        userId: userData.uid, // Usamos uid en lugar de id para consistencia con Firebase Auth
+        userId: userData.uid,
         displayName: userData.displayName || userData.email,
       };
       await updateDoc(docRef, {
