@@ -3,6 +3,7 @@
       <!-- Input que abre el modal para crear post -->
       <section class="flex justify-center mb-6">
         <input 
+          v-if="isMember"
           type="text" 
           placeholder="Escribe algo para este grupo..." 
           @click="showModal = true" 
@@ -46,6 +47,7 @@
   import CreatePostGroupModal from '../organisms/CreatePostGroupModal.vue'
   import PostCard from '../organisms/PostCard.vue'
   import { useGroupsStore } from '../../stores/groups'
+import { is } from 'date-fns/locale'
 
   const groupsStore = useGroupsStore()
 
@@ -53,7 +55,11 @@
     groupId: {
       type: String,
       required: true
-    }
+    },
+    isMember: {
+      type: Boolean,
+      required: false
+    },
   })
   const groupId = props.groupId
   const posts = ref([])

@@ -228,7 +228,7 @@
 
         <!-- Pestaña "Conversación" -->
         <div v-else-if="activeTab === 'conversation'" class="text-sm text-gray-600 dark:text-gray-300">
-          <ConversationGroupTab :group-id="group.idDoc" />
+          <ConversationGroupTab :group-id="group.idDoc" :is-member="isMember" />
         </div>
 
         <!-- Pestaña "Destacados" -->
