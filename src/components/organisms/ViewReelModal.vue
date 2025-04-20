@@ -201,12 +201,14 @@ const handleToggleLike = async () => {
 
   isLiking.value = true;
   try {
-    await reelsStore.toggleLike(props.reel.idDoc, {
+    const updatedReel = await reelsStore.toggleLike(props.reel.idDoc, {
       uid: user.value.uid,
       displayName: user.value.displayName || user.value.email,
       email: user.value.email,
     });
-    showMessage(hasLiked.value ? 'Like agregado' : 'Like quitado', 'success');
+
+    emit('update-reel', updatedReel); // 🔁 actualizar el prop en el padre
+    showMessage(!hasLiked.value ? 'Like agregado' : 'Like quitado', !hasLiked.value ? 'success' : 'error');
   } catch (err) {
     showMessage('Error al procesar el like', 'error');
     console.error('Error en toggleLike:', err);
