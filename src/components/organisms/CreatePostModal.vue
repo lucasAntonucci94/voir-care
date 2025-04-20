@@ -60,16 +60,16 @@
             <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
         </div>
         <!-- Previsualización -->
-        <div v-if="newPost?.media" class="mt-2">
+        <div v-if="newPost?.media.imageBase64" class="mt-2">
           <img 
-            v-if="newPost?.mediaType === 'image'" 
-            :src="newPost.media" 
+            v-if="newPost?.media.type === 'image'" 
+            :src="newPost.media.imageBase64 ?? newPost.media.url ?? ''" 
             alt="Preview" 
             class="w-full h-48 object-cover rounded-lg shadow-sm" 
           />
           <video 
-            v-else-if="newPost?.mediaType === 'video'" 
-            :src="newPost.media" 
+            v-else-if="newPost?.media.type === 'video'" 
+            :src="newPost.media.imageBase64 ?? newPost.media.url ?? ''" 
             controls 
             class="w-full h-48 rounded-lg shadow-sm"
           ></video>
@@ -142,8 +142,12 @@ const newPost = ref({
   user: null,
   title: '',
   description: '',
-  media: null,
-  mediaType: '',
+  media: {
+    imageBase64: null,
+    url: '',
+    type: '',
+    path: '',
+  },
   categories: [],
 });
 
@@ -170,8 +174,8 @@ function handleMediaUpload(event) {
   if (file) {
     const reader = new FileReader();
     reader.onloadend = () => {
-      newPost.value.media = reader.result;
-      newPost.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
+      newPost.value.media.imageBase64 = reader.result;
+      newPost.value.media.type = file.type.startsWith('image') ? 'image' : 'video';
     };
     reader.onerror = (error) => {
       console.error('Error al leer el archivo:', error);
@@ -213,9 +217,8 @@ async function createPost() {
       photoURLFile: user.value.photoURLFile || null,
     },
     title: newPost.value.title,
-    body: newPost.value.description, // Cambiamos description a body
-    imageBase64: newPost.value.media, // Base64 para subir
-    mediaType: newPost.value.mediaType,
+    body: newPost.value.description,
+    media: newPost.value.media,
     categories: newPost.value.categories,
   };
 
@@ -225,8 +228,12 @@ async function createPost() {
       user: null,
       title: '',
       description: '',
-      media: null,
-      mediaType: '',
+      media:  {
+        imageBase64: null,
+        url: '',
+        type: '',
+        path: '',
+      },
       categories: [],
     };
     showModal.value = false;
@@ -270,8 +277,12 @@ function handleCloseModal() {
     user: null,
     title: '',
     description: '',
-    media: null,
-    mediaType: '',
+    media:  {
+      imageBase64: null,
+      url: '',
+      type: '',
+      path: '',
+    },
     categories: [],
   };
   errorFileMessage.value = '';

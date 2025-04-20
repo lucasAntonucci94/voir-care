@@ -46,7 +46,6 @@ const router = useRouter()
 const blog = ref(null)
 
 onMounted(() => {
-  debugger
   const blogId = parseInt(route.params.idBlog)
   const found = blogs.value.find(b => b.id === blogId)
   if (!found) {

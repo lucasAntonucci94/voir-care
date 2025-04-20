@@ -3,18 +3,21 @@
     <PostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
     <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>
     <p class="mt-1 text-sm text-ellipsis">{{ post?.body }}</p>
-    <div v-if="post?.imageUrlFile" class="mt-3">
+    <div v-if="post?.media.url" class="mt-3">
       <img
-        v-if="post?.mediaType === 'image'"
-        :src="post?.imageUrlFile"
+        v-if="post?.media?.type === 'image'"
+        :src="post?.media?.url"
         alt="Post media"
         class="w-full h-48 object-cover rounded-lg cursor-pointer"
         @click="openMediaModal"
       />
       <video
-        v-else-if="post?.mediaType === 'video'"
-        :src="post?.imageUrlFile"
-        controls
+        v-else-if="post?.media?.type === 'video'"
+        :src="post?.media?.url"
+        :poster="post?.media?.url"
+        :controls="true"
+        :autoplay="true"
+        :loop="true"
         class="w-full h-48 rounded-lg cursor-pointer"
         @click="openMediaModal"
       ></video>
@@ -51,17 +54,21 @@
       <div class="flex h-full w-full">
         <!-- Contenido multimedia -->
         <div class="flex-1 flex items-center justify-center relative">
-          <div v-if="post?.mediaType === 'image'" class="media-container">
+          <div v-if="post?.media?.type === 'image'" class="media-container">
             <img
-              :src="post?.imageUrlFile"
+              :src="post?.media?.url"
               alt="Post media"
               class="max-w-full max-h-full object-contain rounded-lg"
             />
           </div>
-          <div v-else-if="post?.mediaType === 'video'" class="media-container">
+          <div v-else-if="post?.media?.type === 'video'" class="media-container">
             <video
-              :src="post?.imageUrlFile"
-              controls
+              :src="post?.media?.url"
+              alt="Post media"
+              :poster="post?.imageUrlFile"
+              :controls="true"
+              :autoplay="true"
+              :loop="true" 
               autoplay
               class="max-w-full max-h-full object-contain rounded-lg"
             ></video>

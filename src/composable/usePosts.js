@@ -12,7 +12,7 @@ export function usePosts() {
    * @param {{user: Object, title: string, body: string, categories: Array, imageBase64: string}} data
    * @returns {Promise<void>}
    */
-  async function savePost({ user, title, body, categories, imageBase64, mediaType }) {
+  async function savePost({ title, body, categories, media, user }) {
     try {
       user.isAdmin = false;
       const data = {
@@ -22,19 +22,19 @@ export function usePosts() {
         body,
         categories: categories || [],
         created_at: serverTimestamp(),
-        imagePathFile: null,
-        imageUrlFile: null,
-        mediaType: mediaType || null,
+        media: media || null,
         likes: [],
         connections: [],
       };
-      if (imageBase64) {
-        const extension = mediaType === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
-        const filePath = `post/${user.email}/${data.id}.${extension}`;
-        await uploadFile(filePath, imageBase64);
-        data.imagePathFile = filePath;
-        data.imageUrlFile = await getFileUrl(filePath);
+
+      if (data.media && data.media?.imageBase64) {
+        const extension = data.media.type === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
+        const filePath = `post/${data.user.email}/${data.id}.${extension}`;
+        await uploadFile(filePath, data.media.imageBase64);
+        data.media.path = filePath;
+        data.media.url = await getFileUrl(filePath);
       }
+
       await addDoc(postRef, data);
     } catch (err) {
       console.error('Error al grabar el post:', err);
@@ -78,6 +78,7 @@ export function usePosts() {
       return onSnapshot(q, (snapshot) => {
         const posts = snapshot.docs.map((doc) => {
           const post = doc.data();
+
           return {
             idDoc: doc.id,
             id: post.id,
@@ -86,10 +87,8 @@ export function usePosts() {
             user: post.user,
             categories: post.categories,
             created_at: post.created_at,
-            imagePathFile: post.imagePathFile,
-            imageUrlFile: post.imageUrlFile,
             likes: post.likes || [],
-            mediaType: post.mediaType || 'image',
+            media: post.media ?? null,
           };
         });
         callback(posts);
@@ -260,10 +259,8 @@ export function usePosts() {
             user: post.user,
             categories: post.categories,
             created_at: post.created_at,
-            imagePathFile: post.imagePathFile,
-            imageUrlFile: post.imageUrlFile,
             likes: post.likes || [],
-            mediaType: post.mediaType || 'image',
+            media: post.media ?? null,
           };
         });
         callback(posts);

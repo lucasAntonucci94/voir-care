@@ -15,9 +15,14 @@ import {
   arrayUnion,
   arrayRemove, 
 } from 'firebase/firestore'
+import { useAuth } from '../api/auth/useAuth';
+import { useStorage } from './useStorage'; // Importamos el composable de storage
+import { newGuid } from '../utils/newGuid';
 
 const db = getFirestore();
 const groupsRef = collection(db, 'groups')
+const { user } = useAuth()
+const { uploadFile, getFileUrl } = useStorage();
 
 export function useGroups() {
   const isCreating = ref(false)
@@ -162,6 +167,60 @@ export function useGroups() {
     }
   }
 
+  async function createPostGroup(idGroup, postData) {
+    try {
+      postData.id = newGuid()
+      postData.user = {
+        id: user.value?.uid,
+        displayName: user.value?.displayName,
+        email: user.value?.email,
+        photoURLFile: user.value?.photoURLFile,
+        photoPath: user.value?.photoPathFile
+      }
+      
+      if (postData.media.imageBase64) {
+        const extension = postData.media.type === 'image' ? 'jpg' : 'mp4';
+        const filePath = `groups/${idGroup}/posts/${user.value.email}/${postData.id}.${extension}`;
+        await uploadFile(filePath, postData.media.imageBase64);
+        postData.media.path = filePath;
+        postData.media.url = await getFileUrl(filePath);
+      }
+
+      const postsRef = collection(db, 'groups', idGroup, 'posts')
+      await addDoc(postsRef, {
+        ...postData,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    } catch (error) {
+      console.error('Error creando grupo:', error)
+      throw error
+    } finally {
+      // isCreating.value = false
+    }
+  }
+
+  // Metodos de suscripcion a posts por id de grupo
+  function suscribePostsByGroupId(groupId, callback) {
+    try {
+      const postsRef = collection(db, 'groups', groupId, 'posts')
+      const q = query(postsRef, orderBy('createdAt', 'desc'))
+      return onSnapshot(q, (snapshot) => {
+        const posts = snapshot.docs.map((docSnap) => {
+          const post = docSnap.data()
+          return {
+            idDoc: docSnap.id,
+            ...post,
+          }
+        })
+        callback(posts)
+      })
+    } catch (error) {
+      console.error('Error al suscribirse a los posts del grupo:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createGroup,
@@ -172,5 +231,7 @@ export function useGroups() {
     updateGroup,
     joinGroup,
     leaveGroup,
+    createPostGroup,
+    suscribePostsByGroupId,
   }
 }

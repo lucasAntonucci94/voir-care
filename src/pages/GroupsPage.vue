@@ -37,19 +37,9 @@
       <!-- Contenido de tab -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
         <!-- Tab: GroupsFeed -->
-        <div v-if="activeTab === 'feed'">
-          <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Tus Feed de Grupos</h2>
-          <div class="space-y-6 flex flex-col items-center">
-            <span class="dark:text-white">Still Working on this</span>
-          </div>
-        </div>
-
+        <GroupFeedTab v-if="activeTab === 'feed'" />
         <!-- Tab: Descubrir -->
-        <!-- <div v-else-if="activeTab === 'discover'">
-          <h2 class="text-lg font-semibold text-[#2c3e50] dark:text-white mb-4">Descubrir Grupos</h2>
-        </div> -->
         <DiscoverGroupsTab v-else-if="activeTab === 'discover'" />
-
         <!-- Tab: Tus Grupos -->
         <UserGroupsTab v-else-if="activeTab === 'yourGroups'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
       </div>
@@ -72,6 +62,7 @@ import { useGroupsStore } from '../stores/groups'
 import CreateGroupModal from '../components/organisms/CreateGroupModal.vue'
 import UserGroupsTab from '../components/molecules/UserGroupsTab.vue'
 import DiscoverGroupsTab from '../components/molecules/DiscoverGroupsTab.vue'
+import GroupFeedTab from '../components/organisms/GroupFeedTab.vue'
 
 // Estados y variables principales
 const { user } = useAuth()
@@ -110,33 +101,32 @@ const handleGroupCreated = (groupData) => {
 }
 
 // Suscripciones según el tab seleccionado
-watch(activeTab, (tab) => {
-  // Si se muestra el feed de grupos (posts de grupos suscriptos)
-  // if (tab === 'feed' && user.value?.uid) {
-  //   groupsStore.subscribeUserGroupFeed(user.value.uid)
-  // } else {
-  //   groupsStore.unsubscribeUserGroupFeed()
-  // }
-  
-  // // Para descubrir grupos (grupos a los que el usuario NO está suscripto)
-  if (tab === 'discover' && user.value?.uid) {
-    groupsStore.subscribeAllGroups(user.value.uid)
-  } else {
+watch(
+  activeTab,
+  (newTab, oldTab) => {
+    // Cancelar todas las suscripciones primero
+    groupsStore.unsubscribeUserGroupFeed()
     groupsStore.unsubscribeAllGroups()
-  }
-  
-  // Para los grupos creados por el usuario
-  if (tab === 'yourGroups' && user.value?.uid) {
-    groupsStore.subscribeUserGroups(user.value.uid)
-  } else {
-    groupsStore.unsubscribeUserGroups()
-  }
-}, { immediate: true })
+    groupsStore.unsubscribeFromUserGroups()
+
+    if (!user.value?.uid) return
+
+    // Activar la suscripción según el tab
+    if (newTab === 'feed') {
+      groupsStore.subscribeUserGroupFeed(user.value.uid)
+    } else if (newTab === 'discover') {
+      groupsStore.subscribeAllGroups()
+    } else if (newTab === 'yourGroups') {
+      groupsStore.subscribeUserGroups(user.value.uid)
+    }
+  },
+  { immediate: true }
+)
 
 // Cancelar todas las suscripciones al desmontar
 onUnmounted(() => {
-  // groupsStore.unsubscribeUserGroupFeed()
+  groupsStore.unsubscribeUserGroupFeed()
   groupsStore.unsubscribeAllGroups()
-  groupsStore.unsubscribeUserGroups()
+  groupsStore.unsubscribeFromUserGroups()
 })
 </script>

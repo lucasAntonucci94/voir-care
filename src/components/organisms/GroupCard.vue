@@ -184,7 +184,6 @@
   async function toggleMembership() {
     const groupId = props.group.idDoc
     const userId = user.value?.uid
-    debugger
     try {
       if (isMember.value) {
         await groupsStore.leaveGroup(groupId, userId)
