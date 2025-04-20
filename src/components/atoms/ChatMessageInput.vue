@@ -10,7 +10,7 @@
         />
         <button
           type="submit"
-          :disabled="messageText.trim().length === 0 || loading"
+          :disabled="loading || cleanedMessage.length === 0"
           class="px-5 py-2.5 bg-primary dark:bg-secondary text-white rounded-2xl shadow-md hover:bg-primary-md hover:bg-secondary-md hover:shadow-lg transition-colors duration-200 transition-shadow duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           <span v-if="!loading">Enviar</span>
@@ -21,7 +21,7 @@
   </template>
   
   <script setup>
-  import { ref, watch } from 'vue';
+  import { ref, watch, computed } from 'vue';
   import { usePrivateChats } from '../../composable/usePrivateChats';
   import { usePrivateChatsStore } from '../../stores/privateChats';
   import { useAuth } from '../../api/auth/useAuth';
@@ -33,21 +33,23 @@
       default: null,
     },
   });
-  
   // Estado reactivo
   const messageText = ref('');
   const loading = ref(false);
   const privateChatsStore = usePrivateChatsStore();
   const { savePrivateMessage } = usePrivateChats();
   const { user } = useAuth();
+
+  const cleanedMessage = computed(() => sanitizeMessage(messageText.value));
   
   // Métodos
   const sendMessage = async () => {
-    if (messageText.value.trim().length === 0) return;
+    const cleanedMessage = sanitizeMessage(messageText.value);
+    if (cleanedMessage.length === 0) return;
     loading.value = true;
     try {
-      const selectedChat = privateChatsStore.chats.value.find(chat => chat.idDoc === props.selectedChatId);
-      const otherUser = Object.keys(selectedChat.user).find(u => u !== user?.value.email);
+      const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === props.selectedChatId);
+      const otherUser = selectedChat.users.find(email => email !== user?.value.email);
       await savePrivateMessage(user?.value.email, otherUser, messageText.value);
       messageText.value = ''; // Limpiar el input después de enviar
     } catch (err) {
@@ -56,7 +58,15 @@
       loading.value = false;
     }
   };
-  
+
+  function sanitizeMessage(message) {
+    return message
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // caracteres no imprimibles
+      .trim();
+  }
+
   // Limpiar el input si el chat seleccionado cambia o se pierde
   watch(() => props.selectedChatId, () => {
     messageText.value = '';

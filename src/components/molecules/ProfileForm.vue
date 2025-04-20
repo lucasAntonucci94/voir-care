@@ -7,22 +7,26 @@
       <input
         v-model="editForm.email"
         type="email"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
+        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50"
         placeholder="Correo electrónico"
         disabled
       />
     </div>
-    
+
     <!-- Nombre de usuario -->
     <div>
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
       <input
         v-model="editForm.displayName"
         type="text"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
+        :class="[
+          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50',
+          errors.displayName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+        ]"
         placeholder="Nombre de usuario"
         :disabled="isLoading"
       />
+      <p v-if="errors.displayName" class="text-red-500 text-sm mt-1">{{ errors.displayName }}</p>
     </div>
 
     <!-- Nombre -->
@@ -31,10 +35,14 @@
       <input
         v-model="editForm.firstName"
         type="text"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
+        :class="[
+          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50',
+          errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+        ]"
         placeholder="Nombre"
         :disabled="isLoading"
       />
+      <p v-if="errors.firstName" class="text-red-500 text-sm mt-1">{{ errors.firstName }}</p>
     </div>
 
     <!-- Apellido -->
@@ -43,10 +51,14 @@
       <input
         v-model="editForm.lastName"
         type="text"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-100 disabled:opacity-50"
+        :class="[
+          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50',
+          errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+        ]"
         placeholder="Apellido"
         :disabled="isLoading"
       />
+      <p v-if="errors.lastName" class="text-red-500 text-sm mt-1">{{ errors.lastName }}</p>
     </div>
 
     <!-- Teléfono -->
@@ -54,11 +66,16 @@
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
       <input
         v-model="editForm.phoneNumber"
+        v-mask="'+54 9 ## ####-####'"
         type="tel"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50"
-        placeholder="Número de teléfono"
+        :class="[
+          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50',
+          errors.phoneNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+        ]"
+        placeholder="+54 9 11 1234-5678"
         :disabled="isLoading"
       />
+      <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">{{ errors.phoneNumber }}</p>
     </div>
 
     <!-- Fecha de nacimiento -->
@@ -67,20 +84,26 @@
       <input
         v-model="editForm.birthday"
         type="date"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50"
+        :class="[
+          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50',
+          errors.birthday ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+        ]"
         :disabled="isLoading"
       />
+      <p v-if="errors.birthday" class="text-red-500 text-sm mt-1">{{ errors.birthday }}</p>
     </div>
 
-    <!-- Género (usando SelectGenre) -->
+    <!-- Género -->
     <div>
       <SelectGenre
         v-model="editForm.genre"
         label="Género"
         id="genre"
         :disabled="isLoading"
+        :class="{ 'border-red-500': errors.genre }"
         class="mt-1 w-full"
       />
+      <p v-if="errors.genre" class="text-red-500 text-sm mt-1">{{ errors.genre }}</p>
     </div>
 
     <!-- País -->
@@ -90,8 +113,10 @@
         label="País"
         id="country"
         :disabled="isLoading"
+        :class="{ 'border-red-500': errors.country }"
         class="mt-1 w-full"
       />
+      <p v-if="errors.country" class="text-red-500 text-sm mt-1">{{ errors.country }}</p>
     </div>
 
     <!-- Foto de perfil -->
@@ -103,10 +128,9 @@
         @change="handlePhotoUpload"
         :class="[
           'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
-          errorBannerFileMessage ? 'border-red-500' : 'border-gray-300  dark:border-gray-800'
+          errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
         ]"
         :disabled="isLoading"
-        required
       />
       <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
       <img
@@ -129,14 +153,11 @@
       </button>
       <button
         type="submit"
-        :disabled="isLoading"
+        :disabled="isLoading || Object.keys(errors)?.length > 0"
         class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
       >
         <span v-if="isLoading">
-          <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+          <i class="fa-solid fa-spinner animate-spin h-5 w-5"></i>
         </span>
         {{ isLoading ? 'Guardando...' : 'Guardar' }}
       </button>
@@ -149,7 +170,7 @@ import { ref, onMounted } from 'vue';
 import { useUsers } from '../../composable/useUsers';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import SelectCountry from '../atoms/SelectCountry.vue';
-import SelectGenre from '../atoms/SelectGenre.vue'; // Nueva importación
+import SelectGenre from '../atoms/SelectGenre.vue';
 
 // Props
 const props = defineProps({
@@ -160,25 +181,40 @@ const props = defineProps({
 
 // Instancias
 const { updateUser } = useUsers();
-const { uploadMedia, isUploading } = useMediaUpload();
+const { uploadMedia } = useMediaUpload();
 
 // Estados
 const editForm = ref({});
 const isLoading = ref(false);
 const errorFileMessage = ref('');
+const errors = ref({});
 
 onMounted(() => {
   editProfile();
 });
 
 function editProfile() {
+  let phone = props.activeUser?.phoneNumber || '';
+  if (phone) {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.startsWith('549') && digits.length === 13) {
+      // Formato móvil: +54 9 ## ####-####
+      phone = `+54 9 ${digits.slice(3, 5)} ${digits.slice(5, 9)}-${digits.slice(9)}`;
+    } else if (digits.startsWith('54') && digits.length === 12) {
+      // Formato fijo: +54 ## ####-####
+      phone = `+54 ${digits.slice(2, 4)} ${digits.slice(4, 8)}-${digits.slice(8)}`;
+    } else {
+      phone = ''; // Si no coincide con ningún formato, lo dejamos vacío
+    }
+  }
+
   editForm.value = {
     id: props.activeUser?.uid || props.activeUser?.id || null,
     displayName: props.activeUser?.displayName || '',
     firstName: props.activeUser?.firstName || '',
     lastName: props.activeUser?.lastName || '',
     email: props.activeUser?.email || '',
-    phoneNumber: props.activeUser?.phoneNumber || '',
+    phoneNumber: phone,
     birthday: props.activeUser?.birthday ? new Date(props.activeUser?.birthday).toISOString().split('T')[0] : '',
     genre: props.activeUser?.genre || '',
     country: props.activeUser?.country || '',
@@ -190,13 +226,13 @@ function editProfile() {
 }
 
 function handlePhotoUpload(event) {
-  errorFileMessage.value = ''; // Reiniciar mensaje de error
+  errorFileMessage.value = '';
   const file = event.target.files[0];
 
-  if (!file) return
+  if (!file) return;
   if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
     errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
-    event.target.value = ''; // Limpiar el input
+    event.target.value = '';
     return;
   }
 
@@ -207,15 +243,20 @@ function handlePhotoUpload(event) {
       editForm.value.photoURL = URL.createObjectURL(file);
       editForm.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
     };
-    reader.onerror = (error) => {
-      console.error('Error al leer el archivo:', error);
-    };
     reader.readAsDataURL(file);
   }
 }
 
 async function saveProfile() {
   isLoading.value = true;
+  errors.value = {};
+
+  const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) {
+    errors.value = validationErrors;
+    isLoading.value = false;
+    return;
+  }
 
   try {
     let updatedPhotoUrl = props.activeUser?.photoURLFile;
@@ -251,5 +292,59 @@ async function saveProfile() {
   } finally {
     isLoading.value = false;
   }
+}
+
+function validateForm() {
+  const validationErrors = {};
+
+  // Check displayName (required)
+  if (!editForm.value.displayName || editForm.value.displayName.trim() === '') {
+    validationErrors.displayName = 'El nombre de usuario no puede estar vacío';
+  }
+
+  // Check firstName (optional, but if provided, must not be empty)
+  if (editForm.value.firstName && editForm.value.firstName.trim() === '') {
+    validationErrors.firstName = 'El nombre no puede estar vacío';
+  }
+
+  // Check lastName (optional, but if provided, must not be empty)
+  if (editForm.value.lastName && editForm.value.lastName.trim() === '') {
+    validationErrors.lastName = 'El apellido no puede estar vacío';
+  }
+
+  // Check phoneNumber (required, with Argentine format validation)
+  if (!editForm.value.phoneNumber || editForm.value.phoneNumber.trim() === '') {
+    validationErrors.phoneNumber = 'El número de teléfono es obligatorio';
+  } else {
+    const cleanedPhone = editForm.value.phoneNumber.replace(/\D/g, '');
+    if (cleanedPhone.startsWith('549') && cleanedPhone.length === 13) {
+      // Formato móvil: +54 9 ## ####-####
+      // Válido, no hacemos nada
+    } else if (cleanedPhone.startsWith('54') && cleanedPhone.length === 12) {
+      // Formato fijo: +54 ## ####-####
+      // Válido, no hacemos nada
+    } else {
+      validationErrors.phoneNumber = 'El número debe seguir el formato +54 9 XX XXXX-XXXX (móvil, 13 dígitos) o +54 XX XXXX-XXXX (fijo, 12 dígitos)';
+    }
+  }
+
+  // Check birthday (required)
+  if (!editForm.value.birthday) {
+    validationErrors.birthday = 'La fecha de nacimiento es obligatoria';
+  } else if (new Date(editForm.value.birthday) > new Date()) {
+    validationErrors.birthday = 'La fecha de nacimiento no puede ser futura';
+  }
+
+  // Check genre (required)
+  if (!editForm.value.genre || editForm.value.genre.trim() === '') {
+    validationErrors.genre = 'El género es obligatorio';
+  }
+
+  // Check country (required)
+  if (!editForm.value.country || editForm.value.country.trim() === '') {
+    validationErrors.country = 'El país es obligatorio';
+  }
+
+  return validationErrors;
 }
 </script>

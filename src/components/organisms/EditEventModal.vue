@@ -5,9 +5,7 @@
       <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Evento</h3>
         <button @click="handleCancel" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <i class="fa-solid fa-xmark w-6 h-6"></i>
         </button>
       </div>
 
@@ -258,7 +256,6 @@ async function handleSubmit() {
     startTime: editForm.value.startTime ? new Date(editForm.value.startTime) : null,
     endTime: editForm.value.endTime ? new Date(editForm.value.endTime) : null,
   }
-  debugger
   // Si se seleccionó una nueva media, la cargamos a storage
   if (editForm.value.newMediaBase64) {
     const ownerId = user.value?.uid || user.value?.id || editForm.value.ownerId
@@ -275,7 +272,6 @@ async function handleSubmit() {
   }
   
   try {
-    debugger
     await eventsStore.editEvent(editForm.value.idDoc, eventData)
     emit('submit', eventData)
   } catch (error) {

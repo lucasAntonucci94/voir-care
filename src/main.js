@@ -5,6 +5,7 @@ import router from './router/router';
 import App from './App.vue';
 import './style.css'
 import process from 'process'
+import { mask } from 'vue-the-mask';
 
 window.process = process
 
@@ -18,6 +19,7 @@ const app = createApp(App);
 const pinia = createPinia();
 app.use(pinia);
 app.use(router);
+app.directive('mask', mask);
 app.mount('#app');
 
 app.provide('firebaseApp', firebaseApp); // Registro instancia de firebase deforma global.

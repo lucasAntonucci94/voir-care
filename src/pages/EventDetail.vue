@@ -67,6 +67,10 @@
               <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Detalles</h2>
               <ul class="space-y-4 text-gray-600 dark:text-gray-300">
                 <li class="flex items-center gap-3">
+                  <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
+                  <span><strong>Descripción:</strong> {{ event.description }}</span>
+                </li>
+                <li class="flex items-center gap-3">
                   <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Inicio:</strong> {{ formatTimestamp(event.startTime, { includeTime: true }) }}</span>
                 </li>
@@ -183,13 +187,8 @@
                 </button>
               </div>
 
-              <!-- Separador -->
-              <div class="border-t border-gray-200 dark:border-gray-700 mb-6"></div>
-
-              <!-- Título: Ir con amigos -->
+              <!-- <div class="border-t border-gray-200 dark:border-gray-700 mb-6"></div>
               <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Ir con amigos</h3>
-
-              <!-- Lista de Asistentes -->
               <ul v-if="attendeesDetails.length" class="space-y-4">
                 <li v-for="attendee in attendeesDetails.slice(0, 3)" :key="attendee.id" class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
@@ -209,7 +208,7 @@
               </ul>
               <p v-else class="text-sm text-gray-600 dark:text-gray-400">
                 No hay asistentes confirmados aún.
-              </p>
+              </p> -->
             </div>
           </div>
         </div>

@@ -24,7 +24,6 @@
             class="max-w-full max-h-full object-contain rounded-2xl shadow-xl border border-gray-800/50"
           ></video>
         </div>
-
         <!-- Navegación: flechas con diseño más elegante -->
         <button
           v-if="hasPreviousReel"
@@ -50,17 +49,20 @@
       >
         <div class="space-y-6">
           <!-- Sección del usuario con avatar -->
-          <div class="flex items-center space-x-4">
+          <router-link 
+            :to="`/profile/${reel?.user?.email}`" 
+            class="flex items-center gap-3 rounded"
+          >
             <img
               :src="reel?.user?.photoURL || 'https://via.placeholder.com/40'"
               alt="User avatar"
               class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md"
-            />
-            <div>
-              <p class="text-lg font-semibold text-primary dark:text-secondary">{{ reel?.user?.displayName }}</p>
-              <p class="text-xs text-gray-600 dark:text-gray-400">{{ formatTimestamp(reel?.createdAt) }}</p>
-            </div>
-          </div>
+              />
+              <div>
+                <p class="text-lg font-semibold text-primary dark:text-secondary">{{ reel?.user?.displayName }}</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400">{{ formatTimestamp(reel?.createdAt) }}</p>
+              </div>
+          </router-link>
 
           <!-- Título del reel -->
           <h3 class="text-2xl font-bold text-gray-600 dark:text-white tracking-tight">{{ reel?.title }}</h3>
@@ -102,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, defineProps, defineEmits } from 'vue';
+import { ref, computed, onMounted, nextTick, defineEmits } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp.js';
 
 const props = defineProps({

@@ -15,28 +15,39 @@
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
         <div>
+          <label for="post-title" class="sr-only">Título</label>
           <input 
+            id="post-title"
+            name="title"
             v-model="newPost.title" 
             type="text" 
-            placeholder="Título de tu publicación"
-            class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent  dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 dark:hover:text-gray-300 bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            placeholder="Título de tu publicación" 
+            class="w-full p-3 border  hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
             :disabled="isLoading"
             required 
           />
+          <p v-if="formErrors?.title" class="text-red-500 text-sm mt-1">{{ formErrors?.title }}</p>
         </div>
         <!-- Descripción -->
         <div>
+          <label for="post-description" class="sr-only">Título</label>
           <textarea 
+            id="post-description"
+            name="description"
             v-model="newPost.description" 
             placeholder="¿Qué quieres compartir?" 
-            class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 dark:hover:text-gray-300 bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
+            class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
             :disabled="isLoading"
             required 
           ></textarea>
+          <p v-if="formErrors.description" class="text-red-500 text-sm mt-1">{{ formErrors.description }}</p>
         </div>
         <!-- Input de archivo -->
         <div class="relative">
+          <label for="post-media" class="sr-only">Imagen o video</label>
           <input 
+            id="post-media"
+            name="media"
             type="file" 
             accept="image/*,video/*" 
             @change="handleMediaUpload" 
@@ -65,29 +76,32 @@
           ></video>
         </div>
         <!-- Categorías -->
-        <div class="flex flex-wrap gap-3">
+        <fieldset class="flex flex-wrap gap-3" aria-describedby="categories-help">
+          <legend class="sr-only">Categorías</legend>
           <label
             v-for="category in categories"
             :key="category.id"
-            class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer"
+            class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer dark:text-gray-100 dark:hover:text-gray-300"
           >
             <input
               :id="'filter_' + category.id"
+              :name="'filter_' + category.id"
               type="checkbox"
               v-model="newPost.categories"
               :value="category"
               :disabled="isLoading"
-              class="custom-checkbox hover:bg-gray-100 dark:hover:bg-gray-600 dark:focus:bg-gray-600"
+              class="custom-checkbox hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800"
             />
-            <span class="font-medium dark:text-white dark:hover:text-gray-300">{{ category.name }}</span>
+            <span class="font-medium">{{ category.name }}</span>
           </label>
-        </div>
+        </fieldset>
+        <p v-if="formErrors.categories" class="text-red-500 text-sm mt-2">{{ formErrors.categories }}</p>
         <!-- Botones -->
         <div class="flex justify-end gap-3">
           <button 
             type="button" 
-            @click="showModal = false;errorFileMessage = ''" 
-            class="px-5 py-2 text-gray-500 dark:text-gray-100 dark:bg-gray-500 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
+            @click="handleCloseModal" 
+            class="px-5 py-2 text-gray-500 dark:bg-gray-500 dark:text-gray-100 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
           >
             Cancelar
           </button>
@@ -98,7 +112,7 @@
           >
             <span v-if="!isLoading">Publicar</span>
             <span v-else class="flex items-center gap-2">
-              <span class="w-4 h-4 border-2 border-white dark:border-gray-800 border-t-transparent rounded-full animate-spin"></span>
+              <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               Publicando...
             </span>
           </button>
@@ -107,6 +121,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, watch } from 'vue';
@@ -120,6 +135,8 @@ const postsStore = usePostsStore();
 const showModal = ref(false);
 const isLoading = ref(false);
 const errorFileMessage = ref('');
+const formErrors = ref({});
+
 const newPost = ref({
   user: null,
   title: '',
@@ -141,24 +158,32 @@ watch(showModal, (newValue) => {
 function handleMediaUpload(event) {
   const file = event.target.files[0];
 
+  if (!file) return;
+
   if (!file) return
-  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
-    event.target.value = ''; // Limpiar el input
-    return;
+      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+        errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+        event.target.value = ''; // Limpiar el input
+        return;
+      }
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      newPost.value.media = reader.result;
+      newPost.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
+    };
+    reader.onerror = (error) => {
+      console.error('Error al leer el archivo:', error);
+    };
+    reader.readAsDataURL(file);
   }
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    newPost.value.media = reader.result;
-    newPost.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
-  };
-  reader.onerror = (error) => {
-    console.error('Error al leer el archivo:', error);
-  };
-  reader.readAsDataURL(file);
 }
 
 async function createPost() {
+  if (!validatePostForm()) {
+    isLoading.value = false;
+    return;
+  }
   isLoading.value = true;
   if (!newPost.value.title || !newPost.value.description) {
     console.error('Título y descripción son obligatorios');
@@ -174,15 +199,15 @@ async function createPost() {
 
   const postData = {
     user: {
-      id: user.value.uid || user.value.id || null,
-      displayName: user.value.displayName || null,
-      firstName: user.value.firstName || null,
-      lastName: user.value.lastName || null,
-      email: user.value.email || null,
-      phoneNumber: user.value.phoneNumber || null,
-      birthday: user.value.birthday || null,
-      genre: user.value.genre || null,
-      country: user.value.country || null,
+      id: user.value.uid || user.value.id,
+      displayName: user.value.displayName || 'No ha definido un displayName',
+      firstName: user.value.firstName || 'No ha definido un nombre',
+      lastName: user.value.lastName || 'No ha definido un apellido',
+      email: user.value.email || 'No ha definido un correo',
+      phoneNumber: user.value.phoneNumber || 'No ha definido un número de teléfono',
+      birthday: user.value.birthday || 'No ha definido una fecha de nacimiento',
+      genre: user.value.genre || 'No ha definido un género',
+      country: user.value.country || 'No ha definido un país',
       photoURL: user.value.photoURL || null,
       photoURLFile: user.value.photoURLFile || null,
     },
@@ -210,18 +235,60 @@ async function createPost() {
     isLoading.value = false;
   }
 }
+
+function validatePostForm() {
+  const errors = {};
+
+  // Título requerido
+  if (!newPost.value.title || newPost.value.title.trim() === '') {
+    errors.title = 'El título es obligatorio';
+  }
+
+  // Descripción requerida
+  if (!newPost.value.description || newPost.value.description.trim() === '') {
+    errors.description = 'La descripción es obligatoria';
+  }
+
+  // Media opcional
+  // if (!newPost.value.media) {
+  //   errors.media = 'Debes subir una imagen o video';
+  // }
+
+  // Al menos una categoría
+  if (!newPost.value.categories || newPost.value.categories.length === 0) {
+    errors.categories = 'Selecciona al menos una categoría';
+  }
+
+  formErrors.value = errors;
+  return Object.keys(errors).length === 0;
+}
+
+function handleCloseModal() {
+  showModal.value = false;
+  newPost.value = {
+    user: null,
+    title: '',
+    description: '',
+    media: null,
+    mediaType: '',
+    categories: [],
+  };
+  errorFileMessage.value = '';
+  formErrors.value = {};
+}
+
 </script>
 
 <style>
 /* Estilo del checkbox personalizado */
 .custom-checkbox {
-  appearance: none;
+  appearance: none; /* Elimina el estilo nativo del navegador */
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 16px;
+  width: 16px; /* Tamaño del checkbox */
   height: 16px;
-  border: 2px solid #d1d5db;
-  border-radius: 4px;
+  border: 2px solid #d1d5db; /* Borde gris (border-gray-300) */
+  border-radius: 4px; /* Esquinas redondeadas */
   position: relative;
   cursor: pointer;
   outline: none;
@@ -235,14 +302,14 @@ async function createPost() {
 
 /* Fondo y tilde cuando está seleccionado */
 .custom-checkbox:checked {
-  background-color: var(--checkbox-bg);
-  border-color: var(--checkbox-bg);
+  background-color: #02bcae; /* Usa tu color bg-primary */
+  border-color: #02bcae; /* Borde del mismo color */
 }
 
 /* Fondo y tilde cuando está seleccionado */
 .custom-checkbox:checked:hover {
-  background-color:  var(--checkbox-bg);
-  border-color:  var(--checkbox-bg);
+  background-color: #019a8e; /* Usa tu color bg-primary */
+  border-color: #019a8e; /* Borde del mismo color */
 }
 
 /* Crear el tilde personalizado con ::after */
@@ -253,13 +320,13 @@ async function createPost() {
   top: 1px;
   width: 4px;
   height: 8px;
-  border: solid white;
+  border: solid white; /* Tilde blanco */
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
 /* Efecto de foco */
 .custom-checkbox:focus {
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5); /* focus:ring-primary con opacity-50 */
 }
 </style>

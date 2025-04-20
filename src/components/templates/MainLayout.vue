@@ -4,7 +4,7 @@ MainLayout.vue
       <Header />
       <div class="flex flex-1 relative">
         <Sidebar
-          v-if="isAuthenticated"
+          v-if="permitedRoutes"
           :show="sidebarStore.showSidebar"
            @toggle="sidebarStore.toggleSidebar"
          />
@@ -19,7 +19,7 @@ MainLayout.vue
 </template>
 
 <script setup>
-import { onUnmounted, watch } from 'vue';
+import { onUnmounted, watch, computed } from 'vue';
 import Header from '../../components/organisms/Header.vue';
 import Footer from '../../components/organisms/Footer.vue';
 import Sidebar from '../../components/organisms/Sidebar.vue';
@@ -56,10 +56,12 @@ onUnmounted(() => {
   privateChatsStore.initializeUnsubscribe();
 });
 
-// Método para determinar rutas permitidas
-const permitedRoutes = () => {
-  return ($route.path !== '/' || $route.path !== '/login' || $route.path !== '/register') && isAuthenticated.value;
-};
+const permitedRoutes = computed(() => {
+  const blockedExactPaths = ['/', '/login', '/register']
+  const isBlockedPath = blockedExactPaths.includes($route.path) //rutas donde no quiero que muestre el side.
+  const isAdminPath = $route.path.startsWith('/admin') //si la ruta empieza con /admin oculto sidebar general.
+  return !isBlockedPath && !isAdminPath && isAuthenticated.value
+})
 </script>
 
 <style scoped>

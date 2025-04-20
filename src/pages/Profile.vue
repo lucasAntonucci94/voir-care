@@ -28,15 +28,7 @@
             @click="scrollLeft"
             class="absolute left-0 top-1/2 -translate-y-1/2 bg-primary dark:bg-secondary text-white p-2 rounded-full shadow-md hover:bg-primary-md dark:hover:bg-secondary-md transition-colors md:hidden z-30"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+            <i class="fa-solid fa-chevron-left w-6 h-6 text-white"></i>
           </button>
 
           <!-- Contenedor de tabs -->
@@ -66,15 +58,7 @@
             @click="scrollRight"
             class="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary-md transition-colors md:hidden z-30"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
+            <i class="fa-solid fa-chevron-right w-6 h-6 text-white"></i>
           </button>
         </div>
       </div>

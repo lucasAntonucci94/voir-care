@@ -50,18 +50,14 @@
           @click="scroll(-1)"
           aria-label="Desplazar carrusel a la izquierda"
         >
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
+          <i class="fa-solid fa-chevron-left w-6 h-6 text-white"></i>
         </button>
         <button
           class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#F4A261] hover:bg-[#E76F51] rounded-full w-12 h-12 flex items-center justify-center shadow-md z-10 transition-transform transform hover:scale-110"
           @click="scroll(1)"
           aria-label="Desplazar carrusel a la derecha"
         >
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
+          <i class="fa-solid fa-chevron-right w-6 h-6 text-white"></i>
         </button>
 
         <!-- Indicadores de progreso (dots) -->
@@ -204,11 +200,6 @@ onUnmounted(() => {
 
 /* Estilos para el contenedor del carrusel */
 .awareness-card img {
-  transition: transform 0.3s ease;
-}
-
-/* Estilos para las flechas */
-button svg {
   transition: transform 0.3s ease;
 }
 

@@ -53,7 +53,7 @@
           <li class="px-4 py-3">
             <ThemeModeButton />
           </li>
-          <router-link v-if="isAuthenticated" to="/adm" @click="toggle">
+          <router-link v-if="isAuthenticated && user?.isAdmin" to="/admin/dashboard" @click="toggle">
             <li class="block px-7 py-3 text-gray-900 hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-200 flex items-center gap-2">
               <i class="fa-solid fa-shield-alt text-sm"></i>
               Panel de Administrador
