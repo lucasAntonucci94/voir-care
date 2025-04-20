@@ -100,10 +100,6 @@
                   <i class="fas fa-users text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Miembros:</strong> {{ group.members?.length || 0 }}</span>
                 </li>
-                <li class="flex items-center gap-3">
-                  <i class="fas fa-bullhorn text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Actividad reciente:</strong> {{ recentActivityMock }}</span>
-                </li>
                 <li v-if="group.rules" class="flex items-center gap-3">
                   <i class="fas fa-book text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Reglas:</strong> {{ group.rules }}</span>
@@ -277,9 +273,6 @@ const ownerDetails = ref({})
 const isMember = ref(false)
 const isAdmin = ref(false)
 
-// Mock para datos no incluidos en groupData
-const recentActivityMock = '5 publicaciones hoy'
-
 // Definir las pestañas
 const tabs = [
   { id: 'info', label: 'Información' },
@@ -303,7 +296,6 @@ onMounted(async () => {
       if (group.value?.ownerId) {
         ownerDetails.value = await usersStore.getUser(group.value.ownerId)
       }
-      debugger
       // Cargar detalles de los miembros
       if (group.value?.members?.length) {
         const userPromises = group.value.members.map(async (userId) => {
@@ -318,7 +310,6 @@ onMounted(async () => {
           }
         })
         membersDetails.value = (await Promise.all(userPromises)).filter(user => user !== null)
-        debugger
       }
     } catch (error) {
       console.error('Error al cargar grupo:', error)
