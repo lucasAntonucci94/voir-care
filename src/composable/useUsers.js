@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { getFirestore, doc, setDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { usePosts } from '../composable/usePosts';
 

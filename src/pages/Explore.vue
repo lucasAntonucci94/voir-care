@@ -9,10 +9,7 @@
           class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition"
           :disabled="loadingLocation"
         >
-          <svg v-if="loadingLocation" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-16 0z" />
-          </svg>
+          <i v-if="loadingLocation" class="fa-solid fa-spinner animate-spin h-5 w-5"></i>
           <span>{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
         </button>
         <button
@@ -66,7 +63,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import ExploreFilters from '../components/molecules/ExploreFilters.vue';
-import ExploreMap from '../components/molecules/ExploreMap.vue';
+import ExploreMap from '../components/molecules/ExploreMapOld.vue';
+// import ExploreMap from '../components/molecules/ExploreMap.vue';
 import { useLocationsStore } from '../stores/locations';
 
 const locationsStore = useLocationsStore();

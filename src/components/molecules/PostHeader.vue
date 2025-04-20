@@ -6,7 +6,7 @@
       class="flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
     >
       <img 
-        :src="post?.user?.photoURLFile || 'https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2Flucas.e.antonucci%40gmail.com.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4'" 
+        :src="post?.user?.photoURLFile || DefaultAvatar" 
         alt="Avatar" 
         class="w-10 h-10 rounded-full border border-gray-200  hover:border-primary"
       />
@@ -49,7 +49,7 @@
               @click="showDeleteModal" 
               class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
             >
-              <i class="fas fa-trash mr-2"></i> Eliminar
+              <i class="fas fa-trash-can mr-2"></i> Eliminar
             </button>
           </li>
           <li v-if="post?.user?.id !== user?.uid">
@@ -172,9 +172,7 @@
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar posteo</h3>
             <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <i class="fa-solid fa-xmark w-6 h-6"></i>
             </button>
           </div>
         </div>
@@ -192,6 +190,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp';
 import PostEditForm from './PostEditForm.vue';
 import { useReports } from '../../composable/useReports';
 import { usePosts } from '../../composable/usePosts';
+import DefaultAvatar from '../../assets/avatar1.jpg'
 
 const props = defineProps(['post']);
 const emit = defineEmits(['delete', 'share', 'report']);

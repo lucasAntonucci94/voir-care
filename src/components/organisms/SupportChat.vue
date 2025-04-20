@@ -6,20 +6,7 @@
         class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-16 sm:h-16 bg-[#F28C38] rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-teal-600 transition-all duration-200 z-50"
         @click="toggleChat"
       >
-        <svg
-          class="h-6 w-6 sm:h-8 sm:w-8 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-          />
-        </svg>
+        <i class="fa-solid fa-comment-dots h-6 w-6 sm:h-8 sm:w-8 text-white"></i>
       </div>
   
       <!-- Ventana del chat -->
@@ -33,15 +20,7 @@
             @click="toggleChat"
             class="text-gray-500 hover:text-gray-700 transition-all duration-200"
           >
-            <svg
-              class="h-5 w-5 sm:h-6 sm:w-6"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <i class="fa-solid fa-xmark h-5 w-5 sm:h-6 sm:w-6"></i>
           </button>
         </div>
   

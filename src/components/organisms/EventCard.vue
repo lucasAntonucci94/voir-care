@@ -40,7 +40,7 @@
           class="text-red-500 hover:text-red-600"
           @click.stop="handleDelete"
         >
-          <i class="fa-solid fa-trash"></i>
+          <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
 
@@ -83,7 +83,7 @@
         </button>
         <button
           v-else
-          class="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-md transition"
+          class="px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded hover:bg-primary-md dark:hover:bg-secondary-md transition"
           @click.stop="openEditModal"
         >
           Editar
@@ -196,7 +196,6 @@
     document.body.style.overflow = ''
   }
   function submitEdit(updatedEvent) {
-    debugger
     // eventsStore.updateEvent(updatedEvent.idDoc, updatedEvent)
     closeEditModal()
   }

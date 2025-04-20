@@ -1,3 +1,4 @@
+<!-- src/components/ViewReelModal.vue -->
 <template>
   <div
     v-if="visible"
@@ -24,7 +25,6 @@
             class="max-w-full max-h-full object-contain rounded-2xl shadow-xl border border-gray-800/50"
           ></video>
         </div>
-
         <!-- Navegación: flechas con diseño más elegante -->
         <button
           v-if="hasPreviousReel"
@@ -50,7 +50,10 @@
       >
         <div class="space-y-6">
           <!-- Sección del usuario con avatar -->
-          <div class="flex items-center space-x-4">
+          <router-link 
+            :to="`/profile/${reel?.user?.email}`" 
+            class="flex items-center gap-3 rounded"
+          >
             <img
               :src="reel?.user?.photoURL || 'https://via.placeholder.com/40'"
               alt="User avatar"
@@ -60,10 +63,24 @@
               <p class="text-lg font-semibold text-primary dark:text-secondary">{{ reel?.user?.displayName }}</p>
               <p class="text-xs text-gray-600 dark:text-gray-400">{{ formatTimestamp(reel?.createdAt) }}</p>
             </div>
-          </div>
+          </router-link>
 
           <!-- Título del reel -->
           <h3 class="text-2xl font-bold text-gray-600 dark:text-white tracking-tight">{{ reel?.title }}</h3>
+
+          <!-- Mensaje de feedback -->
+          <transition name="fade">
+            <div
+              v-if="message"
+              class="p-3 rounded-lg text-sm"
+              :class="{
+                'bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200': messageType === 'success',
+                'bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200': messageType === 'error',
+              }"
+            >
+              {{ message }}
+            </div>
+          </transition>
 
           <!-- Estadísticas -->
           <div class="text-sm space-y-4">
@@ -76,13 +93,19 @@
             </p>
             <div class="flex items-center space-x-2">
               <span class="font-semibold text-gray-600 dark:text-gray-300">Me gusta:</span>
-              <span class="text-gray-600 dark:text-gray-100">{{ reel?.likes?.length }}</span>
+              <span class="text-gray-600 dark:text-gray-100">{{ reel?.likes?.length || 0 }}</span>
               <button
-                @click="toggleLike"
-                class="ml-2 p-2 bg-red-300/20 dark:bg-red-600/20 text-red-400 rounded-full hover:bg-red-400/40 dark:hover:bg-red-600/40 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                @click="handleToggleLike"
+                :disabled="isLiking || !user || !isAuthenticated"
+                class="ml-2 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                :class="{
+                  'bg-red-300/20 dark:bg-red-600/20 text-red-400 hover:bg-red-400/40 dark:hover:bg-red-600/40': !hasLiked,
+                  'bg-red-500/20 dark:bg-red-700/20 text-red-500 hover:bg-red-600/40 dark:hover:bg-red-700/40': hasLiked,
+                  'opacity-50 cursor-not-allowed': isLiking || !user || !isAuthenticated,
+                }"
                 aria-label="Toggle like"
               >
-                <i class="fa-solid fa-heart text-lg"></i>
+                <i class="fa-heart text-lg" :class="{ 'fa-solid': hasLiked, 'fa-regular': !hasLiked }"></i>
               </button>
             </div>
           </div>
@@ -102,8 +125,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, defineProps, defineEmits } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp.js';
+import { useReelsStore } from '../../stores/reels.js';
+import { useAuth } from '../../api/auth/useAuth';
 
 const props = defineProps({
   visible: {
@@ -122,7 +147,18 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'update-reel']);
 const viewModal = ref(null);
+const reelsStore = useReelsStore();
+const { user, isAuthenticated } = useAuth();
+const isLiking = ref(false);
+const message = ref(null);
+const messageType = ref(null);
 
+// Computed para determinar si el usuario actual dio like
+const hasLiked = computed(() => {
+  return props.reel?.likes?.some((like) => like.userId === user.value?.uid) || false;
+});
+
+// Computed para navegación de reels
 const currentReelIndex = computed(() => {
   return props.reel ? props.reels.findIndex((r) => r.id === props.reel.id) : -1;
 });
@@ -146,10 +182,39 @@ const nextReel = () => {
   }
 };
 
-// Función placeholder para el botón de "Like" (deberías integrarla con tu lógica real)
-const toggleLike = () => {
-  console.log('Toggle like for reel:', props.reel.id);
-  // Aquí iría la lógica para agregar/quitar like, por ejemplo, usando useReels
+// Mostrar mensaje temporal
+const showMessage = (text, type) => {
+  message.value = text;
+  messageType.value = type;
+  setTimeout(() => {
+    message.value = null;
+    messageType.value = null;
+  }, 3000); // Desaparece después de 3 segundos
+};
+
+// Manejar toggle de like
+const handleToggleLike = async () => {
+  if (!user.value || !isAuthenticated.value) {
+    showMessage('Debes iniciar sesión para dar like', 'error');
+    return;
+  }
+
+  isLiking.value = true;
+  try {
+    const updatedReel = await reelsStore.toggleLike(props.reel.idDoc, {
+      uid: user.value.uid,
+      displayName: user.value.displayName || user.value.email,
+      email: user.value.email,
+    });
+
+    emit('update-reel', updatedReel); // 🔁 actualizar el prop en el padre
+    showMessage(!hasLiked.value ? 'Like agregado' : 'Like quitado', !hasLiked.value ? 'success' : 'error');
+  } catch (err) {
+    showMessage('Error al procesar el like', 'error');
+    console.error('Error en toggleLike:', err);
+  } finally {
+    isLiking.value = false;
+  }
 };
 
 onMounted(() => {
@@ -175,6 +240,16 @@ onMounted(() => {
   width: 100%;
   height: 100vh;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+}
+
+/* Transición para el mensaje */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* Estilos responsivos para mobile */

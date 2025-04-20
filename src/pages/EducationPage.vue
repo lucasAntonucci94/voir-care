@@ -7,7 +7,7 @@
         </h2>
         <div class="flex flex-wrap gap-2">
           <button
-            v-for="filter in filters"
+            v-for="filter in allCategories"
             :key="filter"
             @click="selectedFilter = filter"
             :class="[
@@ -33,45 +33,25 @@
     </div>
   </template>
   
-  <script setup>
-  import { ref, computed } from 'vue';
-  import BlogPostCard from '../components/organisms/BlogCard.vue';
-  import ImageEjemplo from '../assets/3.png';
-  // Datos simulados (luego conectarás con Firebase)
-  const posts = ref([
-    {
-      id: 1,
-      title: 'Cómo preparar tu hogar para un nuevo perro',
-      summary: 'Consejos prácticos para recibir a tu nueva mascota.',
-      image: ImageEjemplo,
-      type: 'Consejos',
-      categories: ['Preparación', 'Perros'],
-    },
-    {
-      id: 2,
-      title: 'Historias de adopción: Luna encontró un hogar',
-      summary: 'Conoce la emotiva historia de Luna y su nueva familia.',
-      image: ImageEjemplo,
-      type: 'Adopción',
-      categories: ['Historias', 'Gatos'],
-    },
-    {
-      id: 3,
-      title: 'Guía básica de salud para gatos',
-      summary: 'Lo que necesitas saber para mantener a tu gato sano.',
-      image: ImageEjemplo,
-      type: 'Salud',
-      categories: ['Cuidado', 'Gatos'],
-    },
-  ]);
-  
-  // Filtros
-  const filters = ['Todos', 'Consejos', 'Adopción', 'Salud'];
-  const selectedFilter = ref('Todos');
-  
-  // Computado para filtrar posteos
-  const filteredPosts = computed(() => {
-    if (selectedFilter.value === 'Todos') return posts.value;
-    return posts.value.filter(post => post.type === selectedFilter.value);
-  });
-  </script>
+<script setup>
+import { ref, computed } from 'vue'
+import BlogPostCard from '../components/organisms/BlogCard.vue'
+import { blogs } from '../data/blogs.js'
+
+const selectedFilter = ref('Todos')
+
+// Categorías únicas extraídas dinámicamente
+const allCategories = computed(() => {
+  const set = new Set()
+  blogs.value.forEach(blog => blog.categories.forEach(cat => set.add(cat)))
+  return ['Todos', ...Array.from(set)]
+})
+
+// Filtrado por categoría
+const filteredPosts = computed(() => {
+  if (selectedFilter.value === 'Todos') return blogs.value
+  return blogs.value.filter(blog =>
+    blog.categories.includes(selectedFilter.value)
+  )
+})
+</script>

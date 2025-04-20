@@ -70,31 +70,14 @@ export const usePostsStore = defineStore('posts', {
         this.unsubscribeProfile.value = null;
       }
     },
-    async addPost(newPostData) {
-      console.log('Añadiendo nuevo post:', newPostData);
+    async addPost(postData) {
+      console.log('Añadiendo nuevo post:', postData);
       const { savePost } = usePosts();
-      const postData = {
-        user: newPostData.user,
-        title: newPostData.title,
-        body: newPostData.body,
-        categories: newPostData.categories || [],
-        imageBase64: newPostData.imageBase64,
-        mediaType: newPostData.mediaType,
-      };
       await savePost(postData);
     },
     async updatePost(postId, updatedPostData) {
       console.log('Actualizando post:', postId, updatedPostData);
       const { updatePost } = usePosts();
-      const postData = {
-        user: updatedPostData.user,
-        title: updatedPostData.title,
-        body: updatedPostData.body,
-        categories: updatedPostData.categories || [],
-        imageUrlFile: updatedPostData.imageUrlFile,
-        imagePathFile: updatedPostData.imagePathFile,
-        mediaType: updatedPostData.mediaType,
-      };
       await updatePost(postId, postData);
     },
     async deletePost(postIdDoc) {
