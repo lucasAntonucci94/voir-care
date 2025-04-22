@@ -1,9 +1,17 @@
 <template>
     <div>
       <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 sr-only">Tus Eventos</h2>
-      <div v-if="eventsStore?.events?.value?.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center align-center">
+      <EventFilters
+        v-if="eventsStore.events?.value?.length > 0"
+        v-model="searchQuery"
+        v-model:selectedCategory="selectedCategory"
+        :categories="categories"
+        :showSearch="true"
+        :showSelect="true"
+      />
+      <div v-if="filteredEvents.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center align-center mt-4">
         <EventCard
-          v-for="event in eventsStore?.events?.value"
+          v-for="event in filteredEvents"
           :key="event.idDoc"
           :event="event"
         />
@@ -31,13 +39,33 @@
   </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import { useEventsStore } from '../../stores/events'
 import EventCard from '../organisms/EventCard.vue'
+import EventFilters from '../molecules/EventFilters.vue'
 
 const eventsStore = useEventsStore()
 const emit = defineEmits(['open-create-modal','open-discover-tab']);
-
-
+// Estados
+const searchQuery = ref('')
+const selectedCategory = ref('')
+const categories = [
+  { id: 'adopcion', name: 'Adopción' },
+  { id: 'educacion', name: 'Educación' },
+  { id: 'salud', name: 'Salud y Bienestar' },
+  { id: 'recreativo', name: 'Recreativo' },
+  { id: 'competencia', name: 'Concursos y Muestras' },
+  { id: 'voluntariado', name: 'Voluntariado' },
+  { id: 'beneficencia', name: 'Solidarios' },
+  { id: 'otros', name: 'Otros' }
+]
+// Computados
+const filteredEvents = computed(() => {
+  return eventsStore.events?.value
+    ?.filter(event => event.title.toLowerCase().includes(searchQuery.value.toLowerCase())) //filtro por searchQuery
+    ?.filter(event => !selectedCategory.value || event.categories?.some(c => c.id === selectedCategory.value)) //filtro por categorias
+    ?? [] //vacio si no hay eventos
+})
 const navigateToCreateEvent = () => {
     emit('open-create-modal')
   };

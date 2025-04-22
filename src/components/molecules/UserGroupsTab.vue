@@ -6,12 +6,13 @@
       </div>
       <!-- Filtro -->
       <GroupFilters
-          v-model="searchQuery"
-          v-model:selectedCategory="selectedCategory"
-          :categories="categories"
-          :showSearch="true"
-          :showSelect="true"
-        />
+        v-if="groupsStore.userGroups?.value.length > 0"
+        v-model="searchQuery"
+        v-model:selectedCategory="selectedCategory"
+        :categories="categories"
+        :showSearch="true"
+        :showSelect="true"
+      />
       <!-- Lista de grupos -->
       <div v-if="filteredGroups.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <GroupCard

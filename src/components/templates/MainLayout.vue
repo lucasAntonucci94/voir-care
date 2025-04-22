@@ -13,6 +13,7 @@ MainLayout.vue
                   <router-view />
           </div>
         </main>
+        <UserChatBox v-if="shouldShowChatBox" />
       </div>
     <Footer />
   </div>
@@ -28,7 +29,7 @@ import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useCategories } from '../../composable/useCategories';
-
+import UserChatBox from '../../components/organisms/UserChatBox.vue';
 const $route = useRoute();
 const { user, isAuthenticated } = useAuth();
 const sidebarStore = useSidebarStore();
@@ -61,6 +62,10 @@ const permitedRoutes = computed(() => {
   const isBlockedPath = blockedExactPaths.includes($route.path) //rutas donde no quiero que muestre el side.
   const isAdminPath = $route.path.startsWith('/admin') //si la ruta empieza con /admin oculto sidebar general.
   return !isBlockedPath && !isAdminPath && isAuthenticated.value
+})
+
+const shouldShowChatBox = computed(() => {
+  return isAuthenticated.value && $route.path !== '/faqs'
 })
 </script>
 

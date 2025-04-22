@@ -27,13 +27,12 @@
           <router-link v-if="!isAuthenticated" to="/login" class="flex items-center">
             <h1 class="relative flex items-center gap-2 text-white hover:text-primary-lighter transition-colors duration-300 group">Iniciar Sesión</h1>
           </router-link>
-          <!-- <NotificationDropdown
+          <NotificationDropdown
             v-if="isAuthenticated"
-            :notifications="userNotifications"
             :is-open="navbarStore.isNotificationsMenuOpen"
             @toggle="navbarStore.toggleMenu('notifications')"
             class="flex-shrink-0"
-          /> -->
+          />
           <MessagesDropdown
             v-if="isAuthenticated"
             :is-open="navbarStore.isMessageMenuOpen"
@@ -62,7 +61,6 @@ import MessagesDropdown from '../molecules/MessagesDropdown.vue';
 import NotificationDropdown from '../molecules/NotificationDropdown.vue';
 import { useNavbarStore } from '../../stores/navbar';
 
-const route = useRoute();
 const { isAuthenticated } = useAuth();
 const navbarStore = useNavbarStore();
 const sidebarStore = useSidebarStore();

@@ -70,7 +70,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-compass w-5 text-center"></i>
-        <span class="text-sm font-medium">Explorar (trabajando ando)</span>
+        <span class="text-sm font-medium">Explorar</span>
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/profile" 
@@ -112,7 +112,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-question w-5 text-center"></i>
-        <span class="text-sm font-medium">Faqs (trabajando ando)</span>
+        <span class="text-sm font-medium">Faqs</span>
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/groups" 
@@ -126,7 +126,7 @@
         @click="emit('toggle')"
       >
         <i class="fas fa-users w-5 text-center"></i>
-        <span class="text-sm font-medium">Grupos (trabajando ando)</span>
+        <span class="text-sm font-medium">Grupos</span>
       </router-link>
       <router-link v-if="isAuthenticated"
         to="/events" 
@@ -157,7 +157,7 @@
         "
       >
         <i class="fas fa-book-open w-5 text-center"></i>
-        <span class="text-sm font-medium">Educación (trabajando ando)</span>
+        <span class="text-sm font-medium">Educación (próximamente)</span>
     </router-link>
       <router-link v-if="isAuthenticated" 
         to="/adopcion" 
@@ -170,7 +170,7 @@
         "
       >
         <i class="fas fa-dog w-5 text-center"></i>
-        <span class="text-sm font-medium">Adopcion (trabajando ando)</span>
+        <span class="text-sm font-medium">Adopcion (próximamente)</span>
     </router-link>
     </div>
   </aside>

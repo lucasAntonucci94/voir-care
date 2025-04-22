@@ -73,7 +73,6 @@ export const useReelsStore = defineStore('reels', {
     
         // 💡 Buscar el reel actualizado luego del cambio
         const updatedReel = this.reels.find((r) => r.idDoc === reelIdDoc);
-        debugger
         return { ...updatedReel }; // devolver copia para generar nueva referencia reactiva
       } catch (err) {
         console.error('Error al alternar like:', err);
