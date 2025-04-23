@@ -33,12 +33,12 @@
             @toggle="navbarStore.toggleMenu('notifications')"
             class="flex-shrink-0"
           />
-          <MessagesDropdown
+          <!-- <MessagesDropdown
             v-if="isAuthenticated"
             :is-open="navbarStore.isMessageMenuOpen"
             @toggle="navbarStore.toggleMenu('messages')"
             class="flex-shrink-0"
-          />
+          /> -->
           <UserDropdown
             v-if="isAuthenticated"
             :is-open="navbarStore.isUserMenuOpen"

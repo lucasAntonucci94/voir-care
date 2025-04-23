@@ -15,6 +15,7 @@ export function usePosts() {
    */
   async function savePost({ title, body, categories, media, user }) {
     try {
+      debugger
       user.isAdmin = false;
       const data = {
         id: newGuid(),

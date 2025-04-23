@@ -65,7 +65,7 @@ const permitedRoutes = computed(() => {
 })
 
 const shouldShowChatBox = computed(() => {
-  return isAuthenticated.value && $route.path !== '/faqs'
+  return isAuthenticated.value && $route.path !== '/faqs'  && $route.path !== '/chats' 
 })
 </script>
 

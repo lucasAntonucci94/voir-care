@@ -292,9 +292,9 @@ export function usePrivateChats() {
         where('users', 'array-contains', email),
         orderBy('created_at', 'desc')
       );
-      const updatedChats = [];
       
       const unsubscribe = onSnapshot(q, async (snapshot) => {
+        const updatedChats = [];
         for (const doc of snapshot.docs) {
           const chatData = doc.data();
           const chatId = doc.id;
@@ -363,14 +363,11 @@ export function usePrivateChats() {
         return true; // sino lo mantenemos
       });
     };
-
-    const resetUnreadCount = async (chatId, userEmail) => {
+    async function markChatAsRead(userEmail, chatId) {
       const chatDocRef = doc(db, 'chats-private', chatId);
-      await updateDoc(chatDocRef, {
-        [`unreadCount.${userEmail}`]: 0
-      });
-    };
-
+      const fieldPath = new FieldPath('unreadCount', userEmail);
+      await updateDoc(chatDocRef, fieldPath, 0); 
+    }
     
   return {
     savePrivateMessage,
@@ -382,6 +379,7 @@ export function usePrivateChats() {
     deleteChatMessage,
     privateRefCache,
     getChatIdByReference,
-    markMessagesAsRead
+    markMessagesAsRead,
+    markChatAsRead
   };
 }

@@ -34,7 +34,7 @@
             @click="handleClick(notification)"
             :class="[
               'px-4 py-3 cursor-pointer transition-colors',
-              notification.read ? 'text-gray-400' : 'text-black font-semibold',
+              notification.read ? 'text-gray-400 dark:text-gray-500' : 'text-black  dark:text-gray-200 font-semibold',
               'hover:bg-gray-100 dark:hover:bg-gray-700'
             ]"
           >
@@ -70,7 +70,8 @@ const emit = defineEmits(['toggle'])
 const router = useRouter();
 const { user } = useAuth()
 const { notifications, unreadCount } = storeToRefs(useNotificationsStore()) //esto es lo mismo que instanciar store y usar store.propiedad. Mantiene la reactividad de la propiedad al desestructurar.
-const { markAllAsViewed, markNotificationAsRead } = useNotificationsStore()
+// const { markAllAsViewed, markNotificationAsRead } = useNotificationsStore()
+const notificationsStore = useNotificationsStore()
 const privateChatsStore = usePrivateChatsStore();
 
 function toggle() {
@@ -79,12 +80,13 @@ function toggle() {
 
 watch(() => props.isOpen, (val) => {
   if (val) {
-    markAllAsViewed(user.value.uid)
+    notificationsStore.markAllAsViewed(user.value.uid)
   }
 })
 
 async function handleClick(notification) {
-  await markNotificationAsRead(notification.recipientId, notification.id)
+  await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id)
+  await privateChatsStore.markChatAsReaded(user.value.email, notification.entityId)
   if(notification.type === 'message') {
     privateChatsStore.setSelectedChatId(notification.entityId);
     emit('toggle');
