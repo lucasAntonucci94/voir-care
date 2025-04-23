@@ -13,6 +13,10 @@ MainLayout.vue
                   <router-view />
           </div>
         </main>
+        <!-- Snackbar global -->
+        <SnackBar />
+        
+        <!-- Chat de mensajes privados -->
         <UserChatBox v-if="shouldShowChatBox" />
       </div>
     <Footer />
@@ -30,6 +34,8 @@ import { useAuth } from '../../api/auth/useAuth';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useCategories } from '../../composable/useCategories';
 import UserChatBox from '../../components/organisms/UserChatBox.vue';
+import SnackBar from '../../components/atoms/SnackBar.vue'
+
 const $route = useRoute();
 const { user, isAuthenticated } = useAuth();
 const sidebarStore = useSidebarStore();

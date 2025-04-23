@@ -11,6 +11,7 @@ import {
     updateDoc,
     addDoc,
     serverTimestamp,
+    deleteDoc,
   } from 'firebase/firestore'
   
   const db = getFirestore()
@@ -89,13 +90,33 @@ import {
         await batch.commit()
     }
     
+    async function markNotificationAsUnread(uid, notifId) {
+      try {
+        const notifDoc = doc(db, `users/${uid}/notifications`, notifId)
+        await updateDoc(notifDoc, { read: false })
+      } catch (err) {
+        console.error('Error al marcar como no leída:', err)
+      }
+    }
+
+    async function deleteNotification(uid, notifId) {
+      try {
+        const notifDoc = doc(db, `users/${uid}/notifications`, notifId)
+        await deleteDoc(notifDoc)
+      } catch (err) {
+        console.error('Error al eliminar notificación:', err)
+      }
+    }
+
     return {
       subscribeToAllUserNotifications,
       subscribeToUnreadUserNotifications,
       markNotificationAsRead,
       sendNotification,
       markNotificationAsViewed,
-      markAllAsViewed
+      markAllAsViewed,
+      markNotificationAsUnread,
+      deleteNotification,
     }
   }
   

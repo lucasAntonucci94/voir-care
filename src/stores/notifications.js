@@ -9,6 +9,8 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const {
     subscribeToAllUserNotifications,
     markNotificationAsRead,
+    markNotificationAsUnread,
+    deleteNotification,
     markAllAsViewed: markAllAsViewedFromComposable,
     markNotificationAsViewed
   } = useNotifications()
@@ -24,13 +26,14 @@ export const useNotificationsStore = defineStore('notifications', () => {
     markAllAsViewedFromComposable(uid)
     unreadCount.value = 0
   }
-
-
+  
   return {
     notifications,
     unreadCount,
     initNotifications,
     markNotificationAsRead,
+    markNotificationAsUnread,
+    deleteNotification,
     markAllAsViewed,
     markNotificationAsViewed
   }

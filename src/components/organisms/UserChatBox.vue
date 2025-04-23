@@ -8,7 +8,7 @@
       >
         <i class="fa-solid fa-comment-dots text-white text-xl"></i>
         <span
-          class="absolute bottom-full mb-2 text-xs bg-black text-white px-2 py-1 rounded-md hidden sm:block group-hover:block"
+         class="absolute bottom-full mb-2 text-xs bg-black text-white px-2 py-1 rounded-md hidden group-hover:block"
         >
           Mensajes
         </span>
@@ -82,6 +82,41 @@
                     {{ chat.message?.message || 'Sin mensajes aún' }}
                   </p>
                 </div>
+                <!-- Botón de acciones -->
+                <div class="relative z-40">
+                  <button
+                    @click.stop="toggleChatActions(chat.idDoc, $event)"
+                    class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                  >
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+
+                  <Teleport to="body">
+                    <transition name="fade">
+                      <ul
+                        v-if="activeMenuId === chat.idDoc"
+                        class="chat-dropdown fixed w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[1000] text-sm"
+                        :style="dropdownPositions[chat.idDoc] ? {
+                          top: `${dropdownPositions[chat.idDoc].top}px`,
+                          left: `${dropdownPositions[chat.idDoc].left}px`
+                        } : {}"
+                      >
+                        <li
+                          @click.stop="markAsUnread(chat.idDoc)"
+                          class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-700 dark:text-gray-300 cursor-pointer"
+                        >
+                          Marcar como no leído
+                        </li>
+                        <li
+                          @click.stop="deleteChat(chat.idDoc)"
+                          class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-red-500"
+                        >
+                          Eliminar conversación
+                        </li>
+                      </ul>
+                    </transition>
+                  </Teleport>
+                </div>
               </li>
             </ul>
             <div v-else class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">
@@ -102,7 +137,7 @@
   </template>
   
   <script setup>
-  import { ref, computed, watch } from 'vue'
+  import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
   import { usePrivateChatsStore } from '../../stores/privateChats'
   import { useAuth } from '../../api/auth/useAuth'
   import { usePrivateChats } from '../../composable/usePrivateChats'
@@ -126,6 +161,10 @@
   const search = ref('')
   const showSearch = ref(false)
 
+  const activeMenuId = ref(null)
+  const dropdownPositions = ref({})
+
+
   function toggleSearch() {
     showSearch.value = !showSearch.value
     if (!showSearch.value) search.value = ''
@@ -137,7 +176,6 @@
       return other.toLowerCase().includes(search.value.toLowerCase())
     })
   )
-
 
   // Map reactivo para cachear avatares por email
   const avatars = ref(new Map())
@@ -176,8 +214,8 @@
       return 'Sin mensajes aún';
     }
 
-    const prefix = isOwn ? 'Tú: ' : `${otherUserEmail.split('@')[0]}: `;
-    return `${prefix}${message}`.slice(0, 50);
+    const prefix = isOwn ? 'Tú ' : `${otherUserEmail.split('@')[0]} `;
+    return `${prefix}`;
   }
   
   // Cargar avatares al recibir/changear chats
@@ -195,10 +233,46 @@
     router.push('/chats')
     isChatOpen.value = false
   }
-  </script>
-  
-  
-  <style scoped>
+
+  function toggleChatActions(chatId, event) {
+  const rect = event.currentTarget.getBoundingClientRect()
+  dropdownPositions.value[chatId] = {
+    top: rect.bottom + window.scrollY,
+    left: rect.right - 160 + window.scrollX // ancho del dropdown
+  }
+  activeMenuId.value = activeMenuId.value === chatId ? null : chatId
+}
+
+function closeChatActions() {
+  activeMenuId.value = null
+}
+
+function deleteChat(chatId) {
+  console.log('Eliminar chat:', chatId)
+  closeChatActions()
+}
+
+function markAsUnread(chatId) {
+  console.log('Marcar como no leído:', chatId)
+  closeChatActions()
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeChatActionsOnOutsideClick)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeChatActionsOnOutsideClick)
+})
+
+function closeChatActionsOnOutsideClick(e) {
+  if (!e.target.closest('.chat-dropdown')) {
+    closeChatActions()
+  }
+}
+
+</script>
+    
+<style scoped>
   .fade-slide-enter-active,
   .fade-slide-leave-active {
     transition: all 0.3s ease;
@@ -217,4 +291,12 @@
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
   }
-  </style>
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.2s ease;
+  }
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
+</style>
