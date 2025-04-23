@@ -212,7 +212,8 @@ async function deleteNotification(notification) {
 
 function reportNotification(notification) {
   console.log('Reportar notificación:', notification)
-  // Implementar luego
+  // TODO: Implementar lógica de reporte
+  snackbarStore.show('Notificación reportada', 'warning')
 }
 
 document.addEventListener('click', (e) => {

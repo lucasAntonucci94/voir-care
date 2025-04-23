@@ -250,6 +250,7 @@ function closeChatActions() {
 function deleteChat(chatId) {
   console.log('Eliminar chat:', chatId)
   closeChatActions()
+  privateChatsStore.deleteChat(chatId)
 }
 
 function markAsUnread(chatId) {
