@@ -1,22 +1,25 @@
 <template>
-  <section class="explore-section rounded-2xl shadow-2xl overflow-hidden bg-white dark:bg-gray-900">
-    <!-- Header con acciones -->
-    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 sr-only">Explorar lugares</h2>
-      <div class="flex flex-wrap gap-2">
+  <section class="explore-section shadow-2xl overflow-hidden bg-white dark:bg-gray-900">
+    <!-- Header -->
+    <div class="p-6 bg-primary-md dark:bg-secondary-md border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <button
+            @click="goBack"
+            class="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
+            aria-label="Volver a la página anterior"
+          >
+            <i class="fa-solid fa-arrow-left text-lg"></i>
+          </button>
+          <h2 class="text-2xl font-bold text-white">Explora nuestro mapa interactivo</h2>
+        </div>
         <button
           @click="centerOnUserLocation"
-          class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition"
+          class="flex items-center gap-2 px-5 py-2 bg-white text-primary dark:text-secondary rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300"
           :disabled="loadingLocation"
         >
-          <i v-if="loadingLocation" class="fa-solid fa-spinner animate-spin h-5 w-5"></i>
+          <i :class="loadingLocation ? 'fa-solid fa-spinner animate-spin' : 'fa-solid fa-location-crosshairs'" class="h-5 w-5"></i>
           <span>{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
-        </button>
-        <button
-          @click="deleteAllMarkers"
-          class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition"
-        >
-          Borrar marcadores
         </button>
       </div>
     </div>
@@ -80,6 +83,10 @@ function deleteAllMarkers() {
   exploreMapRef.value?.deleteAllMarkers()
 }
 
+function deleteAllFilters() {
+  activeFilters.value = []
+}
+
 const filters = ref([
   { id: 'plaza', label: 'Plazas' },
   { id: 'parque', label: 'Parques' },
@@ -99,6 +106,10 @@ const filteredLocations = computed(() => {
   );
 });
 
+function goBack() {
+  // Lógica personalizada, por ejemplo:
+  window.history.back(); // O usa un evento para notificar al componente padre
+}
 
 const handleMapReady = () => {
   console.log('Mapa listo');
