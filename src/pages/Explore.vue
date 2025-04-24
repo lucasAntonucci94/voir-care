@@ -81,14 +81,6 @@ function centerOnUserLocation() {
   loadingLocation.value = false
 }
 
-function deleteAllMarkers() {
-  exploreMapRef.value?.deleteAllMarkers()
-}
-
-function deleteAllFilters() {
-  activeFilters.value = []
-}
-
 const filters = ref([
   { id: 'plaza', label: 'Plazas' },
   { id: 'parque', label: 'Parques' },
@@ -100,9 +92,17 @@ const filters = ref([
 const activeFilters = ref([]);
 const loadingLocation = ref(false);
 
+// const filteredLocations = computed(() => {
+//   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
+//   if (activeFilters.value.length === 0) return filtered;
+//   return filtered.filter((location) =>
+//     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
+//   );
+// });
+
 const filteredLocations = computed(() => {
   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
-  if (activeFilters.value.length === 0) return filtered;
+  if (activeFilters.value.length === 0) return []; // Devolver lista vacía cuando no hay filtros
   return filtered.filter((location) =>
     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
   );
