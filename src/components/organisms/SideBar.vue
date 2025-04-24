@@ -160,7 +160,7 @@
         <span class="text-sm font-medium">Educación (próximamente)</span>
     </router-link>
       <router-link v-if="isAuthenticated" 
-        to="/adopcion" 
+        to="/adoption" 
         class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
         text-gray-700 hover:bg-gray-200 
         dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"

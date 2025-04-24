@@ -1,14 +1,14 @@
 <template>
   <!-- Header -->
-  <div class="p-6 bg-primary-md dark:bg-secondary-md border-b border-gray-200 dark:border-gray-700">
+  <div class="p-1 md:p-6 bg-primary-md dark:bg-secondary-md border-b border-gray-200 dark:border-gray-700">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-4">
         <button
           @click="goBack"
-          class="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
+          class="flex items-center justify-center w-6 h-6 md:w-10 md:h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
           aria-label="Volver a la página anterior"
         >
-          <i class="fa-solid fa-arrow-left text-lg"></i>
+          <i class="fa-solid fa-arrow-left text-sm md:text-lg"></i>
         </button>
         <h1 class="text-2xl font-bold text-white">Chats</h1>
       </div>
@@ -16,87 +16,92 @@
   </div>
 
   <!-- Contenedor principal -->
-  <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-1.5rem)]">
+  <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-3rem)] md:h-[calc(100vh-6rem)]">
     <!-- Columna izquierda: Listado de chats -->
-    <div class="w-full md:w-1/3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 m-5 overflow-y-auto">
-      <!-- Campo de búsqueda y botón de acciones -->
-      <div class="flex items-center gap-3 mb-5">
-        <div class="relative flex-1">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Buscar por nombre o email..."
-            class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary"
-          />
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"></i>
-        </div>
-        <div class="relative">
-          <button
-            @click="toggleActionsMenu"
-            class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
-            aria-label="Más acciones"
-          >
-            <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
-          </button>
-          <div
-            v-if="showActionsMenu"
-            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-10 border border-gray-200 dark:border-gray-600"
-          >
-            <button
-              @click="createNewChat"
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-            >
-              Crear nuevo chat
-            </button>
-            <button
-              @click="deleteAllChats"
-              class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-            >
-              Eliminar todos los chats
-            </button>
+    <transition name="fade">
+      <div
+        v-if="!showMessages || isDesktop"
+        class="w-full md:w-1/3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 m-5 overflow-y-auto max-h-full"
+      >
+        <!-- Campo de búsqueda y botón de acciones -->
+        <div class="flex items-center gap-3 mb-5">
+          <div class="relative flex-1">
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Buscar por nombre o email..."
+              class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary"
+            />
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"></i>
           </div>
-        </div>
-      </div>
-
-      <!-- Listado de chats -->
-      <div v-if="privateChatsStore?.loading" class="flex justify-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-      </div>
-      <div v-else-if="filteredChats.length === 0" class="text-center text-gray-500 italic py-4 min-h-[200px] flex items-center justify-center">
-        No tienes chats con mensajes.
-      </div>
-      <div v-else class="space-y-3">
-        <div
-          v-for="chat in filteredChats"
-          :key="chat.idDoc"
-          class="flex items-center p-3 rounded-xl transition-all duration-200 cursor-pointer"
-          :class="{
-            'bg-gray-100 dark:bg-gray-600 border-l-4 border-primary dark:border-secondary': privateChatsStore?.selectedChatId === chat.idDoc,
-            'hover:bg-gray-50 dark:hover:bg-gray-700': privateChatsStore?.selectedChatId !== chat.idDoc
-          }"
-          @click="selectChat(chat.idDoc)"
-        >
-          <img
-            :src="getUserPhoto(chat) || AvatarImage"
-            alt="User avatar"
-            class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
-          />
-          <div class="flex-1">
-            <div class="flex justify-between items-center">
-              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">{{ getUserName(chat.users) || 'Usuario desconocido' }}</h3>
-              <span class="text-xs text-gray-400 dark:text-gray-300 truncate">{{ formatTimestamp(chat.created_at) }}</span>
+          <div class="relative">
+            <button
+              @click="toggleActionsMenu"
+              class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+              aria-label="Más acciones"
+            >
+              <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+            </button>
+            <div
+              v-if="showActionsMenu"
+              class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg z-10 border border-gray-200 dark:border-gray-600"
+            >
+              <button
+                @click="createNewChat"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              >
+                Crear nuevo chat
+              </button>
+              <button
+                @click="deleteAllChats"
+                class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+              >
+                Eliminar todos los chats
+              </button>
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-300 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin mensajes' }}</p>
           </div>
-          <button
-            @click.stop="openDeleteChatModal(chat.idDoc)"
-            class="ml-2 p-1 text-gray-500 hover:text-red-700 transition-colors duration-200"
+        </div>
+
+        <!-- Listado de chats -->
+        <div v-if="privateChatsStore?.loading" class="flex justify-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        </div>
+        <div v-else-if="filteredChats.length === 0" class="text-center text-gray-500 italic py-4 min-h-[200px] flex items-center justify-center">
+          No tienes chats con mensajes.
+        </div>
+        <div v-else class="space-y-3">
+          <div
+            v-for="chat in filteredChats"
+            :key="chat.idDoc"
+            class="flex items-center p-3 rounded-xl transition-all duration-200 cursor-pointer"
+            :class="{
+              'bg-gray-100 dark:bg-gray-600 border-l-4 border-primary dark:border-secondary': privateChatsStore?.selectedChatId === chat.idDoc,
+              'hover:bg-gray-50 dark:hover:bg-gray-700': privateChatsStore?.selectedChatId !== chat.idDoc
+            }"
+            @click="selectChat(chat.idDoc)"
           >
-            <i class="fa-solid fa-trash-can w-4 h-4"></i>
-          </button>
+            <img
+              :src="getUserPhoto(chat) || AvatarImage"
+              alt="User avatar"
+              class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
+            />
+            <div class="flex-1">
+              <div class="flex justify-between items-center">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">{{ getUserName(chat.users) || 'Usuario desconocido' }}</h3>
+                <span class="text-xs text-gray-400 dark:text-gray-300 truncate">{{ formatTimestamp(chat.created_at) }}</span>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-300 w-30 sm:w-70 md:w-30 lg:w-40 xl:w-50 truncate">{{ chat.message?.message || 'Sin mensajes' }}</p>
+            </div>
+            <button
+              @click.stop="openDeleteChatModal(chat.idDoc)"
+              class="ml-2 p-1 text-gray-500 hover:text-red-700 transition-colors duration-200"
+            >
+              <i class="fa-solid fa-trash-can w-4 h-4"></i>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
 
     <!-- Modal de confirmación al eliminar un chat -->
     <div v-if="showDeleteChatModal" class="fixed inset-0 z-101 flex items-center justify-center">
@@ -122,14 +127,19 @@
     </div>
 
     <!-- Columna derecha: Lista de mensajes -->
-    <div class="w-full md:w-2/3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 m-5 flex flex-col">
-      <ChatMessagesList />
-    </div>
+    <transition name="fade">
+      <div
+        v-if="showMessages || isDesktop"
+        class="w-full md:w-2/3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg m-5 flex flex-col max-h-full"
+      >
+        <ChatMessagesList @go-back="handleGoBack" />
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { usePrivateChatsStore } from '../stores/privateChats';
 import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
 import { formatTimestamp } from '../utils/formatTimestamp';
@@ -142,10 +152,35 @@ const showDeleteChatModal = ref(false);
 const chatToDelete = ref(null);
 const searchQuery = ref('');
 const showActionsMenu = ref(false);
+const showMessages = ref(false); // Controla qué vista mostrar en mobile
+const isDesktop = ref(false); // Determina si estamos en desktop
+
+// Detectar si estamos en desktop o mobile
+const checkIfDesktop = () => {
+  isDesktop.value = window.innerWidth >= 768; // 768px es el breakpoint para md en Tailwind
+  if (isDesktop.value) {
+    showMessages.value = false; // En desktop, siempre mostramos ambas columnas
+  }
+};
+
+onMounted(() => {
+  checkIfDesktop();
+  window.addEventListener('resize', checkIfDesktop);
+});
 
 // Métodos
 const selectChat = (chatId) => {
   privateChatsStore.setSelectedChatId(chatId);
+  if (!isDesktop.value) {
+    showMessages.value = true; // En mobile, mostramos los mensajes al seleccionar un chat
+  }
+};
+
+const handleGoBack = () => {
+  if (!isDesktop.value) {
+    showMessages.value = false; // En mobile, regresamos al listado de chats
+    privateChatsStore.setSelectedChatId(null); // Deseleccionamos el chat
+  }
 };
 
 const openDeleteChatModal = (chatId) => {
@@ -241,5 +276,24 @@ function goBack() {
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Transición de fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Ajustes para mobile */
+@media (max-width: 767px) {
+  .w-full {
+    margin: 0 !important; /* Eliminar márgenes en mobile */
+    border-radius: 0 !important; /* Eliminar bordes redondeados en mobile */
+  }
 }
 </style>

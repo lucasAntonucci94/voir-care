@@ -1,13 +1,32 @@
 <template>
-  <div v-if="privateChatsStore.selectedChatId" class="flex flex-col h-full">
+  <div v-if="privateChatsStore.selectedChatId" class="flex flex-col h-full p-4">
     <!-- Header del chat -->
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:bg-gray-700 mb-5 bg-gray-200 p-3 rounded-lg flex items-center">
-      <span class="mr-2">💬</span>
-      Chat con {{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}
-    </h2>
+    <div class="flex items-center p-3 bg-gray-200 dark:bg-gray-700 rounded-lg mb-5">
+      <button
+        v-if="!isDesktop"
+        @click="goBack"
+        class="mr-3 flex items-center justify-center w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-400 dark:hover:bg-gray-500 transition-all duration-300"
+        aria-label="Volver al listado de chats"
+      >
+        <i class="fa-solid fa-arrow-left text-lg"></i>
+      </button>
+      <img
+        :src="getUserPhoto() || AvatarImage"
+        alt="User avatar"
+        class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
+      />
+      <div class="flex-1">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">{{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}</h2>
+        </div>
+      </div>
+    </div>
 
     <!-- Contenedor de mensajes -->
-    <div ref="messagesContainer" class="flex-1 space-y-3 overflow-y-auto px-3">
+    <div
+      ref="messagesContainer"
+      class="flex-1 space-y-3 overflow-y-auto px-3 max-h-[calc(100%-12rem)]"
+    >
       <div v-if="loadingMessages" class="flex justify-center bg-gray-50 dark:bg-gray-800 py-6">
         <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
@@ -56,7 +75,7 @@
     </div>
 
     <!-- Input de escritura -->
-    <div class="border-t border-gray-200 dark:border-gray-600">
+    <div class="border-t border-gray-200 dark:border-gray-600 mt-4">
       <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" />
     </div>
 
@@ -95,6 +114,7 @@ import { usePrivateChatsStore } from '../../stores/privateChats';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import ChatMessageInput from '../atoms/ChatMessageInput.vue';
 import { useAuth } from '../../api/auth/useAuth';
+import AvatarImage from '../../assets/avatar1.jpg';
 
 // Estado reactivo
 const { user } = useAuth();
@@ -105,9 +125,17 @@ const unsubscribeMessages = ref(null);
 const showDeleteModal = ref(false);
 const messageToDelete = ref(null);
 const messagesContainer = ref(null);
+const isDesktop = ref(false);
 
-// Montaje y desmontaje
+// Detectar si estamos en desktop o mobile
+const checkIfDesktop = () => {
+  isDesktop.value = window.innerWidth >= 768; // 768px es el breakpoint para md en Tailwind
+};
+
 onMounted(() => {
+  checkIfDesktop();
+  window.addEventListener('resize', checkIfDesktop);
+
   console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
   if (privateChatsStore?.selectedChatId) {
     usePrivateChats().markMessagesAsRead(privateChatsStore?.selectedChatId, user.value.email);
@@ -154,6 +182,7 @@ onUnmounted(() => {
     unsubscribeMessages.value = null;
   }
   messages.value = [];
+  window.removeEventListener('resize', checkIfDesktop);
 });
 
 const deleteMessage = async (messageId) => {
@@ -180,6 +209,17 @@ const getOtherUserEmail = () => {
     : privateChatsStore?.to || null;
 };
 
+const getUserPhoto = () => {
+  const chatId = privateChatsStore?.selectedChatId;
+  const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === chatId);
+
+  if (!selectedChat) return null;
+  const selectedEmail = selectedChat.users.find(email => email !== user?.value.email);
+  return selectedEmail
+    ? `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4`
+    : AvatarImage;
+};
+
 const openDeleteModal = (messageId) => {
   console.log('Abriendo modal para mensaje ID:', messageId);
   messageToDelete.value = messageId;
@@ -197,6 +237,12 @@ const scrollToBottom = () => {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
 };
+
+const goBack = () => {
+  emit('go-back');
+};
+
+const emit = defineEmits(['go-back']);
 </script>
 
 <style scoped>
@@ -211,5 +257,24 @@ const scrollToBottom = () => {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Ajustes para mobile */
+@media (max-width: 767px) {
+  .text-xl {
+    font-size: 1.125rem; /* Reducir tamaño de texto en mobile */
+  }
+
+  .p-3 {
+    padding: 0.75rem; /* Reducir padding en mobile */
+  }
+
+  .max-w-\[70\%\] {
+    max-width: 85%; /* Aumentar el ancho máximo de los mensajes en mobile */
+  }
+
+  .max-h-\[calc\(100\%-12rem\)\] {
+    max-height: calc(100% - 10rem); /* Ajustar altura en mobile */
+  }
 }
 </style>

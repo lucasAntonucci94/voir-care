@@ -1,25 +1,27 @@
 <template>
   <section class="explore-section shadow-2xl overflow-hidden bg-white dark:bg-gray-900">
-    <!-- Header -->
-    <div class="p-6 bg-primary-md dark:bg-secondary-md border-b border-gray-200 dark:border-gray-700">
+   <!-- Header -->
+    <div class="p-6 md:p-6 bg-primary-md dark:bg-secondary-md border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
+        <!-- Sección izquierda: Botón de retroceso y título -->
+        <div class="flex items-center gap-3 md:gap-4">
           <button
             @click="goBack"
-            class="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
+            class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
             aria-label="Volver a la página anterior"
           >
-            <i class="fa-solid fa-arrow-left text-lg"></i>
+            <i class="fa-solid fa-arrow-left text-base md:text-lg"></i>
           </button>
-          <h2 class="text-2xl font-bold text-white">Explora nuestro mapa interactivo</h2>
+          <h2 class="text-xl md:text-2xl font-bold text-white">Explora nuestro mapa interactivo</h2>
         </div>
+        <!-- Botón de "Mi Ubicación" -->
         <button
           @click="centerOnUserLocation"
-          class="flex items-center gap-2 px-5 py-2 bg-white text-primary dark:text-secondary rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300"
+          class="flex items-center gap-1 md:gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-white text-primary dark:text-secondary rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300"
           :disabled="loadingLocation"
         >
-          <i :class="loadingLocation ? 'fa-solid fa-spinner animate-spin' : 'fa-solid fa-location-crosshairs'" class="h-5 w-5"></i>
-          <span>{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
+          <i :class="loadingLocation ? 'fa-solid fa-spinner animate-spin' : 'fa-solid fa-location-crosshairs'" class="h-4 w-4 md:h-5 md:w-5"></i>
+          <span class="text-sm md:text-base">{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
         </button>
       </div>
     </div>
