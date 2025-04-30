@@ -1,5 +1,5 @@
 <template>
-  <section class="mt-0 mb-10 relative" ref="carouselSection">
+  <section class="mt-0 mb-5 relative" ref="carouselSection">
     <h2 class="text-xl font-bold text-[#2c3e50] mb-4 text-center sr-only">Destacados</h2>
     <!-- Carrousel Slider Content -->
     <SliderReels

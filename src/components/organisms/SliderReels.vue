@@ -20,7 +20,7 @@
       <!-- Card para agregar nuevo reel -->
       <div
         v-if="isAuthenticated"
-        class="min-w-[160px] bg-gray-50 dark:bg-gray-600 p-4 rounded-lg shadow-md snap-center border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200 cursor-pointer"
+        class="min-w-[160px] bg-gray-50 dark:bg-gray-600 p-4 rounded-lg shadow-md snap-center border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 cursor-pointer"
         @click="emit('show-upload')"
       >
         <div class="w-full h-24 flex flex-col items-center justify-center gap-2">

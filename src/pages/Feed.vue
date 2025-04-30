@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-1 overflow-hidden">
-    <main class="flex-grow py-10 min-h-screen font-poppins overflow-y-auto">
+    <main class="flex-grow py-2 min-h-screen font-poppins overflow-y-auto">
       <div class="container mx-auto px-4">
         <CarrouselReels />
         <CreatePostModal />
