@@ -78,7 +78,7 @@ export const usePostsStore = defineStore('posts', {
     async updatePost(postId, updatedPostData) {
       console.log('Actualizando post:', postId, updatedPostData);
       const { updatePost } = usePosts();
-      await updatePost(postId, postData);
+      await updatePost(postId, updatedPostData);
     },
     async deletePost(postIdDoc) {
       console.log('Eliminando post con idDoc:', postIdDoc);

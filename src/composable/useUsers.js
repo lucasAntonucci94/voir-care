@@ -291,6 +291,16 @@ export function useUsers() {
     }
   }
 
+  async function getUserIdByEmail(email) {
+    const usersRef = collection(db, 'users')
+    const q = query(usersRef, where('email', '==', email), limit(1))
+    const snapshot = await getDocs(q)
+  
+    if (snapshot.empty) throw new Error('Usuario no encontrado con email: ' + email)
+  
+    return snapshot.docs[0].id // este es el UID (idDoc)
+  }
+  
   return {
     userProfile, // Estado reactivo opcional
     getAllUsers,
@@ -301,6 +311,7 @@ export function useUsers() {
     addConnection,
     removeConnection,
     getUser,
-    updateUserBanner
-  };
+    updateUserBanner,
+    getUserIdByEmail,
+  }
 }

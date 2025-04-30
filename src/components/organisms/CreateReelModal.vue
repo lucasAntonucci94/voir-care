@@ -73,7 +73,7 @@
   import { useReelsStore } from '../../stores/reels';
   import { useAuth } from '../../api/auth/useAuth';
   import { fileToBase64 } from '../../utils/fileToBase64';
-  
+  import { useSnackbarStore } from '../../stores/snackbar';
   // Props y eventos
   const props = defineProps({
     visible: {
@@ -86,6 +86,7 @@
   
   // Estado
   const reelsStore = useReelsStore();
+  const snackbarStore = useSnackbarStore();
   const { user: authUser } = useAuth();
   const newReel = ref({ title: '', base64: null, mediaType: '', thumbnailBase64: null });
   const isLoading = ref(false);
@@ -157,6 +158,7 @@
   
     newReel.value = { title: '', base64: null, mediaType: '', thumbnailBase64: null };
     emit('close');
+    snackbarStore.show('Reel creado exitosamente', 'success')
     isLoading.value = false;
   };
   

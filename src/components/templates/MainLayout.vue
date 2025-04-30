@@ -13,6 +13,11 @@ MainLayout.vue
                   <router-view />
           </div>
         </main>
+        <!-- Snackbar global -->
+        <SnackBar />
+        
+        <!-- Chat de mensajes privados -->
+        <UserChatBox v-if="shouldShowChatBox" />
       </div>
     <Footer />
   </div>
@@ -28,6 +33,8 @@ import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useCategories } from '../../composable/useCategories';
+import UserChatBox from '../../components/organisms/UserChatBox.vue';
+import SnackBar from '../../components/atoms/SnackBar.vue'
 
 const $route = useRoute();
 const { user, isAuthenticated } = useAuth();
@@ -57,10 +64,15 @@ onUnmounted(() => {
 });
 
 const permitedRoutes = computed(() => {
-  const blockedExactPaths = ['/', '/login', '/register']
+  // const blockedExactPaths = ['/', '/login', '/register']
+  const blockedExactPaths = ['/', '/login', '/register', '/explorar', '/chats']
   const isBlockedPath = blockedExactPaths.includes($route.path) //rutas donde no quiero que muestre el side.
   const isAdminPath = $route.path.startsWith('/admin') //si la ruta empieza con /admin oculto sidebar general.
   return !isBlockedPath && !isAdminPath && isAuthenticated.value
+})
+
+const shouldShowChatBox = computed(() => {
+  return isAuthenticated.value && $route.path !== '/faqs'  && $route.path !== '/chats' 
 })
 </script>
 

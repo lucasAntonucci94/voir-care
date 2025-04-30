@@ -17,6 +17,7 @@ import EducationPage from '../pages/EducationPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
 import BlogDetailPage from '../pages/BlogDetail.vue';
+import AdoptionPage from '../pages/AdoptionPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -112,6 +113,14 @@ const routes = [
         path:  '/education',
         name: 'education',
         component: EducationPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/adoption',
+        name: 'adoption',
+        component: AdoptionPage,
         meta: {
             requiresAuth: true,
         }

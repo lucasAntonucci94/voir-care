@@ -24,7 +24,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         const { subscribeToPrivateChats } = usePrivateChats();
         this.unsubscribe = subscribeToPrivateChats(email, (updatedChats) => {
           console.log('Chats actualizados:', updatedChats);
-          if (this.deletedChatId.length > 0) { //hago esto ya que reacciona primero la suscripcion y luego el deleteChat, por lo que el registro no es quitado del chat
+          if (this.deletedChatId.length > 0) { //hago esto ya que reacciona primero la suscripcion y luego el deleteChat, por lo que el registro no es quitado correctamente del chat
             updatedChats = updatedChats.filter(chat => !this.deletedChatId.includes(chat.idDoc));
           }
           this.chats.value = updatedChats ?? [];
@@ -83,6 +83,19 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         } catch (err) {
           this.error.value = err.message;
           console.error('Error deleting message:', err);
+        }
+      },
+      async markChatAsReaded(userEmail, chatId) {
+        debugger
+        const { markChatAsRead } = usePrivateChats()
+        await markChatAsRead(userEmail, chatId)
+        this.markChatAsReadInStore(chatId, userEmail);
+      },
+      markChatAsReadInStore(chatId, userEmail) {
+        debugger
+        const chat = this.chats.value.find(chat => chat.idDoc === chatId);
+        if (chat && chat.unreadCount && chat.unreadCount[userEmail] !== undefined) {
+          chat.unreadCount[userEmail] = 0;
         }
       },
     },

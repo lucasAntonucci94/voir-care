@@ -1,6 +1,8 @@
 import { ref } from 'vue';
-import { doc, getFirestore, addDoc,  updateDoc, increment, FieldPath,  collection, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
+import { doc, getFirestore, addDoc,  updateDoc, increment, FieldPath,  collection, getDoc, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../api/auth/useAuth';
+import { useNotifications } from './useNotifications'
+import { useUsers } from './useUsers'
 
 
 const { user } = useAuth();
@@ -72,11 +74,11 @@ export function usePrivateChats() {
     }
 
     // Funciones públicas
-    async function savePrivateMessage(from, to, message) {
+    async function savePrivateMessage(from, to, message) {      
       const currentChatRef = await getPrivateChatRef(from, to);
       const chatId = currentChatRef.path.split('/')[1]; // Extraer chatId
       const senderEmail = user?.value?.email ?? from;
-    
+      
       await addDoc(currentChatRef, {
         message,
         user: {
@@ -87,10 +89,26 @@ export function usePrivateChats() {
         created_at: serverTimestamp(),
         readBy: [senderEmail]
       });
-    
       // Incrementar unreadCount del receptor
       const chatDocRef = doc(db, 'chats-private', chatId);
       await updateDoc(chatDocRef, new FieldPath('unreadCount', to), increment(1));
+      const { getUserIdByEmail } = useUsers()
+      const { sendNotification } = useNotifications()
+      // NOTIFICO DEL MENSAJE
+      if (to !== from) {
+        const toUid = await getUserIdByEmail(to)
+        const fromUid = user?.value?.id ?? await getUserIdByEmail(from)
+
+        await sendNotification({
+          toUid,
+          fromUid,
+          type: 'message',
+          message: `${user.value?.displayName || from} te ha enviado un mensaje.`,
+          entityId: chatId,
+          entityType: 'chat',
+          extra: null
+        })
+      }
     }
 
     async function markMessagesAsRead(chatId, userEmail) {
@@ -274,9 +292,9 @@ export function usePrivateChats() {
         where('users', 'array-contains', email),
         orderBy('created_at', 'desc')
       );
-      const updatedChats = [];
       
       const unsubscribe = onSnapshot(q, async (snapshot) => {
+        const updatedChats = [];
         for (const doc of snapshot.docs) {
           const chatData = doc.data();
           const chatId = doc.id;
@@ -345,14 +363,11 @@ export function usePrivateChats() {
         return true; // sino lo mantenemos
       });
     };
-
-    const resetUnreadCount = async (chatId, userEmail) => {
+    async function markChatAsRead(userEmail, chatId) {
       const chatDocRef = doc(db, 'chats-private', chatId);
-      await updateDoc(chatDocRef, {
-        [`unreadCount.${userEmail}`]: 0
-      });
-    };
-
+      const fieldPath = new FieldPath('unreadCount', userEmail);
+      await updateDoc(chatDocRef, fieldPath, 0); 
+    }
     
   return {
     savePrivateMessage,
@@ -364,6 +379,7 @@ export function usePrivateChats() {
     deleteChatMessage,
     privateRefCache,
     getChatIdByReference,
-    markMessagesAsRead
+    markMessagesAsRead,
+    markChatAsRead
   };
 }

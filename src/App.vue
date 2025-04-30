@@ -2,10 +2,23 @@
   <router-view />
 </template>
 
-<script>
-import router from './router/router';
+<script setup>
+import { onMounted, watch } from 'vue'
+import { useAuth } from './api/auth/useAuth'
+import { useNotificationsStore } from './stores/notifications'
 
-export default {
-  router,
-};
+const { user } = useAuth()
+const notificationsStore = useNotificationsStore()
+
+onMounted(() => {
+  watch(
+    () => user.value?.uid,
+    uid => {
+      if (uid) {
+        notificationsStore.initNotifications(uid)
+      }
+    },
+    { immediate: true }
+  )
+})
 </script>

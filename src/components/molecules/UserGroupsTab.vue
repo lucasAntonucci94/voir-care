@@ -1,14 +1,22 @@
 <template>
     <div class="container mx-auto px-4 py-6">
       <!-- Encabezado -->
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white sr-only">Tus Grupos</h2>
       </div>
-  
+      <!-- Filtro -->
+      <GroupFilters
+        v-if="groupsStore.userGroups?.value.length > 0"
+        v-model="searchQuery"
+        v-model:selectedCategory="selectedCategory"
+        :categories="categories"
+        :showSearch="true"
+        :showSelect="true"
+      />
       <!-- Lista de grupos -->
-      <div v-if="groupsStore.userGroups?.value?.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-if="filteredGroups.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <GroupCard
-          v-for="group in groupsStore.userGroups?.value"
+          v-for="group in filteredGroups"
           :key="group.idDoc"
           :group="group"
         />
@@ -37,40 +45,41 @@
   </template>
   
   <script setup>
+  import { ref, computed } from 'vue';
   import { useGroupsStore } from '../../stores/groups';
-  import { useRouter } from 'vue-router';
-  import { computed } from 'vue';
-  import { useAuth } from '../../api/auth/useAuth';
   import GroupCard from '../organisms/GroupCard.vue';
-
+  import GroupFilters from '../molecules/GroupFilters.vue';
+  
   const groupsStore = useGroupsStore();
-  const router = useRouter();
-  const { user } = useAuth();
-
+  
+  const searchQuery = ref('');
+  const selectedCategory = ref('');
+  const categories = [
+    { id: 'educacion', name: 'Educación' },
+    { id: 'ayuda', name: 'Ayuda y Asistencia' },
+    { id: 'interes', name: 'Intereses' },
+    { id: 'cuidado', name: 'Cuidado Animal' },
+    { id: 'voluntariado', name: 'Voluntariado' },
+    { id: 'otros', name: 'Otros' },
+  ];
+  
+  const filteredGroups = computed(() => {
+    return groupsStore.userGroups?.value
+      ?.filter(group =>
+        group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
+      )
+      ?.filter(group =>
+        !selectedCategory.value ||
+        group.categories?.some(c => c.id === selectedCategory.value)
+      ) ?? [];
+  });
+  
   const emit = defineEmits(['open-create-modal','open-discover-tab']);
-
-  // Determinar el rol del usuario en el grupo
-  const roleLabel = (group) => {
-    const userId = user.value.uid;
-    if (group.ownerId === userId) return 'Propietario';
-    if (group.admins.includes(userId)) return 'Administrador';
-    return 'Miembro';
-  };
   
-  // Verificar si el usuario es admin o propietario
-  const isAdmin = (group) => {
-    return group.ownerId === user.value.uid || group.admins.includes(user.value.uid);
-  };
-  
-  const navigateToCreateGroup = () => {
-    emit('open-create-modal')
-  };
-  
-  const navigateToDiscoverGroup = () => {
-    emit('open-discover-tab')
-  };
+  const navigateToCreateGroup = () => emit('open-create-modal');
+  const navigateToDiscoverGroup = () => emit('open-discover-tab');
   </script>
-  
+
   <style scoped>
   .group-card {
     display: flex;

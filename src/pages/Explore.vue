@@ -1,22 +1,27 @@
 <template>
-  <section class="explore-section rounded-2xl shadow-2xl overflow-hidden bg-white dark:bg-gray-900">
-    <!-- Header con acciones -->
-    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 sr-only">Explorar lugares</h2>
-      <div class="flex flex-wrap gap-2">
+  <section class="explore-section shadow-2xl overflow-hidden bg-white dark:bg-gray-900">
+   <!-- Header -->
+    <div class="p-6 md:p-6 bg-primary-md dark:bg-secondary-md border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <!-- Sección izquierda: Botón de retroceso y título -->
+        <div class="flex items-center gap-3 md:gap-4">
+          <button
+            @click="goBack"
+            class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
+            aria-label="Volver a la página anterior"
+          >
+            <i class="fa-solid fa-arrow-left text-base md:text-lg"></i>
+          </button>
+          <h2 class="text-xl md:text-2xl font-bold text-white">Explora nuestro mapa interactivo</h2>
+        </div>
+        <!-- Botón de "Mi Ubicación" -->
         <button
           @click="centerOnUserLocation"
-          class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition"
+          class="flex items-center gap-1 md:gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-white text-primary dark:text-secondary rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300"
           :disabled="loadingLocation"
         >
-          <i v-if="loadingLocation" class="fa-solid fa-spinner animate-spin h-5 w-5"></i>
-          <span>{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
-        </button>
-        <button
-          @click="deleteAllMarkers"
-          class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition"
-        >
-          Borrar marcadores
+          <i :class="loadingLocation ? 'fa-solid fa-spinner animate-spin' : 'fa-solid fa-location-crosshairs'" class="h-4 w-4 md:h-5 md:w-5"></i>
+          <span class="text-sm md:text-base">{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
         </button>
       </div>
     </div>
@@ -76,10 +81,6 @@ function centerOnUserLocation() {
   loadingLocation.value = false
 }
 
-function deleteAllMarkers() {
-  exploreMapRef.value?.deleteAllMarkers()
-}
-
 const filters = ref([
   { id: 'plaza', label: 'Plazas' },
   { id: 'parque', label: 'Parques' },
@@ -91,14 +92,26 @@ const filters = ref([
 const activeFilters = ref([]);
 const loadingLocation = ref(false);
 
+// const filteredLocations = computed(() => {
+//   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
+//   if (activeFilters.value.length === 0) return filtered;
+//   return filtered.filter((location) =>
+//     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
+//   );
+// });
+
 const filteredLocations = computed(() => {
   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
-  if (activeFilters.value.length === 0) return filtered;
+  if (activeFilters.value.length === 0) return []; // Devolver lista vacía cuando no hay filtros
   return filtered.filter((location) =>
     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
   );
 });
 
+function goBack() {
+  // Lógica personalizada, por ejemplo:
+  window.history.back(); // O usa un evento para notificar al componente padre
+}
 
 const handleMapReady = () => {
   console.log('Mapa listo');

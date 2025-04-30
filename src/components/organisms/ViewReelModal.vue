@@ -1,4 +1,3 @@
-<!-- src/components/ViewReelModal.vue -->
 <template>
   <div
     v-if="visible"
@@ -27,21 +26,21 @@
         </div>
         <!-- Navegación: flechas con diseño más elegante -->
         <button
-          v-if="hasPreviousReel"
-          @click.stop="previousReel"
-          class="absolute left-6 top-1/2 transform -translate-y-1/2 bg-gray-900/80 text-white p-4 rounded-full hover:bg-indigo-600/80 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300 z-20 shadow-md"
-          aria-label="Reel anterior"
-        >
-          <i class="fa-solid fa-chevron-left text-xl"></i>
-        </button>
-        <button
-          v-if="hasNextReel"
-          @click.stop="nextReel"
-          class="absolute right-6 top-1/2 transform -translate-y-1/2 bg-gray-900/80 text-white p-4 rounded-full hover:bg-indigo-600/80 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300 z-20 shadow-md"
-          aria-label="Siguiente reel"
-        >
-          <i class="fa-solid fa-chevron-right text-xl"></i>
-        </button>
+      v-if="hasPreviousReel"
+      @click.stop="previousReel"
+      class="absolute left-6 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-gray-900/90 text-gray-200 hover:bg-indigo-600/90 hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300 shadow-lg"
+      aria-label="Reel anterior"
+    >
+      <i class="fa-solid fa-chevron-left text-lg"></i>
+    </button>
+    <button
+      v-if="hasNextReel"
+      @click.stop="nextReel"
+      class="absolute right-6 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-gray-900/90 text-gray-200 hover:bg-indigo-600/90 hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300 shadow-lg"
+      aria-label="Siguiente reel"
+    >
+      <i class="fa-solid fa-chevron-right text-lg"></i>
+    </button>
       </div>
 
       <!-- Panel de metadatos: lateral con avatar y botón de like -->
@@ -114,10 +113,10 @@
         <!-- Botón de cierre -->
         <button
           @click="closeModal"
-          class="absolute top-4 right-4 text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-2 transition-colors duration-300 bg-gray-800/50 hover:bg-gray-700/70"
+          class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 bg-gray-900/90 text-gray-200 hover:bg-primary hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 shadow-lg"
           aria-label="Cerrar modal"
         >
-          <i class="fa-solid fa-times text-2xl"></i>
+          <i class="fa-solid fa-xmark text-xl"></i>
         </button>
       </div>
     </div>

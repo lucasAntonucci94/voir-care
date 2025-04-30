@@ -18,28 +18,30 @@
           <h1 class="text-xl md:text-2xl font-semibold tracking-tight hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-200">Voir</h1>
         </router-link>
         <router-link v-else to="/" class="flex items-center">
-          <img src="../../assets/icons/logoGreen.png" alt="Logo de mi red social" class="h-10 mr-4">
-          <h1 class="text-xl md:text-2xl font-semibold tracking-tight hover:text-primary-lighter transition-colors duration-200">Voir</h1>
+          <img src="../../assets/icons/logoGreen.png" alt="Logo claro" class="h-10 mr-4 dark:hidden" />
+
+          <!-- Logo para tema oscuro -->
+          <img src="../../assets/icons/logoOrange.png" alt="Logo oscuro" class="h-10 mr-4 hidden dark:inline" />
+          <h1 class="text-xl md:text-2xl font-semibold tracking-tight hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-200">Voir</h1>
         </router-link>
       </div>
       <nav class="flex flex-nowrap">
         <div class="flex items-center space-x-4">
           <router-link v-if="!isAuthenticated" to="/login" class="flex items-center">
-            <h1 class="relative flex items-center gap-2 text-white hover:text-primary-lighter transition-colors duration-300 group">Iniciar Sesión</h1>
+            <h1 class="relative flex items-center gap-2 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300 group">Iniciar Sesión</h1>
           </router-link>
-          <!-- <NotificationDropdown
+          <NotificationDropdown
             v-if="isAuthenticated"
-            :notifications="userNotifications"
             :is-open="navbarStore.isNotificationsMenuOpen"
             @toggle="navbarStore.toggleMenu('notifications')"
             class="flex-shrink-0"
-          /> -->
-          <MessagesDropdown
+          />
+          <!-- <MessagesDropdown
             v-if="isAuthenticated"
             :is-open="navbarStore.isMessageMenuOpen"
             @toggle="navbarStore.toggleMenu('messages')"
             class="flex-shrink-0"
-          />
+          /> -->
           <UserDropdown
             v-if="isAuthenticated"
             :is-open="navbarStore.isUserMenuOpen"
@@ -62,7 +64,6 @@ import MessagesDropdown from '../molecules/MessagesDropdown.vue';
 import NotificationDropdown from '../molecules/NotificationDropdown.vue';
 import { useNavbarStore } from '../../stores/navbar';
 
-const route = useRoute();
 const { isAuthenticated } = useAuth();
 const navbarStore = useNavbarStore();
 const sidebarStore = useSidebarStore();

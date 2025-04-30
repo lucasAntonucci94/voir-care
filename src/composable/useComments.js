@@ -1,5 +1,7 @@
 import { ref, onUnmounted } from 'vue';
 import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, orderBy, query, where, serverTimestamp } from 'firebase/firestore';
+import { usePosts } from './usePosts'
+import { useNotifications } from './useNotifications'
 
 const db = getFirestore();
 const commentsRef = collection(db, 'comments');
@@ -14,15 +16,35 @@ export function useComments(postId) {
    * @returns {Promise<void>}
    */
   async function saveComment({ user, message }) {
+    const { sendNotification } = useNotifications()
+    const { getPostById } = usePosts()
+    
     const data = {
       user,
-      idPost: postId, // Usamos el postId recibido como parámetro
+      idPost: postId,
       message,
       timestamp: serverTimestamp(),
     };
 
     try {
       await addDoc(commentsRef, data);
+      // Enviar notificación al autor del post
+      const post = await getPostById(postId)
+      const postOwnerId = post?.ownerId || post?.user?.id
+
+      if (postOwnerId && postOwnerId !== user.id) {
+        await sendNotification({
+          toUid: postOwnerId,
+          fromUid: user.id,
+          type: 'comment',
+          message: `${user.displayName} comentó tu publicación.`,
+          entityId: postId,
+          entityType: 'post',
+          extra: {
+            postTitle: post?.title || '',
+          }
+        })
+      }
     } catch (err) {
       console.error('Error al grabar el comentario:', err);
       throw err;
