@@ -64,6 +64,7 @@ onUnmounted(() => {
 });
 
 const permitedRoutes = computed(() => {
+  // const blockedExactPaths = ['/', '/login', '/register']
   const blockedExactPaths = ['/', '/login', '/register', '/explorar', '/chats']
   const isBlockedPath = blockedExactPaths.includes($route.path) //rutas donde no quiero que muestre el side.
   const isAdminPath = $route.path.startsWith('/admin') //si la ruta empieza con /admin oculto sidebar general.

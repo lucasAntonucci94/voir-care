@@ -115,6 +115,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp';
 import ChatMessageInput from '../atoms/ChatMessageInput.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import AvatarImage from '../../assets/avatar1.jpg';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 // Estado reactivo
 const { user } = useAuth();
@@ -126,6 +127,7 @@ const showDeleteModal = ref(false);
 const messageToDelete = ref(null);
 const messagesContainer = ref(null);
 const isDesktop = ref(false);
+const snackbarStore = useSnackbarStore();
 
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
@@ -189,6 +191,7 @@ const deleteMessage = async (messageId) => {
   console.log('Confirmando eliminación de mensaje ID:', messageId);
   privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
   closeDeleteModal();
+  snackbarStore.show('Mensaje eliminado', 'success')
 };
 
 // Métodos

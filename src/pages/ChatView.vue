@@ -145,6 +145,7 @@ import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
 import { formatTimestamp } from '../utils/formatTimestamp';
 import { useAuth } from '../api/auth/useAuth';
 import AvatarImage from '../assets/avatar1.jpg';
+import { useSnackbarStore } from '../stores/snackbar';
 
 const { user: userAuth } = useAuth();
 const privateChatsStore = usePrivateChatsStore();
@@ -154,6 +155,7 @@ const searchQuery = ref('');
 const showActionsMenu = ref(false);
 const showMessages = ref(false); // Controla qué vista mostrar en mobile
 const isDesktop = ref(false); // Determina si estamos en desktop
+const snackbarStore = useSnackbarStore();
 
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
@@ -196,6 +198,7 @@ const closeDeleteChatModal = () => {
 const deleteChat = (chatId) => {
   privateChatsStore.deleteChat(chatId);
   closeDeleteChatModal();
+  snackbarStore.show('Chat eliminado', 'success')
 };
 
 const toggleActionsMenu = () => {
@@ -211,6 +214,7 @@ const deleteAllChats = () => {
   console.log('Eliminar todos los chats');
   privateChatsStore.deleteAllChats();
   showActionsMenu.value = false;
+  snackbarStore.show('Chats eliminados', 'success')
 };
 
 const getUserPhoto = (chat) => {

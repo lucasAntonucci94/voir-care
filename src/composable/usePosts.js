@@ -49,7 +49,8 @@ export function usePosts() {
    * @param {{user: Object, title: string, body: string, categories: Array, imageBase64: string}} data
    * @returns {Promise<void>}
    */
-  async function updatePost(postId, { user, title, body, categories, imageUrlFile, imagePathFile, mediaType }) {
+  async function updatePost(postId, { title, body, categories, media, user }) {
+    debugger
     try {
       const postDocRef = doc(db, 'posts', postId);
       const updatedData = {
@@ -57,9 +58,7 @@ export function usePosts() {
         title,
         body,
         categories: categories || [],
-        imageUrlFile: imageUrlFile || null,
-        imagePathFile: imagePathFile || null,
-        mediaType: mediaType || null,
+        media: media || null,
         updated_at: serverTimestamp(), // Actualizamos timestamp al editar
       };
       await updateDoc(postDocRef, updatedData);

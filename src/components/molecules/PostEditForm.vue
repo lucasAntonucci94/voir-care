@@ -55,14 +55,14 @@
     <!-- Previsualización -->
     <div v-if="editForm.media" class="mt-2">
       <img
-        v-if="editForm.mediaType === 'image'"
-        :src="editForm.media"
+        v-if="editForm.media.type === 'image'"
+        :src="editForm.media.imageBase64 || editForm.media.url"
         alt="Preview"
         class="w-full h-48 object-cover rounded-lg shadow-sm"
       />
       <video
-        v-else-if="editForm.mediaType === 'video'"
-        :src="editForm.media"
+        v-else-if="editForm.media.type === 'video'"
+        :src="editForm.media.imageBase64 || editForm.media.url"
         controls
         class="w-full h-48 rounded-lg shadow-sm"
       ></video>
@@ -132,12 +132,13 @@ const editForm = ref({
   id: null,
   title: '',
   body: '',
-  imageUrlFile: null,
-  imagePathFile: null,
-  mediaType: '',
   categories: [],
-  newMediaBase64: null,
-  media: null, // Para previsualización
+  media: {
+    url: props.post?.media?.url || '',
+    path: props.post?.media?.path || '',
+    type: props.post?.media?.type || '',
+    imageBase64: null,
+  },
 });
 const isLoading = ref(false);
 
@@ -146,34 +147,32 @@ onMounted(() => {
     id: props.post?.id || null,
     title: props.post?.title || '',
     body: props.post?.body || '',
-    imageUrlFile: props.post?.imageUrlFile || null,
-    imagePathFile: props.post?.imagePathFile || null,
-    mediaType: props.post?.mediaType || '',
     categories: props.post?.categories ? [...props.post.categories] : [],
-    newMediaBase64: null,
-    media: props.post?.imageUrlFile || null,
+    media: {
+      url: props.post?.media?.url || '',
+      path: props.post?.media?.path || '',
+      type: props.post?.media?.type || '',
+      imageBase64: null,
+    },
   };
 });
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      editForm.value.newMediaBase64 = reader.result;
-      editForm.value.media = URL.createObjectURL(file); // Previsualización local
-      editForm.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
-    };
-    reader.onerror = (error) => {
-      console.error('Error al leer el archivo:', error);
-    };
-    reader.readAsDataURL(file);
-  }
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    editForm.value.media.imageBase64 = reader.result;
+    editForm.value.media.type = file.type.startsWith('image') ? 'image' : 'video';
+  };
+  reader.onerror = (error) => console.error('Error al leer el archivo:', error);
+  reader.readAsDataURL(file);
 }
 
 async function savePost() {
   isLoading.value = true;
-
+debugger
   if (!editForm.value.title || !editForm.value.body) {
     console.error('Título y cuerpo son obligatorios');
     isLoading.value = false;
@@ -183,11 +182,11 @@ async function savePost() {
   try {
     // Subir el archivo multimedia si hay uno nuevo
     const dynamicPath = `post/${props.post.user.email}/${editForm.value.id}`;
-    const { url: updatedImageUrl, path: updatedImagePath } = await uploadMedia({
-      currentUrl: editForm.value.imageUrlFile,
-      currentPath: editForm.value.imagePathFile,
-      newMediaBase64: editForm.value.newMediaBase64,
-      mediaType: editForm.value.mediaType,
+    const { url, path } = await uploadMedia({
+      currentUrl: editForm.value.media.url,
+      currentPath: editForm.value.media.path,
+      newMediaBase64: editForm.value.media.imageBase64,
+      mediaType: editForm.value.media.type,
       dynamicPath,
     });
 
@@ -195,10 +194,13 @@ async function savePost() {
       ...props.post,
       title: editForm.value.title,
       body: editForm.value.body,
-      imageUrlFile: updatedImageUrl,
-      imagePathFile: updatedImagePath,
-      mediaType: editForm.value.mediaType,
       categories: editForm.value.categories,
+      media: {
+        url,
+        path,
+        type: editForm.value.media.type,
+        imageBase64: null,
+      },
     };
 
     await postsStore.updatePost(updatedPost.idDoc, updatedPost);

@@ -3,7 +3,7 @@
     <PostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
     <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>
     <p class="mt-1 text-sm text-ellipsis">{{ post?.body }}</p>
-    <div v-if="post?.media.url" class="mt-3">
+    <div v-if="post?.media?.url" class="mt-3">
       <img
         v-if="post?.media?.type === 'image'"
         :src="post?.media?.url"
