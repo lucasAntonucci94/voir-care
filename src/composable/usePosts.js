@@ -15,7 +15,6 @@ export function usePosts() {
    */
   async function savePost({ title, body, categories, media, user }) {
     try {
-      debugger
       user.isAdmin = false;
       const data = {
         id: newGuid(),
@@ -50,7 +49,6 @@ export function usePosts() {
    * @returns {Promise<void>}
    */
   async function updatePost(postId, { title, body, categories, media, user }) {
-    debugger
     try {
       const postDocRef = doc(db, 'posts', postId);
       const updatedData = {

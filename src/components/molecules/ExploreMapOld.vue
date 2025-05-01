@@ -57,20 +57,26 @@
 
           <!-- Información del usuario -->
           <div class="flex items-center gap-2 mb-3">
-            <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-200 font-semibold">
-              {{ selectedLocation.emailUser ? selectedLocation.emailUser?.charAt(0).toUpperCase() : 'U' }}
+            <img
+              v-if="selectedLocation.user?.photoURLFile"
+              :src="selectedLocation.user.photoURLFile"
+              alt="Avatar usuario"
+              class="w-8 h-8 rounded-full object-cover"
+            />
+            <div v-else class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-200 font-semibold">
+              {{ selectedLocation?.user?.email ? selectedLocation.user?.email?.charAt(0).toUpperCase() : 'U' }}
             </div>
             <button
               @click="showUserProfile = true"
               class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline"
             >
-              {{ selectedLocation.emailUser || 'Usuario desconocido' }}
+              {{ selectedLocation.user?.displayName || selectedLocation.user?.email || 'Usuario desconocido' }}
             </button>
           </div>
 
-          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ selectedLocation.address.street }}</p>
-          <p v-if="selectedLocation.contact.phone" class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            Tel: <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLocation.contact.phone }}</span>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ selectedLocation.address?.street }}</p>
+          <p v-if="selectedLocation.contact?.phone" class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Tel: <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLocation.contact?.phone }}</span>
           </p>
 
           <!-- Detalles expandibles -->
@@ -97,8 +103,8 @@
           <div class="flex gap-2">
             <!-- Botón de Chat -->
             <a
-              v-if="selectedLocation.emailUser"
-              :href="`mailto:${selectedLocation.emailUser}`"
+              v-if="selectedLocation.user?.email"
+              :href="`mailto:${selectedLocation.user?.email}`"
               class="flex-1 flex items-center justify-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 dark:hover:bg-green-500 transition-all duration-200 text-sm"
             >
               <i class="fa-solid fa-message"></i>
@@ -118,8 +124,8 @@
 
           <!-- Botón de Redes Sociales -->
           <a
-            v-if="selectedLocation.contact.socialNetworkLink"
-            :href="selectedLocation.contact.socialNetworkLink"
+            v-if="selectedLocation.contact?.socialNetworkLink"
+            :href="selectedLocation.contact?.socialNetworkLink"
             target="_blank"
             class="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-sm"
           >
@@ -147,16 +153,16 @@
           <!-- Contenido del perfil -->
           <div class="flex flex-col items-center">
             <div class="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-200 font-semibold text-2xl mb-3">
-              {{ selectedLocation.emailUser ? selectedLocation.emailUser.charAt(0).toUpperCase() : 'U' }}
+              {{ selectedLocation.user?.email ? selectedLocation.user?.email?.charAt(0).toUpperCase() : 'U' }}
             </div>
             <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
-              {{ selectedLocation.emailUser || 'Usuario desconocido' }}
+              {{ selectedLocation.user?.email || 'Usuario desconocido' }}
             </h4>
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
               Creador de esta ubicación
             </p>
             <a
-              :href="`mailto:${selectedLocation.emailUser}`"
+              :href="`mailto:${selectedLocation.user?.email}`"
               class="flex items-center justify-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 dark:hover:bg-green-500 transition-all duration-200 text-sm"
             >
               <i class="fa-solid fa-message"></i>
@@ -325,7 +331,6 @@ async function updateMapMarkers() {
   }
 
   console.log('Actualizando marcadores... Locations:', props.locations);
-  debugger
   const center = map.value.getCenter();
   const zoom = map.value.getZoom();
 

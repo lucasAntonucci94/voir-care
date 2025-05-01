@@ -14,7 +14,6 @@ export const useLocationsStore = defineStore('locations', {
       console.log('Iniciando suscripción a locations...');
       const { subscribeToIncomingLocations } = useLocations();
       this.unsubscribeFn = subscribeToIncomingLocations((updatedLocations) => {
-        debugger
         console.log('Locations recibidos desde Firebase:', updatedLocations);
         this.locations.value = updatedLocations;
         this.isLoading = false;
@@ -31,7 +30,6 @@ export const useLocationsStore = defineStore('locations', {
     },
     // Agregar un nuevo location
     async addLocation(locationData) {
-      debugger
       console.log('Añadiendo nuevo location:', locationData);
       const { saveLocation } = useLocations();
       try {

@@ -172,7 +172,6 @@ function handleMediaUpload(event) {
 
 async function savePost() {
   isLoading.value = true;
-debugger
   if (!editForm.value.title || !editForm.value.body) {
     console.error('Título y cuerpo son obligatorios');
     isLoading.value = false;

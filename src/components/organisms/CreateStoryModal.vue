@@ -168,7 +168,6 @@ function handleMediaUpload(event) {
     event.target.value = '';
     return;
   }
-  debugger
   const reader = new FileReader();
   reader.onloadend = () => {
     newPost.value.media.imageBase64 = reader.result;

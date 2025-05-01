@@ -23,11 +23,10 @@ export function useLocations() {
    *   media: { url, path, type },
    *   timestamp,
    *   pending,
-   *   ownerId
+   *   user: {}
    * }
    */
   async function saveLocation(locationData) {
-    debugger
     try {
       const {
         id = newGuid(),
@@ -39,7 +38,7 @@ export function useLocations() {
         media = {},
         timestamp = serverTimestamp(),
         pending = true,
-        ownerId,
+        user,
       } = locationData
 
       // Si faltan coords, intentamos geocodificar a partir de address.street
@@ -75,7 +74,7 @@ export function useLocations() {
         },
         timestamp,
         pending,
-        ownerId,
+        user,    
       }
 
       // Guardamos usando setDoc y usamos el id como documento
@@ -191,7 +190,7 @@ async function subscribeToIncomingLocations(callback) {
         media: L.media,                 // { url, path, type }
         timestamp: L.timestamp,
         pending: L.pending,
-        ownerId: L.ownerId,
+        user: L.user,
       }
     })
     callback(arr)
@@ -222,7 +221,7 @@ async function getLocationById(id) {
       media: L.media,
       timestamp: L.timestamp,
       pending: L.pending,
-      ownerId: L.ownerId,
+      user: L.user,
     }
   } catch (err) {
     console.error('Error al obtener location por ID:', err)

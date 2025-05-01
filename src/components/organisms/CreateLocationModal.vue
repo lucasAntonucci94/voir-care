@@ -284,11 +284,10 @@
   }
   
   async function handleSubmit() {
-    debugger
     isSubmitting.value = true;
     try {
       // Validar el formulario
-    //   validateForm();
+      validateForm();
   
       // Obtener el ID del usuario autenticado
       const ownerId = user.value?.uid || user.value?.id || null;
@@ -299,7 +298,7 @@
         path: null,
         type: null,
       };
-      debugger
+
       if (newLocation.value.media.imageBase64) {
         const dynamicPath = `locations/${ownerId}/${newGuid()}`;
         const { url, path } = await uploadMedia({
@@ -336,14 +335,17 @@
         media: updatedMedia,
         timestamp: newLocation.value.timestamp,
         pending: newLocation.value.pending,
-        ownerId,
+        user: {
+          id: ownerId,
+          displayName: user.value?.displayName,
+          email: user.value?.email,
+          photoURLFile: user.value?.photoURLFile,
+        },  
       };
   
       // Guardar en Firestore
       await locationsStore.addLocation(locationData);
-  
-      // Emitir evento de creación y cerrar modal
-      emits('locationCreated', locationData);
+      // emits('locationCreated', locationData);
       closeModal();
     } catch (error) {
       console.error('Error al crear location:', error);

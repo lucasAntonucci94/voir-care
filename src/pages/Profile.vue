@@ -186,7 +186,6 @@ function deletePost(postId) {
 onMounted(async () => {
   if (!activeUserEmail.value) return;
   await fetchUserData(activeUserEmail.value);
-  debugger
   if(activeUser && (activeUser?.value?.uid || activeUser?.value?.id)){
     postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
   }
