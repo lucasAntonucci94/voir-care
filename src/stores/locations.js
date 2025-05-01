@@ -3,21 +3,18 @@ import { ref } from 'vue';
 import { useLocations } from '../composable/useLocations';
 
 export const useLocationsStore = defineStore('locations', {
-  state: () => {
-    const locations = ref([]);
-    const isLoading = ref(true);
-
-    return {
-      locations,
-      isLoading
-    };
-  },
+  state: () => ({
+    locations: ref([]),
+    isLoading: ref(true),
+    unsubscribeFn: null,     
+  }),
   actions: {
     // Suscribirse a los locations en tiempo real
     subscribe() {
       console.log('Iniciando suscripción a locations...');
       const { subscribeToIncomingLocations } = useLocations();
-      this.unsubscribe = subscribeToIncomingLocations((updatedLocations) => {
+      this.unsubscribeFn = subscribeToIncomingLocations((updatedLocations) => {
+        debugger
         console.log('Locations recibidos desde Firebase:', updatedLocations);
         this.locations.value = updatedLocations;
         this.isLoading = false;
@@ -26,13 +23,15 @@ export const useLocationsStore = defineStore('locations', {
     },
     // Cancelar la suscripción
     unsubscribe() {
-      if (this.unsubscribe) {
+      if (typeof this.unsubscribeFn === 'function') {
         console.log('Cancelando suscripción a locations...');
-        this.unsubscribe();
+        this.unsubscribeFn();
+        this.unsubscribeFn = null;
       }
     },
     // Agregar un nuevo location
     async addLocation(locationData) {
+      debugger
       console.log('Añadiendo nuevo location:', locationData);
       const { saveLocation } = useLocations();
       try {

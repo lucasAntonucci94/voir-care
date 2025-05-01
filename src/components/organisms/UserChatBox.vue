@@ -1,18 +1,25 @@
 <template>
     <div>
       <!-- Botón flotante -->
-      <div
-        class="fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary dark:bg-secondary rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark dark:hover:bg-secondary-dark cursor-pointer group"
-        @click="toggleChat"
-        aria-label="Abrir mensajes"
+    <div
+      class=" fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary dark:bg-secondary rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark dark:hover:bg-secondary-dark cursor-pointer group"
+      @click="toggleChat"
+      aria-label="Abrir mensajes"
+    >
+      <i class="fa-solid fa-comment-dots text-white text-xl"></i>
+      <!-- Badge de mensajes pendientes -->
+      <span
+        v-if="totalUnread > 0"
+        class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 bg-red-500 text-white text-xs font-bold leading-none px-1.5 py-0.5 rounded-full"
       >
-        <i class="fa-solid fa-comment-dots text-white text-xl"></i>
-        <span
-         class="absolute bottom-full mb-2 text-xs bg-black text-white px-2 py-1 rounded-md hidden group-hover:block"
-        >
-          Mensajes
-        </span>
-      </div>
+        {{ totalUnread }}
+      </span>
+      <span
+        class="absolute bottom-full mb-2 text-xs bg-black text-white px-2 py-1 rounded-md hidden group-hover:block"
+      >
+        Mensajes
+      </span>
+    </div>
   
       <!-- Caja de mini messenger -->
       <transition name="fade-slide">
@@ -157,7 +164,13 @@
   const chats = computed(() =>
     privateChatsStore?.chats?.value?.filter(chat => chat.message) ?? []
   )
-  
+  const totalUnread = computed(() =>
+  chats.value.reduce(
+    (sum, chat) =>
+      sum + (chat.unreadCount?.[userEmail.value] ?? 0),
+    0
+  )
+)
   const search = ref('')
   const showSearch = ref(false)
 

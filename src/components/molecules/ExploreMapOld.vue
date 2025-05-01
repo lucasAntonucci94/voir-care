@@ -68,7 +68,7 @@
             </button>
           </div>
 
-          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ selectedLocation.address }}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ selectedLocation.address.street }}</p>
           <p v-if="selectedLocation.phone" class="text-sm text-gray-500 dark:text-gray-400 mb-4">
             Tel: <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLocation.phone }}</span>
           </p>
@@ -108,7 +108,7 @@
 
           <!-- Botón de Google Maps -->
           <a
-            :href="`https://www.google.com/maps/search/?api=1&query=${selectedLocation.lat},${selectedLocation.lng}`"
+            :href="`https://www.google.com/maps/search/?api=1&query=${selectedLocation.address.coordinates.lat},${selectedLocation.address.coordinates.lng}`"
             target="_blank"
             class="flex items-center justify-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 dark:hover:bg-indigo-500 transition-all duration-200 text-sm"
           >
@@ -118,8 +118,8 @@
 
           <!-- Botón de Redes Sociales -->
           <a
-            v-if="selectedLocation.socialNetworkLink"
-            :href="selectedLocation.socialNetworkLink"
+            v-if="selectedLocation.contact.socialNetworkLink"
+            :href="selectedLocation.contact.socialNetworkLink"
             target="_blank"
             class="flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 text-sm"
           >
@@ -201,13 +201,13 @@ const debounceUpdate = (callback, delay) => {
 };
 
 onMounted(async () => {
-  console.log('ExploreMap montado');
+  // console.log('ExploreMap montado');
   await initMap();
   emit('map-ready');
 });
 
 onBeforeUnmount(() => {
-  console.log('ExploreMap desmontado');
+  // console.log('ExploreMap desmontado');
   deleteAllMarkers();
   if (map.value) {
     google.maps.event.clearInstanceListeners(map.value);
@@ -242,7 +242,7 @@ async function initMap() {
       ],
     });
     isMapInitialized.value = true;
-    console.log('Mapa inicializado correctamente');
+    // console.log('Mapa inicializado correctamente');
     await updateMapMarkers();
   } catch (err) {
     console.error('Error al inicializar el mapa:', err);
@@ -252,7 +252,7 @@ async function initMap() {
 }
 
 function deleteAllMarkers() {
-  console.log('Eliminando marcadores... Total antes:', markers.value.length);
+  // console.log('Eliminando marcadores... Total antes:', markers.value.length);
   markers.value.forEach(({ marker, clickListener }) => {
     if (marker) {
       if (clickListener) {
@@ -267,7 +267,7 @@ function deleteAllMarkers() {
     }
   });
   markers.value = [];
-  console.log('Marcadores eliminados. Total después:', markers.value.length);
+  // console.log('Marcadores eliminados. Total después:', markers.value.length);
 }
 
 function centerOnUserLocation() {
@@ -325,7 +325,7 @@ async function updateMapMarkers() {
   }
 
   console.log('Actualizando marcadores... Locations:', props.locations);
-
+  debugger
   const center = map.value.getCenter();
   const zoom = map.value.getZoom();
 
@@ -349,11 +349,12 @@ async function updateMapMarkers() {
 
     const locations = props.locations || [];
     console.log('Creando marcadores para:', locations);
+    debugger
     for (const location of locations) {
-      if (!location.lat || !location.lng) continue;
+      if (!location.address.coordinates.lat || !location.address.coordinates.lng) continue;
 
       const marker = new MarkerConstructor.value({
-        position: { lat: location.lat, lng: location.lng },
+        position: { lat: location.address.coordinates.lat, lng: location.address.coordinates.lng },
         map: map.value,
         title: location.title,
         icon: getMarkerIcon(location.type),

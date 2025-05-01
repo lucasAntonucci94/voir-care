@@ -38,11 +38,11 @@ onMounted(async () => {
   emit('map-ready');
 
   watch(locationIds, async (newVal, oldVal) => {
-    console.log('WatchInit', newVal, oldVal);
+    // console.log('WatchInit', newVal, oldVal);
     if (!map.value || !AdvancedMarkerElement || !props.locations?.length) return;
-    console.log('UpdateMapMarkers', newVal, oldVal);
+    // console.log('UpdateMapMarkers', newVal, oldVal);
     await updateMapMarkers();
-    console.log('Watchends');
+    // console.log('Watchends');
   }, { immediate: true });
 });
   
@@ -67,7 +67,7 @@ onMounted(async () => {
 //   { immediate: true }
 // )
   async function initMap() {
-    console.log('InitMap')
+    // console.log('InitMap')
     try {
       // Cargar la librería 'marker'
       await loadGoogleMaps({ libraries: ['marker'] })
@@ -88,7 +88,7 @@ onMounted(async () => {
   
   // Función para eliminar los marcadores existentes
   function deleteAllMarkers() {
-    console.log('Eliminando markers:', markers.value.size)
+    // console.log('Eliminando markers:', markers.value.size)
     for (const marker of markers.value.values()) {
       if (marker && typeof marker.remove === 'function') {
         marker.remove()
@@ -111,7 +111,7 @@ onMounted(async () => {
   }
   
   async function updateMapMarkers() {
-    console.log('updateMapMarkers init')
+    // console.log('updateMapMarkers init')
 
     if (!map.value || !AdvancedMarkerElement) return
   
@@ -150,7 +150,7 @@ onMounted(async () => {
   
       markers.value.set(location.id, marker)
     }
-    console.log('Finish UpdateMapMarkers')
+    // console.log('Finish UpdateMapMarkers')
   }
   
   function centerOnUserLocation() {

@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { getFirestore, addDoc, collection, getDocs } from 'firebase/firestore';
 import { newGuid } from '../utils/newGuid';
+// import { db } from '../api/firebase/config'; 
 
 const db = getFirestore();
 const categoriesRef = collection(db, 'categories');

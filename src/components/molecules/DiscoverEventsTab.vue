@@ -2,7 +2,7 @@
   <div>
     <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 sr-only">Descubrir</h2>
     <EventFilters
-      v-if="eventsStore.allEvents?.value.length > 0"
+      v-if="eventsStore.allEvents?.value?.length > 0"
       v-model="searchQuery"
       v-model:selectedCategory="selectedCategory"
       :categories="categories"

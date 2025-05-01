@@ -28,8 +28,17 @@
 
     <!-- Layout principal -->
     <div class="md:grid md:grid-cols-[280px_1fr]">
-      <!-- Componente de filtros -->
-      <ExploreFilters v-model="activeFilters" :filters="filters" />
+      <!-- Contenedor para filtros y botón -->
+      <div class="relative">
+        <ExploreFilters v-model="activeFilters" :filters="filters" />
+        <!-- Botón para abrir la modal -->
+        <button
+          @click="openCreateModal"
+          class="fixed bottom-4 left-4 md:sticky md:bottom-6 md:mx-4 px-4 py-2 bg-primary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
+        >
+          <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
+        </button>
+      </div>
 
       <!-- Componente del mapa -->
       <ExploreMap
@@ -62,6 +71,9 @@
         </li>
       </ul>
     </div> -->
+    <!-- Modal para crear una location -->
+    <CreateLocationModal :visible="isCreateModalOpen" @close="closeCreateModal"
+    />
   </section>
 </template>
 
@@ -71,9 +83,13 @@ import ExploreFilters from '../components/molecules/ExploreFilters.vue';
 import ExploreMap from '../components/molecules/ExploreMapOld.vue';
 // import ExploreMap from '../components/molecules/ExploreMap.vue';
 import { useLocationsStore } from '../stores/locations';
+import CreateLocationModal from '../components/organisms/CreateLocationModal.vue';
 
 const locationsStore = useLocationsStore();
 const exploreMapRef = ref(null) //que hace esta ref? me permite acceder al componente hijo ExploreMap y llamar a sus métodos desde aquí. Magic :D
+const loadingLocation = ref(false);
+const isCreateModalOpen = ref(false);
+const activeFilters = ref([]);
 
 function centerOnUserLocation() {
   loadingLocation.value = true
@@ -89,9 +105,6 @@ const filters = ref([
   { id: 'servicio', label: 'Servicios' },
 ]);
 
-const activeFilters = ref([]);
-const loadingLocation = ref(false);
-
 // const filteredLocations = computed(() => {
 //   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
 //   if (activeFilters.value.length === 0) return filtered;
@@ -101,8 +114,10 @@ const loadingLocation = ref(false);
 // });
 
 const filteredLocations = computed(() => {
+  debugger
   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
-  if (activeFilters.value.length === 0) return []; // Devolver lista vacía cuando no hay filtros
+  if (activeFilters.value.length === 0) return filtered; // Devolver lista vacía cuando no hay filtros
+  // if (activeFilters.value.length === 0) return []; // Devolver lista vacía cuando no hay filtros
   return filtered.filter((location) =>
     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
   );
@@ -116,6 +131,15 @@ function goBack() {
 const handleMapReady = () => {
   console.log('Mapa listo');
 };
+
+// Logica de modal y formulario
+function openCreateModal() {
+  isCreateModalOpen.value = true;
+}
+
+function closeCreateModal() {
+  isCreateModalOpen.value = false;
+}
 
 onMounted(() => {
   locationsStore.subscribe();

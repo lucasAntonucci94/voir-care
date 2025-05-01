@@ -1,45 +1,61 @@
 ! version = 2.0
 
-! sub "q" = qué
-! sub "pq" = por qué
-! sub "x" = por
-
 + hola
 - ¡Hola! Bienvenid@ a la comunidad de Voir. ¿En qué puedo ayudarte hoy?
-- ¡Hola! Soy tu asistente para todo lo relacionado con animales domésticos. ¿Qué necesitas saber?
 
-+ *(ayuda|soporte)*
-- ¡Claro que sí! Puedo ayudarte con temas como adopción, cuidado de mascotas, eventos o cualquier duda sobre animales. ¿Qué te gustaría saber?
-- Estoy aquí para ayudarte con información sobre animales y eventos. ¿En qué puedo colaborar?
++ hey
+- ¡Hola! ¿Cómo estás?
+
++ buenas
+- ¡Hola! ¿Qué tal? ¿En qué puedo ayudarte hoy?
+
++ *ayuda*
+- Claro que sí, ¿sobre qué tema querés ayuda? Adopción, eventos, cuidado...
+
++ soporte
+- Estoy aquí para ayudarte con todo lo relacionado a mascotas, ¿qué necesitas?
+
++ *soporte
+- Estoy aquí para ayudarte con todo lo relacionado a mascotas, ¿qué necesitas?
+
++ soporte*
+- Estoy aquí para ayudarte con todo lo relacionado a mascotas, ¿qué necesitas?
+
++ *soporte*
+- Estoy aquí para ayudarte con todo lo relacionado a mascotas, ¿qué necesitas?
 
 + *adoptar*
-- ¡Qué lindo que estés pensando en adoptar! ¿Necesitas consejos o información sobre refugios?
-- Sobre adopción, puedes consultar nuestras secciones de grupos y eventos para encontrar oportunidades cercanas.
+- ¡Qué lindo que estés pensando en adoptar! ¿Necesitás consejos o querés ver refugios?
 
-+ * (cuidado|cuidados) * (perro|gato|mascota|animal) *
-- El cuidado de nuestras mascotas es fundamental. ¿Quieres saber sobre alimentación, higiene, visitas al veterinario o algo más específico?
-- Para el cuidado de perros y gatos, es importante una dieta balanceada, ejercicio diario y chequeos regulares. ¿Qué te gustaría saber?
++ *cuidado* *perro*
+- ¿Querés saber sobre cuidado de perros? Alimentación, higiene, salud... ¿cuál?
 
-+ * (evento|eventos) *
-- ¡Los eventos son geniales para aprender y ayudar! Puedo contarte sobre jornadas de adopción, charlas o talleres. ¿Qué tipo de evento te interesa?
-- En la sección "Eventos" encontrarás actividades relacionadas con animales. ¿Buscas algo en particular?
++ *cuidado* *gato*
+- Los gatos requieren una dieta adecuada y mucho amor. ¿Buscás algo específico?
 
-+ * (educación|consejo|consejos|información) *
-- ¡Educar es mi especialidad! Puedo darte tips sobre cómo cuidar a tu mascota, evitar el abandono o enseñar a otros sobre bienestar animal. ¿Qué tema te interesa?
-- Un buen comienzo es saber que nuestras mascotas necesitan amor, atención y responsabilidad. ¿Te interesa algo en concreto, como adiestramiento o salud?
++ *evento*
+- ¡Los eventos son una gran forma de colaborar! ¿Querés ver jornadas, talleres, ferias?
+
++ *educación*
+- Puedo enseñarte sobre bienestar animal, adiestramiento, o cómo educar a otros. ¿Qué preferís?
 
 + necesito ayuda
-- Claro, dime en qué necesitas ayuda sobre animales o eventos, y con gusto te orientaré.
-- ¡Entendido! Cuéntame un poco más para ver cómo puedo ayudarte con el cuidado animal o algún evento.
+- Claro, contame un poco más para ver cómo puedo ayudarte con animales o eventos.
 
-+ (gracias|gracias bot)
-- ¡De nada! Me alegra poder ayudarte por el bien de los animales. ¿Algo más en lo que pueda colaborar?
-- ¡Un placer! Todo sea por nuestros amigos de cuatro patas. ¿Qué más necesitas?
++ gracias
+- ¡De nada! Siempre es un placer ayudar. ¿Algo más en lo que pueda colaborar?
 
-+ (adiós|chau|hasta luego)
-- ¡Hasta pronto! Espero verte de nuevo por aquí cuidando a los animales.
-- ¡Chau! Que tengas un día lleno de amor animal. ¡Vuelve cuando quieras!
++ gracias bot
+- ¡Un gusto! Todo sea por nuestros amigos de cuatro patas.
+
++ chau
+- ¡Hasta pronto! Gracias por cuidar a los animales.
+
++ adiós
+- ¡Nos vemos! Recordá que siempre podés volver por más info.
+
++ hasta luego
+- ¡Hasta luego! Te espero cuando necesites ayuda con tus mascotas.
 
 + *
 - No entendí bien tu mensaje. ¿Podrías darme más detalles? Estoy aquí para ayudarte con animales, eventos y más.
-- Ups, me perdí un poco. ¿Me explicas mejor? Quiero ayudarte con todo lo relacionado al cuidado animal.

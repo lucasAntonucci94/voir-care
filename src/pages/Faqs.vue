@@ -54,12 +54,14 @@
 
     <!-- Componente de Chat en Vivo -->
     <SupportChatBot :isOpen="openChat" />
+    <!-- <SupportChatBotDialogFlow /> -->
   </section>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import SupportChatBot from '../components/organisms/SupportChatBot.vue';
+import SupportChatBotDialogFlow from '../components/organisms/SupportChatBotDialogFlow.vue';
 
 // Definición de las categorías (tabs)
 const tabs = ref([
