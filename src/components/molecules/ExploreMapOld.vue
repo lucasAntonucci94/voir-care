@@ -38,8 +38,8 @@
         <!-- Imagen -->
         <div class="relative">
           <img
-            v-if="selectedLocation.imageUrlFile"
-            :src="selectedLocation.imageUrlFile"
+            v-if="selectedLocation.media.url"
+            :src="selectedLocation.media.url"
             alt="Imagen del lugar"
             class="w-full h-48 object-cover rounded-lg mb-4"
           />
@@ -58,7 +58,7 @@
           <!-- Información del usuario -->
           <div class="flex items-center gap-2 mb-3">
             <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-700 dark:text-gray-200 font-semibold">
-              {{ selectedLocation.emailUser ? selectedLocation.emailUser.charAt(0).toUpperCase() : 'U' }}
+              {{ selectedLocation.emailUser ? selectedLocation.emailUser?.charAt(0).toUpperCase() : 'U' }}
             </div>
             <button
               @click="showUserProfile = true"
@@ -69,12 +69,12 @@
           </div>
 
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ selectedLocation.address.street }}</p>
-          <p v-if="selectedLocation.phone" class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            Tel: <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLocation.phone }}</span>
+          <p v-if="selectedLocation.contact.phone" class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Tel: <span class="text-indigo-600 dark:text-indigo-400">{{ selectedLocation.contact.phone }}</span>
           </p>
 
           <!-- Detalles expandibles -->
-          <div v-if="selectedLocation.detail" class="mb-4">
+          <div v-if="selectedLocation.description" class="mb-4">
             <button
               @click="showDetails = !showDetails"
               class="flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
@@ -86,7 +86,7 @@
               v-if="showDetails"
               class="mt-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-300"
             >
-              {{ selectedLocation.detail }}
+              {{ selectedLocation.description }}
             </div>
           </div>
         </div>
