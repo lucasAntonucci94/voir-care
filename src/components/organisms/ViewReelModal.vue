@@ -128,6 +128,7 @@ import { ref, computed, onMounted, nextTick } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp.js';
 import { useReelsStore } from '../../stores/reels.js';
 import { useAuth } from '../../api/auth/useAuth';
+import { useSnackbarStore } from '../../stores/snackbar'
 
 const props = defineProps({
   visible: {
@@ -151,6 +152,7 @@ const { user, isAuthenticated } = useAuth();
 const isLiking = ref(false);
 const message = ref(null);
 const messageType = ref(null);
+const snackbarStore = useSnackbarStore()
 
 // Computed para determinar si el usuario actual dio like
 const hasLiked = computed(() => {
@@ -181,20 +183,10 @@ const nextReel = () => {
   }
 };
 
-// Mostrar mensaje temporal
-const showMessage = (text, type) => {
-  message.value = text;
-  messageType.value = type;
-  setTimeout(() => {
-    message.value = null;
-    messageType.value = null;
-  }, 3000); // Desaparece después de 3 segundos
-};
-
 // Manejar toggle de like
 const handleToggleLike = async () => {
   if (!user.value || !isAuthenticated.value) {
-    showMessage('Debes iniciar sesión para dar like', 'error');
+    snackbarStore.show('Debes iniciar sesión para dar like', 'error')
     return;
   }
 
@@ -207,9 +199,9 @@ const handleToggleLike = async () => {
     });
 
     emit('update-reel', updatedReel); // 🔁 actualizar el prop en el padre
-    showMessage(!hasLiked.value ? 'Like agregado' : 'Like quitado', !hasLiked.value ? 'success' : 'error');
+    snackbarStore.show(!hasLiked.value ? 'Like agregado' : 'Like quitado', !hasLiked.value ? 'success' : 'error')
   } catch (err) {
-    showMessage('Error al procesar el like', 'error');
+    snackbarStore.show('Error al procesar el like', 'error')
     console.error('Error en toggleLike:', err);
   } finally {
     isLiking.value = false;

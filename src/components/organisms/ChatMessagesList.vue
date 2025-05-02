@@ -11,7 +11,7 @@
         <i class="fa-solid fa-arrow-left text-lg"></i>
       </button>
       <img
-        :src="getUserPhoto() || AvatarImage"
+        :src="userPhotoUrl || AvatarImage"
         alt="User avatar"
         class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
       />
@@ -116,6 +116,7 @@ import ChatMessageInput from '../atoms/ChatMessageInput.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import AvatarImage from '../../assets/avatar1.jpg';
 import { useSnackbarStore } from '../../stores/snackbar';
+import { useStorage } from '../../composable/useStorage'
 
 // Estado reactivo
 const { user } = useAuth();
@@ -128,7 +129,7 @@ const messageToDelete = ref(null);
 const messagesContainer = ref(null);
 const isDesktop = ref(false);
 const snackbarStore = useSnackbarStore();
-
+const userPhotoUrl = ref(null);
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
   isDesktop.value = window.innerWidth >= 768; // 768px es el breakpoint para md en Tailwind
@@ -164,6 +165,7 @@ onMounted(() => {
           }
         );
         usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
+        setChatUserPhoto()
       } else {
         messages.value = [];
       }
@@ -212,15 +214,26 @@ const getOtherUserEmail = () => {
     : privateChatsStore?.to || null;
 };
 
-const getUserPhoto = () => {
-  const chatId = privateChatsStore?.selectedChatId;
-  const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === chatId);
+const setChatUserPhoto = async () => {
+  try {
+    const { getFileUrl } = useStorage();
+    const selectedEmail = getOtherUserEmail();
 
-  if (!selectedChat) return null;
-  const selectedEmail = selectedChat.users.find(email => email !== user?.value.email);
-  return selectedEmail
-    ? `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4`
-    : AvatarImage;
+    // Si no hay email válido, asignar imagen por defecto
+    if (!selectedEmail) {
+      userPhotoUrl.value = AvatarImage;
+      return;
+    }
+
+    // Obtener la URL del archivo desde Firebase Storage
+    const fileUrl = await getFileUrl(`/profile/${selectedEmail}.jpg`);
+
+    // Asignar la URL o la imagen por defecto si fileUrl no es válido
+    userPhotoUrl.value = fileUrl && typeof fileUrl === 'string' && fileUrl.trim() ? fileUrl : AvatarImage;
+  } catch (error) {
+    console.error('Error fetching user photo:', error);
+    userPhotoUrl.value = AvatarImage; // Imagen por defecto en caso de error
+  }
 };
 
 const openDeleteModal = (messageId) => {
