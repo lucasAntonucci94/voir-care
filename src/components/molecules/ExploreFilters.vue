@@ -87,12 +87,13 @@ const props = defineProps({
 });
 
 const filters = ref([
+    { id: 'parque', label: 'Parque' },
     { id: 'veterinaria', label: 'Veterinaria' },
     { id: 'petshop', label: 'Pet Shop' },
     { id: 'guarderia', label: 'Guardería' },
     { id: 'petfriendly', label: 'Pet Friendly' },
-    { id: 'parque', label: 'Parque' },
-    { id: 'servicio', label: 'Servicio' },
+    { id: 'paseador', label: 'Paseador' },
+    { id: 'entrenador', label: 'Entrenador' },
 ]);
 
 const emit = defineEmits(['update:modelValue']);

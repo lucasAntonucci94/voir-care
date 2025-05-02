@@ -32,9 +32,19 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useGoogleMaps } from '../../composable/useGoogleMaps';
+import LocationDetailModal from '../organisms/LocationDetailModal.vue';
 import CatIcon from '../../assets/icons/cat_1998592.png';
 import DogIcon from '../../assets/icons/dog_1998627.png';
-import LocationDetailModal from '../organisms/LocationDetailModal.vue';
+import TrainerIcon1 from '../../assets/icons/locations/entrenador1.png';
+import TrainerIcon2 from '../../assets/icons/locations/entrenador2.png';
+import VetIcon1 from '../../assets/icons/locations/vet1.png';
+import VetIcon2 from '../../assets/icons/locations/vet2.png';
+import PaseadorIcon1 from '../../assets/icons/locations/paseador1.png';
+import PaseadorIcon2 from '../../assets/icons/locations/paseador2.png';
+import Guarderiacon1 from '../../assets/icons/locations/guarderia1.png';
+import Guarderiacon2 from '../../assets/icons/locations/guarderia2.png';
+import ParqueIcon1 from '../../assets/icons/locations/parque1.png';
+import PetfriendlyIcon1 from '../../assets/icons/locations/petfriendly1.png';
 
 const props = defineProps({
   locations: Array,
@@ -158,12 +168,14 @@ function addCustomMarker(position, title, iconUrl) {
 
 function getMarkerIcon(type) {
   const iconMap = {
-    plaza: CatIcon,
-    parque: CatIcon,
-    veterinaria: DogIcon,
-    petshop: DogIcon,
+    parque: ParqueIcon1,
+    petfriendly: PetfriendlyIcon1,
+    veterinaria: VetIcon1,
+    petshop: Guarderiacon1,
     servicio: CatIcon,
+    guarderia: Guarderiacon2,
   };
+  
   return {
     url: iconMap[type] || CatIcon,
     scaledSize: new google.maps.Size(40, 40),
