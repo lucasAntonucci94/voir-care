@@ -30,14 +30,14 @@
     <div class="md:grid md:grid-cols-[280px_1fr]">
       <!-- Contenedor para filtros y botón -->
       <div class="relative">
-        <ExploreFilters v-model="activeFilters" :filters="filters" />
         <!-- Botón para abrir la modal -->
         <button
           @click="openCreateModal"
-          class="fixed bottom-4 left-4 md:sticky md:bottom-6 md:mx-4 px-4 py-2 bg-primary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
+          class="px-4 py-2 mt-3 ml-4 bg-primary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
         >
           <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
         </button>
+        <ExploreFilters v-model="activeFilters" />
       </div>
 
       <!-- Componente del mapa -->
@@ -47,30 +47,6 @@
         @map-ready="handleMapReady"
       />
     </div>
-
-    <!-- Lista de lugares (solo en mobile) -->
-    <!-- <div class="md:hidden p-6 bg-gray-50 dark:bg-gray-900">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Lugares cercanos</h3>
-      <ul class="space-y-4">
-        <li
-          v-for="location in filteredLocations"
-          :key="location.id"
-          class="flex items-start gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
-        >
-          <img
-            :src="location.imageUrlFile || 'https://via.placeholder.com/150'"
-            alt="Imagen del lugar"
-            class="w-16 h-16 object-cover rounded-md"
-          />
-          <div class="flex-1">
-            <h4 class="text-base font-semibold text-gray-800 dark:text-white">{{ location.title }}</h4>
-            <p class="text-sm text-gray-600 dark:text-gray-300">{{ location.detail }}</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ location.address }}</p>
-            <p v-if="location.phone" class="text-xs text-indigo-600 mt-1">Tel: {{ location.phone }}</p>
-          </div>
-        </li>
-      </ul>
-    </div> -->
     <!-- Modal para crear una location -->
     <CreateLocationModal :visible="isCreateModalOpen" @close="closeCreateModal"
     />
@@ -97,14 +73,6 @@ function centerOnUserLocation() {
   loadingLocation.value = false
 }
 
-const filters = ref([
-  { id: 'plaza', label: 'Plazas' },
-  { id: 'parque', label: 'Parques' },
-  { id: 'veterinaria', label: 'Veterinarias' },
-  { id: 'petshop', label: 'Pet Shops' },
-  { id: 'servicio', label: 'Servicios' },
-]);
-
 // const filteredLocations = computed(() => {
 //   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
 //   if (activeFilters.value.length === 0) return filtered;
@@ -114,10 +82,8 @@ const filters = ref([
 // });
 
 const filteredLocations = computed(() => {
-  debugger
   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
   if (activeFilters.value.length === 0) return filtered; // Devolver lista vacía cuando no hay filtros
-  // if (activeFilters.value.length === 0) return []; // Devolver lista vacía cuando no hay filtros
   return filtered.filter((location) =>
     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
   );

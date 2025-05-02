@@ -1,26 +1,18 @@
-// src/composable/useGoogleMaps.js
 import { ref } from 'vue';
 
-// Clave de la API de Google Maps (idealmente en un .env)
+// Clave de la API de Google Maps (asegúrate de que sea válida y esté restringida)
 const GOOGLE_MAPS_API_KEY = 'AIzaSyDbCImtrddG3Zm7roBIeYMWug-rsfoCH7c';
 
 export function useGoogleMaps() {
   const isGoogleMapsLoaded = ref(false);
   let geocoder = null;
 
-  // Cargar la biblioteca de Google Maps dinámicamente
-  const loadGoogleMaps = async (options = {}) => {
+  // Cargar la biblioteca de Google Maps dinámicamente con todas las bibliotecas necesarias
+  const loadGoogleMaps = async () => {
     if (isGoogleMapsLoaded.value) return Promise.resolve();
 
-    const defaultOptions = {
-      libraries: ['places'], // Mantener places para geocoder
-    };
-    const { libraries } = { ...defaultOptions, ...options };
-
-    // Añadir 'marker' si no está en la lista
-    if (!libraries.includes('marker')) {
-      libraries.push('marker');
-    }
+    // Cargar siempre 'marker' y 'places'
+    const libraries = ['marker', 'places'];
 
     return new Promise((resolve, reject) => {
       if (window.google && window.google.maps) {
@@ -37,7 +29,9 @@ export function useGoogleMaps() {
           isGoogleMapsLoaded.value = true;
           resolve();
         };
-        script.onerror = () => reject(new Error('No se pudo cargar Google Maps'));
+        script.onerror = () => {
+          reject(new Error('No se pudo cargar Google Maps. Verifica la conexión o la clave de API.'));
+        };
         document.head.appendChild(script);
       }
     });

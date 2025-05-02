@@ -62,21 +62,13 @@
     </div>
 
     <!-- Teléfono -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
-      <input
-        v-model="editForm.phoneNumber"
-        v-mask="'+54 9 ## ####-####'"
-        type="tel"
-        :class="[
-          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50',
-          errors.phoneNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
-        ]"
-        placeholder="+54 9 11 1234-5678"
-        :disabled="isLoading"
-      />
-      <p v-if="errors.phoneNumber" class="text-red-500 text-sm mt-1">{{ errors.phoneNumber }}</p>
-    </div>
+    <PhoneInput
+      v-model="editForm.phoneNumber"
+      label="Teléfono"
+      id="phone"
+      :error="errors.phoneNumber"
+      :disabled="isLoading"
+    />
 
     <!-- Fecha de nacimiento -->
     <div>
@@ -171,7 +163,7 @@ import { useUsers } from '../../composable/useUsers';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import SelectCountry from '../atoms/SelectCountry.vue';
 import SelectGenre from '../atoms/SelectGenre.vue';
-
+import PhoneInput from '../atoms/PhoneInput.vue';
 // Props
 const props = defineProps({
   activeUser: { type: Object, required: true },

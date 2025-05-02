@@ -86,13 +86,11 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         }
       },
       async markChatAsReaded(userEmail, chatId) {
-        debugger
         const { markChatAsRead } = usePrivateChats()
         await markChatAsRead(userEmail, chatId)
         this.markChatAsReadInStore(chatId, userEmail);
       },
       markChatAsReadInStore(chatId, userEmail) {
-        debugger
         const chat = this.chats.value.find(chat => chat.idDoc === chatId);
         if (chat && chat.unreadCount && chat.unreadCount[userEmail] !== undefined) {
           chat.unreadCount[userEmail] = 0;

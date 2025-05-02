@@ -80,12 +80,20 @@
 import { ref, defineProps, defineEmits, onMounted } from 'vue';
 
 const props = defineProps({
-  filters: Array,
   modelValue: {
     type: Array,
     default: () => []
   }
 });
+
+const filters = ref([
+    { id: 'veterinaria', label: 'Veterinaria' },
+    { id: 'petshop', label: 'Pet Shop' },
+    { id: 'guarderia', label: 'Guardería' },
+    { id: 'petfriendly', label: 'Pet Friendly' },
+    { id: 'parque', label: 'Parque' },
+    { id: 'servicio', label: 'Servicio' },
+]);
 
 const emit = defineEmits(['update:modelValue']);
 

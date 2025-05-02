@@ -8,7 +8,7 @@
             <i class="fa-solid fa-xmark w-6 h-6"></i>
           </button>
         </div>
-  
+
         <!-- Contenido del modal -->
         <div class="p-6">
           <form @submit.prevent="handleSubmit" class="space-y-6">
@@ -25,7 +25,7 @@
                 required
               />
             </div>
-  
+
             <!-- Descripción -->
             <div>
               <label for="description" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Descripción</label>
@@ -38,7 +38,7 @@
                 required
               ></textarea>
             </div>
-  
+
             <!-- Dirección con GeolocationInput -->
             <div>
               <label for="location" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Dirección</label>
@@ -50,7 +50,7 @@
               />
               <p v-if="locationError" class="text-sm text-red-500 mt-2">{{ locationError }}</p>
             </div>
-  
+
             <!-- Tipo -->
             <div>
               <label for="type" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Tipo</label>
@@ -65,20 +65,14 @@
                 <option v-for="type in locationTypes" :key="type.id" :value="type.id">{{ type.label }}</option>
               </select>
             </div>
-  
+
             <!-- Teléfono -->
-            <div>
-              <label for="phone" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Teléfono (opcional)</label>
-              <input
+            <PhoneInput
                 v-model="newLocation.contact.phone"
+                label="Teléfono"
                 id="phone"
-                type="tel"
-                placeholder="Ej: 011 4785-5566"
-                class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                 :disabled="isSubmitting"
               />
-            </div>
-  
             <!-- Imagen o Video -->
             <div>
               <label for="media" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Imagen o Video (opcional)</label>
@@ -92,7 +86,7 @@
               />
               <p v-if="errorFileMessage" class="text-sm text-red-500 mt-2">{{ errorFileMessage }}</p>
             </div>
-  
+
             <!-- Previsualización de Media -->
             <div v-if="newLocation.media.url" class="mt-2">
               <img
@@ -108,7 +102,7 @@
                 class="w-full h-48 rounded-lg shadow-sm"
               ></video>
             </div>
-  
+
             <!-- Botones -->
             <div class="flex justify-end gap-3 mt-6">
               <button
@@ -144,7 +138,8 @@
   import { useLocationsStore } from '../../stores/locations';
   import { useAuth } from '../../api/auth/useAuth';
   import GeolocationInput from '../atoms/GeolocationInput.vue'
-
+  import PhoneInput from '../atoms/PhoneInput.vue'
+  
   const emits = defineEmits(['close', 'locationCreated']);
   const props = defineProps({
     visible: {
@@ -152,25 +147,24 @@
       default: false,
     },
   });
-  
+
   const { uploadMedia } = useMediaUpload();
   const { user } = useAuth();
   const locationsStore = useLocationsStore();
-  
+
   const isSubmitting = ref(false);
   const errorFileMessage = ref('');
   const locationError = ref('');
-  
+
   const locationTypes = ref([
     { id: 'veterinaria', label: 'Veterinaria' },
     { id: 'petshop', label: 'Pet Shop' },
     { id: 'guarderia', label: 'Guardería' },
     { id: 'petfriendly', label: 'Pet Friendly' },
-    { id: 'plaza', label: 'Plaza' },
     { id: 'parque', label: 'Parque' },
     { id: 'servicio', label: 'Servicio' },
   ]);
-  
+
   const newLocation = ref({
     id: newGuid(),
     title: '',
@@ -196,7 +190,7 @@
     timestamp: '',
     pending: false,
   });
-  
+
   // Variable para GeolocationInput
   const locationInput = ref({
     address: '',
@@ -229,7 +223,7 @@
     errorFileMessage.value = '';
     emits('close');
   }
-  
+
   function resetForm() {
     newLocation.value = {
       id: newGuid(),
@@ -257,7 +251,7 @@
       pending: false,
     };
   }
-  
+
   function handleMediaUpload(event) {
     errorFileMessage.value = '';
     const file = event.target.files[0];
@@ -282,16 +276,16 @@
     };
     reader.readAsDataURL(file);
   }
-  
+
   async function handleSubmit() {
     isSubmitting.value = true;
     try {
       // Validar el formulario
       validateForm();
-  
+
       // Obtener el ID del usuario autenticado
       const ownerId = user.value?.uid || user.value?.id || null;
-  
+
       // Subir el archivo multimedia si existe
       let updatedMedia = {
         url: null,
@@ -314,7 +308,7 @@
           type: newLocation.value.media.type,
         };
       }
-  
+
       // Preparar los datos para Firestore
       const locationData = {
         id: newLocation.value.id,
@@ -340,9 +334,9 @@
           displayName: user.value?.displayName,
           email: user.value?.email,
           photoURLFile: user.value?.photoURLFile,
-        },  
+        },
       };
-  
+
       // Guardar en Firestore
       await locationsStore.addLocation(locationData);
       // emits('locationCreated', locationData);
@@ -354,7 +348,7 @@
       isSubmitting.value = false;
     }
   }
-  
+
   function validateForm() {
     if (!newLocation.value.title || newLocation.value.title.trim() === '') {
       throw new Error('El título es obligatorio');
@@ -376,7 +370,7 @@
     }
   }
   </script>
-  
+
   <style scoped>
   /* Oculta scrollbars en los contenedores scrollables */
   .scrollbar-hide::-webkit-scrollbar {
@@ -386,22 +380,22 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   /* Estilos para el scroll del modal */
   .overflow-y-auto {
     scrollbar-width: thin;
     scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-thumb {
     background-color: rgba(155, 155, 155, 0.5);
     border-radius: 3px;
   }
-  
+
   .overflow-y-auto::-webkit-scrollbar-track {
     background: transparent;
   }
