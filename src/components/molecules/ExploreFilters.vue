@@ -56,6 +56,7 @@
         v-for="filter in filters"
         :key="filter.id"
         class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 cursor-pointer"
+        :class="{ 'shadow-md': modelValue.includes(filter.id) }"
       >
         <input
           type="checkbox"
@@ -70,6 +71,7 @@
         >
           <i v-if="modelValue.includes(filter.id)" class="fa-solid fa-check text-white text-sm"></i>
         </span>
+        <img :src="filter.icon" :alt="`${filter.label} icon`" class="w-6 h-6 object-contain" />
         <span class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ filter.label }}</span>
       </label>
     </div>
@@ -78,6 +80,13 @@
 
 <script setup>
 import { ref, defineProps, defineEmits, onMounted } from 'vue';
+import CatIcon from '../../assets/icons/cat_1998592.png';
+import VetIcon1 from '../../assets/icons/locations/vet1.png';
+import TrainerIcon1 from '../../assets/icons/locations/entrenador1.png';
+import PaseadorIcon1 from '../../assets/icons/locations/paseador1.png';
+import Guarderiacon1 from '../../assets/icons/locations/guarderia1.png';
+import ParqueIcon1 from '../../assets/icons/locations/parque1.png';
+import PetfriendlyIcon1 from '../../assets/icons/locations/petfriendly1.png';
 
 const props = defineProps({
   modelValue: {
@@ -87,13 +96,13 @@ const props = defineProps({
 });
 
 const filters = ref([
-    { id: 'parque', label: 'Parque' },
-    { id: 'veterinaria', label: 'Veterinaria' },
-    { id: 'petshop', label: 'Pet Shop' },
-    { id: 'guarderia', label: 'Guardería' },
-    { id: 'petfriendly', label: 'Pet Friendly' },
-    { id: 'paseador', label: 'Paseador' },
-    { id: 'entrenador', label: 'Entrenador' },
+    { id: 'veterinaria', label: 'Veterinaria', icon: VetIcon1 },
+    { id: 'petshop', label: 'Pet Shop', icon: CatIcon }, // Considera crear PetshopIcon1
+    { id: 'guarderia', label: 'Guardería', icon: Guarderiacon1 },
+    { id: 'petfriendly', label: 'Pet Friendly', icon: PetfriendlyIcon1 },
+    { id: 'paseador', label: 'Paseador', icon: PaseadorIcon1 },
+    { id: 'entrenador', label: 'Entrenador', icon: TrainerIcon1 },
+    { id: 'parque', label: 'Parque', icon: ParqueIcon1 },
 ]);
 
 const emit = defineEmits(['update:modelValue']);
@@ -148,6 +157,20 @@ label:hover span {
   transform: scale(1.1);
 }
 
+/* Estilo para los íconos */
+img {
+  filter: brightness(0.9); /* Suaviza los íconos para que no sean demasiado brillantes */
+  transition: transform 0.2s ease;
+}
+label:hover img {
+  transform: scale(1.1); /* Efecto de hover para los íconos */
+}
+
+/* Estilo para la sombra en filtros seleccionados */
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
 /* Estilo para el contenedor de filtros */
 .overflow-y-auto {
   scrollbar-width: thin;
@@ -185,6 +208,14 @@ label:hover span {
   .py-2 {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem; /* Reducir padding del botón en mobile */
+  }
+  img {
+    width: 1.25rem; /* Reducir tamaño de íconos en mobile */
+    height: 1.25rem;
+  }
+  .w-6 {
+    width: 1.5rem; /* Reducir tamaño del checkbox en mobile */
+    height: 1.5rem;
   }
 }
 </style>

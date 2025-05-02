@@ -11,24 +11,32 @@
 
       <!-- Barra de progreso -->
       <div class="p-6">
-        <div class="flex justify-between mb-6">
-          <div class="flex-1 text-center">
-            <div :class="['w-8 h-8 mx-auto rounded-full flex items-center justify-center', currentStep >= 1 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500']">
-              1
+        <div class="flex justify-center mb-6">
+          <div class="flex items-center space-x-2">
+            <div v-for="(step, index) in steps" :key="index" class="relative flex items-center">
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all duration-300"
+                :class="{
+                  'bg-primary dark:bg-secondary text-white animate-pulse-step': currentStep === index + 1,
+                  'bg-primary text-white': currentStep > index + 1,
+                  'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-300': currentStep < index + 1,
+                }"
+                :aria-current="currentStep === index + 1 ? 'step' : undefined"
+                :aria-label="`Paso ${index + 1}`"
+              >
+                <span v-if="currentStep <= index + 1">{{ index + 1 }}</span>
+                <i v-else class="fa-solid fa-check"></i>
+              </div>
+              <div
+                v-if="index < steps.length - 1"
+                class="w-6 h-1 bg-gray-200 dark:bg-gray-600"
+              >
+                <div
+                  class="h-full transition-all duration-300"
+                  :class="currentStep > index + 1 ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-600'"
+                ></div>
+              </div>
             </div>
-            <p class="text-sm mt-2 text-gray-600 dark:text-gray-300">Información</p>
-          </div>
-          <div class="flex-1 text-center">
-            <div :class="['w-8 h-8 mx-auto rounded-full flex items-center justify-center', currentStep >= 2 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500']">
-              2
-            </div>
-            <p class="text-sm mt-2 text-gray-600 dark:text-gray-300">Ubicación</p>
-          </div>
-          <div class="flex-1 text-center">
-            <div :class="['w-8 h-8 mx-auto rounded-full flex items-center justify-center', currentStep >= 3 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500']">
-              3
-            </div>
-            <p class="text-sm mt-2 text-gray-600 dark:text-gray-300">Multimedia</p>
           </div>
         </div>
 
@@ -208,6 +216,13 @@ const locationError = ref('');
 const currentStep = ref(1);
 const errors = ref({});
 
+// Definición de los pasos
+const steps = ref([
+  { label: 'Información' },
+  { label: 'Ubicación' },
+  { label: 'Multimedia' },
+]);
+
 const locationTypes = ref([
   { id: 'parque', label: 'Parque' },
   { id: 'veterinaria', label: 'Veterinaria' },
@@ -371,13 +386,6 @@ function validateStep(step) {
     if (!newLocation.value.contact.phone || newLocation.value.contact.phone.trim() === '') {
       errors.value.phone = 'El teléfono es obligatorio';
       isValid = false;
-    } else {
-      // // Validar formato de teléfono (ej: 011 4785-5566, +5491147855566, etc.)
-      // const phoneRegex = /^\+?\d{1,4}?\s?\d{1,4}\s?\d{4}-?\d{4}$/;
-      // if (!phoneRegex.test(newLocation.value.contact.phone)) {
-      //   errors.value.phone = 'El teléfono debe tener un formato válido (ej: 011 4785-5566)';
-      //   isValid = false;
-      // }
     }
   }
   // Paso 3 no requiere validación, ya que la multimedia es opcional
@@ -497,5 +505,25 @@ async function handleSubmit() {
 
 .overflow-y-auto::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* Animación para los pasos del stepper */
+.animate-pulse-step {
+  animation: pulseStep 0.5s ease-in-out;
+}
+
+@keyframes pulseStep {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
 }
 </style>

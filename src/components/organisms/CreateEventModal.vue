@@ -1,20 +1,49 @@
 <template>
-    <div v-if="visible"  class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <!-- Encabezado del modal -->
-        <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear evento</h3>
-          <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
-            <i class="fa-solid fa-xmark w-6 h-6"></i>
-          </button>
+  <div v-if="visible" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <!-- Encabezado del modal -->
+      <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear evento</h3>
+        <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+          <i class="fa-solid fa-xmark w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="p-6">
+        <div class="flex justify-center mb-6">
+          <div class="flex items-center space-x-2">
+            <div v-for="(step, index) in steps" :key="index" class="relative flex items-center">
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all duration-300"
+                :class="{
+                  'bg-primary dark:bg-secondary text-white animate-pulse-step': currentStep === index + 1,
+                  'bg-primary text-white': currentStep > index + 1,
+                  'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-300': currentStep < index + 1,
+                }"
+                :aria-current="currentStep === index + 1 ? 'step' : undefined"
+                :aria-label="`Paso ${index + 1}`"
+              >
+                <span v-if="currentStep <= index + 1">{{ index + 1 }}</span>
+                <i v-else class="fa-solid fa-check"></i>
+              </div>
+              <div
+                v-if="index < steps.length - 1"
+                class="w-6 h-1 bg-gray-200 dark:bg-gray-600"
+              >
+                <div
+                  class="h-full transition-all duration-300"
+                  :class="currentStep > index + 1 ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-600'"
+                ></div>
+              </div>
+            </div>
+          </div>
         </div>
-  
-        <!-- Contenido del modal -->
-        <div class="p-6">
-          <h4 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 tracking-tight sr-only">
-            Crear Evento
-          </h4>
-          <form @submit.prevent="handleCreateEvent" class="space-y-6">
+
+        <!-- Contenido del formulario -->
+        <form @submit.prevent="handleCreateEvent" class="space-y-6">
+          <!-- Paso 1: Información básica -->
+          <div v-if="currentStep === 1">
             <!-- Título -->
             <div>
               <label for="eventTitle" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -30,7 +59,7 @@
                 required
               />
             </div>
-  
+
             <!-- Descripción -->
             <div>
               <label for="eventDescription" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -45,7 +74,10 @@
                 required
               ></textarea>
             </div>
-  
+          </div>
+
+          <!-- Paso 2: Multimedia -->
+          <div v-if="currentStep === 2">
             <!-- Imagen o Video -->
             <div class="relative">
               <label for="eventMedia" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -58,7 +90,7 @@
                 @change="handleMediaUpload"
                 :class="[
                   'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
-                  errorFileMessage ? 'border-red-500' : 'border-gray-300  dark:border-gray-800'
+                  errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
                 :disabled="isLoading"
                 required
@@ -66,7 +98,7 @@
               <!-- Mensaje de error -->
               <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
             </div>
-           
+
             <!-- Previsualización de Media -->
             <div v-if="newEvent.media" class="mt-2">
               <img
@@ -82,7 +114,10 @@
                 class="w-full h-48 rounded-lg shadow-sm"
               ></video>
             </div>
-  
+          </div>
+
+          <!-- Paso 3: Detalles del evento -->
+          <div v-if="currentStep === 3">
             <!-- Fecha y Hora de Inicio -->
             <div>
               <label for="eventStartTime" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -97,7 +132,7 @@
                 required
               />
             </div>
-  
+
             <!-- Fecha y Hora de Fin (opcional) -->
             <div>
               <label for="eventEndTime" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -111,7 +146,7 @@
                 :disabled="isLoading"
               />
             </div>
-  
+
             <!-- Ubicación -->
             <div>
               <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -122,7 +157,7 @@
                 placeholder="Ingresá una dirección"
               />
             </div>
-  
+
             <!-- Capacidad -->
             <div>
               <label for="eventCapacity" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -137,7 +172,10 @@
                 :disabled="isLoading"
               />
             </div>
-  
+          </div>
+
+          <!-- Paso 4: Configuración adicional -->
+          <div v-if="currentStep === 4">
             <!-- Categorías -->
             <div v-if="categories?.length" class="flex flex-wrap gap-3">
               <label
@@ -156,7 +194,7 @@
                 <span class="font-medium">{{ category.name }}</span>
               </label>
             </div>
-  
+
             <!-- Privacidad -->
             <div class="flex gap-4 items-center mt-4">
               <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
@@ -178,68 +216,124 @@
                 Privado
               </label>
             </div>
-  
-            <!-- Botones -->
-            <div class="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                @click="closeModal"
-                class="px-5 py-2 text-gray-500 dark:text-gray-200 dark:bg-gray-600 rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
-              >
-                Cancelar
-              </button>
-              <button
-                :disabled="isLoading"
-                type="submit"
-                class="relative px-5 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span v-if="!isLoading">Crear Evento</span>
-                <span v-else class="flex items-center gap-2">
-                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  Creando...
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
+          </div>
+
+          <!-- Botones de navegación -->
+          <div class="flex justify-between gap-3 mt-6">
+            <button
+              v-if="currentStep > 1"
+              type="button"
+              @click="previousStep"
+              class="px-5 py-2 text-gray-500 dark:text-gray-200 dark:bg-gray-600 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200"
+              :disabled="isLoading"
+            >
+              Atrás
+            </button>
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-5 py-2 text-gray-500 dark:text-gray-200 dark:bg-gray-600 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200"
+              :disabled="isLoading"
+            >
+              Cancelar
+            </button>
+            <div class="flex-1"></div>
+            <button
+              v-if="currentStep < steps.length"
+              type="button"
+              @click="nextStep"
+              class="px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg"
+              :disabled="isLoading"
+            >
+              Siguiente
+            </button>
+            <button
+              v-if="currentStep === steps.length"
+              type="submit"
+              class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
+              :disabled="isLoading"
+            >
+              <span v-if="!isLoading">Crear Evento</span>
+              <span v-else class="flex items-center gap-2">
+                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Creando...
+              </span>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import { useMediaUpload } from '../../composable/useMediaUpload'
-  import { newGuid } from '../../utils/newGuid'
-  import { useEventsStore } from '../../stores/events'
-  import { useAuth } from '../../api/auth/useAuth'
-  import GeolocationInput from '../atoms/GeolocationInput.vue'
-  
-  const emits = defineEmits(['close', 'eventCreated'])
-  const props = defineProps({
-    visible: {
-      type: Boolean,
-      default: false
-    }
-  })
-  
-  const { uploadMedia } = useMediaUpload()
-  const { user } = useAuth()
-  const eventsStore = useEventsStore()
-  const errorFileMessage = ref('');
+  </div>
+</template>
 
-  const isLoading = ref(false)
-  const categories = ref([
-    { id: 'adopcion', name: 'Adopción' },
-    { id: 'educacion', name: 'Educación' },
-    { id: 'salud', name: 'Salud y Bienestar' },
-    { id: 'recreativo', name: 'Recreativo' },
-    { id: 'competencia', name: 'Concursos y Muestras' },
-    { id: 'voluntariado', name: 'Voluntariado' },
-    { id: 'beneficencia', name: 'Solidarios' },
-    { id: 'otros', name: 'Otros' }
-  ])
-    
-  const newEvent = ref({
+<script setup>
+import { ref } from 'vue';
+import { useMediaUpload } from '../../composable/useMediaUpload';
+import { newGuid } from '../../utils/newGuid';
+import { useEventsStore } from '../../stores/events';
+import { useAuth } from '../../api/auth/useAuth';
+import GeolocationInput from '../atoms/GeolocationInput.vue';
+
+const emits = defineEmits(['close', 'eventCreated']);
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const { uploadMedia } = useMediaUpload();
+const { user } = useAuth();
+const eventsStore = useEventsStore();
+const errorFileMessage = ref('');
+
+const isLoading = ref(false);
+const currentStep = ref(1);
+const steps = ref([
+  { label: 'Información' },
+  { label: 'Multimedia' },
+  { label: 'Detalles' },
+  { label: 'Configuración' },
+]);
+
+const categories = ref([
+  { id: 'adopcion', name: 'Adopción' },
+  { id: 'educacion', name: 'Educación' },
+  { id: 'salud', name: 'Salud y Bienestar' },
+  { id: 'recreativo', name: 'Recreativo' },
+  { id: 'competencia', name: 'Concursos y Muestras' },
+  { id: 'voluntariado', name: 'Voluntariado' },
+  { id: 'beneficencia', name: 'Solidarios' },
+  { id: 'otros', name: 'Otros' },
+]);
+
+const newEvent = ref({
+  title: '',
+  description: '',
+  media: '',
+  mediaType: '',
+  newMediaBase64: null,
+  categories: [],
+  privacy: 'public',
+  startTime: '',
+  endTime: '',
+  location: {
+    address: '',
+    lat: null,
+    lng: null,
+  },
+  capacity: null,
+});
+
+function closeModal() {
+  resetForm();
+  errorFileMessage.value = '';
+  currentStep.value = 1;
+  emits('close');
+}
+
+function resetForm() {
+  newEvent.value = {
     title: '',
     description: '',
     media: '',
@@ -249,171 +343,194 @@
     privacy: 'public',
     startTime: '',
     endTime: '',
-    location: {
-      address: '',
-      lat: null,
-      lng: null,
-    },
-    capacity: null
-  })
-  
-  function closeModal() {
-    resetForm()
-    errorFileMessage.value =''  
-    emits('close')
-  }
-  
-  async function handleCreateEvent() {
-    isLoading.value = true
-    try {
-      validateForm(newEvent.value)
-      const ownerId = user.value?.uid || user.value?.id || null
-      let updatedPhotoUrl = null
-      let updatedPhotoPath = null
-      if (newEvent.value.newMediaBase64) {
-        const dynamicPath = `events/${ownerId}/${newGuid()}`
-        const { url, path } = await uploadMedia({
-          currentUrl: null,
-          currentPath: null,
-          newMediaBase64: newEvent.value.newMediaBase64,
-          mediaType: newEvent.value.mediaType,
-          dynamicPath,
-        })
-        updatedPhotoUrl = url
-        updatedPhotoPath = path
-      }
-      const eventData = {
-        title: newEvent.value.title,
-        description: newEvent.value.description,
-        media: updatedPhotoUrl || null,
-        mediaPath: updatedPhotoPath || null,
-        mediaType: newEvent.value.mediaType || null,
-        categories: newEvent.value.categories,
-        privacy: newEvent.value.privacy,
-        ownerId: ownerId,
-        startTime: newEvent.value.startTime ? new Date(newEvent.value.startTime) : null,
-        endTime: newEvent.value.endTime ? new Date(newEvent.value.endTime) : null,
-        location: newEvent.value.location,
-        capacity: newEvent.value.capacity,
-        attendees: {
-          going: [ownerId],
-          interested: [],
-          notInterested: []
-        },
-      }
-      await eventsStore.createEvent(eventData)
-      emits('eventCreated', eventData)
-      closeModal()
-    } catch (error) {
-      console.error('Error al crear evento:', error)
-      alert('Error al crear evento:'+ error)
-    } finally {
-      isLoading.value = false
-    }
-  }
-  
-  function resetForm() {
-    newEvent.value = {
-      title: '',
-      description: '',
-      media: '',
-      mediaType: '',
-      newMediaBase64: null,
-      categories: [],
-      privacy: 'public',
-      startTime: '',
-      endTime: '',
-      location: { address: '', lat: null, lng: null },
-      capacity: null
-    }
-  }
-  
-  function validateForm() {
-    if(!newEvent.value.title) {
-      throw new Error('El título es obligatorio')
-    }
-    if(!newEvent.value.description) {
-      throw new Error('La descripción es obligatoria')
-    }
-    if(!newEvent.value.startTime) {
-      throw new Error('La fecha y hora de inicio son obligatorias')
-    }
-    if(newEvent.value.endTime && new Date(newEvent.value.startTime) >= new Date(newEvent.value.endTime)) {
-      throw new Error('La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio')
-    }
-    if(newEvent.value.capacity && newEvent.value.capacity < 0) {
-      throw new Error('La capacidad debe ser un número positivo')
-    }
-    if(!newEvent.value.location.address) {
-      throw new Error('La ubicación es obligatoria')
-    }
-    if(!newEvent.value.media) {
-      throw new Error('Debe cargarle una portada al evento.')
-    }
-    // if(newEvent.value.location.address && !newEvent.value.location.lat) {
-    //   throw new Error('La ubicación es obligatoria')
-    // }
-    // if(newEvent.value.location.lat && !newEvent.value.location.address) {
-    //   throw new Error('La dirección es obligatoria')
-    // }
-    if(newEvent.value.categories.length === 0) {
-      throw new Error('Debes seleccionar al menos una categoría')
-    }
-    if(newEvent.value.privacy !== 'public' && newEvent.value.privacy !== 'private') {
-      throw new Error('La privacidad debe ser pública o privada')
-    }
-  }
-  
-  function handleMediaUpload(event) {
-    errorFileMessage.value = ''
-    const file = event.target.files[0];
+    location: { address: '', lat: null, lng: null },
+    capacity: null,
+  };
+}
 
-    if (!file) return
-    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-      errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
-      event.target.value = ''; // Limpiar el input
-      return;
+function validateStep(step) {
+  let isValid = true;
+
+  if (step === 1) {
+    if (!newEvent.value.title) {
+      alert('El título es obligatorio');
+      isValid = false;
     }
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      newEvent.value.newMediaBase64 = reader.result
-      newEvent.value.media = URL.createObjectURL(file)
-      newEvent.value.mediaType = file.type.startsWith('image') ? 'image' : 'video'
+    if (!newEvent.value.description) {
+      alert('La descripción es obligatoria');
+      isValid = false;
     }
-    reader.onerror = (error) => {
-      console.error('Error al leer el archivo:', error)
+  } else if (step === 2) {
+    if (!newEvent.value.media) {
+      alert('Debe cargarle una portada al evento.');
+      isValid = false;
     }
-    reader.readAsDataURL(file)
+  } else if (step === 3) {
+    if (!newEvent.value.startTime) {
+      alert('La fecha y hora de inicio son obligatorias');
+      isValid = false;
+    }
+    if (newEvent.value.endTime && new Date(newEvent.value.startTime) >= new Date(newEvent.value.endTime)) {
+      alert('La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio');
+      isValid = false;
+    }
+    if (newEvent.value.capacity && newEvent.value.capacity < 0) {
+      alert('La capacidad debe ser un número positivo');
+      isValid = false;
+    }
+    if (!newEvent.value.location.address) {
+      alert('La ubicación es obligatoria');
+      isValid = false;
+    }
+  } else if (step === 4) {
+    if (newEvent.value.categories.length === 0) {
+      alert('Debes seleccionar al menos una categoría');
+      isValid = false;
+    }
+    if (newEvent.value.privacy !== 'public' && newEvent.value.privacy !== 'private') {
+      alert('La privacidad debe ser pública o privada');
+      isValid = false;
+    }
   }
-  </script>
-  
-  <style scoped>
-  /* Oculta scrollbars en los contenedores scrollables */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+
+  return isValid;
+}
+
+function nextStep() {
+  if (validateStep(currentStep.value)) {
+    currentStep.value += 1;
   }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+}
+
+function previousStep() {
+  currentStep.value -= 1;
+}
+
+async function handleCreateEvent() {
+  isLoading.value = true;
+  try {
+    // Validar todos los pasos
+    for (let i = 1; i <= steps.value.length; i++) {
+      if (!validateStep(i)) {
+        currentStep.value = i;
+        return;
+      }
+    }
+
+    const ownerId = user.value?.uid || user.value?.id || null;
+    let updatedPhotoUrl = null;
+    let updatedPhotoPath = null;
+    if (newEvent.value.newMediaBase64) {
+      const dynamicPath = `events/${ownerId}/${newGuid()}`;
+      const { url, path } = await uploadMedia({
+        currentUrl: null,
+        currentPath: null,
+        newMediaBase64: newEvent.value.newMediaBase64,
+        mediaType: newEvent.value.mediaType,
+        dynamicPath,
+      });
+      updatedPhotoUrl = url;
+      updatedPhotoPath = path;
+    }
+    const eventData = {
+      title: newEvent.value.title,
+      description: newEvent.value.description,
+      media: updatedPhotoUrl || null,
+      mediaPath: updatedPhotoPath || null,
+      mediaType: newEvent.value.mediaType || null,
+      categories: newEvent.value.categories,
+      privacy: newEvent.value.privacy,
+      ownerId: ownerId,
+      startTime: newEvent.value.startTime ? new Date(newEvent.value.startTime) : null,
+      endTime: newEvent.value.endTime ? new Date(newEvent.value.endTime) : null,
+      location: newEvent.value.location,
+      capacity: newEvent.value.capacity,
+      attendees: {
+        going: [ownerId],
+        interested: [],
+        notInterested: [],
+      },
+    };
+    await eventsStore.createEvent(eventData);
+    emits('eventCreated', eventData);
+    closeModal();
+  } catch (error) {
+    console.error('Error al crear evento:', error);
+    alert('Error al crear evento: ' + error);
+  } finally {
+    isLoading.value = false;
   }
-  
-  /* Estilos para el scroll del modal */
-  .overflow-y-auto {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+function handleMediaUpload(event) {
+  errorFileMessage.value = '';
+  const file = event.target.files[0];
+
+  if (!file) return;
+  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+    event.target.value = ''; // Limpiar el input
+    return;
   }
-  
-  .overflow-y-auto::-webkit-scrollbar {
-    width: 6px;
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    newEvent.value.newMediaBase64 = reader.result;
+    newEvent.value.media = URL.createObjectURL(file);
+    newEvent.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
+  };
+  reader.onerror = (error) => {
+    console.error('Error al leer el archivo:', error);
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+
+<style scoped>
+/* Oculta scrollbars en los contenedores scrollables */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Estilos para el scroll del modal */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Animación para los pasos del stepper */
+.animate-pulse-step {
+  animation: pulseStep 0.5s ease-in-out;
+}
+
+@keyframes pulseStep {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
   }
-  
-  .overflow-y-auto::-webkit-scrollbar-thumb {
-    background-color: rgba(155, 155, 155, 0.5);
-    border-radius: 3px;
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.1);
   }
-  
-  .overflow-y-auto::-webkit-scrollbar-track {
-    background: transparent;
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
-  </style>
-  
+}
+</style>

@@ -120,7 +120,7 @@
 
   <!-- Modal de edición de perfil -->
   <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4 overflow-hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-xl overflow-y-auto">
       <div class="sticky top-0 z-10 p-4 border-b bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Perfil</h2>
@@ -134,6 +134,8 @@
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script setup>

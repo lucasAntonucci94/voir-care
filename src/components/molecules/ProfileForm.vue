@@ -1,169 +1,242 @@
-<!-- ProfileForm.vue -->
 <template>
-  <form @submit.prevent="saveProfile" class="p-4 space-y-6 max-w-md mx-auto">
-    <!-- Email -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-      <input
-        v-model="editForm.email"
-        type="email"
-        class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50"
-        placeholder="Correo electrónico"
-        disabled
-      />
+  <form @submit.prevent="saveProfile" class="flex flex-col min-h-full p-4">
+    <!-- Stepper -->
+    <div class="flex justify-center mb-4">
+      <div class="flex items-center space-x-2">
+        <div v-for="(step, index) in steps" :key="index" class="relative flex items-center">
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all duration-300"
+            :class="{
+              'bg-primary dark:bg-secondary text-white animate-pulse-step': currentStep === index,
+              'bg-green-500 text-white': currentStep > index,
+              'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300': currentStep < index,
+            }"
+            :aria-current="currentStep === index ? 'step' : undefined"
+            :aria-label="`Paso ${index + 1}`"
+          >
+            <span v-if="currentStep <= index">{{ index + 1 }}</span>
+            <i v-else class="fa-solid fa-check"></i>
+          </div>
+          <div
+            v-if="index < steps.length - 1"
+            class="w-6 h-1 bg-gray-200 dark:bg-gray-600"
+          >
+            <div
+              class="h-full transition-all duration-300"
+              :class="currentStep > index ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-600'"
+            ></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Nombre de usuario -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
-      <input
-        v-model="editForm.displayName"
-        type="text"
-        :class="[
-          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50',
-          errors.displayName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
-        ]"
-        placeholder="Nombre de usuario"
-        :disabled="isLoading"
-      />
-      <p v-if="errors.displayName" class="text-red-500 text-sm mt-1">{{ errors.displayName }}</p>
+    <!-- Contenido de los pasos -->
+    <div class="flex-1 flex flex-col justify-center space-y-4 min-h-[200px]">
+      <!-- Paso 1: Información personal -->
+      <div v-if="currentStep === 0" class="space-y-4 animate-fade-in">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <input
+            v-model="editForm.email"
+            type="email"
+            class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm"
+            placeholder="Correo electrónico"
+            disabled
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
+          <input
+            v-model="editForm.displayName"
+            type="text"
+            :class="[
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
+              stepErrors.displayName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+            ]"
+            placeholder="Nombre de usuario"
+            :disabled="isLoading"
+          />
+          <p v-if="stepErrors.displayName" class="text-red-500 text-sm mt-1">{{ stepErrors.displayName }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
+          <input
+            v-model="editForm.firstName"
+            type="text"
+            :class="[
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
+              stepErrors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+            ]"
+            placeholder="Nombre"
+            :disabled="isLoading"
+          />
+          <p v-if="stepErrors.firstName" class="text-red-500 text-sm mt-1">{{ stepErrors.firstName }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
+          <input
+            v-model="editForm.lastName"
+            type="text"
+            :class="[
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
+              stepErrors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+            ]"
+            placeholder="Apellido"
+            :disabled="isLoading"
+          />
+          <p v-if="stepErrors.lastName" class="text-red-500 text-sm mt-1">{{ stepErrors.lastName }}</p>
+        </div>
+      </div>
+
+      <!-- Paso 2: Contacto -->
+      <div v-if="currentStep === 1" class="space-y-4 animate-fade-in">
+        <PhoneInput
+          v-model="editForm.phoneNumber"
+          label="Teléfono"
+          id="phone"
+          :error="stepErrors.phoneNumber"
+          :disabled="isLoading"
+          class="hover:bg-transparent dark:hover:bg-transparent"
+        />
+      </div>
+
+      <!-- Paso 3: Detalles personales -->
+      <div v-if="currentStep === 2" class="space-y-4 animate-fade-in">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de nacimiento</label>
+          <input
+            v-model="editForm.birthday"
+            type="date"
+            :class="[
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50 shadow-sm',
+              stepErrors.birthday ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+            ]"
+            :disabled="isLoading"
+          />
+          <p v-if="stepErrors.birthday" class="text-red-500 text-sm mt-1">{{ stepErrors.birthday }}</p>
+        </div>
+        <div>
+          <SelectGenre
+            v-model="editForm.genre"
+            label="Género"
+            id="genre"
+            :disabled="isLoading"
+            :class="[
+              'mt-1 w-full hover:bg-transparent dark:hover:bg-transparent',
+              stepErrors.genre ? 'border-red-500' : ''
+            ]"
+          />
+          <p v-if="stepErrors.genre" class="text-red-500 text-sm mt-1">{{ stepErrors.genre }}</p>
+        </div>
+        <div>
+          <SelectCountry
+            v-model="editForm.country"
+            label="País"
+            id="country"
+            :disabled="isLoading"
+            :class="[
+              'mt-1 w-full hover:bg-transparent dark:hover:bg-transparent',
+              stepErrors.country ? 'border-red-500' : ''
+            ]"
+          />
+          <p v-if="stepErrors.country" class="text-red-500 text-sm mt-1">{{ stepErrors.country }}</p>
+        </div>
+      </div>
+
+      <!-- Paso 4: Foto de perfil -->
+      <div v-if="currentStep === 3" class="space-y-4 animate-fade-in">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto de perfil</label>
+          <input
+            type="file"
+            accept="image/*"
+            @change="handlePhotoUpload"
+            :class="[
+              'w-full p-2 border dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary/90 dark:hover:file:bg-secondary/90 transition-colors duration-200 shadow-sm',
+              errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+            ]"
+            :disabled="isLoading"
+          />
+          <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
+          <div class="mt-2 flex items-center gap-4">
+            <img
+              v-if="editForm.photoURL"
+              :src="editForm.photoURL"
+              alt="Vista previa"
+              class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-800 shadow-sm"
+            />
+            <div
+              v-else
+              class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-300"
+            >
+              <i class="fa-solid fa-user text-2xl"></i>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Nombre -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
-      <input
-        v-model="editForm.firstName"
-        type="text"
-        :class="[
-          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50',
-          errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
-        ]"
-        placeholder="Nombre"
-        :disabled="isLoading"
-      />
-      <p v-if="errors.firstName" class="text-red-500 text-sm mt-1">{{ errors.firstName }}</p>
-    </div>
-
-    <!-- Apellido -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
-      <input
-        v-model="editForm.lastName"
-        type="text"
-        :class="[
-          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50',
-          errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
-        ]"
-        placeholder="Apellido"
-        :disabled="isLoading"
-      />
-      <p v-if="errors.lastName" class="text-red-500 text-sm mt-1">{{ errors.lastName }}</p>
-    </div>
-
-    <!-- Teléfono -->
-    <PhoneInput
-      v-model="editForm.phoneNumber"
-      label="Teléfono"
-      id="phone"
-      :error="errors.phoneNumber"
-      :disabled="isLoading"
-    />
-
-    <!-- Fecha de nacimiento -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de nacimiento</label>
-      <input
-        v-model="editForm.birthday"
-        type="date"
-        :class="[
-          'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50',
-          errors.birthday ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
-        ]"
-        :disabled="isLoading"
-      />
-      <p v-if="errors.birthday" class="text-red-500 text-sm mt-1">{{ errors.birthday }}</p>
-    </div>
-
-    <!-- Género -->
-    <div>
-      <SelectGenre
-        v-model="editForm.genre"
-        label="Género"
-        id="genre"
-        :disabled="isLoading"
-        :class="{ 'border-red-500': errors.genre }"
-        class="mt-1 w-full"
-      />
-      <p v-if="errors.genre" class="text-red-500 text-sm mt-1">{{ errors.genre }}</p>
-    </div>
-
-    <!-- País -->
-    <div>
-      <SelectCountry
-        v-model="editForm.country"
-        label="País"
-        id="country"
-        :disabled="isLoading"
-        :class="{ 'border-red-500': errors.country }"
-        class="mt-1 w-full"
-      />
-      <p v-if="errors.country" class="text-red-500 text-sm mt-1">{{ errors.country }}</p>
-    </div>
-
-    <!-- Foto de perfil -->
-    <div>
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto de perfil</label>
-      <input
-        type="file"
-        accept="image/*"
-        @change="handlePhotoUpload"
-        :class="[
-          'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
-          errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
-        ]"
-        :disabled="isLoading"
-      />
-      <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
-      <img
-        v-if="editForm.photoURL"
-        :src="editForm.photoURL"
-        alt="Vista previa"
-        class="mt-2 w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-800"
-      />
-    </div>
-
-    <!-- Botones del formulario -->
-    <div class="flex justify-end gap-2 pt-4 border-t border-gray-200">
+    <!-- Botones de navegación -->
+    <div class="flex justify-between gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
       <button
         type="button"
-        @click="closeEditModal"
+        @click="props.closeEditModal"
         :disabled="isLoading"
-        class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        aria-label="Cancelar edición del perfil"
       >
+        <i class="fa-solid fa-times"></i>
         Cancelar
       </button>
-      <button
-        type="submit"
-        :disabled="isLoading || Object.keys(errors)?.length > 0"
-        class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-      >
-        <span v-if="isLoading">
-          <i class="fa-solid fa-spinner animate-spin h-5 w-5"></i>
-        </span>
-        {{ isLoading ? 'Guardando...' : 'Guardar' }}
-      </button>
+      <div class="flex items-center gap-2">
+        <button
+          v-if="currentStep > 0"
+          type="button"
+          @click="prevStep"
+          :disabled="isLoading"
+          class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          aria-label="Volver al paso anterior"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+          Atrás
+        </button>
+        <button
+          v-if="currentStep < steps.length - 1"
+          type="button"
+          @click="nextStep"
+          :disabled="isLoading || hasStepErrors"
+          class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          aria-label="Avanzar al siguiente paso"
+        >
+          Siguiente
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <button
+          v-if="currentStep === steps.length - 1"
+          type="submit"
+          :disabled="isLoading || hasGlobalErrors"
+          class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          aria-label="Guardar perfil"
+        >
+          <span v-if="isLoading">
+            <i class="fa-solid fa-spinner animate-spin"></i>
+          </span>
+          {{ isLoading ? 'Guardando...' : 'Guardar' }}
+          <i v-if="!isLoading" class="fa-solid fa-save"></i>
+        </button>
+      </div>
     </div>
   </form>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useUsers } from '../../composable/useUsers';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import SelectCountry from '../atoms/SelectCountry.vue';
 import SelectGenre from '../atoms/SelectGenre.vue';
 import PhoneInput from '../atoms/PhoneInput.vue';
+
 // Props
 const props = defineProps({
   activeUser: { type: Object, required: true },
@@ -180,6 +253,26 @@ const editForm = ref({});
 const isLoading = ref(false);
 const errorFileMessage = ref('');
 const errors = ref({});
+const currentStep = ref(0);
+const stepErrors = ref({});
+
+// Definición de pasos
+const steps = ref([
+  { label: 'Información personal', fields: ['displayName', 'firstName', 'lastName'] },
+  { label: 'Contacto', fields: ['phoneNumber'] },
+  { label: 'Detalles personales', fields: ['birthday', 'genre', 'country'] },
+  { label: 'Foto de perfil', fields: ['photoURL'] },
+]);
+
+// Validar si el paso actual tiene errores
+const hasStepErrors = computed(() => {
+  return Object.keys(stepErrors.value).length > 0;
+});
+
+// Validar si hay errores globales
+const hasGlobalErrors = computed(() => {
+  return Object.keys(errors.value).length > 0;
+});
 
 onMounted(() => {
   editProfile();
@@ -190,13 +283,11 @@ function editProfile() {
   if (phone) {
     const digits = phone.replace(/\D/g, '');
     if (digits.startsWith('549') && digits.length === 13) {
-      // Formato móvil: +54 9 ## ####-####
       phone = `+54 9 ${digits.slice(3, 5)} ${digits.slice(5, 9)}-${digits.slice(9)}`;
     } else if (digits.startsWith('54') && digits.length === 12) {
-      // Formato fijo: +54 ## ####-####
       phone = `+54 ${digits.slice(2, 4)} ${digits.slice(4, 8)}-${digits.slice(8)}`;
     } else {
-      phone = ''; // Si no coincide con ningún formato, lo dejamos vacío
+      phone = '';
     }
   }
 
@@ -222,8 +313,8 @@ function handlePhotoUpload(event) {
   const file = event.target.files[0];
 
   if (!file) return;
-  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+  if (!file.type.startsWith('image/')) {
+    errorFileMessage.value = 'Selecciona una imagen válida.';
     event.target.value = '';
     return;
   }
@@ -233,9 +324,87 @@ function handlePhotoUpload(event) {
     reader.onloadend = () => {
       editForm.value.newMediaBase64 = reader.result;
       editForm.value.photoURL = URL.createObjectURL(file);
-      editForm.value.mediaType = file.type.startsWith('image') ? 'image' : 'video';
+      editForm.value.mediaType = 'image';
     };
     reader.readAsDataURL(file);
+  }
+}
+
+function validateStep(stepIndex) {
+  stepErrors.value = {};
+  const stepFields = steps.value[stepIndex].fields;
+
+  // Validaciones específicas por campo
+  if (stepFields.includes('displayName')) {
+    if (!editForm.value.displayName || editForm.value.displayName.trim() === '') {
+      stepErrors.value.displayName = 'El nombre de usuario no puede estar vacío';
+    }
+  }
+
+  if (stepFields.includes('firstName')) {
+    if (editForm.value.firstName && editForm.value.firstName.trim() === '') {
+      stepErrors.value.firstName = 'El nombre no puede estar vacío';
+    }
+  }
+
+  if (stepFields.includes('lastName')) {
+    if (editForm.value.lastName && editForm.value.lastName.trim() === '') {
+      stepErrors.value.lastName = 'El apellido no puede estar vacío';
+    }
+  }
+
+  if (stepFields.includes('phoneNumber')) {
+    if (!editForm.value.phoneNumber || editForm.value.phoneNumber.trim() === '') {
+      stepErrors.value.phoneNumber = 'El número de teléfono es obligatorio';
+    } else {
+      const cleanedPhone = editForm.value.phoneNumber.replace(/\D/g, '');
+      if (cleanedPhone.startsWith('549') && cleanedPhone.length === 13) {
+        // Formato móvil: +54 9 ## ####-####
+      } else if (cleanedPhone.startsWith('54') && cleanedPhone.length === 12) {
+        // Formato fijo: +54 ## ####-####
+      } else {
+        stepErrors.value.phoneNumber = 'El número debe seguir el formato +54 9 XX XXXX-XXXX (móvil, 13 dígitos) o +54 XX XXXX-XXXX (fijo, 12 dígitos)';
+      }
+    }
+  }
+
+  if (stepFields.includes('birthday')) {
+    if (!editForm.value.birthday) {
+      stepErrors.value.birthday = 'La fecha de nacimiento es obligatoria';
+    } else if (new Date(editForm.value.birthday) > new Date()) {
+      stepErrors.value.birthday = 'La fecha de nacimiento no puede ser futura';
+    }
+  }
+
+  if (stepFields.includes('genre')) {
+    if (!editForm.value.genre || editForm.value.genre.trim() === '') {
+      stepErrors.value.genre = 'El género es obligatorio';
+    }
+  }
+
+  if (stepFields.includes('country')) {
+    if (!editForm.value.country || editForm.value.country.trim() === '') {
+      stepErrors.value.country = 'El país es obligatorio';
+    }
+  }
+
+  // Actualizar errores globales
+  errors.value = { ...errors.value, ...stepErrors.value };
+  return Object.keys(stepErrors.value).length === 0;
+}
+
+function nextStep() {
+  if (validateStep(currentStep.value)) {
+    currentStep.value++;
+    errors.value = { ...stepErrors.value };
+  }
+}
+
+function prevStep() {
+  if (currentStep.value > 0) {
+    currentStep.value--;
+    stepErrors.value = {};
+    errors.value = { ...stepErrors.value };
   }
 }
 
@@ -243,9 +412,11 @@ async function saveProfile() {
   isLoading.value = true;
   errors.value = {};
 
+  // Validar todos los campos antes de guardar
   const validationErrors = validateForm();
   if (Object.keys(validationErrors).length > 0) {
     errors.value = validationErrors;
+    stepErrors.value = validationErrors;
     isLoading.value = false;
     return;
   }
@@ -277,7 +448,6 @@ async function saveProfile() {
 
     await updateUser(profileToUpdate.uid, profileToUpdate);
     props.updateRefData(profileToUpdate);
-    console.log('Perfil actualizado:', profileToUpdate);
     props.closeEditModal();
   } catch (err) {
     console.error('Error al guardar el perfil:', err);
@@ -289,50 +459,42 @@ async function saveProfile() {
 function validateForm() {
   const validationErrors = {};
 
-  // Check displayName (required)
+  // Validaciones completas
   if (!editForm.value.displayName || editForm.value.displayName.trim() === '') {
     validationErrors.displayName = 'El nombre de usuario no puede estar vacío';
   }
 
-  // Check firstName (optional, but if provided, must not be empty)
   if (editForm.value.firstName && editForm.value.firstName.trim() === '') {
     validationErrors.firstName = 'El nombre no puede estar vacío';
   }
 
-  // Check lastName (optional, but if provided, must not be empty)
   if (editForm.value.lastName && editForm.value.lastName.trim() === '') {
     validationErrors.lastName = 'El apellido no puede estar vacío';
   }
 
-  // Check phoneNumber (required, with Argentine format validation)
   if (!editForm.value.phoneNumber || editForm.value.phoneNumber.trim() === '') {
     validationErrors.phoneNumber = 'El número de teléfono es obligatorio';
   } else {
     const cleanedPhone = editForm.value.phoneNumber.replace(/\D/g, '');
     if (cleanedPhone.startsWith('549') && cleanedPhone.length === 13) {
       // Formato móvil: +54 9 ## ####-####
-      // Válido, no hacemos nada
     } else if (cleanedPhone.startsWith('54') && cleanedPhone.length === 12) {
       // Formato fijo: +54 ## ####-####
-      // Válido, no hacemos nada
     } else {
       validationErrors.phoneNumber = 'El número debe seguir el formato +54 9 XX XXXX-XXXX (móvil, 13 dígitos) o +54 XX XXXX-XXXX (fijo, 12 dígitos)';
     }
   }
 
-  // Check birthday (required)
   if (!editForm.value.birthday) {
     validationErrors.birthday = 'La fecha de nacimiento es obligatoria';
   } else if (new Date(editForm.value.birthday) > new Date()) {
     validationErrors.birthday = 'La fecha de nacimiento no puede ser futura';
   }
 
-  // Check genre (required)
   if (!editForm.value.genre || editForm.value.genre.trim() === '') {
     validationErrors.genre = 'El género es obligatorio';
   }
 
-  // Check country (required)
   if (!editForm.value.country || editForm.value.country.trim() === '') {
     validationErrors.country = 'El país es obligatorio';
   }
@@ -340,3 +502,66 @@ function validateForm() {
   return validationErrors;
 }
 </script>
+
+<style scoped>
+/* Animación para cambio de pasos */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación para los pasos del stepper */
+.animate-pulse-step {
+  animation: pulseStep 0.5s ease-in-out;
+}
+
+@keyframes pulseStep {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+/* Estilo para inputs y selects */
+input, select {
+  transition: all 0.2s ease;
+}
+
+/* Eliminar efecto hover en selects */
+select:hover {
+  background: transparent !important;
+}
+
+/* Estilo responsivo */
+@media (max-width: 640px) {
+  .p-4 {
+    padding: 0.75rem;
+  }
+  .w-8 {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.65rem;
+  }
+  .w-6 {
+    width: 1rem;
+  }
+}
+</style>

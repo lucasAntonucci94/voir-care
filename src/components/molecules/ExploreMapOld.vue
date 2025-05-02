@@ -174,8 +174,9 @@ function getMarkerIcon(type) {
     petshop: Guarderiacon1,
     servicio: CatIcon,
     guarderia: Guarderiacon2,
+    paseador: PaseadorIcon2,
+    entrenador: TrainerIcon1,
   };
-  
   return {
     url: iconMap[type] || CatIcon,
     scaledSize: new google.maps.Size(40, 40),
