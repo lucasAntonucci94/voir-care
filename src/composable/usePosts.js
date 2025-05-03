@@ -14,6 +14,7 @@ export function usePosts() {
    * @returns {Promise<void>}
    */
   async function savePost({ title, body, categories, media, user }) {
+    debugger
     try {
       user.isAdmin = false;
       const data = {
@@ -23,17 +24,20 @@ export function usePosts() {
         body,
         categories: categories || [],
         created_at: serverTimestamp(),
-        media: media || null,
+        media: null,
         likes: [],
         connections: [],
       };
 
-      if (data.media && data.media?.imageBase64) {
-        const extension = data.media.type === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
+      if (media && media?.imageBase64) {
+        const extension = media.type === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
         const filePath = `post/${data.user.email}/${data.id}.${extension}`;
-        await uploadFile(filePath, data.media.imageBase64);
-        data.media.path = filePath;
-        data.media.url = await getFileUrl(filePath);
+        await uploadFile(filePath, media.imageBase64);
+        data.media ={
+          path: filePath,
+          url: await getFileUrl(filePath),
+          type: media.type,
+        }
       }
 
       await addDoc(postRef, data);

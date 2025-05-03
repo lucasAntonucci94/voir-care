@@ -82,28 +82,16 @@
       <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" />
     </div>
 
-    <!-- Modal de confirmación integrado -->
-    <div v-if="showDeleteModal" class="fixed inset-0 z-101 flex items-center justify-center">
-      <div class="fixed inset-0 bg-black opacity-50"></div>
-      <div class="relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-4">Confirmar eliminación</h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">¿Estás seguro de que deseas eliminar este mensaje?</p>
-        <div class="flex justify-end space-x-4">
-          <button
-            @click="closeDeleteModal"
-            class="px-4 py-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-xl transition-colors duration-200"
-          >
-            Cancelar
-          </button>
-          <button
-            @click="deleteMessage(messageToDelete)"
-            class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-xl hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200"
-          >
-            Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Modal de confirmacion al eliminar un mensaje -->
+    <GenericConfirmModal
+      :visible="showDeleteModal"
+      title="Confirmar eliminación"
+      message="¿Estás seguro de que deseas eliminar este mensaje?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteModal"
+      @confirmed="deleteMessage(messageToDelete)"
+    />
   </div>
   <div v-else class="flex-1 bg-white dark:bg-gray-800 dark:text-gray-300 rounded-xl shadow-xl p-5 text-center text-gray-700 border border-gray-200 dark:border-gray-700">
     Selecciona un chat para ver los mensajes.
@@ -116,6 +104,7 @@ import { usePrivateChats } from '../../composable/usePrivateChats';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import ChatMessageInput from '../atoms/ChatMessageInput.vue';
+import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
 

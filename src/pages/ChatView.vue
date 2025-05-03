@@ -31,28 +31,16 @@
     </transition>
 
     <!-- Modal de confirmación al eliminar un chat -->
-    <div v-if="showDeleteChatModal" class="fixed inset-0 z-101 flex items-center justify-center">
-      <div class="fixed inset-0 bg-black opacity-50"></div>
-      <div class="relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-4">Confirmar eliminación</h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">¿Estás seguro de que deseas eliminar este chat?</p>
-        <div class="flex justify-end space-x-4">
-          <button
-            @click="closeDeleteChatModal"
-            class="px-4 py-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-xl transition-colors duration-200"
-          >
-            Cancelar
-          </button>
-          <button
-            @click="deleteChat(chatToDelete)"
-            class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-xl hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200"
-          >
-            Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
-
+    <GenericConfirmModal
+      :visible="showDeleteChatModal"
+      title="Confirmar eliminación"
+      message="¿Estás seguro de que deseas eliminar este chat?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteChatModal"
+      @confirmed="deleteChat(chatToDelete)"
+    />
+    
     <!-- Columna derecha: Lista de mensajes -->
     <transition name="fade">
       <div
@@ -71,6 +59,7 @@ import { usePrivateChatsStore } from '../stores/privateChats';
 import ChatMessagesList from '../components/organisms/ChatMessagesList.vue';
 import ChatList from '../components/organisms/ChatList.vue';
 import { useSnackbarStore } from '../stores/snackbar';
+import GenericConfirmModal from '../components/molecules/GenericConfirmModal.vue';
 
 const privateChatsStore = usePrivateChatsStore();
 const snackbarStore = useSnackbarStore();
