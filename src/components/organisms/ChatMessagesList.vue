@@ -1,3 +1,4 @@
+```vue
 <template>
   <div v-if="privateChatsStore.selectedChatId" class="flex flex-col h-full p-4">
     <!-- Header del chat -->
@@ -11,13 +12,15 @@
         <i class="fa-solid fa-arrow-left text-lg"></i>
       </button>
       <img
-        :src="userPhotoUrl || AvatarImage"
+        :src="privateChatsStore.getUserPhoto(privateChatsStore.selectedChatId)"
         alt="User avatar"
         class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
       />
       <div class="flex-1">
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">{{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
+            {{ getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)) || 'Usuario desconocido' }}
+          </h2>
         </div>
       </div>
     </div>
@@ -114,9 +117,7 @@ import { usePrivateChatsStore } from '../../stores/privateChats';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import ChatMessageInput from '../atoms/ChatMessageInput.vue';
 import { useAuth } from '../../api/auth/useAuth';
-import AvatarImage from '../../assets/avatar1.jpg';
 import { useSnackbarStore } from '../../stores/snackbar';
-import { useStorage } from '../../composable/useStorage'
 
 // Estado reactivo
 const { user } = useAuth();
@@ -129,10 +130,10 @@ const messageToDelete = ref(null);
 const messagesContainer = ref(null);
 const isDesktop = ref(false);
 const snackbarStore = useSnackbarStore();
-const userPhotoUrl = ref(null);
+
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
-  isDesktop.value = window.innerWidth >= 768; // 768px es el breakpoint para md en Tailwind
+  isDesktop.value = window.innerWidth >= 768;
 };
 
 onMounted(() => {
@@ -143,40 +144,6 @@ onMounted(() => {
   if (privateChatsStore?.selectedChatId) {
     usePrivateChats().markMessagesAsRead(privateChatsStore?.selectedChatId, user.value.email);
   }
-  watch(
-    () => privateChatsStore?.selectedChatId,
-    (newChatId) => {
-      if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
-        unsubscribeMessages.value();
-        unsubscribeMessages.value = null;
-      }
-      if (newChatId) {
-        loadingMessages.value = true;
-        const otherUser = getOtherUserEmail();
-        if (!user?.value || !otherUser) return;
-        unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
-          user.value.email,
-          otherUser,
-          (msgs) => {
-            console.log('Mensajes recibidos:', msgs);
-            messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
-            loadingMessages.value = false;
-            scrollToBottom();
-          }
-        );
-        usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
-        setChatUserPhoto()
-      } else {
-        messages.value = [];
-      }
-    },
-    { immediate: true }
-  );
-
-  // Auto-scroll al final de los mensajes
-  watch(messages, () => {
-    scrollToBottom();
-  });
 });
 
 onUnmounted(() => {
@@ -189,51 +156,61 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkIfDesktop);
 });
 
+// Cargar mensajes y precargar foto cuando cambia el chat seleccionado
+watch(
+  () => privateChatsStore?.selectedChatId,
+  async (newChatId) => {
+    if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
+      unsubscribeMessages.value();
+      unsubscribeMessages.value = null;
+    }
+    if (newChatId) {
+      loadingMessages.value = true;
+      const otherUserEmail = privateChatsStore.getOtherUserEmail(newChatId);
+      if (!user?.value || !otherUserEmail) {
+        loadingMessages.value = false;
+        return;
+      }
+      // Precargar la foto del usuario
+      await privateChatsStore.fetchUserPhoto(otherUserEmail);
+      unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
+        user.value.email,
+        otherUserEmail,
+        (msgs) => {
+          console.log('Mensajes recibidos:', msgs);
+          messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
+          loadingMessages.value = false;
+          scrollToBottom();
+        }
+      );
+      usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
+    } else {
+      messages.value = [];
+      loadingMessages.value = false;
+    }
+  },
+  { immediate: true }
+);
+
+// Auto-scroll al final de los mensajes
+watch(messages, () => {
+  scrollToBottom();
+});
+
+// Métodos
 const deleteMessage = async (messageId) => {
   console.log('Confirmando eliminación de mensaje ID:', messageId);
   privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
   closeDeleteModal();
-  snackbarStore.show('Mensaje eliminado', 'success')
+  snackbarStore.show('Mensaje eliminado', 'success');
 };
 
-// Métodos
 const formatDate = (timestamp) => {
   return formatTimestamp(timestamp);
 };
 
 const getUserName = (email) => {
-  return email?.split('@')[0].replace('.', ' ');
-};
-
-const getOtherUserEmail = () => {
-  const chatId = privateChatsStore?.selectedChatId;
-  const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === chatId);
-
-  return selectedChat
-    ? selectedChat.users.find(email => email !== user?.value.email)
-    : privateChatsStore?.to || null;
-};
-
-const setChatUserPhoto = async () => {
-  try {
-    const { getFileUrl } = useStorage();
-    const selectedEmail = getOtherUserEmail();
-
-    // Si no hay email válido, asignar imagen por defecto
-    if (!selectedEmail) {
-      userPhotoUrl.value = AvatarImage;
-      return;
-    }
-
-    // Obtener la URL del archivo desde Firebase Storage
-    const fileUrl = await getFileUrl(`/profile/${selectedEmail}.jpg`);
-
-    // Asignar la URL o la imagen por defecto si fileUrl no es válido
-    userPhotoUrl.value = fileUrl && typeof fileUrl === 'string' && fileUrl.trim() ? fileUrl : AvatarImage;
-  } catch (error) {
-    console.error('Error fetching user photo:', error);
-    userPhotoUrl.value = AvatarImage; // Imagen por defecto en caso de error
-  }
+  return email?.split('@')[0].replace('.', ' ') || '';
 };
 
 const openDeleteModal = (messageId) => {

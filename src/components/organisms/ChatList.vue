@@ -59,7 +59,7 @@
         @click="selectChat(chat.idDoc)"
       >
         <img
-          :src="getChatUserPhoto(chat.idDoc) || AvatarImage"
+          :src="getChatUserPhoto(chat.idDoc)"
           alt="User avatar"
           class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
         />
@@ -86,19 +86,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats';
-import { useStorage } from '../../composable/useStorage';
 import { useSnackbarStore } from '../../stores/snackbar';
-import AvatarImage from '../../assets/avatar1.jpg';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 
 const privateChatsStore = usePrivateChatsStore();
-const { getFileUrl } = useStorage();
 const snackbarStore = useSnackbarStore();
 const searchQuery = ref('');
 const showActionsMenu = ref(false);
-const photoCache = ref(new Map());
 
 // Emite eventos para el componente padre
 const emit = defineEmits(['selectChat', 'openDeleteChatModal']);
@@ -124,40 +120,14 @@ const createNewChat = () => {
 
 const deleteAllChats = () => {
   console.log('Eliminar todos los chats');
-  privateChatsStore.deleteAllChats?.();
+  privateChatsStore.deleteAllChats();
   showActionsMenu.value = false;
   snackbarStore.show('Chats eliminados', 'success');
 };
 
 // Obtener la foto de perfil para un chat
 const getChatUserPhoto = (chatId) => {
-  if (photoCache.value.has(chatId)) {
-    return photoCache.value.get(chatId);
-  }
-  return AvatarImage;
-};
-
-// Cargar fotos para todos los chats visibles
-const loadChatPhotos = async () => {
-  if (!privateChatsStore.chats?.value) return;
-
-  for (const chat of privateChatsStore.chats.value) {
-    if (!photoCache.value.has(chat.idDoc)) {
-      const email = privateChatsStore.getOtherUserEmail(chat.idDoc);
-      if (email) {
-        try {
-          const fileUrl = await getFileUrl(`/profile/${email}.jpg`);
-          const photoUrl = fileUrl && typeof fileUrl === 'string' && fileUrl.trim() ? fileUrl : AvatarImage;
-          photoCache.value.set(chat.idDoc, photoUrl);
-        } catch (error) {
-          console.error(`Error fetching photo for chat ${chat.idDoc}:`, error);
-          photoCache.value.set(chat.idDoc, AvatarImage);
-        }
-      } else {
-        photoCache.value.set(chat.idDoc, AvatarImage);
-      }
-    }
-  }
+  return privateChatsStore.getUserPhoto(chatId);
 };
 
 // Obtener el nombre del otro usuario
@@ -179,18 +149,10 @@ const filteredChats = computed(() => {
   });
 });
 
-// Cargar fotos iniciales y reaccionar a cambios en los chats
+// Cargar fotos iniciales
 onMounted(() => {
-  loadChatPhotos();
+  privateChatsStore.loadChatPhotos();
 });
-
-watch(
-  () => privateChatsStore.chats.value,
-  () => {
-    loadChatPhotos();
-  },
-  { deep: true }
-);
 </script>
 
 <style scoped>
