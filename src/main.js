@@ -22,4 +22,4 @@ app.use(router);
 app.directive('mask', mask);
 app.mount('#app');
 
-app.provide('firebaseApp', firebaseApp); // Registro instancia de firebase deforma global.
+app.provide('firebaseApp', firebaseApp); // Registro instancia de firebase de forma global.
