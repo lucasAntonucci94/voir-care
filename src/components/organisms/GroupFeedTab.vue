@@ -57,14 +57,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useGroupsStore } from '../../stores/groups'
 import PostCard from '../organisms/PostCard.vue'
 import AvatarDefault from '../../assets/avatar1.jpg'
+import { useAuth } from '../../api/auth/useAuth'
 
 const groupsStore = useGroupsStore()
 const posts = computed(() => groupsStore.userGroupFeed.value || [])
 const sortOption = ref('newest')
+const { user } = useAuth()
 
 // Computed property to sort posts
 const sortedPosts = computed(() => {
@@ -81,10 +83,22 @@ const sortedPosts = computed(() => {
   return postsArray
 })
 
-// Optional: Function to handle sorting (if additional logic is needed)
+// Function to handle sorting
 function sortPosts() {
-  // Add any additional logic here, e.g., fetching new data from Firebase
 }
+
+
+// Suscripción a eventos del usuario
+onMounted(() => {
+  if (user.value) {
+    groupsStore.subscribeUserGroupFeed(user.value.uid)
+  }
+})
+
+// Desuscripción al desmontar el componente
+onUnmounted(() => {
+  groupsStore.unsubscribeUserGroupFeed()
+})
 </script>
 
 <style scoped>

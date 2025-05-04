@@ -14,7 +14,6 @@ export function usePosts() {
    * @returns {Promise<void>}
    */
   async function savePost({ title, body, categories, media, user }) {
-    debugger
     try {
       user.isAdmin = false;
       const data = {

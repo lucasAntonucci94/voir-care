@@ -84,17 +84,6 @@
   <!-- Events and Groups -->
   <CarouselAwareness title="Eventos y Grupos" :events="awarenessEvents" :auto-scroll="true" />
 
-  <!-- Footer -->
-  <footer class="bg-[#2C3E50] text-white py-8 font-poppins">
-    <div class="container mx-auto px-4 text-center">
-      <nav class="flex justify-center gap-4 mb-4">
-        <a href="#" class="text-white hover:text-[#F4A261]" aria-label="Visita nuestra página de Facebook">Facebook</a>
-        <a href="#" class="text-white hover:text-[#F4A261]" aria-label="Visita nuestro perfil de X">X</a>
-        <a href="#" class="text-white hover:text-[#F4A261]" aria-label="Visita nuestra cuenta de Instagram">Instagram</a>
-      </nav>
-      <p class="text-sm text-gray-400">© 2025 Voir. Juntos por el bienestar animal.</p>
-    </div>
-  </footer>
 </template>
 
 <script setup>

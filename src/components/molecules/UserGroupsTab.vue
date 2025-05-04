@@ -6,7 +6,7 @@
       </div>
       <!-- Filtro -->
       <GroupFilters
-        v-if="groupsStore.userGroups?.value.length > 0"
+        v-if="groupsStore.userGroups?.value?.length > 0"
         v-model="searchQuery"
         v-model:selectedCategory="selectedCategory"
         :categories="categories"
@@ -14,7 +14,7 @@
         :showSelect="true"
       />
       <!-- Lista de grupos -->
-      <div v-if="filteredGroups.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-if="filteredGroups?.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <GroupCard
           v-for="group in filteredGroups"
           :key="group.idDoc"
@@ -45,13 +45,14 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted, onUnmounted } from 'vue';
   import { useGroupsStore } from '../../stores/groups';
   import GroupCard from '../organisms/GroupCard.vue';
   import GroupFilters from '../molecules/GroupFilters.vue';
-  
+  import { useAuth } from '../../api/auth/useAuth';
+
   const groupsStore = useGroupsStore();
-  
+  const { user } = useAuth();
   const searchQuery = ref('');
   const selectedCategory = ref('');
   const categories = [
@@ -78,6 +79,19 @@
   
   const navigateToCreateGroup = () => emit('open-create-modal');
   const navigateToDiscoverGroup = () => emit('open-discover-tab');
+
+  
+  // Suscripción a eventos del usuario
+  onMounted(() => {
+    if (user.value) {
+      groupsStore.subscribeUserGroups(user.value.uid)
+    }
+  })
+
+  // Desuscripción al desmontar el componente
+  onUnmounted(() => {
+    groupsStore.unsubscribeFromUserGroups()
+  })
   </script>
 
   <style scoped>

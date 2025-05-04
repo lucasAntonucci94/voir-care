@@ -35,7 +35,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useGroupsStore } from '../../stores/groups'
 import { useAuth } from '../../api/auth/useAuth'
 import GroupCard from '../organisms/GroupCard.vue'
@@ -68,4 +68,16 @@ const discoveredGroups = computed(() => {
 const navigateToCreateGroup = () => {
   console.log("Crear grupo")
 }
+
+  // Suscripción a eventos del usuario
+  onMounted(() => {
+    if (user.value) {
+      groupsStore.subscribeAllGroups()
+    }
+  })
+
+  // Desuscripción al desmontar el componente
+  onUnmounted(() => {
+    groupsStore.unsubscribeAllGroups()
+  })
 </script>

@@ -177,15 +177,18 @@ export function useGroups() {
         photoURLFile: user.value?.photoURLFile,
         photoPath: user.value?.photoPathFile
       }
-      
-      if (postData.media.imageBase64) {
+      debugger
+      if (postData.media && postData.media.imageBase64) {
         const extension = postData.media.type === 'image' ? 'jpg' : 'mp4';
         const filePath = `groups/${idGroup}/posts/${user.value.email}/${postData.id}.${extension}`;
         await uploadFile(filePath, postData.media.imageBase64);
-        postData.media.path = filePath;
-        postData.media.url = await getFileUrl(filePath);
+        postData.media = {
+          path: filePath,
+          url: await getFileUrl(filePath),
+          type: postData.media.type,
+        } 
       }
-
+     
       const postsRef = collection(db, 'groups', idGroup, 'posts')
       await addDoc(postsRef, {
         ...postData,

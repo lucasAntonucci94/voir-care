@@ -87,8 +87,8 @@ export const usePostsStore = defineStore('posts', {
     },
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
-      const post = this.posts.value.find(p => p.idDoc === postIdDoc) || 
-                   this.profilePosts.value.find(p => p.idDoc === postIdDoc);
+      const post = this.posts?.value?.find(p => p.idDoc === postIdDoc) || 
+                   this.profilePosts?.value?.find(p => p.idDoc === postIdDoc);
       if (!post) return;
 
       const userLiked = post.likes.some(like => like.userId === userData.id);

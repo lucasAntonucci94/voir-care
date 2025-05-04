@@ -149,6 +149,7 @@ import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateStoryModal from '../organisms/CreateStoryModal.vue';
 import BannerDefault from '../../assets/darkwallpaper.jpg'
+import { useSnackbarStore } from '../../stores/snackbar'
 
 // Props
 const props = defineProps({
@@ -168,6 +169,7 @@ const { getChatIdByReference } = usePrivateChats();
 const { updateUserBanner } = useUsers();
 const privateChatsStore = usePrivateChatsStore();
 const { getUser, addConnection, removeConnection } = useUsers();
+const snackbarStore = useSnackbarStore()
 
 // Estados
 const isAddingConnection = ref(false);
@@ -231,9 +233,10 @@ async function saveBanner() {
 
     props.activeUser.bannerUrlFile = url;
     closeBannerModal();
+    snackbarStore.show("Banner actualizado exitosamente.","success")
   } catch (err) {
     console.error('Error al actualizar el banner:', err);
-    alert('Hubo un error al subir el banner. Intenta de nuevo.');
+    snackbarStore.show("Ocurrió un error al subir el banner. Intentalo nuevamente.","error")
   } finally {
     uploading.value = false;
   }

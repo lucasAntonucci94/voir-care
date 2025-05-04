@@ -129,10 +129,12 @@ import { ref, watch } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { usePostsStore } from '../../stores/posts';
 import { useCategories } from '../../composable/useCategories';
+import { useSnackbarStore } from '../../stores/snackbar'
 
 const { categories } = useCategories();
 const { user } = useAuth();
 const postsStore = usePostsStore();
+const snackbarStore = useSnackbarStore()
 const showModal = ref(false);
 const isLoading = ref(false);
 const errorFileMessage = ref('');
@@ -237,8 +239,9 @@ async function createPost() {
       categories: [],
     };
     showModal.value = false;
+    snackbarStore.show("Publicación creada exitosamente.","success")
   } catch (error) {
-    console.error('Error al crear el post:', error);
+    snackbarStore.show(`Error al crear la publicación.Error: ${error}`,"error")
   } finally {
     isLoading.value = false;
   }

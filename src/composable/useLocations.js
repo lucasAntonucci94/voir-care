@@ -175,25 +175,25 @@ async function updateLocation(idDoc, locationData) {
  * y mapea cada doc a la estructura que espera tu UI/store.
  */
 async function subscribeToIncomingLocations(callback) {
-  const q = query(locationsRef, orderBy('timestamp', 'desc'))
-  return onSnapshot(q, snapshot => {
-    const arr = snapshot.docs.map(d => {
+  const query = query(locationsRef, orderBy('timestamp', 'desc'))
+  return onSnapshot(query, snapshot => {
+    const locations = snapshot.docs.map(d => {
       const L = d.data()
       return {
         idDoc: d.id,
         id: L.id,
         title: L.title,
         description: L.description,
-        address: L.address,             // { street, coordinates:{lat,lng} }
+        address: L.address, // { street, coordinates:{lat,lng} }
         type: L.type,
-        contact: L.contact,             // { phone, socialNetworkLink }
-        media: L.media,                 // { url, path, type }
+        contact: L.contact, // { phone, socialNetworkLink }
+        media: L.media, // { url, path, type }
         timestamp: L.timestamp,
         pending: L.pending,
         user: L.user,
       }
     })
-    callback(arr)
+    callback(locations)
   }, err => {
     console.error('Error en onSnapshot locations:', err)
     throw err

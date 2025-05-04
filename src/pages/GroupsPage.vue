@@ -15,27 +15,33 @@
           </div>
         </div>
       </div>
-      <!-- Tabs específicos para eventos -->
-      <div class="container mx-auto px-4 md:px-8 lg:px-16">
-          <div class="mt-4 flex gap-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
+        <!-- Tabs específicos para eventos -->
+        <div class="container mx-auto px-4 md:px-8 lg:px-16">
+          <div class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide whitespace-nowrap">
             <button
               v-for="tab in tabs"
               :key="tab.id"
               @click="activeTab = tab.id"
-              :class="[ 
-                'px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200',
+              :class="[
+                'relative px-4 py-3 text-sm font-medium transition-all duration-300',
                 activeTab === tab.id
-                  ? 'bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
               ]"
+              :aria-selected="activeTab === tab.id"
+              role="tab"
             >
               {{ tab.label }}
+              <!-- Línea indicadora para la pestaña activa -->
+              <span
+                v-if="activeTab === tab.id"
+                class="absolute inset-x-0 bottom-0 h-0.5 bg-primary dark:bg-secondary"
+              ></span>
             </button>
           </div>
         </div>
-
       <!-- Contenido de tab -->
-      <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
+      <div class="container mx-auto px-4 md:px-8 lg:px-16">
         <!-- Tab: GroupsFeed -->
         <GroupFeedTab v-if="activeTab === 'feed'" />
         <!-- Tab: Descubrir -->
@@ -56,17 +62,11 @@
 </template>
 
 <script setup>
-import { ref, watch, onUnmounted } from 'vue'
-import { useAuth } from '../api/auth/useAuth'
-import { useGroupsStore } from '../stores/groups'
+import { ref } from 'vue'
 import CreateGroupModal from '../components/organisms/CreateGroupModal.vue'
 import UserGroupsTab from '../components/molecules/UserGroupsTab.vue'
 import DiscoverGroupsTab from '../components/molecules/DiscoverGroupsTab.vue'
 import GroupFeedTab from '../components/organisms/GroupFeedTab.vue'
-
-// Estados y variables principales
-const { user } = useAuth()
-const groupsStore = useGroupsStore()
 
 // Control de tabs
 const tabs = [
@@ -100,33 +100,26 @@ const handleGroupCreated = (groupData) => {
   console.log('Grupo creado:', groupData)
 }
 
-// Suscripciones según el tab seleccionado
-watch(
-  activeTab,
-  (newTab, oldTab) => {
-    // Cancelar todas las suscripciones primero
-    groupsStore.unsubscribeUserGroupFeed()
-    groupsStore.unsubscribeAllGroups()
-    groupsStore.unsubscribeFromUserGroups()
+// // Suscripciones según el tab seleccionado
+// watch(
+//   activeTab,
+//   (newTab, oldTab) => {
+//     // Cancelar todas las suscripciones primero
+//     groupsStore.unsubscribeUserGroupFeed()
+//     groupsStore.unsubscribeAllGroups()
+//     groupsStore.unsubscribeFromUserGroups()
 
-    if (!user.value?.uid) return
+//     if (!user.value?.uid) return
 
-    // Activar la suscripción según el tab
-    if (newTab === 'feed') {
-      groupsStore.subscribeUserGroupFeed(user.value.uid)
-    } else if (newTab === 'discover') {
-      groupsStore.subscribeAllGroups()
-    } else if (newTab === 'yourGroups') {
-      groupsStore.subscribeUserGroups(user.value.uid)
-    }
-  },
-  { immediate: true }
-)
-
-// Cancelar todas las suscripciones al desmontar
-onUnmounted(() => {
-  groupsStore.unsubscribeUserGroupFeed()
-  groupsStore.unsubscribeAllGroups()
-  groupsStore.unsubscribeFromUserGroups()
-})
+//     // Activar la suscripción según el tab
+//     if (newTab === 'feed') {
+//       groupsStore.subscribeUserGroupFeed(user.value.uid)
+//     } else if (newTab === 'discover') {
+//       groupsStore.subscribeAllGroups()
+//     } else if (newTab === 'yourGroups') {
+//       groupsStore.subscribeUserGroups(user.value.uid)
+//     }
+//   },
+//   { immediate: true }
+// )
 </script>

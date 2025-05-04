@@ -1,4 +1,3 @@
-```vue
 <template>
   <div v-if="privateChatsStore.selectedChatId" class="flex flex-col h-full p-4">
     <!-- Header del chat -->

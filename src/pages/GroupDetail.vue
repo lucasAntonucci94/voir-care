@@ -236,9 +236,9 @@
         <GroupMembersTab v-if="activeTab === 'members'" :members="membersDetails" />
 
         <!-- Pestaña "Eventos" -->
-        <div v-else-if="activeTab === 'events'" class="text-sm text-gray-600 dark:text-gray-300">
+        <!-- <div v-else-if="activeTab === 'events'" class="text-sm text-gray-600 dark:text-gray-300">
           <p>Eventos organizados por este grupo (próximamente).</p>
-        </div>
+        </div> -->
 
         <!-- Pestaña "Multimedia" -->
         <div v-else-if="activeTab === 'multimedia'" class="text-sm text-gray-600 dark:text-gray-300">
@@ -279,8 +279,8 @@ const tabs = [
   { id: 'conversation', label: 'Conversación' },
   { id: 'highlights', label: 'Destacados' },
   { id: 'members', label: 'Miembros' },
-  { id: 'events', label: 'Eventos' },
-  { id: 'multimedia', label: 'Multimedia' },
+  // { id: 'events', label: 'Eventos' },
+  { id: 'multimedia', label: 'Galería' },
 ]
 const activeTab = ref('info')
 

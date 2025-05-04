@@ -1,4 +1,4 @@
-import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, query, orderBy, serverTimestamp, arrayUnion, arrayRemove, updateDoc } from 'firebase/firestore';
+import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, query, orderBy, serverTimestamp, arrayUnion, arrayRemove, updateDoc, increment, getDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { newGuid } from '../utils/newGuid';
 
@@ -14,17 +14,13 @@ export function useReels() {
    */
   async function saveReel({ user, title, file, mediaType, thumbnail }) {
     try {
-      // Determinar tipo de archivo y extensión
       const extension = mediaType === 'image' ? 'jpg' : 'mp4';
       const filePath = `reels/${user.uid}/${newGuid()}.${extension}`;
       const thumbnailPath = `reels/${user.uid}/${newGuid()}_thumb.jpg`;
-      // Subir archivo principal a Storage
       await uploadFile(filePath, file);
       const mediaUrl = await getFileUrl(filePath);
-      // Subir thumbnail a Storage
       await uploadFile(thumbnailPath, thumbnail);
       const thumbnailUrl = await getFileUrl(thumbnailPath);
-      // Datos del reel
       const reelData = {
         id: newGuid(),
         user: {
@@ -41,10 +37,10 @@ export function useReels() {
         createdAt: serverTimestamp(),
         likes: [],
         views: 0,
+        viewDetails: {}, // Inicializar viewDetails como objeto vacío
         isPublic: true,
         status: 'active',
       };
-      // Guardar en Firestore
       await addDoc(reelsRef, reelData);
     } catch (err) {
       console.error('Error al guardar el reel:', err);
@@ -75,6 +71,7 @@ export function useReels() {
             user: reel.user,
             likes: reel.likes || [],
             views: reel.views || 0,
+            viewDetails: reel.viewDetails || {},
             isPublic: reel.isPublic,
             status: reel.status,
           };
@@ -96,7 +93,6 @@ export function useReels() {
     try {
       const docRef = doc(db, 'reels', idDoc);
       await deleteDoc(docRef);
-      // Nota: Podrías eliminar el archivo de Storage aquí si es necesario
     } catch (err) {
       console.error('Error al eliminar reel:', err);
       throw err;
@@ -147,11 +143,69 @@ export function useReels() {
     }
   }
 
+  /**
+   * Incrementa el contador de visualizaciones de un reel si el usuario no lo ha visto antes.
+   * @param {string} reelIdDoc - ID del documento
+   * @param {Object} userData - Datos del usuario (uid, email)
+   * @returns {Promise<Object>} - Reel actualizado
+   */
+  async function incrementView(reelIdDoc, userData) {
+    try {
+      const docRef = doc(db, 'reels', reelIdDoc);
+      const reelSnap = await getDoc(docRef);
+      if (!reelSnap.exists()) {
+        throw new Error('Reel no encontrado');
+      }
+
+      const reelData = reelSnap.data();
+      const viewDetails = reelData.viewDetails || {};
+
+      // Solo incrementar si el usuario no ha visto el reel
+      if (!viewDetails[userData.uid]) {
+        await updateDoc(docRef, {
+          views: increment(1),
+          [`viewDetails.${userData.uid}`]: {
+            email: userData.email,
+            timestamp: serverTimestamp(),
+          },
+        });
+      }
+
+      // Devolver el reel actualizado
+      return {
+        idDoc: reelIdDoc,
+        id: reelData.id,
+        title: reelData.title,
+        mediaUrl: reelData.mediaUrl,
+        thumbnailUrl: reelData.thumbnailUrl,
+        mediaType: reelData.mediaType,
+        mediaPath: reelData.mediaPath,
+        createdAt: reelData.createdAt,
+        user: reelData.user,
+        likes: reelData.likes || [],
+        views: (reelData.views || 0) + (viewDetails[userData.uid] ? 0 : 1),
+        viewDetails: {
+          ...viewDetails,
+          [userData.uid]: {
+            email: userData.email,
+            timestamp: new Date(), // Aproximación, ya que serverTimestamp no está resuelto aún
+          },
+        },
+        isPublic: reelData.isPublic,
+        status: reelData.status,
+      };
+    } catch (err) {
+      console.error('Error incrementando visualización:', err);
+      throw err;
+    }
+  }
+
   return {
     saveReel,
     subscribeToIncomingReels,
     deleteReel,
     addLike,
     removeLike,
+    incrementView,
   };
 }

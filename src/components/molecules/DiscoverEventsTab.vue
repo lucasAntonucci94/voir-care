@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useEventsStore } from '../../stores/events'
 import EventCard from '../organisms/EventCard.vue'
 import { useAuth } from '../../api/auth/useAuth'
@@ -45,6 +45,7 @@ const categories = [
   { id: 'beneficencia', name: 'Solidarios' },
   { id: 'otros', name: 'Otros' }
 ]
+
 // Computados
 const filteredEvents = computed(() => {
   return eventsStore.allEvents?.value
@@ -53,4 +54,13 @@ const filteredEvents = computed(() => {
     ?.filter(event => !selectedCategory.value || event.categories?.some(c => c.id === selectedCategory.value)) //filtro por categorias
     ?? [] //vacio si no hay eventos
 })
+
+onMounted(() => {
+  eventsStore.subscribeAllEvents()
+})
+
+onUnmounted(() => {
+  eventsStore.unsubscribeAllEvents()
+})
+
 </script>

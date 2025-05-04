@@ -79,5 +79,23 @@ export const useReelsStore = defineStore('reels', {
         throw err;
       }
     },    
+    // Incrementar visualizaciones de un reel
+    async incrementView(reelIdDoc, userData) {
+      try {
+        const { incrementView } = useReels();
+        const updatedReel = await incrementView(reelIdDoc, userData);
+
+        // Actualizar el reel en el estado local
+        const index = this.reels.findIndex((r) => r.idDoc === reelIdDoc);
+        if (index !== -1) {
+          this.reels[index] = { ...updatedReel };
+        }
+
+        return { ...updatedReel };
+      } catch (err) {
+        console.error('Error al incrementar visualización:', err);
+        throw err;
+      }
+    },
   },
 });

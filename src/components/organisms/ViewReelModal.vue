@@ -24,34 +24,34 @@
             class="max-w-full max-h-full object-contain rounded-2xl shadow-xl border border-gray-800/50"
           ></video>
         </div>
-        <!-- Navegación: flechas con diseño más elegante -->
+        <!-- Navegación: flechas con diseño elegante -->
         <button
-      v-if="hasPreviousReel"
-      @click.stop="previousReel"
-      class="absolute left-6 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-gray-900/90 text-gray-200 hover:bg-indigo-600/90 hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300 shadow-lg"
-      aria-label="Reel anterior"
-    >
-      <i class="fa-solid fa-chevron-left text-lg"></i>
-    </button>
-    <button
-      v-if="hasNextReel"
-      @click.stop="nextReel"
-      class="absolute right-6 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-gray-900/90 text-gray-200 hover:bg-indigo-600/90 hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-300 shadow-lg"
-      aria-label="Siguiente reel"
-    >
-      <i class="fa-solid fa-chevron-right text-lg"></i>
-    </button>
+          v-if="hasPreviousReel"
+          @click.stop="previousReel"
+          class="absolute left-6 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-gray-500/80 dark:bg-gray-800/80 text-gray-100 dark:text-gray-200 hover:bg-primary/80 dark:hover:bg-secondary/80 hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-300 shadow-lg"
+          aria-label="Reel anterior"
+        >
+          <i class="fa-solid fa-chevron-left text-lg"></i>
+        </button>
+        <button
+          v-if="hasNextReel"
+          @click.stop="nextReel"
+          class="absolute right-6 top-1/2 transform -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-gray-500/80 dark:bg-gray-800/80 text-gray-100 dark:text-gray-200 hover:bg-primary/80 dark:hover:bg-secondary/80 hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-300 shadow-lg"
+          aria-label="Siguiente reel"
+        >
+          <i class="fa-solid fa-chevron-right text-lg"></i>
+        </button>
       </div>
 
-      <!-- Panel de metadatos: lateral con avatar y botón de like -->
+      <!-- Panel de metadatos: lateral con diseño mejorado -->
       <div
-        class="w-full md:w-96 bg-gray-100 dark:bg-gray-800 text-white p-6 flex flex-col justify-between relative rounded-t-2xl md:rounded-l-2xl shadow-2xl overflow-y-auto"
+        class="w-full md:w-96 bg-gradient-to-b from-gray-200 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-white p-6 flex flex-col justify-between relative rounded-t-2xl md:rounded-l-2xl shadow-2xl overflow-y-auto border-l border-gray-300 dark:border-gray-700"
       >
         <div class="space-y-6">
           <!-- Sección del usuario con avatar -->
           <router-link 
             :to="`/profile/${reel?.user?.email}`" 
-            class="flex items-center gap-3 rounded"
+            class="flex items-center gap-3 rounded hover:bg-gray-300/50 dark:hover:bg-gray-700/50 p-2 transition-all duration-200"
           >
             <img
               :src="reel?.user?.photoURL || 'https://via.placeholder.com/40'"
@@ -64,8 +64,13 @@
             </div>
           </router-link>
 
+          <!-- Separador -->
+          <hr class="border-gray-300 dark:border-gray-600" />
+
           <!-- Título del reel -->
-          <h3 class="text-2xl font-bold text-gray-600 dark:text-white tracking-tight">{{ reel?.title }}</h3>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white tracking-tight overflow-wrap break-word word-break-break-word max-w-full">
+            {{ reel?.title }}
+          </h3>
 
           <!-- Mensaje de feedback -->
           <transition name="fade">
@@ -86,7 +91,7 @@
             <p class="flex items-center space-x-2">
               <span class="font-semibold text-gray-600 dark:text-gray-300">Visualizaciones:</span>
               <span class="text-gray-600 dark:text-gray-100 flex items-center">
-                {{ reel?.views }}
+                {{ formatNumber(reel?.views || 0) }}
                 <i class="fa-solid fa-eye text-primary dark:text-secondary ml-2"></i>
               </span>
             </p>
@@ -96,15 +101,15 @@
               <button
                 @click="handleToggleLike"
                 :disabled="isLiking || !user || !isAuthenticated"
-                class="ml-2 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                class="ml-2 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300 transform hover:scale-110"
                 :class="{
-                  'bg-red-300/20 dark:bg-red-600/20 text-red-400 hover:bg-red-400/40 dark:hover:bg-red-600/40': !hasLiked,
-                  'bg-red-500/20 dark:bg-red-700/20 text-red-500 hover:bg-red-600/40 dark:hover:bg-red-700/40': hasLiked,
+                  'bg-red-100/50 dark:bg-red-600/20 text-red-400 hover:bg-red-200/50 dark:hover:bg-red-600/30': !hasLiked,
+                  'bg-red-500/20 dark:bg-red-700/20 text-red-500 hover:bg-red-600/30 dark:hover:bg-red-700/30': hasLiked,
                   'opacity-50 cursor-not-allowed': isLiking || !user || !isAuthenticated,
                 }"
                 aria-label="Toggle like"
               >
-                <i class="fa-heart text-lg" :class="{ 'fa-solid': hasLiked, 'fa-regular': !hasLiked }"></i>
+                <i class="fa-heart text-xl" :class="{ 'fa-solid': hasLiked, 'fa-regular': !hasLiked }"></i>
               </button>
             </div>
           </div>
@@ -113,7 +118,7 @@
         <!-- Botón de cierre -->
         <button
           @click="closeModal"
-          class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 bg-gray-900/90 text-gray-200 hover:bg-primary hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 shadow-lg"
+          class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 bg-gray-500/80 dark:bg-gray-800/80 text-gray-100 dark:text-gray-200 hover:bg-primary dark:hover:bg-secondary hover:text-white rounded-full focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-300 shadow-lg"
           aria-label="Cerrar modal"
         >
           <i class="fa-solid fa-xmark text-xl"></i>
@@ -124,12 +129,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp.js';
 import { useReelsStore } from '../../stores/reels.js';
 import { useAuth } from '../../api/auth/useAuth';
-import { useSnackbarStore } from '../../stores/snackbar'
+import { useSnackbarStore } from '../../stores/snackbar';
 
+// Define props with proper validation
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -145,21 +151,24 @@ const props = defineProps({
   },
 });
 
+// Define emits
 const emit = defineEmits(['close', 'update-reel']);
+
+// Reactive references
 const viewModal = ref(null);
 const reelsStore = useReelsStore();
 const { user, isAuthenticated } = useAuth();
 const isLiking = ref(false);
 const message = ref(null);
 const messageType = ref(null);
-const snackbarStore = useSnackbarStore()
+const snackbarStore = useSnackbarStore();
+const viewedReelId = ref(null); // Track the currently viewed reel to prevent duplicate increments
 
-// Computed para determinar si el usuario actual dio like
+// Computed properties
 const hasLiked = computed(() => {
   return props.reel?.likes?.some((like) => like.userId === user.value?.uid) || false;
 });
 
-// Computed para navegación de reels
 const currentReelIndex = computed(() => {
   return props.reel ? props.reels.findIndex((r) => r.id === props.reel.id) : -1;
 });
@@ -167,7 +176,59 @@ const currentReelIndex = computed(() => {
 const hasPreviousReel = computed(() => currentReelIndex.value > 0);
 const hasNextReel = computed(() => currentReelIndex.value < props.reels.length - 1);
 
+// Utility functions
+const formatNumber = (num) => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num;
+};
+
+// Increment view logic
+const incrementView = async () => {
+  if (!props.reel?.idDoc || !user.value || viewedReelId.value === props.reel.idDoc) {
+    return; // Skip if no reel, no user, or already viewed
+  }
+
+  try {
+    const updatedReel = await reelsStore.incrementView(props.reel.idDoc, {
+      uid: user.value.uid,
+      email: user.value.email,
+    });
+    viewedReelId.value = props.reel.idDoc; // Mark as viewed
+    emit('update-reel', updatedReel);
+  } catch (err) {
+    console.error('Error incrementing view:', err);
+    snackbarStore.show('Error registering view', 'error');
+  }
+};
+
+// Handle like toggle
+const handleToggleLike = async () => {
+  if (!user.value || !isAuthenticated.value) {
+    snackbarStore.show('You must be logged in to like', 'error');
+    return;
+  }
+
+  isLiking.value = true;
+  try {
+    const updatedReel = await reelsStore.toggleLike(props.reel.idDoc, {
+      uid: user.value.uid,
+      displayName: user.value.displayName || user.value.email,
+      email: user.value.email,
+    });
+    emit('update-reel', updatedReel);
+    snackbarStore.show(hasLiked.value ? 'Like removed' : 'Like added', hasLiked.value ? 'error' : 'success');
+  } catch (err) {
+    snackbarStore.show('Error processing like', 'error');
+    console.error('Error in toggleLike:', err);
+  } finally {
+    isLiking.value = false;
+  }
+};
+
+// Modal controls
 const closeModal = () => {
+  viewedReelId.value = null; // Reset viewed reel on close
   emit('close');
 };
 
@@ -183,47 +244,39 @@ const nextReel = () => {
   }
 };
 
-// Manejar toggle de like
-const handleToggleLike = async () => {
-  if (!user.value || !isAuthenticated.value) {
-    snackbarStore.show('Debes iniciar sesión para dar like', 'error')
-    return;
-  }
-
-  isLiking.value = true;
-  try {
-    const updatedReel = await reelsStore.toggleLike(props.reel.idDoc, {
-      uid: user.value.uid,
-      displayName: user.value.displayName || user.value.email,
-      email: user.value.email,
-    });
-
-    emit('update-reel', updatedReel); // 🔁 actualizar el prop en el padre
-    snackbarStore.show(!hasLiked.value ? 'Like agregado' : 'Like quitado', !hasLiked.value ? 'success' : 'error')
-  } catch (err) {
-    snackbarStore.show('Error al procesar el like', 'error')
-    console.error('Error en toggleLike:', err);
-  } finally {
-    isLiking.value = false;
-  }
-};
-
+// Lifecycle hooks
 onMounted(() => {
   nextTick(() => {
-    if (viewModal.value && props.visible) {
+    if (viewModal.value) {
       viewModal.value.focus();
     }
   });
 });
+
+// Watch for modal visibility and reel changes
+watch(
+  [() => props.visible, () => props.reel?.idDoc],
+  ([newVisible, newReelId], [oldVisible, oldReelId]) => {
+    if (newVisible && newReelId && (newReelId !== oldReelId || !oldVisible)) {
+      // Trigger increment when modal opens or reel changes
+      nextTick(() => {
+        if (viewModal.value) {
+          viewModal.value.focus();
+          incrementView();
+        }
+      });
+    }
+  }
+);
 </script>
 
 <style scoped>
-/* Transición del modal */
+/* Modal transition */
 .fixed {
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Contenedor de medios */
+/* Media container */
 .media-container {
   display: flex;
   justify-content: center;
@@ -233,7 +286,16 @@ onMounted(() => {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
 }
 
-/* Transición para el mensaje */
+/* Title overflow correction */
+.overflow-wrap {
+  overflow-wrap: break-word;
+}
+
+.word-break-break-word {
+  word-break: break-word;
+}
+
+/* Message transition */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
@@ -243,10 +305,10 @@ onMounted(() => {
   opacity: 0;
 }
 
-/* Estilos responsivos para mobile */
+/* Responsive styles for mobile */
 @media (max-width: 768px) {
   .media-container {
-    height: calc(100vh - 14rem); /* Más espacio para el panel inferior */
+    height: calc(100vh - 14rem);
   }
   .flex {
     flex-direction: column;
@@ -257,7 +319,7 @@ onMounted(() => {
   }
 }
 
-/* Scroll personalizado en el panel de metadatos */
+/* Custom scrollbar for metadata panel */
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;

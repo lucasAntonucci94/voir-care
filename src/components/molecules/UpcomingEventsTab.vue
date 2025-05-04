@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useEventsStore } from '../../stores/events'
 import { useAuth } from '../../api/auth/useAuth'
 import { useUpcomingEventFilters } from '../../composable/useUpcomingEventFilters'
@@ -43,6 +43,15 @@ import EventCard from '../organisms/EventCard.vue'
 
 const { user } = useAuth()
 const eventsStore = useEventsStore()
+
+onMounted(() => {
+  eventsStore.subscribeUpcomingEvents()
+})
+
+onUnmounted(() => {
+  eventsStore.unsubscribeUpcomingEvents()
+})
+
 const selectedFilter = ref('all')
 const notOwnedEvents = computed(() =>
   eventsStore.upcomingEvents?.value?.filter(e => e.ownerId !== user?.value?.uid) ?? []

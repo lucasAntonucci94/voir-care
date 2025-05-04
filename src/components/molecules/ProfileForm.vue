@@ -236,6 +236,7 @@ import { useMediaUpload } from '../../composable/useMediaUpload';
 import SelectCountry from '../atoms/SelectCountry.vue';
 import SelectGenre from '../atoms/SelectGenre.vue';
 import PhoneInput from '../atoms/PhoneInput.vue';
+import { useSnackbarStore } from '../../stores/snackbar'
 
 // Props
 const props = defineProps({
@@ -247,6 +248,7 @@ const props = defineProps({
 // Instancias
 const { updateUser } = useUsers();
 const { uploadMedia } = useMediaUpload();
+const snackbarStore = useSnackbarStore()
 
 // Estados
 const editForm = ref({});
@@ -449,8 +451,9 @@ async function saveProfile() {
     await updateUser(profileToUpdate.uid, profileToUpdate);
     props.updateRefData(profileToUpdate);
     props.closeEditModal();
+    snackbarStore.show("Perfil actualizado exitosamente.","success")
   } catch (err) {
-    console.error('Error al guardar el perfil:', err);
+    snackbarStore.show("Error al guardar el perfil. Error"+err,"error")
   } finally {
     isLoading.value = false;
   }

@@ -97,6 +97,7 @@ async function createPost() {
   };
 
   try {
+    debugger
     await groupsStore.createPostGroup(props.groupId, postData);
     emit('close');
   } catch (err) {
