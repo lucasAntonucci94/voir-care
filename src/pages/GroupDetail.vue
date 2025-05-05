@@ -277,7 +277,7 @@ const isAdmin = ref(false)
 const tabs = [
   { id: 'info', label: 'Información' },
   { id: 'conversation', label: 'Conversación' },
-  { id: 'highlights', label: 'Destacados' },
+  // { id: 'highlights', label: 'Destacados' },
   { id: 'members', label: 'Miembros' },
   // { id: 'events', label: 'Eventos' },
   { id: 'multimedia', label: 'Galería' },
