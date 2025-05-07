@@ -78,7 +78,15 @@
             <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
             <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
               <PostCard v-for="post in postsStore.profilePosts.value" :key="post.id" :post="post" @delete="deletePost(post.id)" />
-              <p v-if="!postsStore.profilePosts?.value?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
+              <div  v-if="!postsStore.profilePosts?.value?.length" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <p class="text-gray-500 dark:text-gray-400">No tienes publicaciones guardadas aún.</p>
+                <button
+                  class="mt-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
+                  @click="navigateToFeed"
+                >
+                  Explorar publicaciones
+                </button>
+              </div>
             </div>
             <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" />
             <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" />
@@ -96,6 +104,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router'
 import { useAuth } from '../api/auth/useAuth';
 import { usePostsStore } from '../stores/posts';
 import PostCard from '../components/organisms/PostCard.vue';
@@ -122,6 +131,7 @@ const showArrows = ref(false);
 const canScrollLeft = ref(false);
 const canScrollRight = ref(false);
 const connections = ref([]);
+const router = useRouter()
 
 // Tabs
 const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos','Guardado'];
@@ -222,6 +232,12 @@ const handleModalCreate = () => {
 const setDiscoverTab = () => {
   // Lógica para manejar el tab de descubrir
 };
+
+ // Navigate to feed
+ function navigateToFeed() {
+    router.push('/feed')
+  }
+  
 
 // Ciclo de vida
 onMounted(async () => {
