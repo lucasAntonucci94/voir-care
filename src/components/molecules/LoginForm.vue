@@ -54,12 +54,16 @@ import InputText from '../atoms/InputText.vue';
 import InputPassword from '../atoms/InputPassword.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useFormField } from '../../composable/useFormField';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const { login, resetPassword, error } = useAuth();
 const router = useRouter();
 const isLoading = ref(false);
 const isResetting = ref(false);
 const showResetForm = ref(false);
+
+// Stores
+const snackbarStore = useSnackbarStore();
 
 // Schema para login
 const loginSchema = yup.object({
@@ -94,6 +98,7 @@ const handleSubmit = async () => {
     setErrorFromFirebase(error.value.code, error.value.message);
   } else {
     router.push('/feed');
+    snackbarStore.show('Bienvenido!', 'success');
   }
 
   isLoading.value = false;
@@ -111,7 +116,7 @@ const handleResetPassword = async () => {
 
   const result = await resetPassword(resetEmail.field.value.value);
   if (result === true) {
-    alert('Se ha enviado un enlace de restablecimiento a tu correo.');
+    snackbarStore.show('Se ha enviado un enlace de restablecimiento a tu correo.', 'success');
     showResetForm.value = false;
     resetEmail.clearError();
     resetEmail.field.value.value = ''; // Limpiar el campo

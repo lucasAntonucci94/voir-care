@@ -32,10 +32,14 @@ import InputText from '../atoms/InputText.vue';
 import InputPassword from '../atoms/InputPassword.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useFormField } from '../../composable/useFormField';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const { doRegister, error } = useAuth();
 const router = useRouter();
 const isLoading = ref(false);
+
+// Stores
+const snackbarStore = useSnackbarStore();
 
 // Definimos el esquema de validación con yup
 const registerSchema = yup.object({
@@ -79,6 +83,7 @@ const handleSubmit = async () => {
     setErrorFromFirebase(error.value.code, error.value.message);
   } else {
     router.push('/');
+    snackbarStore.show('Bienvenido!', 'success');
   }
 
   isLoading.value = false;

@@ -272,20 +272,16 @@ async function handleReport() {
     isLoading.value = false;
     showModalReport.value = false;
     document.body.style.overflow = '';
-    user.value.hiddenPosts.push({ id: user.value.uid, postId: props.post.id });
+    // user.value.hiddenPosts.push({ id: user.value.uid, postId: props.post.id });
+    snackbarStore.show('Gracias por tu cooperación.', 'success');
   } else {
-    console.error('Error reporting post');
+    snackbarStore.show('Error al reportar una publicación', 'success');
   }
 }
 
 // Mostrar el modal de compartir
 function showShareModal() {
   shareStore.openShareModal(props.post);
-}
-
-// Ejecuta metodo de guardado de post para el usuario logueado
-function savePost() {
-  // ejecuta guardado en db. ejecuta savePost from store
 }
 
 // Mostrar el modal de report
@@ -315,6 +311,7 @@ async function handleHidePost() {
     showModalHide.value = false;
     document.body.style.overflow = '';
     user.value.hiddenPosts.push({ id: user.value.uid, postId: props.post.id });
+    snackbarStore.show('Se oculto la publicación.', 'success');
   } else {
     console.error('Error hiding post');
   }
