@@ -6,19 +6,24 @@ export const useLocationsStore = defineStore('locations', {
   state: () => ({
     locations: ref([]),
     isLoading: ref(true),
-    unsubscribeFn: null,     
+    unsubscribeFn: null,
   }),
   actions: {
     // Suscribirse a los locations en tiempo real
     subscribe() {
       console.log('Iniciando suscripción a locations...');
       const { subscribeToIncomingLocations } = useLocations();
-      this.unsubscribeFn = subscribeToIncomingLocations((updatedLocations) => {
-        console.log('Locations recibidos desde Firebase:', updatedLocations);
-        this.locations.value = updatedLocations;
+      try {
+        this.unsubscribeFn = subscribeToIncomingLocations((updatedLocations) => {
+          console.log('Locations recibidos desde Firebase:', updatedLocations);
+          this.locations.value = updatedLocations;
+          this.isLoading = false;
+          console.log('Locations actualizados en el store:', this.locations.value);
+        });
+      } catch (error) {
+        console.error('Error al suscribirse a locations:', error);
         this.isLoading = false;
-        console.log('Locations actualizados en el store:', this.locations.value);
-      });
+      }
     },
     // Cancelar la suscripción
     unsubscribe() {
@@ -75,6 +80,6 @@ export const useLocationsStore = defineStore('locations', {
         console.error('Error al cambiar estado pending:', error);
         throw error;
       }
-    }
-  }
+    },
+  },
 });

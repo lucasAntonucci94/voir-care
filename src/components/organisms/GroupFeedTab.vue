@@ -41,13 +41,13 @@
           class="relative"
         >
           <!-- Group Context -->
-          <div class="flex items-center mb-2">
+          <div class="flex items-center mb-2" @click="goToDetail(post.group.id)">
             <img
-              :src="post.groupAvatar || AvatarDefault"
+              :src="post.group.media.url || AvatarDefault"
               alt="Group Avatar"
               class="w-6 h-6 rounded-full mr-2"
             />
-            <span class="text-sm text-gray-600 dark:text-gray-400">{{ post.groupName || 'Group Name' }}</span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">{{ post.group.title || 'Nombre del Grupo' }}</span>
           </div>
           <PostCard :post="post" />
         </div>
@@ -62,12 +62,12 @@ import { useGroupsStore } from '../../stores/groups'
 import PostCard from '../organisms/PostCard.vue'
 import AvatarDefault from '../../assets/avatar1.jpg'
 import { useAuth } from '../../api/auth/useAuth'
-
+import { useRouter } from 'vue-router'
 const groupsStore = useGroupsStore()
 const posts = computed(() => groupsStore.userGroupFeed.value || [])
 const sortOption = ref('newest')
 const { user } = useAuth()
-
+const router = useRouter()
 // Computed property to sort posts
 const sortedPosts = computed(() => {
   const postsArray = [...posts.value]
@@ -86,7 +86,10 @@ const sortedPosts = computed(() => {
 // Function to handle sorting
 function sortPosts() {
 }
-
+function goToDetail(idGroup) {
+    router.push({ name: 'groupDetail', params: { idGroup: idGroup } })
+}
+  
 
 // Suscripción a eventos del usuario
 onMounted(() => {

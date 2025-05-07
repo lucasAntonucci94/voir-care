@@ -85,6 +85,7 @@
             <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
             <UserEventsTab v-else-if="activeTab === 'eventos'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
             <UserGroupsTab v-else-if="activeTab === 'grupos'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
+            <SavedPostTab v-else-if="activeTab === 'guardado'" />
           </div>
         </div>
       </div>
@@ -105,6 +106,7 @@ import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
 import GalleryTab from '../components/organisms/ProfileGalleryTab.vue';
 import UserEventsTab from '../components/molecules/UserEventsTab.vue';
 import UserGroupsTab from '../components/molecules/UserGroupsTab.vue';
+import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
 
 // Instancias
 const route = useRoute();
@@ -122,7 +124,7 @@ const canScrollRight = ref(false);
 const connections = ref([]);
 
 // Tabs
-const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos'];
+const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos','Guardado'];
 const setTabConexiones = () => {
   activeTab.value = 'conexiones';
 };
@@ -228,12 +230,18 @@ onMounted(async () => {
   if (activeUser && (activeUser?.value?.uid || activeUser?.value?.id)) {
     postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
   }
+   // Subscribe to savedPosts if this is the user's own profile
+   if (isOwnProfile.value && authUser.value?.uid) {
+    console.log('Iniciando suscripción a posts guardados en Profile.vue...');
+    postsStore.subscribeToSavedPosts(authUser.value.uid);
+  }
   checkScroll();
   window.addEventListener('resize', checkScroll);
 });
 
 onUnmounted(() => {
   postsStore.unsubscribeProfile();
+  postsStore.unsubscribeSavedPosts(); // Cancela la suscripción a savedPosts
   window.removeEventListener('resize', checkScroll);
 });
 </script>

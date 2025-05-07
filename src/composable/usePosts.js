@@ -149,13 +149,15 @@ export function usePosts() {
       const post = postSnap.data()
   
       return {
-        id,
+        idDoc: id,
+        id: post.id,
         title: post.title,
         body: post.body,
         user: post.user,
+        categories: post.categories,
         created_at: post.created_at,
-        imagePathFile: post.imagePathFile ?? null,
-        imageUrlFile: post.imageUrlFile ?? null,
+        likes: post.likes || [],
+        media: post.media ?? null,
       }
     } catch (err) {
       console.error('Error al obtener post por ID:', err)

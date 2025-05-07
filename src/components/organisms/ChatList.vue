@@ -81,6 +81,7 @@
         </button>
       </div>
     </div>
+    <NewChatModal ref="newChatModal" />
   </div>
 </template>
 
@@ -89,11 +90,13 @@ import { ref, computed, onMounted } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useSnackbarStore } from '../../stores/snackbar';
 import { formatTimestamp } from '../../utils/formatTimestamp';
+import NewChatModal from '../molecules/NewChatModal.vue';
 
 const privateChatsStore = usePrivateChatsStore();
 const snackbarStore = useSnackbarStore();
 const searchQuery = ref('');
 const showActionsMenu = ref(false);
+const newChatModal = ref(null); // Reference to the NewChatModal component
 
 // Emite eventos para el componente padre
 const emit = defineEmits(['selectChat', 'openDeleteChatModal']);
@@ -113,12 +116,11 @@ const toggleActionsMenu = () => {
 };
 
 const createNewChat = () => {
-  console.log('Crear nuevo chat');
+  newChatModal.value.openModal();
   showActionsMenu.value = false;
 };
 
 const deleteAllChats = () => {
-  console.log('Eliminar todos los chats');
   privateChatsStore.deleteAllChats();
   showActionsMenu.value = false;
   snackbarStore.show('Chats eliminados', 'success');

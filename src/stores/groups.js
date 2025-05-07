@@ -38,7 +38,7 @@ export const useGroupsStore = defineStore('groups', {
         this.unsubscribeUserGroups  = null
       }
     },
-    // Suscribirse a los grupos en los que el usuario es miembro
+    // Suscribirse a todos los grupos
     subscribeAllGroups() {
       if (this.unsubscribeAll) {
         console.log('Suscripción a todos los grupos ya activa, ignorando...')
@@ -102,28 +102,24 @@ export const useGroupsStore = defineStore('groups', {
           return
         }
     
-        console.log('[Feed] Suscribiendo a posteos de grupos:', groupIds)
-    
         // Array para almacenar las funciones de desuscripción de los posteos
         this.unsubscribePostsUserFeed = []
-    debugger
-    // Suscribirse a los posteos de cada grupo
-    this.userGroups?.value?.forEach(group => {
-          debugger
+        this.userGroups?.value?.forEach(group => {
           const unsubscribe = suscribePostsByGroupId(group.idDoc, (posts) => {
-            debugger
-            // Agregar groupId a cada posteo para identificarlo
-            const postsWithGroupId = posts.map(post => ({
+            const postsWithGroupDetail = posts.map(post => ({
               ...post,
-              groupId:group.idDoc,
+              group:{
+                id:group.idDoc,
+                title:group.title,
+                media:group.media,
+              }
             }))
     
-            // Combinar los nuevos posteos con los existentes, evitando duplicados
             const uniquePosts = [
               ...this.userGroupFeed?.value?.filter(
-                p => p.groupId !== groupId // Mantener posteos de otros grupos
+                p => p.group.id !== group.idDoc // Mantener posteos de otros grupos
               ),
-              ...postsWithGroupId, // Agregar los nuevos posteos
+              ...postsWithGroupDetail, // Agregar los nuevos posteos
             ]
     
             // Actualizar el feed, ordenando por fecha
@@ -135,31 +131,6 @@ export const useGroupsStore = defineStore('groups', {
           // Guardar la función de desuscripción
           this.unsubscribePostsUserFeed.push(unsubscribe)
         })
-        // groupIds.forEach(groupId => {
-        //   const unsubscribe = suscribePostsByGroupId(groupId, (posts) => {
-        //     // Agregar groupId a cada posteo para identificarlo
-        //     const postsWithGroupId = posts.map(post => ({
-        //       ...post,
-        //       groupId,
-        //     }))
-    
-        //     // Combinar los nuevos posteos con los existentes, evitando duplicados
-        //     const uniquePosts = [
-        //       ...this.userGroupFeed?.value?.filter(
-        //         p => p.groupId !== groupId // Mantener posteos de otros grupos
-        //       ),
-        //       ...postsWithGroupId, // Agregar los nuevos posteos
-        //     ]
-    
-        //     // Actualizar el feed, ordenando por fecha
-        //     this.userGroupFeed.value = uniquePosts.sort(
-        //       (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
-        //     )
-        //   })
-    
-        //   // Guardar la función de desuscripción
-        //   this.unsubscribePostsUserFeed.push(unsubscribe)
-        // })
       })
     },
     unsubscribeUserGroupFeed() {

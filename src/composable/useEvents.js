@@ -25,7 +25,6 @@ export function useEvents() {
 
   async function createEvent(eventData) {
     try {
-      debugger
       isCreating.value = true
       await addDoc(eventsRef, {
         ...eventData,
@@ -40,7 +39,6 @@ export function useEvents() {
   }
   async function updateEvent(idDoc, eventData) {
     try {
-      debugger
       const docRef = doc(db, 'events', idDoc)
       await updateDoc(docRef, {
         ...eventData,

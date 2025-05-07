@@ -114,8 +114,6 @@ onMounted(() => {
 onUnmounted(() => {
   locationsStore.unsubscribe();
 });
-
-
 </script> 
 
 <style scoped>

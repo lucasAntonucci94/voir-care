@@ -15,7 +15,7 @@
           </div>
         </div>
       </div>
-        <!-- Tabs específicos para eventos -->
+        <!-- Tabs específicos para grupos -->
         <div class="container mx-auto px-4 md:px-8 lg:px-16">
           <div class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide whitespace-nowrap">
             <button

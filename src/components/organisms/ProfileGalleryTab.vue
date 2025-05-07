@@ -1,24 +1,32 @@
 <template>
     <div class="block bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm mx-auto max-w-lg md:max-w-4xl">
-      <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Galería</h2>
+      <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 sr-only">Galería</h2>
   
       <!-- Subtabs -->
-      <div class="flex gap-2 mb-4">
-        <button
-          v-for="subtab in subtabs"
-          :key="subtab"
-          @click="setSubtab(subtab.toLowerCase())"
-          :class="[
-            'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200',
-            activeSubtab === subtab.toLowerCase()
-              ? 'bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
-          ]"
-        >
-          {{ subtab }}
-        </button>
+      <div class="container mx-auto">
+        <div class="flex gap-1 mb-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide whitespace-nowrap">
+          <button
+            v-for="subtab in subtabs"
+            :key="subtab"
+            @click="setSubtab(subtab.toLowerCase())"
+            :class="[
+              'relative px-4 py-3 text-sm font-medium transition-all duration-300',
+              activeSubtab === subtab.toLowerCase()
+                ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
+                : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
+            ]"
+            :aria-selected="activeSubtab === subtab.toLowerCase()"
+            role="tab"
+          >
+            {{ subtab }}
+            <!-- Línea indicadora para la pestaña activa -->
+            <span
+              v-if="activeSubtab === subtab.toLowerCase()"
+              class="absolute inset-x-0 bottom-0 h-0.5 bg-primary dark:bg-secondary"
+            ></span>
+          </button>
+        </div>
       </div>
-  
       <!-- Filters -->
       <div class="flex gap-4 mb-4 flex-col sm:flex-row">
         <div class="flex-1">
@@ -35,7 +43,7 @@
             <option value="video">Videos</option>
           </select>
         </div>
-        <div class="flex-1">
+        <!-- <div class="flex-1">
           <label for="content-type-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Tipo de Contenido
           </label>
@@ -48,13 +56,13 @@
             <option value="posts">Publicaciones</option>
             <option value="reels">Reels</option>
           </select>
-        </div>
+        </div> -->
       </div>
   
       <!-- Loading State -->
       <div v-if="isLoading" class="flex justify-center items-center py-6">
         <div class="text-center">
-          <img src="../assets/loaders/pawOrange.gif" alt="Loading" class="w-16 h-16 mx-auto" />
+          <img src="../../assets/loaders/pawOrange.gif" alt="Loading" class="w-16 h-16 mx-auto" />
           <p class="text-primary dark:text-secondary text-sm font-medium animate-pulse">Cargando medios...</p>
         </div>
       </div>
@@ -101,9 +109,10 @@
   <script setup>
   import { ref, computed, onMounted } from 'vue';
   import { usePostsStore } from '../../stores/posts';
+  import { useReelsStore } from '../../stores/reels';
   import MediaModalViewer from '../molecules/MediaViewerModal.vue';
   import DefaultImage from '../../assets/avatar1.jpg';
-  
+  import { useAuth } from '../../api/auth/useAuth'
   // Subtabs
   const subtabs = ['All', 'Posts', 'Reels'];
   const activeSubtab = ref('all');
@@ -112,33 +121,18 @@
   const mediaTypeFilter = ref('all'); // all, image, video
   const contentTypeFilter = ref('all'); // all, posts, reels
   
+  // Intancias
+  const { user } = useAuth()
+
   // Pinia store
   const postsStore = usePostsStore();
+  const reelsStore = useReelsStore();
   
   // Default video thumbnail
   const defaultVideoThumbnail = DefaultImage;
   
   // Cache for video thumbnails
   const videoThumbnails = ref({});
-  
-  // Mock reels data (placeholder with image and video support)
-  const mockReels = ref([
-    {
-      id: 'reel1',
-      title: 'Reel 1',
-      media: { url: DefaultImage, type: 'image' },
-      source: 'reel',
-    },
-    {
-      id: 'reel2',
-      title: 'Reel 2',
-      media: {
-        url: 'https://firebasestorage.googleapis.com/v0/b/voir-432421.firebasestorage.app/o/sample%2Fsample-video.mp4?alt=media&token=...',
-        type: 'video',
-      },
-      source: 'reel',
-    },
-  ]);
   
   // Combined and filtered media
   const filteredMedia = computed(() => {
@@ -157,14 +151,24 @@
         media: post.media,
         source: 'posts',
       }));
-  
-    const reels = mockReels.value.map(reel => ({
-      id: reel.id,
-      title: reel.title,
-      media: reel.media,
-      source: 'reels',
-    }));
-  
+      
+    const reels = reelsStore.reels?.filter(reel => 
+        reel.user.uid === user.value?.uid &&
+        reel.mediaUrl && 
+        ['image', 'video'].includes(reel.mediaType) && 
+        typeof reel.mediaUrl === 'string' && 
+        reel.mediaUrl.startsWith('https://firebasestorage.googleapis.com')
+      )
+      .map(reel => ({
+        id: reel.idDoc,
+        title: reel.title,
+        media: {
+          url: reel.mediaUrl,
+          type: reel.mediaType,
+        },
+        source: 'reels',
+      })
+    );
     let combined = [...posts, ...reels];
     // Apply content type filter
     if (contentTypeFilter.value !== 'all') {

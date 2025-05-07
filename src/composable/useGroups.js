@@ -177,7 +177,6 @@ export function useGroups() {
         photoURLFile: user.value?.photoURLFile,
         photoPath: user.value?.photoPathFile
       }
-      debugger
       if (postData.media && postData.media.imageBase64) {
         const extension = postData.media.type === 'image' ? 'jpg' : 'mp4';
         const filePath = `groups/${idGroup}/posts/${user.value.email}/${postData.id}.${extension}`;

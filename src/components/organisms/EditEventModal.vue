@@ -448,7 +448,6 @@ async function handleSubmit() {
       eventData.media = url || null;
       eventData.mediaPath = path || null;
     }
-    debugger
     await eventsStore.editEvent(editForm.value.idDoc, eventData);
     emit('submit', eventData);
     closeModal();

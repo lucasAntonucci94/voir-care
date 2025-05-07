@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { usePosts } from '../composable/usePosts';
+import { useSavedPosts } from '../composable/useSavedPost';
 
 export const usePostsStore = defineStore('posts', {
   state: () => {
@@ -10,6 +11,8 @@ export const usePostsStore = defineStore('posts', {
     const isLoadingProfile = ref(true); // Loading para el perfil
     const unsubscribeGlobal = ref(null); // Suscripción global
     const unsubscribeProfile = ref(null); // Suscripción del perfil
+    const savedPostIds = ref([]); // IDs de posts guardados
+    const unsubscribeSavedPosts = ref(null); // Suscripción a posts guardados
 
     return {
       posts,
@@ -18,6 +21,8 @@ export const usePostsStore = defineStore('posts', {
       isLoadingProfile,
       unsubscribeGlobal,
       unsubscribeProfile,
+      savedPostIds,
+      unsubscribeSavedPosts,
     };
   },
   actions: {
@@ -85,17 +90,111 @@ export const usePostsStore = defineStore('posts', {
       const { deletePost } = usePosts();
       await deletePost(postIdDoc);
     },
+    // async toggleLike(postIdDoc, userData) {
+    //   debugger
+    //   const { addLike, removeLike } = usePosts();
+    //   const post = this.posts?.value?.find(p => p.idDoc === postIdDoc) || 
+    //                this.profilePosts?.value?.find(p => p.idDoc === postIdDoc);
+    //   if (!post) return;
+
+    //   const userLiked = post.likes.some(like => like.userId === userData.id);
+    //   if (userLiked) {
+    //     await removeLike(postIdDoc, userData);
+    //   } else {
+    //     await addLike(postIdDoc, userData);
+    //   }
+    // },
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
-      const post = this.posts?.value?.find(p => p.idDoc === postIdDoc) || 
-                   this.profilePosts?.value?.find(p => p.idDoc === postIdDoc);
+      debugger
+      // Find the post in posts, profilePosts, or savedPosts
+      let postInPosts = this.posts?.value?.find(p => p.idDoc === postIdDoc);
+      let postInProfile = this.profilePosts?.value?.find(p => p.idDoc === postIdDoc);
+      let postInSaved = this.savedPosts?.find(p => p.idDoc === postIdDoc);
+      let post = postInPosts || postInProfile || postInSaved;
       if (!post) return;
 
       const userLiked = post.likes.some(like => like.userId === userData.id);
-      if (userLiked) {
-        await removeLike(postIdDoc, userData);
+      try {
+        if (userLiked) {
+          await removeLike(postIdDoc, userData);
+          // Update local arrays after successful removal
+          if (postInPosts) postInPosts.likes = postInPosts.likes.filter(like => like.userId !== userData.id);
+          if (postInProfile) postInProfile.likes = postInProfile.likes.filter(like => like.userId !== userData.id);
+          if (postInSaved) postInSaved.likes = postInSaved.likes.filter(like => like.userId !== userData.id);
+        } else {
+          await addLike(postIdDoc, userData);
+          // Update local arrays after successful addition
+          if (postInPosts) postInPosts.likes = [...postInPosts.likes, { userId: userData.id, timestamp: new Date().toISOString() }];
+          if (postInProfile) postInProfile.likes = [...postInProfile.likes, { userId: userData.id, timestamp: new Date().toISOString() }];
+          if (postInSaved) postInSaved.likes = [...postInSaved.likes, { userId: userData.id, timestamp: new Date().toISOString() }];
+        }
+        // // Ensure reactivity by reassigning the arrays if needed (though direct mutation should work with ref)
+        // if (postInPosts) this.posts = [...this.posts]; // Trigger reactivity
+        // if (postInProfile) this.profilePosts = [...this.profilePosts]; // Trigger reactivity
+        // if (postInSaved) this.savedPosts = [...this.savedPosts]; // Trigger reactivity
+      } catch (error) {
+        console.error('Error toggling like:', error);
+      }
+    },
+    // Suscribirse a los posts guardados del usuario
+    subscribeToSavedPosts(userId) {
+      if (this.unsubscribeSavedPosts.value) {
+        console.log('Cancelando suscripción anterior a posts guardados...');
+        this.unsubscribeSavedPosts.value();
+        this.unsubscribeSavedPosts.value = null;
+      }
+      if (!userId) {
+        console.warn('No se proporcionó userId para la suscripción a posts guardados');
+        return;
+      }
+      console.log(`Iniciando suscripción a posts guardados para userId: ${userId}...`);
+      const { subscribeToSavedPosts } = useSavedPosts();
+      this.unsubscribeSavedPosts.value = subscribeToSavedPosts(userId, (savedPosts) => {
+        console.log('Posts guardados recibidos desde Firebase:', savedPosts.value);
+        this.savedPostIds = savedPosts.map(sp => sp.postId);
+      });
+    },
+    // Cancelar suscripción a posts guardados
+    unsubscribeSavedPosts() {
+      if (this.unsubscribeSavedPosts.value) {
+        console.log('Cancelando suscripción a posts guardados...');
+        this.unsubscribeSavedPosts.value();
+        this.unsubscribeSavedPosts.value = null;
+      }
+    },
+    // Toggle save/unsave post
+    async toggleSavePost(userId, postId) {
+      const { savePost, unsavePost, isPostSaved } = useSavedPosts();
+      const isSaved = await isPostSaved(userId, postId);
+      if (isSaved) {
+        await unsavePost(userId, postId);
+
       } else {
-        await addLike(postIdDoc, userData);
+        await savePost(userId, postId);
+      }
+    },
+    async fetchSavedPosts() {
+      const { getPostById } = usePosts();
+      try {
+        debugger
+        const fetchedPosts = await Promise.all(
+          this.savedPostIds.map(async (postId) => {
+            try {
+              const post = await getPostById(postId);
+              return post;
+            } catch (error) {
+              console.error(`Error fetching post with ID ${postId}:`, error);
+              return null;
+            }
+          })
+        );
+        debugger
+        // Filter out null values (failed fetches) and store in savedPosts
+        this.savedPosts = fetchedPosts.filter(post => post !== null);
+      } catch (error) {
+        console.error('Error fetching saved posts:', error);
+        this.savedPosts = []; // Reset on error
       }
     },
   },
