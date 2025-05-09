@@ -47,15 +47,15 @@
       <!-- Fechas -->
       <div class="flex flex-col gap-1">
         <span><strong>Inicio:</strong> {{ formattedStartTime }}</span>
-        <span v-if="event?.endTime"><strong>Fin:</strong> {{ formattedEndTime }}</span>
+        <!-- <span v-if="event?.endTime"><strong>Fin:</strong> {{ formattedEndTime }}</span> -->
         <!-- <span v-if="event?.capacity"><strong>Capacidad:</strong> {{ event.capacity }}</span> -->
         <span><strong>Participantes:</strong> {{ event?.attendance?.going?.length || 0 }}</span>
       </div>
 
       <!-- Descripción corta -->
-      <p class="line-clamp-3 text-xs text-gray-600 dark:text-gray-300">
+      <!-- <p class="line-clamp-3 text-xs text-gray-600 dark:text-gray-300">
         {{ event.description }}
-      </p>
+      </p> -->
     </div>
 
    <!-- Acción + Categorías -->

@@ -25,14 +25,14 @@
   import { ref, watch, computed } from 'vue';
   import VueDatePicker from '@vuepic/vue-datepicker';
   import '@vuepic/vue-datepicker/dist/main.css';
-  
+  import { newGuid } from '../../utils/newGuid.js';
   const props = defineProps({
     modelValue: { type: [String, Date, null], default: null }, // Supports ISO string or Date object
     label: { type: String, default: '' },
     placeholder: { type: String, default: '' },
     disabled: { type: Boolean, default: false },
     timeEnabled: { type: Boolean, default: true }, // Controls whether time selection is enabled
-    id: { type: String, default: () => `date-${Math.random().toString(36).substr(2, 9)}` }, // Unique ID
+    id: { type: String, default: () => `date-${newGuid()}` }, // Unique ID
   });
   
   const emit = defineEmits(['update:modelValue']);

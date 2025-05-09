@@ -9,7 +9,7 @@
       :showSearch="true"
       :showSelect="true"
     />
-    <div v-if="filteredEvents.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center align-center mt-4">
+    <div v-if="filteredEvents.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center mt-4">
       <EventCard
         v-for="event in filteredEvents"
         :key="event.idDoc"

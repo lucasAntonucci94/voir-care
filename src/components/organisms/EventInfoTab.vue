@@ -55,7 +55,7 @@
         <!-- Columna derecha: Boletos, Organizador, Asistentes -->
         <div class="space-y-6">
             <!-- Card de Boletos -->
-            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+            <div class=" hidden bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                 <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Boletos</h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Por show agotado, y a pedido del público: Nueva función. ¡No te quedes sin tu entrada!
@@ -154,6 +154,7 @@
                     <i class="fa-solid fa-arrow-right fa-lg"></i>
                     </router-link>
                 </li>
+                <li v-if="attendeesDetails.length >= 3" class="text-center pt-3"> Ver más</li>
                 </ul>
                 <p v-else class="text-sm text-gray-600 dark:text-gray-400">
                 No hay asistentes confirmados aún.

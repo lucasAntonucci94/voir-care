@@ -15,15 +15,17 @@
           </div>
         </div>
       </div>
-        <!-- Tabs específicos para grupos -->
+        <!-- Tabs para grupos -->
         <div class="container mx-auto px-4 md:px-8 lg:px-16">
-          <div class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide whitespace-nowrap">
+          <div
+            class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide whitespace-nowrap"
+          >
             <button
               v-for="tab in tabs"
               :key="tab.id"
               @click="activeTab = tab.id"
               :class="[
-                'relative px-4 py-3 text-sm font-medium transition-all duration-300',
+                'relative px-4 py-3 text-sm font-medium transition-all duration-300 flex items-center space-x-2',
                 activeTab === tab.id
                   ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -31,7 +33,8 @@
               :aria-selected="activeTab === tab.id"
               role="tab"
             >
-              {{ tab.label }}
+              <i :class="tab.icon" aria-hidden="true"></i>
+              <span>{{ tab.label }}</span>
               <!-- Línea indicadora para la pestaña activa -->
               <span
                 v-if="activeTab === tab.id"
@@ -70,10 +73,10 @@ import GroupFeedTab from '../components/organisms/GroupFeedTab.vue'
 
 // Control de tabs
 const tabs = [
-  { id: 'feed', label: 'Tus Feed' },
-  { id: 'discover', label: 'Descubrir' },
-  { id: 'yourGroups', label: 'Tus Grupos' },
-]
+  { id: 'feed', label: 'Tus Feed', icon: 'fa-solid fa-rss' },
+  { id: 'discover', label: 'Descubrir', icon: 'fa-solid fa-magnifying-glass' },
+  { id: 'yourGroups', label: 'Tus Grupos', icon: 'fa-solid fa-users' },
+];
 const activeTab = ref('feed')
 
 // Control de la modal de creación de grupo
