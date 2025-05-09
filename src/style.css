@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tailwindcss/utilities";
+/* @import '@vuepic/vue-datepicker/dist/main.css'; */
 
 @theme{
   --color-primary-lighter: #b4f0eb;  
@@ -142,4 +143,65 @@
 
 #app {
   margin: 0 auto;
+}
+
+
+/* DATE PICKER STYLES */
+.dp__overlay {
+  background-color: #f9fafb; /* Tailwind gray-50 */
+  color: #374151; /* Tailwind gray-700 */
+  border-radius: 0.5rem; /* Tailwind rounded-lg */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* Tailwind shadow-md */
+  z-index: 50; /* Asegura que esté por encima de otros elementos */
+}
+
+.dp__overlay.dark {
+  background-color: #1f2937; /* Tailwind gray-800 */
+  color: #e5e7eb; /* Tailwind gray-200 */
+}
+
+.dp__cell_inner:hover {
+  background-color: #e5e7eb; /* Tailwind gray-200 */
+}
+
+.dp__cell_inner:hover.dark {
+  background-color: #4b5563; /* Tailwind gray-600 */
+}
+
+.dp__active_date {
+  background-color: #3b82f6; /* Tailwind blue-500 */
+  color: #ffffff; /* Tailwind white */
+}
+
+.dp__today {
+  border-color: #3b82f6; /* Tailwind blue-500 */
+}
+
+@media (max-width: 640px) {
+  .dp__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semiopaco */
+    z-index: 100; /* Más alto para móviles */
+    border-radius: 0; /* Sin bordes redondeados en pantalla completa */
+  }
+
+  .dp__overlay_container {
+    width: 100%;
+    max-width: 95%; /* Margen pequeño en los bordes */
+    max-height: 90vh; /* Limita la altura */
+    background-color: #f9fafb; /* Tailwind gray-50 */
+    border-radius: 0.5rem; /* Bordes redondeados para el calendario */
+    overflow-y: auto; /* Permite scroll si el contenido es grande */
+  }
+
+  .dp__overlay_container.dark {
+    background-color: #1f2937; /* Tailwind gray-800 */
+  }
 }

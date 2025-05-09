@@ -20,7 +20,7 @@
         :updateRefData="updateDataFromChild"
       />
       <!-- Tabs con flechas -->
-      <div class="container mx-auto mt-6 px-4 md:px-8 lg:px-16 sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10">
+      <div class="container mx-auto mt-6 sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10">
         <div class="relative">
           <!-- Botón de flecha izquierda -->
           <button
@@ -35,25 +35,26 @@
           <!-- Contenedor de tabs -->
           <div
             ref="tabsContainer"
-            class="flex gap-2 py-3 overflow-x-auto scrollbar-hide whitespace-nowrap snap-x snap-mandatory md:justify-center md:overflow-x-visible"
+            class="flex gap-1 md:gap-3 py-3 overflow-x-auto scrollbar-hide whitespace-nowrap snap-x snap-mandatory md:justify-center"
             @scroll="updateScrollState"
           >
             <button
               v-for="tab in allTabs"
-              :key="tab"
-              @click="activeTab = tab.toLowerCase()"
+              :key="tab.name"
+              @click="activeTab = tab.name.toLowerCase()"
               :class="[
-                'relative px-4 py-2 text-sm font-medium transition-all duration-300 snap-start',
-                activeTab === tab.toLowerCase()
+                'relative py-2 px-2 md:px-5 text-sm font-medium transition-all duration-300 snap-start flex items-center space-x-2',
+                activeTab === tab.name.toLowerCase()
                   ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
                   : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
               ]"
-              :aria-selected="activeTab === tab.toLowerCase()"
+              :aria-selected="activeTab === tab.name.toLowerCase()"
               role="tab"
             >
-              {{ tab }}
+              <i :class="tab.icon" aria-hidden="true"></i>
+              <span>{{ tab.name }}</span>
               <span
-                v-if="activeTab === tab.toLowerCase()"
+                v-if="activeTab === tab.name.toLowerCase()"
                 class="absolute inset-x-0 bottom-0 h-0.5 bg-primary dark:bg-secondary"
               ></span>
             </button>
@@ -134,7 +135,16 @@ const connections = ref([]);
 const router = useRouter()
 
 // Tabs
-const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos','Guardado'];
+const allTabs = [
+  { name: 'Publicaciones', icon: 'fa-solid fa-square-share-nodes' },
+  { name: 'Información', icon: 'fa-solid fa-circle-info' },
+  { name: 'Conexiones', icon: 'fa-solid fa-user-group' },
+  { name: 'Galería', icon: 'fa-solid fa-images' },
+  { name: 'Eventos', icon: 'fa-solid fa-calendar-days' },
+  { name: 'Grupos', icon: 'fa-solid fa-users' },
+  { name: 'Guardado', icon: 'fa-solid fa-bookmark' },
+];
+
 const setTabConexiones = () => {
   activeTab.value = 'conexiones';
 };

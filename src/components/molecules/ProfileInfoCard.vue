@@ -1,20 +1,20 @@
 <template>
     <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
-        <img :src="activeUser?.photoURLFile  || avatarDefault" alt="Avatar" class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover shadow-lg" />
+        <img @click="openModal" :src="activeUser?.photoURLFile  || avatarDefault" alt="Avatar" class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover shadow-lg cursor-pointer" />
         <div class="text-center md:text-left text-gray-800 md:text-white">
             <h1 class="text-xl md:text-2xl font-bold">{{ activeUser?.displayName || activeUser?.email || 'Usuario' }}</h1>
             <p class="text-sm">{{ connections?.length || 0 }} conexiones</p>
             <div class="mt-2 flex -space-x-2 items-center">
                 <img 
-                v-for="connection in connections?.slice(0, 5)" 
-                :key="connection.idDoc"
-                :src="connection.avatar"
-                alt=""
-                class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
+                    v-for="connection in connections?.slice(0, 5)" 
+                    :key="connection.idDoc"
+                    :src="connection.avatar"
+                    alt=""
+                    class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
                 />
                 <button
                     @click="setTabConexiones"
-                    class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary dark:hover:ring-secondary transition group"
+                    class="relative inline-block h-8 w-8 rounded-full ring-2 ring-white hover:ring-primary dark:hover:ring-secondary transition group cursor-pointer"
                     data-tooltip="Ver todas las conexiones"
                 >
                     <img
@@ -30,9 +30,17 @@
             </div>
         </div>
     </div>
+    <!-- Media Modal -->
+    <MediaModalViewer
+       :visible="showModal"
+       :media="selectedMedia"
+       @close="closeModal"
+     />
 </template>
 <script setup>
+import { ref } from 'vue';
 import avatarDefault from '../../assets/avatar1.jpg';
+import MediaModalViewer from '../../components/molecules/MediaViewerModal.vue';
 
 // Props
 const props = defineProps({
@@ -40,6 +48,24 @@ const props = defineProps({
     connections: { type: Array, required: true },
     setTabConexiones: { type: Function, required: true },
 });
+
+
+  // Modal state
+  const showModal = ref(false);
+  const selectedMedia = ref({ src: '', type: 'image' });
+  
+  // Modal functions
+  const openModal = () => {
+    selectedMedia.value.src = props.activeUser?.photoURLFile || avatarDefault;
+    showModal.value = true;
+    document.body.style.overflow = 'hidden';
+  };
+  
+  const closeModal = () => {
+    showModal.value = false;
+    selectedMedia.value = { src: '', type: 'image' };
+    document.body.style.overflow = '';
+  };
 </script>
 
 <style scoped>

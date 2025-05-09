@@ -39,7 +39,7 @@
           <input
             v-model="editForm.email"
             type="email"
-            class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-800 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm"
+            class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-800 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm"
             placeholder="Correo electrónico"
             disabled
           />
@@ -50,7 +50,7 @@
             v-model="editForm.displayName"
             type="text"
             :class="[
-              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
               stepErrors.displayName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             placeholder="Nombre de usuario"
@@ -64,7 +64,7 @@
             v-model="editForm.firstName"
             type="text"
             :class="[
-              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
               stepErrors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             placeholder="Nombre"
@@ -78,7 +78,7 @@
             v-model="editForm.lastName"
             type="text"
             :class="[
-              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
               stepErrors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             placeholder="Apellido"
@@ -103,17 +103,26 @@
       <!-- Paso 3: Detalles personales -->
       <div v-if="currentStep === 2" class="space-y-4 animate-fade-in">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de nacimiento</label>
+          <!-- <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de nacimiento</label>
           <input
             v-model="editForm.birthday"
             type="date"
             :class="[
-              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50 shadow-sm',
+              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50 shadow-sm',
               stepErrors.birthday ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             :disabled="isLoading"
           />
-          <p v-if="stepErrors.birthday" class="text-red-500 text-sm mt-1">{{ stepErrors.birthday }}</p>
+          -->
+          
+          <SelectDate
+            v-model="editForm.birthday"
+            label="Fecha de nacimiento"
+            :disabled="isLoading"
+            :timeEnabled="false"
+            />
+            <!-- :error="stepErrors.birthday" -->
+          <p v-if="stepErrors.birthday" class="text-red-500 text-sm mt-1">{{ stepErrors.birthday }}</p> 
         </div>
         <div>
           <SelectGenre
@@ -186,7 +195,7 @@
         aria-label="Cancelar edición del perfil"
       >
         <i class="fa-solid fa-times"></i>
-        Cancelar
+        <p class="hidden md:block">Cancelar</p>
       </button>
       <div class="flex items-center gap-2">
         <button
@@ -198,7 +207,7 @@
           aria-label="Volver al paso anterior"
         >
           <i class="fa-solid fa-arrow-left"></i>
-          Atrás
+          <p class="hidden md:block">Atrás</p>
         </button>
         <button
           v-if="currentStep < steps.length - 1"
@@ -208,7 +217,7 @@
           class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           aria-label="Avanzar al siguiente paso"
         >
-          Siguiente
+          <p class="hidden md:block">Siguiente</p>
           <i class="fa-solid fa-arrow-right"></i>
         </button>
         <button
@@ -221,7 +230,9 @@
           <span v-if="isLoading">
             <i class="fa-solid fa-spinner animate-spin"></i>
           </span>
-          {{ isLoading ? 'Guardando...' : 'Guardar' }}
+          <p class="hidden md:block">
+            {{ isLoading ? 'Guardando...' : 'Guardar' }}
+          </p>
           <i v-if="!isLoading" class="fa-solid fa-save"></i>
         </button>
       </div>
@@ -237,6 +248,7 @@ import SelectCountry from '../atoms/SelectCountry.vue';
 import SelectGenre from '../atoms/SelectGenre.vue';
 import PhoneInput from '../atoms/PhoneInput.vue';
 import { useSnackbarStore } from '../../stores/snackbar'
+import SelectDate from '../atoms/SelectDate.vue';
 
 // Props
 const props = defineProps({

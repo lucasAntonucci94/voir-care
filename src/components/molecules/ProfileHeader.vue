@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full h-38 md:h-64 overflow-hidden">
+  <div @click="openMediaModal" class="relative w-full h-38 md:h-64 overflow-hidden">
     <img :src="activeUser?.bannerUrlFile ?? bannerUrl" alt="Banner" class="w-full h-full object-cover" />
     <div class="absolute inset-0 bg-black/50"></div>
   </div>
@@ -135,7 +135,12 @@
     </div>
   </div>
 
-
+  <!-- Media Modal -->
+  <MediaModalViewer
+      :visible="showModalMedia"
+      :media="selectedMedia"
+      @close="closeMediaModal"
+    />
 </template>
 
 <script setup>
@@ -150,7 +155,8 @@ import { useAuth } from '../../api/auth/useAuth';
 import CreateStoryModal from '../organisms/CreateStoryModal.vue';
 import BannerDefault from '../../assets/darkwallpaper.jpg'
 import { useSnackbarStore } from '../../stores/snackbar'
-
+import MediaModalViewer from '../../components/molecules/MediaViewerModal.vue';
+import avatarDefault from '../../assets/darkwallpaper.jpg';
 // Props
 const props = defineProps({
   activeUser: { type: Object, required: true },
@@ -182,6 +188,10 @@ const uploading = ref(false);
 const bannerUrl = ref(BannerDefault);
 const errorBannerFileMessage = ref('');
 
+  // Modal state
+  const showModalMedia = ref(false);
+  const selectedMedia = ref({ src: '', type: 'image' });
+  
 // Computados
 const isFollowing = computed(() => {
   return authUser.value?.connections?.some(conn => conn.uid === props?.activeUser?.uid);
@@ -199,6 +209,20 @@ function closeBannerModal() {
   previewUrl.value = null;
   document.body.style.overflow = ''; // Restaura el scroll del body
 }
+
+// Abrir Modal ver media
+const openMediaModal = () => {
+  selectedMedia.value.src = props.activeUser?.bannerUrlFile || avatarDefault;
+  showModalMedia.value = true;
+  document.body.style.overflow = 'hidden';
+};
+
+// Cerrar Modal ver media
+const closeMediaModal = () => {
+  selectedMedia.value = { src: '', type: 'image' };
+  showModalMedia.value = false;
+  document.body.style.overflow = '';
+};
 
 function handleFileChange(event) {
   errorBannerFileMessage.value = ''; // Reiniciar mensaje de error

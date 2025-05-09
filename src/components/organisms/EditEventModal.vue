@@ -119,7 +119,7 @@
           <!-- Paso 3: Detalles del evento -->
           <div v-if="currentStep === 3">
             <!-- Fecha y Hora de Inicio -->
-            <div>
+            <!-- <div>
               <label for="eventStartTime" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Fecha y Hora de Inicio
               </label>
@@ -131,22 +131,34 @@
                 :disabled="isLoading"
                 required
               />
-            </div>
-
+            </div> -->
+            <SelectDate
+              v-model="editForm.startTime"
+              label="Fecha y Hora de Inicio"
+              :disabled="isLoading"
+              time-enabled
+              required
+            />
             <!-- Fecha y Hora de Fin -->
-            <div>
+            <!-- <div>
               <label for="eventEndTime" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Fecha y Hora de Fin
               </label>
               <input
-                v-model="editForm.endTime"
-                id="eventEndTime"
-                type="datetime-local"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                :disabled="isLoading"
+              v-model="editForm.endTime"
+              id="eventEndTime"
+              type="datetime-local"
+              class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              :disabled="isLoading"
               />
-            </div>
-
+            </div> -->
+            <SelectDate
+              v-model="editForm.endTime"
+              label="Fecha y Hora de Fin"
+              :disabled="isLoading"
+              time-enabled
+            />
+            
             <!-- Ubicación -->
             <div>
               <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -277,6 +289,7 @@ import { useEventsStore } from '../../stores/events';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import { newGuid } from '../../utils/newGuid';
 import { useAuth } from '../../api/auth/useAuth';
+import SelectDate from '../atoms/SelectDate.vue';
 
 const props = defineProps({
   visible: {
@@ -350,6 +363,7 @@ watch(
       endTime: formatFirebaseTimestamp(newVal.endTime),
     };
     newMediaBase64.value = null;
+    debugger
   },
   { immediate: true }
 );

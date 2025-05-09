@@ -119,34 +119,20 @@
           <!-- Paso 3: Detalles del evento -->
           <div v-if="currentStep === 3">
             <!-- Fecha y Hora de Inicio -->
-            <div>
-              <label for="eventStartTime" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Fecha y Hora de Inicio
-              </label>
-              <input
-                v-model="newEvent.startTime"
-                id="eventStartTime"
-                type="datetime-local"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 transition-all duration-200"
-                :disabled="isLoading"
-                required
-              />
-            </div>
-
+            <SelectDate
+              v-model="newEvent.startTime"
+              label="Fecha y Hora de Inicio"
+              :disabled="isLoading"
+              time-enabled
+              required
+            />
             <!-- Fecha y Hora de Fin (opcional) -->
-            <div>
-              <label for="eventEndTime" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Fecha y Hora de Fin
-              </label>
-              <input
-                v-model="newEvent.endTime"
-                id="eventEndTime"
-                type="datetime-local"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 transition-all duration-200"
-                :disabled="isLoading"
-              />
-            </div>
-
+            <SelectDate
+              v-model="newEvent.endTime"
+              label="Fecha y Hora de Fin"
+              :disabled="isLoading"
+              time-enabled
+            />
             <!-- Ubicación -->
             <div>
               <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -274,6 +260,7 @@ import { newGuid } from '../../utils/newGuid';
 import { useEventsStore } from '../../stores/events';
 import { useAuth } from '../../api/auth/useAuth';
 import GeolocationInput from '../atoms/GeolocationInput.vue';
+import SelectDate from '../atoms/SelectDate.vue';
 
 const emits = defineEmits(['close', 'eventCreated']);
 const props = defineProps({
@@ -452,6 +439,7 @@ async function handleCreateEvent() {
         notInterested: [],
       },
     };
+    debugger
     await eventsStore.createEvent(eventData);
     emits('eventCreated', eventData);
     closeModal();
