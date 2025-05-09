@@ -97,9 +97,6 @@
                     <li @click.stop="deleteNotification(notification)" class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-red-500">
                       Eliminar
                     </li>
-                    <li @click.stop="reportNotification(notification)" class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-yellow-500">
-                      Reportar
-                    </li>
                   </ul>
                 </transition>
               </Teleport>
@@ -208,12 +205,6 @@ async function deleteNotification(notification) {
   } catch (error) {
     snackbarStore.show('Error al eliminar la notificación', 'error')
   }
-}
-
-function reportNotification(notification) {
-  console.log('Reportar notificación:', notification)
-  // TODO: Implementar lógica de reporte
-  snackbarStore.show('Notificación reportada', 'warning')
 }
 
 document.addEventListener('click', (e) => {
