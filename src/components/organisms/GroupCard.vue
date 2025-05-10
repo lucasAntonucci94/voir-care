@@ -1,6 +1,6 @@
 <template>
     <div
-      class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden w-full max-w-sm border border-gray-200 dark:border-gray-700 transition-transform duration-300 hover:shadow-xl cursor-pointer"
+      class="bg-white dark:bg-gray-700 rounded-2xl shadow-md overflow-hidden w-full max-w-sm border border-gray-200 dark:border-gray-700 transition-transform duration-300 hover:shadow-xl cursor-pointer"
       @click="goToDetail"
     >
       <!-- Media -->

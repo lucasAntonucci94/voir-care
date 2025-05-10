@@ -28,18 +28,8 @@
 
     <!-- Layout principal -->
     <div class="md:grid md:grid-cols-[280px_1fr]">
-      <!-- Contenedor para filtros y botón -->
-      <div class="relative">
-        <!-- Botón para abrir la modal -->
-        <button
-          @click="openCreateModal"
-          class="px-4 py-2 mt-3 ml-4 bg-primary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
-        >
-          <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
-        </button>
-        <ExploreFilters v-model="activeFilters" />
-      </div>
-
+      <!-- Componente de acciones (boton de creacion y filtros) -->
+      <ExploreFilters v-model="activeFilters" />
       <!-- Componente del mapa -->
       <ExploreMap
         ref="exploreMapRef"
@@ -47,9 +37,6 @@
         @map-ready="handleMapReady"
       />
     </div>
-    <!-- Modal para crear una location -->
-    <CreateLocationModal :visible="isCreateModalOpen" @close="closeCreateModal"
-    />
   </section>
 </template>
 
@@ -59,12 +46,10 @@ import ExploreFilters from '../components/molecules/ExploreFilters.vue';
 import ExploreMap from '../components/molecules/ExploreMapOld.vue';
 // import ExploreMap from '../components/molecules/ExploreMap.vue';
 import { useLocationsStore } from '../stores/locations';
-import CreateLocationModal from '../components/organisms/CreateLocationModal.vue';
 
 const locationsStore = useLocationsStore();
 const exploreMapRef = ref(null) //que hace esta ref? me permite acceder al componente hijo ExploreMap y llamar a sus métodos desde aquí. Magic :D
 const loadingLocation = ref(false);
-const isCreateModalOpen = ref(false);
 const activeFilters = ref([]);
 
 function centerOnUserLocation() {
@@ -72,14 +57,6 @@ function centerOnUserLocation() {
   exploreMapRef.value?.centerOnUserLocation()
   loadingLocation.value = false
 }
-
-// const filteredLocations = computed(() => {
-//   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
-//   if (activeFilters.value.length === 0) return filtered;
-//   return filtered.filter((location) =>
-//     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
-//   );
-// });
 
 const filteredLocations = computed(() => {
   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
@@ -90,22 +67,13 @@ const filteredLocations = computed(() => {
 });
 
 function goBack() {
-  // Lógica personalizada, por ejemplo:
-  window.history.back(); // O usa un evento para notificar al componente padre
+  window.history.back();
 }
 
 const handleMapReady = () => {
   console.log('Mapa listo');
 };
 
-// Logica de modal y formulario
-function openCreateModal() {
-  isCreateModalOpen.value = true;
-}
-
-function closeCreateModal() {
-  isCreateModalOpen.value = false;
-}
 
 onMounted(() => {
   locationsStore.subscribe();

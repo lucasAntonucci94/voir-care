@@ -20,7 +20,7 @@
         :updateRefData="updateDataFromChild"
       />
       <!-- Tabs con flechas -->
-      <div class="container mx-auto mt-6 sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10">
+      <div class="container mx-auto mt-6 sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10 rounded-lg">
         <div class="relative">
           <!-- Botón de flecha izquierda -->
           <button
@@ -35,7 +35,7 @@
           <!-- Contenedor de tabs -->
           <div
             ref="tabsContainer"
-            class="flex gap-1 md:gap-3 py-3 overflow-x-auto scrollbar-hide whitespace-nowrap snap-x snap-mandatory md:justify-center"
+            class=" flex gap-1 md:gap-3 py-3 overflow-x-auto scrollbar-hide whitespace-nowrap snap-x snap-mandatory md:justify-center"
             @scroll="updateScrollState"
           >
             <button

@@ -1,5 +1,9 @@
 <template>
   <div class="p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-full overflow-y-auto">
+    <button class="px-4 py-2 mb-5 bg-primary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
+      @click="openCreateModal" aria-label="Agregar lugar">
+      <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
+    </button>
     <!-- Título y botón de borrar filtros -->
     <div class="flex items-center justify-between mb-6 bg-gray-100 dark:bg-gray-900 p-4 rounded-xl shadow-sm">
       <div class="flex items-center gap-3">
@@ -75,11 +79,12 @@
         <span class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ filter.label }}</span>
       </label>
     </div>
+    <CreateLocationModal :visible="showCreateModal" @close="closeCreateModal" />
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, onMounted } from 'vue';
+import { ref, defineEmits, onMounted } from 'vue';
 import CatIcon from '../../assets/icons/cat_1998592.png';
 import VetIcon1 from '../../assets/icons/locations/vet1.png';
 import TrainerIcon1 from '../../assets/icons/locations/entrenador1.png';
@@ -87,6 +92,7 @@ import PaseadorIcon1 from '../../assets/icons/locations/paseador1.png';
 import Guarderiacon1 from '../../assets/icons/locations/guarderia1.png';
 import ParqueIcon1 from '../../assets/icons/locations/parque1.png';
 import PetfriendlyIcon1 from '../../assets/icons/locations/petfriendly1.png';
+import CreateLocationModal from '../../components/organisms/CreateLocationModal.vue';
 
 const props = defineProps({
   modelValue: {
@@ -110,6 +116,7 @@ const emit = defineEmits(['update:modelValue']);
 // Estado Reactivo
 const isDesktop = ref(false);
 const showFilters = ref(false); // Controla si los filtros están expandidos en mobile
+const showCreateModal = ref(false);
 
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
@@ -118,6 +125,15 @@ const checkIfDesktop = () => {
     showFilters.value = true; // En desktop, los filtros siempre están expandidos
   }
 };
+
+// Logica de modal y formulario
+function openCreateModal() {
+  showCreateModal.value = true;
+}
+
+function closeCreateModal() {
+  showCreateModal.value = false;
+}
 
 onMounted(() => {
   checkIfDesktop();

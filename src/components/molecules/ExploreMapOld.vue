@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full h-[60vh] md:h-[70vh]">
+  <div class="relative w-full h-[60vh] md:h-[100vh]">
     <!-- Skeleton Loader mientras el mapa se reinicia -->
     <div
       v-if="isMapLoading"
