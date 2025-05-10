@@ -49,7 +49,7 @@
             />
             <span class="text-sm text-gray-600 dark:text-gray-400">{{ post.group.title || 'Nombre del Grupo' }}</span>
           </div>
-          <PostCard :post="post" />
+          <GroupPostCard :post="post" />
         </div>
       </TransitionGroup>
     </div>
@@ -59,7 +59,7 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useGroupsStore } from '../../stores/groups'
-import PostCard from '../organisms/PostCard.vue'
+import GroupPostCard from '../organisms/GroupPostCard.vue'
 import AvatarDefault from '../../assets/avatar1.jpg'
 import { useAuth } from '../../api/auth/useAuth'
 import { useRouter } from 'vue-router'
