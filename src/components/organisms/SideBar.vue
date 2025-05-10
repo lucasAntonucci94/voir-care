@@ -3,87 +3,74 @@
     'bg-gray-100  dark:bg-gray-800 w-64 p-6 shadow-lg transition-transform duration-300 fixed top-0 bottom-0 z-100',
     show ? 'translate-x-0' : '-translate-x-full',
     'md:w-72 md:shadow-none md:static md:translate-x-0'
-  ]">
+  ]" aria-label="Menú lateral de navegación" id="sidebar">
     <!-- Cruz de cierre en móvil -->
     <button 
       v-if="show" 
       @click="emit('toggle')" 
-      class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 hover:text-primary transition-colors md:hidden"
+      type="button"
+      class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary transition-colors md:hidden"
+      aria-label="Cerrar menú lateral"
+      :aria-expanded="show"
+      aria-controls="sidebar"
     >
-      <i class="fas fa-times text-lg"></i>
+      <span class="fa-solid fa-times text-lg" aria-hidden="true"></span>
     </button>
 
     <!-- Perfil del usuario -->
-    <router-link to="/profile" v-if="isAuthenticated" class="flex items-center gap-4 mb-8">
-      <img 
+    <header class="mb-8">
+      <router-link to="/profile" v-if="isAuthenticated" class="flex items-center gap-4 mb-8" aria-current="page">
+        <img 
         :src="user?.photoURLFile || avatarDefault" 
-        alt="Avatar" 
+        :alt="`Avatar de ${user?.displayName || user?.email || 'Usuario'}`"
         class="w-12 h-12 rounded-full border-2 border-gray-200 object-cover"
-      />
-      <div>
-        <p class="text-gray-800 dark:text-gray-200 font-semibold">
-          {{ user?.displayName || user?.email || 'Usuario' }}
-        </p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">{{user?.isAdmin ? 'Administrador' :'Miembro'}}</p>
-      </div>
-    </router-link>
+        />
+        <div>
+          <p class="text-gray-800 dark:text-gray-200 font-semibold text-base">
+            {{ user?.displayName || user?.email || 'Usuario' }}
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{user?.isAdmin ? 'Administrador' :'Miembro'}}</p>
+        </div>
+      </router-link>
+    </header>
 
     <!-- Navegación principal -->
-    <nav class="space-y-2">
+    <nav class="space-y-2" aria-label="Navegación principal">
       <router-link 
         :to="pathLocation(isAuthenticated)" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white"
         @click="emit('toggle')"
       >
-        <i class="fas fa-home w-5 text-center"></i>
+        <span class="fa-solid fa-home w-5 text-center" aria-hidden="true"></span>
         <span class="text-sm font-medium">Inicio</span>
       </router-link>
-      <router-link v-if="!isAuthenticated"
+      <router-link 
         to="/login" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white"
         @click="emit('toggle')"
       >
-        <i class="fas fa-compass w-5 text-center"></i>
-        <span class="text-sm font-medium">Iniciar Sesión</span>
+        <span class="fa-solid fa-right-to-bracket w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Iniciar Sesión</span>
       </router-link>
-      <router-link v-if="isAuthenticated"
+      <router-link 
         to="/groups" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white"
         @click="emit('toggle')"
-        >
-        <i class="fas fa-users w-5 text-center"></i>
-          <span class="text-sm font-medium">Grupos</span>
-        </router-link>
-        <router-link v-if="isAuthenticated"
+      >
+        <span class="fa-solid fa-users w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Grupos</span>
+      </router-link>
+      <router-link 
         to="/events" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
-        >
-        <i class="fas fa-calendar w-5 text-center"></i>
-        <span class="text-sm font-medium">Eventos</span>
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white"
+        @click="emit('toggle')"
+      >
+        <span class="fa-solid fa-calendar w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Eventos</span>
       </router-link>
       <!-- <router-link v-if="isAuthenticated"
       to="/profile" 
@@ -99,79 +86,56 @@
       <i class="fas fa-user w-5 text-center"></i>
       <span class="text-sm font-medium">Perfil</span>
     </router-link> -->
-    <router-link v-if="isAuthenticated"
-      to="/explorar" 
-      class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-      text-gray-700 hover:bg-gray-200 
-      dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-      active-class="
-      bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-      dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-      "
-      @click="emit('toggle')"
-    >
-      <i class="fas fa-compass w-5 text-center"></i>
-      <span class="text-sm font-medium">Explorar</span>
-    </router-link>
-      <router-link v-if="isAuthenticated"
-        to="/chats" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
+      <router-link 
+        to="/explorar" 
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white"
         @click="emit('toggle')"
       >
-        <i class="fas fa-message w-5 text-center"></i>
-        <span class="text-sm font-medium">Mensajes</span>
+        <span class="fa-solid fa-compass w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Explorar</span>
+      </router-link>
+      <router-link 
+        to="/chats" 
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:focus-bg-secondary-md dark:hover:text-white"
+        @click="emit('toggle')"
+      >
+        <span class="fa-solid fa-message w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Mensajes</span>
       </router-link>
       <router-link 
         to="/faqs" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white"
         @click="emit('toggle')"
-        >
-        <i class="fas fa-question w-5 text-center"></i>
-        <span class="text-sm font-medium">Faqs</span>
+      >
+        <span class="fa-solid fa-question w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Preguntas Frecuentes</span>
       </router-link>
     </nav>
 
     <!-- Sección "Otros" -->
-    <div class="mt-8">
+    <div class="mt-8 space-y-2">
       <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Otros</h3>
-      <router-link v-if="isAuthenticated" 
+      <router-link 
         to="/education" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors mb-2
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:focus-bg-secondary-md dark:hover:text-white"
+        @click="emit('toggle')"
       >
-        <i class="fas fa-book-open w-5 text-center"></i>
-        <span class="text-sm font-medium">Educación (próximamente)</span>
-    </router-link>
-      <router-link v-if="isAuthenticated" 
+        <span class="fa-solid fa-message w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Educación</span>
+      </router-link>
+      <router-link 
         to="/adoption" 
-        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
-        text-gray-700 hover:bg-gray-200 
-        dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
-        active-class="
-        bg-primary text-white hover:bg-primary-md hover:text-gray-100 
-        dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white
-        "
+        class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
+        active-class="bg-primary text-white hover:bg-primary-md hover:text-gray-100 dark:bg-secondary dark:text-white dark:hover:bg-secondary-md dark:hover:text-white"
+        @click="emit('toggle')"
       >
-        <i class="fas fa-dog w-5 text-center"></i>
-        <span class="text-sm font-medium">Adopcion (próximamente)</span>
-    </router-link>
+        <span class="fa-solid fa-question w-5 text-center" aria-hidden="true"></span>
+        <span class="text-base font-medium">Adopcion</span>
+      </router-link>
     </div>
   </aside>
   <!-- Fondo semitransparente para cerrar en móvil -->
@@ -179,6 +143,7 @@
     v-if="show" 
     @click="emit('toggle')" 
     class="fixed inset-0 bg-black/40 md:hidden z-20"
+    aria-hidden="true"
   ></div>
 </template>
 

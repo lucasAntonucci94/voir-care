@@ -50,6 +50,7 @@
             />
             <span class="text-sm text-gray-600 dark:text-gray-400">{{ post.group.title || 'Nombre del Grupo' }}</span>
           </div>
+            
           <GroupPostCard :post="post" />
         </div>
       </TransitionGroup>

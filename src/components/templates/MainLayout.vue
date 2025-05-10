@@ -9,9 +9,7 @@ MainLayout.vue
            @toggle="sidebarStore.toggleSidebar"
          />
         <main class="flex-grow bg-gray-50 dark:bg-gray-900 font-poppins overflow-y-auto flex-1">
-          <div class=" mx-auto">
-                  <router-view />
-          </div>
+          <router-view />
         </main>
         <!-- Snackbar global -->
         <SnackBar />

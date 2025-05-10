@@ -1,13 +1,12 @@
 import { ref } from 'vue';
 
-// Clave de la API de Google Maps (asegúrate de que sea válida y esté restringida)
-const GOOGLE_MAPS_API_KEY = 'AIzaSyDbCImtrddG3Zm7roBIeYMWug-rsfoCH7c';
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 export function useGoogleMaps() {
   const isGoogleMapsLoaded = ref(false);
   let geocoder = null;
 
-  // Cargar la biblioteca de Google Maps dinámicamente con todas las bibliotecas necesarias
+  // Cargar las librerias de Google Maps
   const loadGoogleMaps = async () => {
     if (isGoogleMapsLoaded.value) return Promise.resolve();
 
