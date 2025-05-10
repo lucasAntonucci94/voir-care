@@ -2,8 +2,8 @@
     <div class="flex flex-col md:flex-row items-center md:items-start gap-4">
         <img @click="openModal" :src="activeUser?.photoURLFile  || avatarDefault" alt="Avatar" class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover shadow-lg cursor-pointer" />
         <div class="text-center md:text-left text-gray-800 md:text-white">
-            <h1 class="text-xl md:text-2xl font-bold">{{ activeUser?.displayName || activeUser?.email || 'Usuario' }}</h1>
-            <p class="text-sm">{{ connections?.length || 0 }} conexiones</p>
+            <h1 class="text-gray-700 dark:text-gray-300 text-xl md:text-2xl font-bold">{{ activeUser?.displayName || activeUser?.email || 'Usuario' }}</h1>
+            <p class="text-gray-700 dark:text-gray-300 text-sm">{{ connections?.length || 0 }} conexiones</p>
             <div class="mt-2 flex -space-x-2 items-center">
                 <img 
                     v-for="connection in connections?.slice(0, 5)" 

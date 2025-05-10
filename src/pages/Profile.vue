@@ -20,7 +20,7 @@
         :updateRefData="updateDataFromChild"
       />
       <!-- Tabs con flechas -->
-      <div class="container mx-auto mt-6 sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10 rounded-lg">
+      <div class="container mx-auto  mt-10 md:mt-5  sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10 rounded-lg">
         <div class="relative">
           <!-- Botón de flecha izquierda -->
           <button

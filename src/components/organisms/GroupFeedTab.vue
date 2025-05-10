@@ -3,7 +3,8 @@
     <!-- Sticky Header with Sorting -->
     <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 py-4 mb-6 rounded-lg shadow-sm">
       <div class="flex justify-between items-center max-w-2xl mx-auto">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Feed de Grupos</h2>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Feed de Grupos (En mantenimiento, de ser posible no interactuar con los post)</h2>
+        
         <select
           v-model="sortOption"
           class="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
