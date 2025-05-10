@@ -85,7 +85,7 @@
         <i class="fas fa-calendar w-5 text-center"></i>
         <span class="text-sm font-medium">Eventos</span>
       </router-link>
-      <router-link v-if="isAuthenticated"
+      <!-- <router-link v-if="isAuthenticated"
       to="/profile" 
       class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
       text-gray-700 hover:bg-gray-200 
@@ -98,7 +98,7 @@
       >
       <i class="fas fa-user w-5 text-center"></i>
       <span class="text-sm font-medium">Perfil</span>
-    </router-link>
+    </router-link> -->
     <router-link v-if="isAuthenticated"
       to="/explorar" 
       class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors
