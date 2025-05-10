@@ -3,7 +3,7 @@
     <!-- Filtros superiores -->
     <div class="flex flex-wrap gap-4 justify-between items-center">
       <div class="flex gap-2 flex-wrap">
-        <label for="filter" class="text-sm font-medium text-gray-700 dark:text-white">Filtrar por</label>
+        <label for="filter" class="text-sm font-medium text-gray-700 dark:text-white sr-only">Filtrar por</label>
         <select
           id="filter"
           v-model="selectedFilter"

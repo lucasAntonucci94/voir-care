@@ -1,3 +1,4 @@
+<!-- NotificationDropdown.vue -->
 <template>
   <div class="relative">
     <!-- Botón de notificaciones -->
@@ -51,10 +52,18 @@
         <!-- Acciones -->
         <div class="flex justify-end px-4 py-2 border-b border-gray-100 dark:border-gray-700">
           <button
+            v-if="activeTab === 'unread'"
             @click="markAllAsRead"
             class="text-xs text-gray-600 dark:text-gray-300 hover:underline"
           >
             Marcar todas como leídas
+          </button>
+          <button
+            v-else-if="activeTab === 'read'"
+            @click="deleteAllRead"
+            class="text-xs text-red-500 dark:text-red-400 hover:underline"
+          >
+            Borrar todo
           </button>
         </div>
 
@@ -112,7 +121,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
@@ -156,6 +164,20 @@ async function markAllAsRead() {
   await Promise.all(promises)
 }
 
+async function deleteAllRead() {
+  const readNotifications = filteredNotifications.value;
+  const promises = readNotifications.map(n =>
+    notificationsStore.deleteNotification(user.value.uid, n.id)
+  );
+  try {
+    await Promise.all(promises);
+    snackbarStore.show('Todas las notificaciones leídas han sido eliminadas', 'success');
+  } catch (error) {
+    snackbarStore.show('Error al eliminar las notificaciones', 'error');
+    console.error('Error deleting read notifications:', error);
+  }
+}
+
 async function handleClick(notification) {
   await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id)
   if (notification.type === 'message') {
@@ -181,11 +203,15 @@ async function toggleRead(notification) {
 }
 
 function getDropdownPosition(event, id) {
-  const position = dropdownPositions.value[id]
-  return position ? {
+  const button = event.currentTarget.getBoundingClientRect()
+  dropdownPositions.value[id] = {
+    top: button.bottom + window.scrollY,
+    left: button.right - 160 + window.scrollX // ajustá 160 a tu ancho de menú
+  }
+  return dropdownPositions.value[id] ? {
     position: 'absolute',
-    top: `${position.top}px`,
-    left: `${position.left}px`
+    top: `${dropdownPositions.value[id].top}px`,
+    left: `${dropdownPositions.value[id].left}px`
   } : {}
 }
 
