@@ -106,7 +106,6 @@ export const usePostsStore = defineStore('posts', {
     // },
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
-      debugger
       // Find the post in posts, profilePosts, or savedPosts
       let postInPosts = this.posts?.value?.find(p => p.idDoc === postIdDoc);
       let postInProfile = this.profilePosts?.value?.find(p => p.idDoc === postIdDoc);
@@ -177,7 +176,6 @@ export const usePostsStore = defineStore('posts', {
     async fetchSavedPosts() {
       const { getPostById } = usePosts();
       try {
-        debugger
         const fetchedPosts = await Promise.all(
           this.savedPostIds.map(async (postId) => {
             try {
@@ -189,7 +187,6 @@ export const usePostsStore = defineStore('posts', {
             }
           })
         );
-        debugger
         // Filter out null values (failed fetches) and store in savedPosts
         this.savedPosts = fetchedPosts.filter(post => post !== null);
       } catch (error) {

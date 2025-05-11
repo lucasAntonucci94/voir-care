@@ -439,7 +439,6 @@ async function handleCreateEvent() {
         notInterested: [],
       },
     };
-    debugger
     await eventsStore.createEvent(eventData);
     emits('eventCreated', eventData);
     closeModal();

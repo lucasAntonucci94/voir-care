@@ -16,7 +16,10 @@ import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
-import UsersPage from '../pages/admin/UsersPage.vue';
+import AdmUsersPage from '../pages/admin/UsersPage.vue';
+import AdmEventsPage from '../pages/admin/EventsPage.vue';
+import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
+import AdmEducationsPage from '../pages/admin/EducationsPage.vue';
 import BlogDetailPage from '../pages/BlogDetail.vue';
 import AdoptionPage from '../pages/AdoptionPage.vue';
 import { useAuth } from '../api/auth/useAuth';
@@ -153,7 +156,7 @@ const routes = [
       {
         path:  '/admin/users',
         name: 'usersAdm',
-        component: UsersPage,
+        component: AdmUsersPage,
         meta: {
             requiresAuth: true,
         }
@@ -161,7 +164,7 @@ const routes = [
       {
         path:  '/admin/events',
         name: 'eventsAdm',
-        component: UsersPage,
+        component: AdmEventsPage,
         meta: {
             requiresAuth: true,
         }
@@ -169,7 +172,7 @@ const routes = [
       {
         path:  '/admin/groups',
         name: 'groupsAdm',
-        component: UsersPage,
+        component: AdmGroupsPage,
         meta: {
             requiresAuth: true,
         }
@@ -177,7 +180,7 @@ const routes = [
       // {
       //   path:  '/admin/faqs',
       //   name: 'users',
-      //   component: UsersPage,
+      //   component: AdmUsersPage,
       //   meta: {
       //       requiresAuth: true,
       //   }
@@ -185,7 +188,7 @@ const routes = [
       {
         path:  '/admin/education',
         name: 'educationAdm',
-        component: UsersPage,
+        component: AdmEducationsPage,
         meta: {
             requiresAuth: true,
         }
@@ -193,7 +196,7 @@ const routes = [
       {
         path:  '/admin/adoption',
         name: 'adoptionAdm',
-        component: UsersPage,
+        component: AdmUsersPage,
         meta: {
             requiresAuth: true,
         }

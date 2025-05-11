@@ -21,7 +21,6 @@ export const useUsersStore = defineStore('users', {
       return user;
     },
     subscribeUsers() {
-      debugger
       if (this.unsubscribeUsersFn) {
         console.log('Suscripción a usuarios ya activa, ignorando...');
         return;
@@ -30,7 +29,6 @@ export const useUsersStore = defineStore('users', {
       const { subscribeToUsers } = useUsers();
       this.unsubscribeUsersFn = subscribeToUsers((updatedUsers) => {
         console.log('Usuarios recibidos desde Firebase:', updatedUsers);
-        debugger
         this.users = updatedUsers;
         this.isLoading = false;
       });

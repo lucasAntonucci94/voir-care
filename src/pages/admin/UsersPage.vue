@@ -239,7 +239,6 @@ const filteredUsers = computed(() => {
       filterRole.value === 'admin' ? user.isAdmin : !user.isAdmin
     );
   }
-  debugger
   return filtered;
 });
 

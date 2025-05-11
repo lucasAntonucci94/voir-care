@@ -363,7 +363,6 @@ watch(
       endTime: formatFirebaseTimestamp(newVal.endTime),
     };
     newMediaBase64.value = null;
-    debugger
   },
   { immediate: true }
 );
