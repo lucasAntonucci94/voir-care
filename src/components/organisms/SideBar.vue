@@ -86,7 +86,7 @@ const { user, isAuthenticated } = useAuth();
 const emit = defineEmits(['toggle']);
 const props = defineProps(['show']);
 
-// Navigation items for main navigation
+// Items de navecación principal
 const mainNavItems = [
   { to: '/home', icon: 'fa-home', label: 'Inicio' },
   { to: '/groups', icon: 'fa-users', label: 'Grupos' },
@@ -96,13 +96,12 @@ const mainNavItems = [
   { to: '/faqs', icon: 'fa-question', label: 'Preguntas Frecuentes' },
 ];
 
-// Navigation items for "Otros" section
+// Items de navegación "Otros"
 const otherNavItems = [
   { to: '/education', icon: 'fa-message', label: 'Educación' },
   { to: '/adoption', icon: 'fa-paw', label: 'Adopción' },
 ];
 
-// Determine path for "Inicio" based on authentication
 function pathLocation(isAuthenticated) {
   return isAuthenticated ? '/feed' : '/';
 }
