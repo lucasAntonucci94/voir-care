@@ -16,6 +16,7 @@ import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
+import UsersPage from '../pages/admin/UsersPage.vue';
 import BlogDetailPage from '../pages/BlogDetail.vue';
 import AdoptionPage from '../pages/AdoptionPage.vue';
 import { useAuth } from '../api/auth/useAuth';
@@ -143,8 +144,56 @@ const routes = [
       },
       {
         path:  '/admin/reports',
-        name: 'reports',
+        name: 'reportsAdm',
         component: ReportsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/users',
+        name: 'usersAdm',
+        component: UsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/events',
+        name: 'eventsAdm',
+        component: UsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/groups',
+        name: 'groupsAdm',
+        component: UsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      // {
+      //   path:  '/admin/faqs',
+      //   name: 'users',
+      //   component: UsersPage,
+      //   meta: {
+      //       requiresAuth: true,
+      //   }
+      // },
+      {
+        path:  '/admin/education',
+        name: 'educationAdm',
+        component: UsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/adoption',
+        name: 'adoptionAdm',
+        component: UsersPage,
         meta: {
             requiresAuth: true,
         }

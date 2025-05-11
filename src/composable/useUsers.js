@@ -1,13 +1,13 @@
 import { ref } from 'vue';
-import { getFirestore, doc, setDoc, getDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove, onSnapshot,deleteDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { usePosts } from '../composable/usePosts';
+import { useAuth } from '../api/auth/useAuth'
 
 const db = getFirestore();
 const usersRef = collection(db, 'users');
 const { getFileUrl } = useStorage();
 const { updateUserFromPost } = usePosts();
-// Estado reactivo para el perfil del usuario (opcional, dependiendo de cómo quieras usarlo)
 const userProfile = ref(null);
 
 export function useUsers() {
@@ -24,7 +24,7 @@ export function useUsers() {
       querySnapshot.forEach((doc) => {
         const user = doc.data();
         users.push({
-          uid: userDoc.id,
+          uid: doc.id,
           email: user.email,
           displayName: user.displayName,
           firstName: user.firstName || null,
@@ -33,12 +33,13 @@ export function useUsers() {
           genre: user.genre || null,
           birthday: user.birthday || null,
           country: user.country || null,
-          photoURLFile: user.photoURLFile|| null,
-          photoPathFile: user.photoPathFile|| null,
+          photoURLFile: user.photoURLFile || null,
+          photoPathFile: user.photoPathFile || null,
           bannerUrlFile: user.bannerUrlFile || null,
           bannerPathFile: user.bannerPathFile || null,
           avatar: user.avatar || null,
           isAdmin: user.isAdmin || false,
+          isBlocked: user.isBlocked || false,
         });
       });
 
@@ -46,6 +47,30 @@ export function useUsers() {
     } catch (error) {
       console.error('Error al obtener todos los usuarios:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Escucha los usuarios en tiempo real.
+   * @param {function} callback - Función que recibe un array de usuarios
+   * @returns {function} - Función para cancelar la suscripción
+   */
+  function subscribeToUsers(callback) {
+    try {
+      const q = query(usersRef);
+      return onSnapshot(q, (snapshot) => {
+        const users = snapshot.docs.map((doc) => ({
+          uid: doc.id,
+          ...doc.data(),
+        }));
+        callback(users);
+      }, (error) => {
+        console.error('Error al suscribirse a usuarios:', error);
+        throw error;
+      });
+    } catch (err) {
+      console.error('Error al suscribirse a usuarios:', err);
+      throw err;
     }
   }
 
@@ -75,11 +100,12 @@ export function useUsers() {
         country: user.country || null,
         avatar: user.avatar || null,
         connections: user.connections || [],
-        photoURLFile: user.photoURLFile|| null,
-        photoPathFile: user.photoPathFile|| null,
+        photoURLFile: user.photoURLFile || null,
+        photoPathFile: user.photoPathFile || null,
         bannerUrlFile: user.bannerUrlFile || null,
         bannerPathFile: user.bannerPathFile || null,
         isAdmin: user.isAdmin || false,
+        isBlocked: user.isBlocked || false,
       };
     } catch (error) {
       console.error('Error al obtener el perfil por email:', error);
@@ -105,12 +131,13 @@ export function useUsers() {
         genre: data.genre || null,
         birthday: data.birthday || null,
         country: data.country || null,
-        photoURLFile: data.photoURLFile|| null,
-        photoPathFile: data.photoURLFile|| null,
+        photoURLFile: data.photoURLFile || null,
+        photoPathFile: data.photoPathFile || null,
         avatar: data.avatar || null,
         bannerUrlFile: data.bannerUrlFile || null,
         bannerPathFile: data.bannerPathFile || null,
         isAdmin: data.isAdmin || false,
+        isBlocked: false,
       });
     } catch (error) {
       console.error('Error al crear usuario:', error);
@@ -141,11 +168,28 @@ export function useUsers() {
         photoPathFile: data.photoPathFile || null,
         bannerUrlFile: data.bannerUrlFile || null,
         bannerPathFile: data.bannerPathFile || null,
-      }
+        isBlocked: data.isBlocked || null,
+      };
       await updateDoc(docRef, userData);
-      await updateUserFromPost(id, userData)
+      await updateUserFromPost(id, userData);
     } catch (error) {
       console.error('Error al actualizar usuario:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina un usuario de Firestore
+   * @param {string} id - ID del usuario
+   * @returns {Promise<void>}
+   */
+  async function deleteUser(id) {
+    try {
+      const userRef = doc(db, 'users', id);
+      await deleteDoc(userRef);
+      console.log(`Usuario con ID ${id} eliminado exitosamente`);
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
       throw error;
     }
   }
@@ -173,13 +217,13 @@ export function useUsers() {
       ]);
 
       const combinedData = {
-        ...firebaseUser, // Datos de Firebase Auth
-        photoURLFile,    // URL de la imagen desde Storage
-        ...profile,      // Datos adicionales de Firestore
+        ...firebaseUser,
+        photoURLFile,
+        ...profile,
         hiddenPosts,
       };
 
-      userProfile.value = combinedData; // Actualizamos el estado reactivo
+      userProfile.value = combinedData;
 
       return combinedData;
     } catch (error) {
@@ -204,7 +248,6 @@ export function useUsers() {
         avatar: connectionData.avatar || null,
       };
 
-      // Usamos arrayUnion para agregar la conexión al array 'connections' sin duplicados
       await updateDoc(userRef, {
         connections: arrayUnion(connection),
       });
@@ -269,7 +312,7 @@ export function useUsers() {
       await updateDoc(docRef, {
         bannerUrlFile: bannerData.bannerUrlFile,
         bannerPathFile: bannerData.bannerPathFile,
-      }); // Actualización parcial solo del banner
+      });
     } catch (error) {
       console.error('Error al actualizar el banner del usuario:', error);
       throw error;
@@ -292,26 +335,108 @@ export function useUsers() {
   }
 
   async function getUserIdByEmail(email) {
-    const usersRef = collection(db, 'users')
-    const q = query(usersRef, where('email', '==', email), limit(1))
-    const snapshot = await getDocs(q)
-  
-    if (snapshot.empty) throw new Error('Usuario no encontrado con email: ' + email)
-  
-    return snapshot.docs[0].id // este es el UID (idDoc)
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, where('email', '==', email), limit(1));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) throw new Error('Usuario no encontrado con email: ' + email);
+
+    return snapshot.docs[0].id;
   }
   
+  /**
+   * Bloquea a un usuario de forma global (sera ejecutado por el admin)
+   * @param {string} id - ID del usuario
+   * @param {boolean} isBlocked - true para bloquear, false para desbloquear
+   * @returns {Promise<void>}
+   */
+  async function blockUserGlobally(id, isBlocked) {
+    try {
+      // verifico que exista usuario logueado
+      const { user: authUser } = useAuth();
+      if (!authUser.value) throw new Error('No hay usuario autenticado');
+      
+      // Verifico que el usuario logueado sea admin
+      const currentUserDoc = await getDoc(doc(db, 'users', authUser.value.uid));
+      if (!currentUserDoc.exists() || !currentUserDoc.data().isAdmin) {
+        throw new Error('Solo los administradores pueden bloquear globalmente');
+      }  
+      // Actualizo propiedad isBlocked en Firestore
+      const userRef = doc(db, 'users', id);
+      await updateDoc(userRef, {
+        isBlocked: isBlocked,
+      });
+      console.log(`Usuario con ID ${id} ${isBlocked ? 'bloqueado' : 'desbloqueado'} exitosamente`);
+    } catch (error) {
+      console.error('Error al bloquear usuario:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Bloquea a un usuario individualmente
+   * @param {string} targetId - ID del usuario a bloquear
+   * @returns {Promise<void>}
+   */
+  async function blockUserIndividually(targetId) {
+    try {
+      // verifico que exista usuario logueado
+      const { user: authUser } = useAuth();
+      if (!authUser.value) throw new Error('No hay usuario autenticado');
+      
+      if (authUser.value.uid === targetId) throw new Error('No puedes bloquearte a ti mismo');
+
+      const targetRef = doc(db, 'users', targetId);
+      await updateDoc(targetRef, {
+        blockedBy: arrayUnion(authUser.value.uid),
+      });
+      console.log(`Usuario con ID ${targetId} bloqueado por ${authUser.value.uid}`);
+    } catch (error) {
+      console.error('Error al bloquear usuario individualmente:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Desbloquea a un usuario individualmente
+   * @param {string} targetId - ID del usuario a desbloquear
+   * @returns {Promise<void>}
+   */
+  async function unblockUserIndividually(targetId) {
+    try {
+      // verifico que exista usuario logueado
+      const { user: authUser } = useAuth();
+      if (!authUser.value) throw new Error('No hay usuario autenticado');
+      
+      if (!authUser.value) throw new Error('No hay usuario autenticado');
+
+      const targetRef = doc(db, 'users', targetId);
+      await updateDoc(targetRef, {
+        blockedBy: arrayRemove(authUser.value.uid),
+      });
+      console.log(`Usuario con ID ${targetId} desbloqueado por ${authUser.value.uid}`);
+    } catch (error) {
+      console.error('Error al desbloquear usuario individualmente:', error);
+      throw error;
+    }
+  }
+
   return {
-    userProfile, // Estado reactivo opcional
+    userProfile,
     getAllUsers,
+    subscribeToUsers,
     getUserProfileByEmail,
     createUser,
     updateUser,
+    deleteUser,
     loadProfileInfo,
     addConnection,
     removeConnection,
     getUser,
     updateUserBanner,
     getUserIdByEmail,
-  }
+    blockUserGlobally,
+    blockUserIndividually,
+    unblockUserIndividually,
+  };
 }

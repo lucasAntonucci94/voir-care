@@ -139,6 +139,7 @@ const resetPassword = async (email) => {
 };
 
 export function useAuth() {
+  debugger
   // Inicializar estado desde localStorage al cargar el composable
   if (!user.value && !isAuthenticated.value) {
     initializeAuthState(); // Chequear localStorage primero

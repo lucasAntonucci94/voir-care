@@ -25,7 +25,7 @@
             <DashboardCard title="Usuarios" :value="stats.users" icon="fas fa-users" />
             <DashboardCard title="Eventos" :value="stats.events" icon="fas fa-calendar-alt" />
             <DashboardCard title="Grupos" :value="stats.groups" icon="fas fa-users-cog" />
-            <DashboardCard title="FAQs" :value="stats.faqs" icon="fas fa-question-circle" />
+            <!-- <DashboardCard title="FAQs" :value="stats.faqs" icon="fas fa-question-circle" /> -->
             <DashboardCard title="Educación" :value="stats.education" icon="fas fa-graduation-cap" />
             <DashboardCard title="Adopción" :value="stats.adoption" icon="fas fa-paw" />
             <DashboardCard title="Reportes" :value="stats.reports" icon="fas fa-exclamation-triangle" />
@@ -51,7 +51,7 @@
     { label: 'Usuarios', route: '/admin/users', icon: 'fas fa-users' },
     { label: 'Eventos', route: '/admin/events', icon: 'fas fa-calendar-alt' },
     { label: 'Grupos', route: '/admin/groups', icon: 'fas fa-users-cog' },
-    { label: 'FAQs', route: '/admin/faqs', icon: 'fas fa-question-circle' },
+    // { label: 'FAQs', route: '/admin/faqs', icon: 'fas fa-question-circle' },
     { label: 'Educación', route: '/admin/education', icon: 'fas fa-graduation-cap' },
     { label: 'Adopción', route: '/admin/adoption', icon: 'fas fa-paw' },
     { label: 'Reportes', route: '/admin/reports', icon: 'fas fa-exclamation-triangle' }
@@ -61,7 +61,7 @@
     users: 1024,
     events: 230,
     groups: 56,
-    faqs: 42,
+    // faqs: 42,
     education: 18,
     adoption: 35,
     reports: 7
