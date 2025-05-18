@@ -18,7 +18,7 @@
     <div class="relative" ref="dropdownRef">
       <button 
         @click="post.showMenu = !post.showMenu" 
-        class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200"
+        class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
       >
         <i class="fas fa-ellipsis-h"></i>
       </button>
@@ -267,7 +267,15 @@ async function handleReport() {
   if (!selectedReportReason.value) return;
 
   isLoading.value = true;
-  const response = await saveReport(props.post.id, user.value.uid, selectedReportReason.value, reportDescription.value);
+  const response = await saveReport({
+      entityType: 'post',
+      entityId: props.post.id,
+      userId: user.value.uid,
+      reason: selectedReportReason.value,
+      description: reportDescription.value,
+      metadata: { title: props.post.title },
+    });
+
   if (response) {
     isLoading.value = false;
     showModalReport.value = false;

@@ -96,5 +96,21 @@ export const useUsersStore = defineStore('users', {
         throw error;
       }
     },
+    async suscribeUser(id, suscribe) {
+      try {
+        const { suscribeUser } = useUsers();
+        await suscribeUser(id, suscribe);
+        const user = this.users.find((u) => u.uid === id);
+        if (user) {
+          user.isSuscribe = suscribe;
+        }
+        this.error = null;
+        console.log(`Usuario con ID ${id} ${suscribe ? 'suscripto' : 'desuscripto'} en el store`);
+      } catch (error) {
+        console.error('Error al suscribir/desuscribir usuario en el store:', error);
+        this.error = error.message || 'Error al suscribir/desuscribir usuario';
+        throw error;
+      }
+    },
   },
 });

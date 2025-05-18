@@ -43,8 +43,8 @@
 
     <!-- Navegación de Tabs -->
     <div class="container mx-auto px-4 md:px-8 py-6">
-      <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-        <nav class="flex overflow-x-auto" role="tablist">
+      <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 mb-6">
+        <nav class="flex overflow-x-auto space-x-4" role="tablist">
           <button
             v-for="tab in tabs"
             :key="tab.id"
@@ -61,6 +61,105 @@
             {{ tab.label }}
           </button>
         </nav>
+        <!-- Settings Dropdown Button -->
+        <div ref="dropdownRef" class="relative">
+          <button
+            @click="showSettingsMenu = !showSettingsMenu"
+            class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md"
+          >
+            <i class="fas fa-cog"></i>
+            <span class="ml-2 text-sm  hidden md:inline">Configuración</span>
+          </button>
+          <div
+            v-if="showSettingsMenu"
+            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
+          >
+            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+              <!-- Edit Group (Owner or Admin) -->
+              <li v-if="isAdmin || group?.ownerId === user?.uid">
+                <button
+                  @click="showEditGroupModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-pen mr-2"></i> Editar Grupo
+                </button>
+              </li>
+              <!-- Delete Group (Owner or Admin) -->
+              <li v-if="isAdmin || group?.ownerId === user?.uid">
+                <button
+                  @click="showDeleteGroupModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-trash-can mr-2"></i> Eliminar Grupo
+                </button>
+              </li>
+              <!-- Report Group (Non-owner, non-admin) -->
+              <li v-if="group?.ownerId !== user?.uid && !isAdmin">
+                <button
+                  @click="showReportGroupModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-flag mr-2"></i> Reportar Grupo
+                </button>
+              </li>
+              <!-- Hide Group (Non-owner, non-admin) -->
+              <!-- <li v-if="group?.ownerId !== user?.uid && !isAdmin">
+                <button
+                  @click="showHideGroupModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-eye-slash mr-2"></i> Ocultar Grupo
+                </button>
+              </li> -->
+              <!-- Hide Group (Non-owner, non-admin) -->
+              <li v-if="group?.ownerId !== user?.uid && !isAdmin && isMember">
+                <button
+                  @click="toggleMembership"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-close mr-2"></i> Salir del Grupo
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- Modal de confirmación para reportar un post -->
+        <div v-if="showReportModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300 mb-4">¿Desea reportar esta publicación?</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">¿Estás seguro de que quieres reportar esta publicación?</p>
+            <label class="block mb-2 text-gray-700 dark:text-gray-300">Motivo del reporte:</label>
+            <select v-model="selectedReportReason" class="w-full mb-4 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 focus:border-primary dark:focus:border-secondary rounded-lg px-3 py-2">
+              <option value="" disabled selected>Seleccione un motivo</option>
+              <option value="Contenido inapropiado">Contenido inapropiado</option>
+              <option value="Spam">Spam</option>
+              <option value="Información errónea">Información errónea</option>
+              <option value="Otro">Otro</option>
+            </select>
+            <label class="block mb-2 text-gray-700 dark:text-gray-300">Descripción (opcional):</label>
+            <textarea v-model="reportDescription" rows="3" class="w-full mb-4 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 rounded-lg px-3 py-2" placeholder="Agrega una descripción adicional..."></textarea>
+            <div class="flex justify-end gap-3">
+              <button 
+                @click="closeReportModal" 
+                class="px-4 py-2 text-gray-500 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-200 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
+              >
+                Cancelar
+              </button>
+              <button
+                :disabled="loading || !selectedReportReason"
+                type="submit"
+                @click="handleReport" 
+                class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
+              >
+                <span v-if="!loading">Reportar</span>
+                <span v-else class="flex items-center gap-2">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Reportando...
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Contenido de la pestaña seleccionada -->
@@ -83,7 +182,7 @@
                 </li>
                 <li class="flex items-center gap-3">
                   <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Privacidad:</strong> {{ group.privacy || 'Público' }}</span>
+                  <span><strong>Privacidad:</strong> {{ group.privacy.toLowerCase() === 'public' ? 'Público' : 'Privado' }}</span>
                 </li>
                 <li class="flex items-center gap-3">
                   <i class="fas fa-tags text-primary dark:text-secondary text-xl"></i>
@@ -106,36 +205,16 @@
                 </li>
               </ul>
             </div>
-            <div
-              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
-            >
-              <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-                Publicaciones Destacadas
-              </h2>
-              <ul class="space-y-4 text-gray-600 dark:text-gray-300">
-                <li class="flex items-center gap-3">
-                  <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Se:</strong></span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Esta:</strong></span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Trabajando:</strong></span>
-                </li>
-              </ul>
-            </div>
           </div>
 
           <!-- Columna derecha: Acciones, Creador, Miembros -->
           <div class="space-y-6">
             <!-- Card de Acciones -->
             <section
+              v-if="!isAdmin && !isMember"
               class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
             >
-              <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Acciones</h2>
+              <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100 sr-only">Acciones</h2>
               <div class="flex flex-col gap-3">
                 <button
                   v-if="!isAdmin"
@@ -149,22 +228,26 @@
                   ></i>
                   {{ isMember ? 'Salir del grupo' : 'Unirme al grupo' }}
                 </button>
-                <button
-                  class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
-                  disabled
-                >
-                  Invitar amigos
-                </button>
               </div>
             </section>
 
             <!-- Card de Creador y Miembros -->
             <section
-              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700"
+              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700 relative"
             >
+              <!-- Header with Button -->
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
+                <button
+                  class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
+                  @click="openInviteFriendsModal"
+                >
+                  Invitar amigos
+                </button>
+              </div>
+
               <!-- Sección de Creador -->
               <div class="mb-4">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
                 <div class="flex items-center gap-3 mt-2">
                   <img
                     :src="ownerDetails.photoURLFile || defaultAvatar"
@@ -218,7 +301,7 @@
                 </p>
               </div>
             </section>
-
+            <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" />
           </div>
         </div>
 
@@ -227,18 +310,8 @@
           <ConversationGroupTab :group-id="group.idDoc" :is-member="isMember" />
         </div>
 
-        <!-- Pestaña "Destacados" -->
-        <div v-else-if="activeTab === 'highlights'" class="text-sm text-gray-600 dark:text-gray-300">
-          <p>Aquí se mostrarán los posteos destacados (próximamente).</p>
-        </div>
-
         <!-- Pestaña "Personas" -->
         <GroupMembersTab v-if="activeTab === 'members'" :members="membersDetails" />
-
-        <!-- Pestaña "Eventos" -->
-        <!-- <div v-else-if="activeTab === 'events'" class="text-sm text-gray-600 dark:text-gray-300">
-          <p>Eventos organizados por este grupo (próximamente).</p>
-        </div> -->
 
         <!-- Pestaña "Multimedia" -->
         <div v-else-if="activeTab === 'multimedia'" class="text-sm text-gray-600 dark:text-gray-300">
@@ -250,7 +323,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { formatTimestamp } from '../utils/formatTimestamp'
 import { useGroupsStore } from '../stores/groups'
@@ -260,11 +333,16 @@ import defaultGroupBanner from '../assets/wallwhite.jpg'
 import { useAuth } from '../api/auth/useAuth'
 import ConversationGroupTab from '../components/organisms/ConversationGroupTab.vue'
 import GroupMembersTab from '../components/organisms/GroupMembersTab.vue'
+import InviteFriendsModal from '../components/molecules/InviteFriendsModal.vue'
+import { useReports } from '../composable/useReports';
+import { useSnackbarStore } from '../stores/snackbar'
 
 const route = useRoute()
 const groupsStore = useGroupsStore()
 const usersStore = useUsersStore()
 const { user } = useAuth()
+const { saveReport } = useReports();
+const snackbarStore = useSnackbarStore()
 
 const group = ref(null)
 const loading = ref(true)
@@ -272,18 +350,22 @@ const membersDetails = ref([])
 const ownerDetails = ref({})
 const isMember = ref(false)
 const isAdmin = ref(false)
+const showModalInviteFriends = ref(false)
+const showSettingsMenu = ref(false)
+const dropdownRef = ref(null)
+const selectedReportReason = ref('');
+const reportDescription = ref('');
+const showReportModal = ref(false)
 
 // Definir las pestañas
 const tabs = [
   { id: 'info', label: 'Información' },
   { id: 'conversation', label: 'Conversación' },
-  // { id: 'highlights', label: 'Destacados' },
   { id: 'members', label: 'Miembros' },
-  // { id: 'events', label: 'Eventos' },
-  { id: 'multimedia', label: 'Galería' },
+  // { id: 'multimedia', label: 'Galería' },
 ]
 const activeTab = ref('info')
-
+  
 onMounted(async () => {
   const id = route.params.idGroup
   if (id) {
@@ -300,9 +382,6 @@ onMounted(async () => {
       if (group.value?.members?.length) {
         const userPromises = group.value.members.map(async (userId) => {
           try {
-            // if(group.value.ownerId === userId) {
-            //   return null // No incluir al propietario en la lista de miembros
-            // }
             return await usersStore.getUser(userId)
           } catch (error) {
             console.warn(`No se pudo obtener el usuario con ID ${userId}:`, error)
@@ -316,7 +395,22 @@ onMounted(async () => {
     }
   }
   loading.value = false
+
+  // Add event listener for click outside
+  document.addEventListener('click', handleClickOutside)
 })
+
+onUnmounted(() => {
+  // Remove event listener to prevent memory leaks
+  document.removeEventListener('click', handleClickOutside)
+})
+
+// Handle click outside to close dropdown
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    showSettingsMenu.value = false
+  }
+}
 
 // Corregir watch para isMember
 watch(
@@ -346,6 +440,70 @@ async function toggleMembership() {
   } catch (err) {
     console.error('Error al cambiar la membresía del grupo:', err)
   }
+}
+
+function openInviteFriendsModal() {
+  showModalInviteFriends.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function closeInviteFriendsModal() {
+  showModalInviteFriends.value = false
+  document.body.style.overflow = ''
+}
+
+// Placeholder functions for dropdown actions
+function showEditGroupModal() {
+  showSettingsMenu.value = false
+  // Implement modal logic for editing group
+  console.log('Abrir modal para editar grupo')
+}
+
+function showDeleteGroupModal() {
+  showSettingsMenu.value = false
+  // Implement modal logic for deleting group
+  console.log('Abrir modal para eliminar grupo')
+}
+
+async function showReportGroupModal() {
+  showSettingsMenu.value = false
+  showReportModal.value = true
+}
+// Confirmar report
+async function handleReport() {
+  if (!selectedReportReason.value) return;
+
+  loading.value = true;
+  const response = await saveReport({
+      entityType: 'group',
+      entityId:  group.value?.idDoc,
+      userId: user.value?.uid,
+      reason: selectedReportReason.value,
+      description: reportDescription.value,
+      metadata: { title: group.value?.title },
+    });
+
+  if (response) {
+    loading.value = false;
+    showReportModal.value = false;
+    document.body.style.overflow = '';
+    // user.value.hiddenPosts.push({ id: user.value.uid, postId: props.post.id });
+    snackbarStore.show('Gracias por tu cooperación.', 'success');
+  } else {
+    snackbarStore.show('Error al reportar una publicación', 'success');
+  }
+}
+
+// Cerrar modal reportar post
+function closeReportModal() {
+  showReportModal.value = false;
+  document.body.style.overflow = '';
+}
+
+function showHideGroupModal() {
+  showSettingsMenu.value = false
+  // Implement modal logic for hiding group
+  console.log('Abrir modal para ocultar grupo')
 }
 </script>
 

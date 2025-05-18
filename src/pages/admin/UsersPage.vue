@@ -60,6 +60,7 @@
               <th class="py-3 px-6 text-left">País</th>
               <th class="py-3 px-6 text-center">Admin</th>
               <th class="py-3 px-6 text-center">Estado</th>
+              <th class="py-3 px-6 text-center">Suscripto</th>
               <th class="py-3 px-6 text-center">Acciones</th>
             </tr>
           </thead>
@@ -92,6 +93,11 @@
                   {{ user.isBlockedGlobally ? 'Bloqueado' : 'Activo' }}
                 </span>
               </td>
+               <td class="py-3 px-6 text-center">
+                <span :class="user.isSuscribe ? 'text-green-500' : 'text-red-500'">
+                  {{ user.isSuscribe ? 'Sí' : 'No' }}
+                </span>
+              </td>
               <td class="py-3 px-6 text-center">
                 <div class="flex item-center justify-center gap-2">
                   <button
@@ -117,6 +123,14 @@
                     :aria-label="user.isBlockedGlobally ? 'Desbloquear usuario' : 'Bloquear usuario'"
                   >
                     <i :class="user.isBlockedGlobally ? 'fas fa-unlock' : 'fas fa-ban'"></i>
+                  </button>
+                  <button
+                    @click="toggleSuscriptionUser(user)"
+                    :class="!user.isSuscribe ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700'"
+                    :title="!user.isSuscribe ? 'Suscribir' : 'Desuscribir'"
+                    :aria-label="!user.isSuscribe ? 'Suscribir usuario' : 'Desuscribir usuario'"
+                  >
+                    <i :class="!user.isSuscribe ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                   </button>
                 </div>
               </td>
@@ -288,6 +302,17 @@ const toggleBlockUser = async (user) => {
     snackbarStore.show(`Usuario ${block ? 'bloqueado' : 'desbloqueado'} exitosamente`,'success');
   } catch (error) {
     snackbarStore.show(`Error al ${user.isBlockedGlobally ? 'desbloquear' : 'bloquear'} usuario`, 'error');
+  }
+};
+
+// Toggle suscription status
+const toggleSuscriptionUser = async (user) => {
+  try {
+    const suscribe = !user.isSuscribe;
+    await usersStore.suscribeUser(user.uid, suscribe);
+    snackbarStore.show(`Usuario ${suscribe ? 'suscripto' : 'desuscripto'} exitosamente`,'success');
+  } catch (error) {
+    snackbarStore.show(`Error al ${user.isSuscribe ? 'suscrir' : 'desuscrir'} usuario`, 'error');
   }
 };
 

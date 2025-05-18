@@ -1,8 +1,8 @@
 <template>
-    <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div v-if="isOpen" class="fixed inset-0 z-101 flex items-center justify-center bg-black/50">
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">Nuevo Chat</h2>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">Invita a tus amigos</h2>
           <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -24,7 +24,7 @@
             @click="selectConnection(connection.email)"
           >
             <img
-              :src="connection.avatar || AvatarDefault"
+              :src="connection.avatar || AvantarDefault"
               alt="User avatar"
               class="w-10 h-10 rounded-full mr-3 object-cover"
             />
@@ -50,21 +50,34 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, watch } from 'vue';
   import { useRouter } from 'vue-router';
   import { useAuth } from '../../api/auth/useAuth';
   import { usePrivateChatsStore } from '../../stores/privateChats';
   import { usePrivateChats } from '../../composable/usePrivateChats';
-  import AvatarDefault from '../../assets/avatar1.jpg';
+  import AvantarDefault from '../../assets/avatar1.jpg';
 
   const router = useRouter();
   const { user } = useAuth();
   const { getChatIdByReference } = usePrivateChats();
   const privateChatsStore = usePrivateChatsStore();
+ 
+  const props = defineProps({
+    visible: {
+      type: Boolean,
+      default: false
+    }
+  });
+  const emit = defineEmits(['close']);
   
   const isOpen = ref(false);
   const searchQuery = ref('');
+
+  watch(() => props.visible, (newVal) => {
+    isOpen.value = newVal;
+  });
   
+
   // Compute filtered connections based on search query
   const filteredConnections = computed(() => {
     if (!user.value?.connections) return [];
@@ -78,15 +91,10 @@
     );
   });
   
-  // Open and close modal
-  const openModal = () => {
-    isOpen.value = true;
-    searchQuery.value = '';
-  };
-  
   const closeModal = () => {
-    isOpen.value = false;
     searchQuery.value = '';
+    emit('close');
+    isOpen.value = false;
   };
   
   // Handle connection selection and chat creation
@@ -106,8 +114,6 @@
     }
   };
   
-  // Expongo metodo para abrir modal.
-  defineExpose({ openModal });
   </script>
   
   <style scoped>

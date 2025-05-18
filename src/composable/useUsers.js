@@ -372,7 +372,7 @@ export function useUsers() {
       throw error;
     }
   }
-
+  
   /**
    * Bloquea a un usuario individualmente
    * @param {string} targetId - ID del usuario a bloquear
@@ -420,6 +420,34 @@ export function useUsers() {
       throw error;
     }
   }
+ /**
+   * Bloquea a un usuario de forma global (sera ejecutado por el admin)
+   * @param {string} id - ID del usuario
+   * @param {boolean} isSuscribe - true para suscribir, false para desuscribir
+   * @returns {Promise<void>}
+   */
+  async function suscribeUser(id, isSuscribe) {
+    try {
+      // verifico que exista usuario logueado
+      const { user: authUser } = useAuth();
+      if (!authUser.value) throw new Error('No hay usuario autenticado');
+      
+      // Verifico que el usuario logueado sea admin
+      const currentUserDoc = await getDoc(doc(db, 'users', authUser.value.uid));
+      if (!currentUserDoc.exists() || !currentUserDoc.data().isAdmin) {
+        throw new Error('Solo los administradores pueden bloquear globalmente');
+      }  
+      // Actualizo propiedad isSuscribe en Firestore
+      const userRef = doc(db, 'users', id);
+      await updateDoc(userRef, {
+        isSuscribe: isSuscribe,
+      });
+      console.log(`Usuario con ID ${id} ${isSuscribe ? 'suscripto' : 'desuscripto'} exitosamente`);
+    } catch (error) {
+      console.error('Error al suscribir usuario:', error);
+      throw error;
+    }
+  }
 
   return {
     userProfile,
@@ -438,5 +466,6 @@ export function useUsers() {
     blockUserGlobally,
     blockUserIndividually,
     unblockUserIndividually,
+    suscribeUser,
   };
 }

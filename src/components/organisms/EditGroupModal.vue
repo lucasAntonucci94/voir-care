@@ -54,7 +54,7 @@
                 v-model="editableGroup.title"
                 id="groupTitle"
                 type="text"
-                class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 dark:hover:bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
                 :disabled="isLoading"
                 required
               />
@@ -68,7 +68,7 @@
               <textarea
                 v-model="editableGroup.description"
                 id="groupDescription"
-                class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 min-h-[100px]"
+                class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 dark:hover:bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 min-h-[100px]"
                 :disabled="isLoading"
                 required
               ></textarea>

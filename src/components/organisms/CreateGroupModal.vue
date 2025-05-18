@@ -209,6 +209,7 @@ import { useMediaUpload } from '../../composable/useMediaUpload';
 import { newGuid } from '../../utils/newGuid';
 import { useGroupsStore } from '../../stores/groups';
 import { useAuth } from '../../api/auth/useAuth';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const emits = defineEmits(['close', 'groupCreated']);
 const props = defineProps({
@@ -221,7 +222,7 @@ const props = defineProps({
 const { uploadMedia } = useMediaUpload();
 const { user } = useAuth();
 const groupsStore = useGroupsStore();
-
+const snackbarStore = useSnackbarStore();
 // Mensaje de error para archivos
 const errorFileMessage = ref('');
 
@@ -360,9 +361,10 @@ async function handleCreateGroup() {
     await groupsStore.createGroup(groupData);
     emits('groupCreated', groupData);
     closeModal();
+    snackbarStore.show('Grupo creado exitosamente', 'success');
   } catch (error) {
     console.error('Error al crear grupo:', error);
-    alert('Error al crear grupo: ' + error.message);
+    snackbarStore.show('Error al crear grupo: ' + error.message, 'error');
   } finally {
     isLoading.value = false;
   }

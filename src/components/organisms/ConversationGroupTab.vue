@@ -34,11 +34,6 @@
           />
         </transition-group>
       </div>
-  
-      <!-- Mensaje de error si no se pueden cargar las publicaciones -->
-      <div v-if="!loading && posts.length === 0" class="text-center py-12">
-        <p class="text-gray-500 dark:text-gray-400">No se pudieron cargar las publicaciones.</p>
-      </div>
     </div>
   </template>
   

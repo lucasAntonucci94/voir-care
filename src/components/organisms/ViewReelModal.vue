@@ -54,7 +54,7 @@
             class="flex items-center gap-3 rounded hover:bg-gray-300/50 dark:hover:bg-gray-700/50 p-2 transition-all duration-200"
           >
             <img
-              :src="reel?.user?.photoURL || 'https://via.placeholder.com/40'"
+              :src="reel?.user?.photoURL || AvantarDefault"
               alt="User avatar"
               class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md"
             />
@@ -134,6 +134,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp.js';
 import { useReelsStore } from '../../stores/reels.js';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
+  import AvantarDefault from '../../assets/avatar1.jpg';
 
 // Define props with proper validation
 const props = defineProps({

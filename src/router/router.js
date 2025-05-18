@@ -177,14 +177,6 @@ const routes = [
             requiresAuth: true,
         }
       },
-      // {
-      //   path:  '/admin/faqs',
-      //   name: 'users',
-      //   component: AdmUsersPage,
-      //   meta: {
-      //       requiresAuth: true,
-      //   }
-      // },
       {
         path:  '/admin/education',
         name: 'educationAdm',

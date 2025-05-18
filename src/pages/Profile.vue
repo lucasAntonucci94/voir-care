@@ -114,8 +114,8 @@ import ProfileHeader from '../components/molecules/ProfileHeader.vue';
 import ProfileInfo from '../components/molecules/ProfileInfoTab.vue';
 import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
 import GalleryTab from '../components/organisms/ProfileGalleryTab.vue';
-import UserEventsTab from '../components/molecules/UserEventsTab.vue';
-import UserGroupsTab from '../components/molecules/UserGroupsTab.vue';
+import UserEventsTab from '../components/molecules/ProfileUserEventsTab.vue';
+import UserGroupsTab from '../components/molecules/ProfileUserGroupsTab.vue';
 import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
 
 // Instancias
