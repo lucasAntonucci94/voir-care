@@ -65,17 +65,17 @@
           </router-link>
 
           <!-- Botón de opciones -->
-          <div class="absolute left-23 bottom-100 z-10" ref="dropdownRef">
+          <div class="absolute ml-5 left-0 bottom-0 z-10" ref="dropdownRef">
             <button
               @click="showSettingsMenu = !showSettingsMenu"
-              class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
+              class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md"
             >
               <i class="fas fa-ellipsis-h"></i>
-              <span class="ml-2 sr-only">Opciones</span>
+              <span class="ml-2 text-sm  hidden md:inline">Opciones</span>
             </button>
             <div
               v-if="showSettingsMenu"
-              class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
+              class="absolute left-0 bottom-10 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
             >
               <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
                 <!-- Delete Reel (Owner or Admin) -->
@@ -97,14 +97,14 @@
                   </button>
                 </li>
                 <!-- Hide Reel (Non-owner) -->
-                <li v-if="!isOwner">
+                <!-- <li v-if="!isOwner">
                   <button
                     @click="showHideReelModal"
                     class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                   >
                     <i class="fas fa-eye-slash mr-2"></i> Ocultar
                   </button>
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>

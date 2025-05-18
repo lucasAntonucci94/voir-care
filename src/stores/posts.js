@@ -91,7 +91,6 @@ export const usePostsStore = defineStore('posts', {
       await deletePost(postIdDoc);
     },
     // async toggleLike(postIdDoc, userData) {
-    //   debugger
     //   const { addLike, removeLike } = usePosts();
     //   const post = this.posts?.value?.find(p => p.idDoc === postIdDoc) || 
     //                this.profilePosts?.value?.find(p => p.idDoc === postIdDoc);
@@ -128,10 +127,6 @@ export const usePostsStore = defineStore('posts', {
           if (postInProfile) postInProfile.likes = [...postInProfile.likes, { userId: userData.id, timestamp: new Date().toISOString() }];
           if (postInSaved) postInSaved.likes = [...postInSaved.likes, { userId: userData.id, timestamp: new Date().toISOString() }];
         }
-        // // Ensure reactivity by reassigning the arrays if needed (though direct mutation should work with ref)
-        // if (postInPosts) this.posts = [...this.posts]; // Trigger reactivity
-        // if (postInProfile) this.profilePosts = [...this.profilePosts]; // Trigger reactivity
-        // if (postInSaved) this.savedPosts = [...this.savedPosts]; // Trigger reactivity
       } catch (error) {
         console.error('Error toggling like:', error);
       }

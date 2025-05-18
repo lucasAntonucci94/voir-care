@@ -200,7 +200,6 @@ const editEvent = ref(null);
 // Computed property for filtered events
 const filteredEvents = computed(() => {
   let filtered = eventsStore.allEvents.value;
-debugger
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(

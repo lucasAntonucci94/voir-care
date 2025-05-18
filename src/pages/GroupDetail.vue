@@ -1,4 +1,3 @@
-<!-- pages/GroupDetail.vue -->
 <template>
   <div v-if="loading" class="flex items-center justify-center h-screen">
     <p class="text-lg text-gray-500 dark:text-gray-300">Cargando grupo...</p>
@@ -401,7 +400,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  // Remove event listener to prevent memory leaks
+  // Remove event listener
   document.removeEventListener('click', handleClickOutside)
 })
 
@@ -452,6 +451,11 @@ function closeInviteFriendsModal() {
   document.body.style.overflow = ''
 }
 
+async function showReportGroupModal() {
+  showSettingsMenu.value = false
+  showReportModal.value = true
+}
+
 // Placeholder functions for dropdown actions
 function showEditGroupModal() {
   showSettingsMenu.value = false
@@ -465,10 +469,6 @@ function showDeleteGroupModal() {
   console.log('Abrir modal para eliminar grupo')
 }
 
-async function showReportGroupModal() {
-  showSettingsMenu.value = false
-  showReportModal.value = true
-}
 // Confirmar report
 async function handleReport() {
   if (!selectedReportReason.value) return;

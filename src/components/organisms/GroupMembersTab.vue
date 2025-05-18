@@ -1,4 +1,3 @@
-<!-- components/organisms/GroupMembersTab.vue -->
 <template>
   <div class="block bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm mx-auto max-w-lg">
     <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">Miembros</h2>

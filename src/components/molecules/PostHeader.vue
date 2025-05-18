@@ -233,7 +233,9 @@ const handleClickOutside = (event) => {
 };
 
 // Computed
-const isSaved = computed(() => { return postsStore.savedPostIds.includes(props.post.idDoc);});
+const isSaved = computed(() => {
+  return postsStore.savedPostIds.includes(props.post.idDoc);
+});
 
 // Toggle save/unsave post
 async function toggleSavePost() {

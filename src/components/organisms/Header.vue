@@ -1,4 +1,3 @@
-<!-- Header.vue -->
 <template>
   <header class="text-white bg-primary dark:bg-secondary p-4 relative shadow-md transition-all duration-300" ref="headerRef">
     <div class="container mx-auto flex flex-wrap justify-between items-center md:py-4 px-4 md:px-8 lg:px-16">

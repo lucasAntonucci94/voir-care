@@ -1,4 +1,3 @@
-<!-- src/components/SupportChat.vue -->
 <template>
     <div>
       <!-- Botón flotante para abrir/cerrar el chat -->

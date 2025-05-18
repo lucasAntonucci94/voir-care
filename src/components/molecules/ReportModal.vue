@@ -117,7 +117,6 @@ const handleCancel = () => {
 };
 
 const handleReport = async () => {
-    debugger
   if (!props.entityId || !user.value.uid || !selectedReportReason.value) {
     snackbarStore.show('Faltan datos para reportar', 'error');
     return;
