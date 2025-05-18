@@ -242,7 +242,7 @@
                   class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
                   @click="openInviteFriendsModal"
                 >
-                  Invitar amigos
+                  Invitar
                 </button>
               </div>
 
@@ -487,7 +487,6 @@ async function handleReport() {
     loading.value = false;
     showReportModal.value = false;
     document.body.style.overflow = '';
-    // user.value.hiddenPosts.push({ id: user.value.uid, postId: props.post.id });
     snackbarStore.show('Gracias por tu cooperación.', 'success');
   } else {
     snackbarStore.show('Error al reportar una publicación', 'success');

@@ -49,8 +49,8 @@
       >
         <div class="space-y-6">
           <!-- Sección del usuario con avatar -->
-          <router-link 
-            :to="`/profile/${reel?.user?.email}`" 
+          <router-link
+            :to="`/profile/${reel?.user?.email}`"
             class="flex items-center gap-3 rounded hover:bg-gray-300/50 dark:hover:bg-gray-700/50 p-2 transition-all duration-200"
           >
             <img
@@ -63,6 +63,51 @@
               <p class="text-xs text-gray-600 dark:text-gray-400">{{ formatTimestamp(reel?.createdAt) }}</p>
             </div>
           </router-link>
+
+          <!-- Botón de opciones -->
+          <div class="absolute left-23 bottom-100 z-10" ref="dropdownRef">
+            <button
+              @click="showSettingsMenu = !showSettingsMenu"
+              class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
+            >
+              <i class="fas fa-ellipsis-h"></i>
+              <span class="ml-2 sr-only">Opciones</span>
+            </button>
+            <div
+              v-if="showSettingsMenu"
+              class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
+            >
+              <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+                <!-- Delete Reel (Owner or Admin) -->
+                <li v-if="isOwner">
+                  <button
+                    @click="openDeleteModal"
+                    class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                  >
+                    <i class="fas fa-trash-can mr-2"></i> Eliminar
+                  </button>
+                </li>
+                <!-- Report Reel (Non-owner) -->
+                <li v-if="!isOwner">
+                  <button
+                    @click="openReportModal"
+                    class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                  >
+                    <i class="fas fa-flag mr-2"></i> Reportar
+                  </button>
+                </li>
+                <!-- Hide Reel (Non-owner) -->
+                <li v-if="!isOwner">
+                  <button
+                    @click="showHideReelModal"
+                    class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                  >
+                    <i class="fas fa-eye-slash mr-2"></i> Ocultar
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
 
           <!-- Separador -->
           <hr class="border-gray-300 dark:border-gray-600" />
@@ -125,18 +170,42 @@
         </button>
       </div>
     </div>
+
+    <!-- Modal de reporte -->
+    <ModalReport
+      :visible="showReportModal"
+      :entity-type="'reel'"
+      :entity-id="reel?.idDoc || ''"
+      :metadata="{ reelTitle: reel?.title || '' }"
+      @close="closeReportModal"
+      @reported="closeReportModal"
+    />
+
+    <!-- Modal de confirmación al eliminar un mensaje -->
+    <GenericConfirmModal
+      :visible="showDeleteModal"
+      title="Confirmar eliminación"
+      message="¿Estás seguro de que deseas eliminar este mensaje?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteModal"
+      @confirmed="deleteReel"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, watch } from 'vue';
+import { ref, computed, onMounted, nextTick, watch, onUnmounted } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp.js';
 import { useReelsStore } from '../../stores/reels.js';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
-  import AvantarDefault from '../../assets/avatar1.jpg';
+import { useReports } from '../../composable/useReports';
+import AvantarDefault from '../../assets/avatar1.jpg';
+import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
+import ModalReport from '../molecules/ReportModal.vue';
 
-// Define props with proper validation
+// Props
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -152,10 +221,10 @@ const props = defineProps({
   },
 });
 
-// Define emits
+// Emits
 const emit = defineEmits(['close', 'update-reel']);
 
-// Reactive references
+// References
 const viewModal = ref(null);
 const reelsStore = useReelsStore();
 const { user, isAuthenticated } = useAuth();
@@ -163,9 +232,13 @@ const isLiking = ref(false);
 const message = ref(null);
 const messageType = ref(null);
 const snackbarStore = useSnackbarStore();
-const viewedReelId = ref(null); // Track the currently viewed reel to prevent duplicate increments
+const viewedReelId = ref(null);
+const showSettingsMenu = ref(false);
+const dropdownRef = ref(null);
+const showDeleteModal = ref(false);
+const showReportModal = ref(false);
 
-// Computed properties
+// Computed
 const hasLiked = computed(() => {
   return props.reel?.likes?.some((like) => like.userId === user.value?.uid) || false;
 });
@@ -177,25 +250,27 @@ const currentReelIndex = computed(() => {
 const hasPreviousReel = computed(() => currentReelIndex.value > 0);
 const hasNextReel = computed(() => currentReelIndex.value < props.reels.length - 1);
 
-// Utility functions
+const isOwner = computed(() => {
+  return props.reel?.user?.uid === user.value?.uid || false;
+});
+
+// Utility
 const formatNumber = (num) => {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
   return num;
 };
 
-// Increment view logic
 const incrementView = async () => {
   if (!props.reel?.idDoc || !user.value || viewedReelId.value === props.reel.idDoc) {
-    return; // Skip if no reel, no user, or already viewed
+    return;
   }
-
   try {
     const updatedReel = await reelsStore.incrementView(props.reel.idDoc, {
       uid: user.value.uid,
       email: user.value.email,
     });
-    viewedReelId.value = props.reel.idDoc; // Mark as viewed
+    viewedReelId.value = props.reel.idDoc;
     emit('update-reel', updatedReel);
   } catch (err) {
     console.error('Error incrementing view:', err);
@@ -209,7 +284,6 @@ const handleToggleLike = async () => {
     snackbarStore.show('You must be logged in to like', 'error');
     return;
   }
-
   isLiking.value = true;
   try {
     const updatedReel = await reelsStore.toggleLike(props.reel.idDoc, {
@@ -229,7 +303,8 @@ const handleToggleLike = async () => {
 
 // Modal controls
 const closeModal = () => {
-  viewedReelId.value = null; // Reset viewed reel on close
+  viewedReelId.value = null;
+  showSettingsMenu.value = false;
   emit('close');
 };
 
@@ -245,6 +320,63 @@ const nextReel = () => {
   }
 };
 
+// Dropdown actions
+const deleteReel = async () => {
+  showSettingsMenu.value = false;
+  if (!props.reel?.idDoc) return;
+  try {
+    await reelsStore.deleteReel(props.reel.idDoc);
+    snackbarStore.show('Reel eliminado exitosamente', 'success');
+    closeModal();
+    emit('update-reel', null);
+    showDeleteModal.value = false;
+    viewedReelId.value = null;
+  } catch (err) {
+    console.error('Error deleting reel:', err);
+    snackbarStore.show('Error al eliminar el reel', 'error');
+  }
+};
+
+const closeDeleteModal = () => {
+  showSettingsMenu.value = false;
+  showDeleteModal.value = false;
+};
+
+const openDeleteModal = () => {
+  showSettingsMenu.value = false;
+  showDeleteModal.value = true;
+};
+
+const showEditReelModal = () => {
+  showSettingsMenu.value = false;
+  console.log('Abrir modal para editar reel');
+  snackbarStore.show('Edición no implementada aún', 'info');
+};
+
+const openReportModal = () => {
+  showSettingsMenu.value = false;
+  showReportModal.value = true;
+};
+
+const closeReportModal = () => {
+  showSettingsMenu.value = false;
+  showReportModal.value = false;
+  document.body.style.overflow = '';
+};
+
+const showHideReelModal = () => {
+  showSettingsMenu.value = false;
+  console.log('Ocultar reel');
+  snackbarStore.show('Ocultar no implementado aún', 'info');
+};
+
+// Handle click outside to close dropdown
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    showSettingsMenu.value = false;
+  }
+};
+
 // Lifecycle hooks
 onMounted(() => {
   nextTick(() => {
@@ -252,6 +384,11 @@ onMounted(() => {
       viewModal.value.focus();
     }
   });
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 
 // Watch for modal visibility and reel changes
@@ -259,7 +396,6 @@ watch(
   [() => props.visible, () => props.reel?.idDoc],
   ([newVisible, newReelId], [oldVisible, oldReelId]) => {
     if (newVisible && newReelId && (newReelId !== oldReelId || !oldVisible)) {
-      // Trigger increment when modal opens or reel changes
       nextTick(() => {
         if (viewModal.value) {
           viewModal.value.focus();
