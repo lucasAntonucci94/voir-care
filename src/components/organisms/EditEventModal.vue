@@ -253,7 +253,6 @@
             >
               Cancelar
             </button>
-            <div class="flex-1"></div>
             <button
               v-if="currentStep < steps.length"
               type="button"
@@ -290,6 +289,7 @@ import { useMediaUpload } from '../../composable/useMediaUpload';
 import { newGuid } from '../../utils/newGuid';
 import { useAuth } from '../../api/auth/useAuth';
 import SelectDate from '../atoms/SelectDate.vue';
+import { useSnackbarStore } from '../../stores/snackbar'
 
 const props = defineProps({
   visible: {
@@ -303,6 +303,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['cancel', 'submit']);
+const snackbarStore = useSnackbarStore()
 const eventsStore = useEventsStore();
 const { uploadMedia } = useMediaUpload();
 const { user } = useAuth();
@@ -464,9 +465,10 @@ async function handleSubmit() {
     await eventsStore.editEvent(editForm.value.idDoc, eventData);
     emit('submit', eventData);
     closeModal();
+    snackbarStore.show('Evento actualizado exitosamente.', 'success');
   } catch (error) {
     console.error('Error actualizando el evento:', error);
-    alert('Error al actualizar evento: ' + error.message);
+    snackbarStore.show('Error al actualizar evento: ' + error.message, 'error');
   } finally {
     isLoading.value = false;
   }

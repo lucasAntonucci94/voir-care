@@ -224,7 +224,6 @@
             >
               Cancelar
             </button>
-            <div class="flex-1"></div>
             <button
               v-if="currentStep < steps.length"
               type="button"

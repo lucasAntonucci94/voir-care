@@ -160,7 +160,6 @@
             >
               Atrás
             </button>
-            <div class="flex-1"></div>
             <button
               v-if="currentStep < 3"
               type="button"

@@ -77,7 +77,7 @@
               <!-- Edit Group (Owner or Admin) -->
               <li v-if="isAdmin || group?.ownerId === user?.uid">
                 <button
-                  @click="showEditGroupModal"
+                  @click="openEditModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
                   <i class="fas fa-pen mr-2"></i> Editar Grupo
@@ -86,7 +86,7 @@
               <!-- Delete Group (Owner or Admin) -->
               <li v-if="isAdmin || group?.ownerId === user?.uid">
                 <button
-                  @click="showDeleteGroupModal"
+                  @click="openDeleteModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
                   <i class="fas fa-trash-can mr-2"></i> Eliminar Grupo
@@ -159,6 +159,25 @@
             </div>
           </div>
         </div>
+        <!-- Modal de confirmación de eliminación -->
+        <GenericConfirmModal
+          v-if="showDeleteModal"
+          :visible="showDeleteModal"
+          title="¿Eliminar Grupo?"
+          message="Esta acción no se puede deshacer. ¿Estás seguro de que quieres continuar?"
+          confirmButtonText="Eliminar"
+          cancelButtonText="Cancelar"
+          @cancel="closeDeleteModal"
+          @confirmed="confirmDelete"
+        />
+        <!-- Modal de edición de grupo -->
+        <EditGroupModal
+          v-if="showEditModal"
+          :visible="showEditModal"
+          :group="selectedGroup"
+          @close="closeEditModal"
+          @groupUpdated="handleGroupUpdated"
+        />
       </div>
 
       <!-- Contenido de la pestaña seleccionada -->
@@ -323,7 +342,7 @@
 
 <script setup>
 import { ref, onMounted, watch, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { formatTimestamp } from '../utils/formatTimestamp'
 import { useGroupsStore } from '../stores/groups'
 import { useUsersStore } from '../stores/users'
@@ -335,8 +354,11 @@ import GroupMembersTab from '../components/organisms/GroupMembersTab.vue'
 import InviteFriendsModal from '../components/molecules/InviteFriendsModal.vue'
 import { useReports } from '../composable/useReports';
 import { useSnackbarStore } from '../stores/snackbar'
+import GenericConfirmModal from '../components/molecules/GenericConfirmModal.vue'
+import EditGroupModal from '../components/organisms/EditGroupModal.vue'
 
 const route = useRoute()
+const router = useRouter()
 const groupsStore = useGroupsStore()
 const usersStore = useUsersStore()
 const { user } = useAuth()
@@ -355,6 +377,9 @@ const dropdownRef = ref(null)
 const selectedReportReason = ref('');
 const reportDescription = ref('');
 const showReportModal = ref(false)
+const showDeleteModal = ref(false)
+const showEditModal = ref(false)
+const selectedGroup = ref(null)
 
 // Definir las pestañas
 const tabs = [
@@ -456,19 +481,6 @@ async function showReportGroupModal() {
   showReportModal.value = true
 }
 
-// Placeholder functions for dropdown actions
-function showEditGroupModal() {
-  showSettingsMenu.value = false
-  // Implement modal logic for editing group
-  console.log('Abrir modal para editar grupo')
-}
-
-function showDeleteGroupModal() {
-  showSettingsMenu.value = false
-  // Implement modal logic for deleting group
-  console.log('Abrir modal para eliminar grupo')
-}
-
 // Confirmar report
 async function handleReport() {
   if (!selectedReportReason.value) return;
@@ -498,6 +510,52 @@ function closeReportModal() {
   showReportModal.value = false;
   document.body.style.overflow = '';
 }
+
+
+function openDeleteModal() {
+  showSettingsMenu.value = false;
+  showDeleteModal.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  document.body.style.overflow = ''
+}
+
+async function confirmDelete() {
+  debugger
+  try {
+    await groupsStore.deleteGroup(group.value.idDoc)
+    closeDeleteModal()
+    console.log('Grupo eliminado')
+    router.push({ name: 'groups' })
+    snackbarStore.show('Grupo eliminado', 'success')
+  } catch (error) {
+    console.error('Error al eliminar grupo:', error)
+    snackbarStore.show('Error al eliminar grupo', 'error')
+    return
+  }
+}
+
+// Funciones para modal de edicion
+function openEditModal() {
+  // Suponemos que `group` ya tiene todos los datos completos
+  selectedGroup.value = group.value
+  showEditModal.value = true
+  showSettingsMenu.value = false
+}
+
+function closeEditModal() {
+  showEditModal.value = false
+  selectedGroup.value = null
+}
+
+function handleGroupUpdated(updatedGroup) {
+  group.value = updatedGroup
+  closeEditModal()
+}
+  
 
 function showHideGroupModal() {
   showSettingsMenu.value = false

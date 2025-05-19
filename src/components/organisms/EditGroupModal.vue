@@ -58,6 +58,7 @@
                 :disabled="isLoading"
                 required
               />
+              <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción -->
@@ -72,6 +73,7 @@
                 :disabled="isLoading"
                 required
               ></textarea>
+              <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
             </div>
           </div>
 
@@ -126,6 +128,7 @@
                 />
                 <span class="font-medium">{{ category.name }}</span>
               </label>
+              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
 
             <!-- Privacidad -->
@@ -138,6 +141,7 @@
                 <input type="radio" value="private" v-model="editableGroup.privacy" :disabled="isLoading" />
                 Privado
               </label>
+              <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
             </div>
           </div>
 
@@ -161,7 +165,6 @@
             >
               Cancelar
             </button>
-            <div class="flex-1"></div>
             <button
               v-if="currentStep < steps.length"
               type="button"
@@ -194,6 +197,7 @@
 import { ref, watch } from 'vue';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import { useGroupsStore } from '../../stores/groups';
+import { useSnackbarStore } from '../../stores/snackbar'
 
 const props = defineProps({
   visible: Boolean,
@@ -203,9 +207,11 @@ const emits = defineEmits(['close', 'groupUpdated']);
 
 const { uploadMedia } = useMediaUpload();
 const groupsStore = useGroupsStore();
+const snackbarStore = useSnackbarStore()
 
 const isLoading = ref(false);
 const errorFileMessage = ref('');
+const formErrors = ref({});
 const currentStep = ref(1);
 const steps = ref([
   { label: 'Información' },
@@ -253,30 +259,53 @@ watch(
 
 function closeModal() {
   currentStep.value = 1;
+  formErrors.value = {};
+  errorFileMessage.value = '';
+  resetForm();
   emits('close');
+}
+
+function resetForm() {
+  editableGroup.value = {
+    title: '',
+    description: '',
+    media: {
+      url: '',
+      path: null,
+      type: null,
+    },
+    newMediaBase64: null,
+    categories: [],
+    privacy: 'public',
+  };
 }
 
 function validateStep(step) {
   let isValid = true;
-
+  const errors = {};
+  
   if (step === 1) {
     if (!editableGroup.value.title || editableGroup.value.title.trim() === '') {
-      alert('El título es obligatorio');
+      errors.title = 'El título es obligatorio';
       isValid = false;
     }
     if (!editableGroup.value.description) {
-      alert('La descripción es obligatoria');
+      errors.description = 'La descripción es obligatoria';
       isValid = false;
     }
   } else if (step === 2) {
     // Media is optional, no validation required
   } else if (step === 3) {
     if (editableGroup.value.categories.length === 0) {
-      alert('Selecciona al menos una categoría');
+      errors.categories = 'Debes seleccionar al menos una categoría';
+      isValid = false;
+    }
+    if (editableGroup.value.privacy !== 'public' && editableGroup.value.privacy !== 'private') {
+      errors.privacy = 'La privacidad debe ser pública o privada';
       isValid = false;
     }
   }
-
+  formErrors.value = errors;
   return isValid;
 }
 
@@ -331,9 +360,10 @@ async function handleUpdateGroup() {
     await groupsStore.editGroup(props.group.idDoc, updatedGroupData);
     emits('groupUpdated', updatedGroupData);
     closeModal();
+    snackbarStore.show('Grupo actualizado exitosamente.', 'success');
   } catch (err) {
     console.error('Error al actualizar grupo:', err);
-    alert('Error al actualizar grupo: ' + err.message);
+    snackbarStore.show('Error al actualizar grupo: ' + err.message, 'error');
   } finally {
     isLoading.value = false;
   }

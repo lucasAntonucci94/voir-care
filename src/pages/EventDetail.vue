@@ -65,7 +65,7 @@
               <!-- Edit Event (Owner or Admin) -->
               <li v-if="isAdmin || event?.ownerId === user?.uid">
                 <button
-                  @click="showEditEventModal"
+                  @click="openEditModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
                   <i class="fas fa-pen mr-2"></i> Editar Evento
@@ -74,7 +74,7 @@
               <!-- Delete Event (Owner or Admin) -->
               <li v-if="isAdmin || event?.ownerId === user?.uid">
                 <button
-                  @click="showDeleteEventModal"
+                  @click="openDeleteModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
                   <i class="fas fa-trash-can mr-2"></i> Eliminar Evento
@@ -111,6 +111,25 @@
           @reported="closeReportModal"
         />
       </div>
+      <!-- Modal de confirmación de eliminación -->
+      <GenericConfirmModal
+        v-if="showDeleteModal"
+        :visible="showDeleteModal"
+        title="¿Eliminar evento?"
+        message="Esta acción no se puede deshacer. ¿Estás seguro de que quieres continuar?"
+        confirmButtonText="Eliminar"
+        cancelButtonText="Cancelar"
+        @cancel="closeDeleteModal"
+        @confirmed="confirmDelete"
+      />
+      <!-- Modal de edición de evento -->
+      <EditEventModal
+        v-if="selectedEvent && showEditModal"
+        :visible="showEditModal"
+        :event="selectedEvent"
+        @cancel="closeEditModal"
+        @submit="submitEdit"
+      />
 
       <!-- Contenido de la pestaña seleccionada -->
       <div>
@@ -140,7 +159,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useEventsStore } from '../stores/events';
 import { useUsersStore } from '../stores/users';
 import { useSnackbarStore } from '../stores/snackbar';
@@ -148,8 +167,11 @@ import EventInfoTab from '../components/organisms/EventInfoTab.vue';
 import EventParticipantsTab from '../components/molecules/EventParticipantsTab.vue';
 import ModalReport from '../components/molecules/ReportModal.vue';
 import { useAuth } from '../api/auth/useAuth';
+import GenericConfirmModal from '../components/molecules/GenericConfirmModal.vue'
+import EditEventModal from '../components/organisms/EditEventModal.vue'
 
 const route = useRoute();
+const router = useRouter();
 const eventsStore = useEventsStore();
 const snackbarStore = useSnackbarStore();
 const usersStore = useUsersStore();
@@ -163,8 +185,19 @@ const ownerDetails = ref({});
 const dropdownRef = ref(null);
 const showSettingsMenu = ref(false);
 const showReportModal = ref(false);
+const showDeleteModal = ref(false);
 const isGoing = ref(false);
 const isAdmin = ref(false);
+const showEditModal = ref(false)
+const selectedEvent = ref({
+  title: '',
+  description: '',
+  startTime: '',
+  endTime: '',
+  privacy: 'public',
+  capacity: 0,
+  location: { address: '' }
+})
 
 // Definir las pestañas
 const tabs = [
@@ -192,16 +225,6 @@ function closeReportModal() {
   document.body.style.overflow = '';
 }
 
-function showDeleteEventModal() {
-  showSettingsMenu.value = false;
-  console.log('Abrir modal para eliminar evento');
-}
-
-function showEditEventModal() {
-  showSettingsMenu.value = false;
-  console.log('Abrir modal para editar evento');
-}
-
 async function handleAttendance() {
   if (!user.value) {
     console.log('Usuario no autenticado');
@@ -227,12 +250,54 @@ async function handleAttendance() {
       console.log(`Usuario confirma asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
       snackbarStore.show(`Usuario confirma asistencia al evento: ${event.value.title}`, 'success');
     }
+    showSettingsMenu.value = false;
   } catch (error) {
     console.error(`Error al ${currentStatus ? 'cancelar' : 'confirmar'} asistencia:`, error);
     snackbarStore.show(`Error al ${currentStatus ? 'cancelar' : 'confirmar'} asistencia al evento`, 'error');
   }
 }
 
+function openDeleteModal() {
+  showSettingsMenu.value = false;
+  showDeleteModal.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  document.body.style.overflow = ''
+}
+
+async function confirmDelete() {
+  try {
+    await eventsStore.deleteEvent(event.value.idDoc)
+    closeDeleteModal()
+    console.log('Evento eliminado')
+    router.push({ name: 'events' })
+    snackbarStore.show('Evento eliminado', 'success')
+  } catch (error) {
+    console.error('Error al eliminar evento:', error)
+    snackbarStore.show('Error al eliminar evento', 'error')
+    return
+  }
+}
+
+// Funciones para abrir y cerrar el modal de edicion
+function openEditModal() {
+  showSettingsMenu.value = false;
+  selectedEvent.value = { ...event.value }
+  showEditModal.value = true
+  document.body.style.overflow = 'hidden'
+}
+function closeEditModal() {
+  showEditModal.value = false
+  document.body.style.overflow = ''
+}
+function submitEdit(updatedEvent) {
+  event.value = { ...event.value, ...updatedEvent }
+  closeEditModal()
+}
+  
 onMounted(async () => {
   const id = route.params.idEvent;
   if (id) {

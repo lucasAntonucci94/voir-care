@@ -58,6 +58,7 @@
                 :disabled="isLoading"
                 required
               />
+              <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción del Grupo -->
@@ -73,6 +74,7 @@
                 :disabled="isLoading"
                 required
               ></textarea>
+              <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
             </div>
           </div>
 
@@ -129,6 +131,7 @@
                 />
                 <span class="font-medium">{{ category.name }}</span>
               </label>
+              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
 
             <!-- Privacidad (público/privado) -->
@@ -151,6 +154,7 @@
                 />
                 Privado
               </label>
+              <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
             </div>
           </div>
 
@@ -174,7 +178,7 @@
             >
               Cancelar
             </button>
-            <div class="flex-1"></div>
+            
             <button
               v-if="currentStep < steps.length"
               type="button"
@@ -223,7 +227,7 @@ const { uploadMedia } = useMediaUpload();
 const { user } = useAuth();
 const groupsStore = useGroupsStore();
 const snackbarStore = useSnackbarStore();
-// Mensaje de error para archivos
+const formErrors = ref({});
 const errorFileMessage = ref('');
 
 const isLoading = ref(false);
@@ -259,6 +263,8 @@ function closeModal() {
   resetForm();
   errorFileMessage.value = '';
   currentStep.value = 1;
+  formErrors.value = {};
+  isLoading.value = false;
   emits('close');
 }
 
@@ -279,28 +285,31 @@ function resetForm() {
 
 function validateStep(step) {
   let isValid = true;
+  const errors = {};
 
   if (step === 1) {
     if (!newGroup.value.title || newGroup.value.title.trim() === '') {
-      alert('El título es obligatorio');
+      errors.title = 'El título es obligatorio';
       isValid = false;
     }
     if (!newGroup.value.description) {
-      alert('La descripción es obligatoria');
+      errors.description = 'La descripción es obligatoria';
       isValid = false;
     }
   } else if (step === 2) {
     // La imagen/video es opcional, no se valida aquí
   } else if (step === 3) {
     if (newGroup.value.categories.length === 0) {
-      alert('Debes seleccionar al menos una categoría');
+      errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
     }
     if (newGroup.value.privacy !== 'public' && newGroup.value.privacy !== 'private') {
-      alert('La privacidad debe ser pública o privada');
+      errors.privacy = 'La privacidad debe ser pública o privada';
       isValid = false;
     }
   }
+  
+  formErrors.value = errors;
 
   return isValid;
 }
