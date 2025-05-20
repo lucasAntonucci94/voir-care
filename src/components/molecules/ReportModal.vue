@@ -124,7 +124,6 @@ const handleReport = async () => {
 
   loading.value = true;
   try {
-    debugger
     await saveReport({
       entityType: props.entityType,
       entityId: props.entityId,

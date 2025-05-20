@@ -94,7 +94,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
 
     // Ocultar un post
     async hidePostGroup(userId, postId) {
-      debugger
       const { hidePostGroup } = useGroupPosts();
       this.isLoading = true;
       try {
@@ -133,22 +132,23 @@ export const useGroupPostsStore = defineStore('groupPosts', {
 
     // Alternar like (dar o quitar like)
     async toggleLikePostGroup(idGroup, postIdDoc, userData, posts) {
-      const { addLikeGroup, removeLikeGroup } = useGroupPosts();
+      debugger
+      const { addLikePostGroup, removeLikePostGroup } = useGroupPosts();
       // Buscar el post en el arreglo proporcionado
       let post = posts?.find((p) => p.idDoc === postIdDoc);
       if (!post) return;
 
-      const userLiked = post.likes.some((like) => like.userId === userData.id);
+      const userLiked = post?.likes?.some((like) => like.userId === userData.id);
       this.isLoading = true;
       try {
         if (userLiked) {
-          await removeLikeGroup(idGroup, postIdDoc, userData);
+          await removeLikePostGroup(idGroup, postIdDoc, userData);
           // Actualizar el arreglo local después de quitar el like
           post.likes = post.likes.filter((like) => like.userId !== userData.id);
         } else {
-          await addLikeGroup(idGroup, postIdDoc, userData);
+          await addLikePostGroup(idGroup, postIdDoc, userData);
           // Actualizar el arreglo local después de agregar el like
-          post.likes = [...post.likes, { userId: userData.id, email: userData.email }];
+          post.likes = (post?.likes === null || post?.likes === undefined) ? [] : [...post.likes, { userId: userData.id, email: userData.email }];
         }
       } catch (error) {
         console.error('Error toggling like:', error);

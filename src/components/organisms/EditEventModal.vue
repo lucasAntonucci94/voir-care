@@ -385,7 +385,6 @@ function validateStep(step) {
       errors.endTime = 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio';
       isValid = false;
     }
-    debugger
     if (!editForm.value.capacity) {
       errors.capacity = 'La capacidad es obligatoria';
       isValid = false;

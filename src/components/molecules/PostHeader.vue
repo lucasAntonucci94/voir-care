@@ -172,11 +172,7 @@
   </div>
 
   <!-- Modal de edición de un post -->
-  <div v-if="showModalEdit" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4 overflow-hidden">
-    
-        <PostEditForm :post="post" @close="closeEditModal" @update-post="handlePostUpdate" />
-     
-  </div>
+  <PostEditForm :visible="showModalEdit" :post="post" @close="closeEditModal" @update-post="handlePostUpdate" />
 
   <!-- Modal de compartir -->
   <SharePostModal :post="post" />

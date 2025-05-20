@@ -12,7 +12,7 @@
       />
       <div>
         <p class="text-sm font-bold text-gray-700 dark:text-white">{{ post?.user?.displayName || 'Anónimo' }}</p>
-        <p class="text-xs text-gray-500 dark:text-white">{{ post?.created_at != null ? formatTimestamp(post?.created_at) : null }}</p>
+        <p class="text-xs text-gray-500 dark:text-white">{{ post?.createdAt != null ? formatTimestamp(post?.createdAt) : null }}</p>
       </div>
     </router-link>
     <div class="relative" ref="dropdownRef">
@@ -172,26 +172,21 @@
   </div>
 
   <!-- Modal de edición de un post -->
-  <div v-if="showModalEdit" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4 overflow-hidden">
-    
-        <PostEditForm :post="post" @close="closeEditModal" @update-post="handlePostUpdate" />
-     
-  </div>
+  <GroupPostEditModal :visible="showModalEdit" :post="post" @close="closeEditModal" @update-post="handlePostUpdate" />
 
   <!-- Modal de compartir -->
-  <SharePostModal :post="post" />
+  <!-- <SharePostModal :post="post" /> -->
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { formatTimestamp } from '../../utils/formatTimestamp';
-import { useShareStore } from '../../stores/shareStore';
+// import { useShareStore } from '../../stores/shareStore';
 import { usePostsStore } from '../../stores/posts';
-import PostEditForm from './PostEditForm.vue';
-import SharePostModal from '../molecules/SharePostModal.vue';
+import GroupPostEditModal from './GroupPostEditModal.vue';
+// import SharePostModal from '../molecules/SharePostModal.vue';
 import { useReports } from '../../composable/useReports';
-import { usePosts } from '../../composable/usePosts';
 import DefaultAvatar from '../../assets/avatar1.jpg';
 import { useSnackbarStore } from '../../stores/snackbar'
 import { useGroupPostsStore } from '../../stores/groupPosts';
@@ -201,8 +196,7 @@ const emit = defineEmits(['delete', 'report']);
 
 const { user } = useAuth();
 const { saveReport } = useReports();
-const { hidePost } = usePosts();
-const shareStore = useShareStore();
+// const shareStore = useShareStore();
 const postsStore = usePostsStore();
 const snackbarStore = useSnackbarStore()
 
@@ -230,7 +224,8 @@ const isSaved = computed(() => {
 
 // Toggle save/unsave post
 async function toggleSavePost() {
-  // if (!user.value?.uid) return;
+  debugger
+  if (!user.value?.uid) return;
   // await postsStore.toggleSavePost(user.value.uid, props.post.idDoc);
   props.post.showMenu = false;
   snackbarStore.show(isSaved.value ? 'Post guardado' : 'Post eliminado', 'success');
@@ -280,22 +275,16 @@ async function handleReport() {
   }
 }
 
-// Mostrar el modal de compartir
-function showShareModal() {
-  shareStore.openShareModal(props.post);
-}
-
 // Mostrar el modal de report
 function showReportModal() {
   showModalReport.value = true;
   document.body.style.overflow = 'hidden';
 }
 
-// Mostrar el modal de edición
-function showEditModal() {
-  showModalEdit.value = true;
-  document.body.style.overflow = 'hidden';
-}
+// // Mostrar el modal de compartir
+// function showShareModal() {
+//   shareStore.openShareModal(props.post);
+// }
 
 // Mostrar el modal de ocultar
 function showHideModal() {
@@ -330,10 +319,16 @@ function closeHideModal() {
   showModalHide.value = false;
   document.body.style.overflow = '';
 }
-
+// Handle post update
 function handlePostUpdate(updatedPost) {
   showModalEdit.value = false;
   document.body.style.overflow = '';
+}
+
+// Mostrar el modal de edición
+function showEditModal() {
+  showModalEdit.value = true;
+  document.body.style.overflow = 'hidden';
 }
 
 function closeEditModal() {

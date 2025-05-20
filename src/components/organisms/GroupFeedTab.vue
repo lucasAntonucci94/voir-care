@@ -3,7 +3,7 @@
     <!-- Sticky Header with Sorting -->
     <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 py-4 mb-6 rounded-lg shadow-sm">
       <div class="flex justify-between items-center max-w-2xl mx-auto">
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Feed de Grupos (En mantenimiento, de ser posible no interactuar con los post)</h2>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Feed de Grupos</h2>
         
         <select
           v-model="sortOption"
@@ -74,19 +74,17 @@ const router = useRouter()
 const sortedPosts = computed(() => {
   let postsArray = [...posts.value]
 
-   debugger
   if(user.value?.hiddenGroupPosts?.length > 0) {
     console.log(user.value?.hiddenGroupPosts)
-    debugger
     postsArray = postsArray?.filter(post => 
       !user.value?.hiddenGroupPosts?.some(hidden => hidden.postId === post.id)
     );
   } 
-
   if (sortOption.value === 'newest') {
+    debugger
     return postsArray.sort((a, b) => b.createdAt - a.createdAt)
   } else if (sortOption.value === 'mostLiked') {
-    return postsArray.sort((a, b) => (b.likes || 0) - (a.likes || 0))
+    return postsArray.sort((a, b) => (b.likes.length || 0) - (a.likes.length || 0))
   } else if (sortOption.value === 'mostCommented') {
     return postsArray.sort((a, b) => (b.commentCount || 0) - (a.commentCount || 0))
   }

@@ -524,7 +524,6 @@ function closeDeleteModal() {
 }
 
 async function confirmDelete() {
-  debugger
   try {
     await groupsStore.deleteGroup(group.value.idDoc)
     closeDeleteModal()

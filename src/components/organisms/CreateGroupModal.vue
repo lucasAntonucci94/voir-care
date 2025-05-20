@@ -299,7 +299,6 @@ function validateStep(step) {
       isValid = false;
     }
   } else if (step === 2) {
-    debugger
     if (!newGroup.value.media.url) {
       errors.media = 'Debe cargarle una portada al grupo';
       isValid = false;

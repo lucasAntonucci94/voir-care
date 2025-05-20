@@ -11,7 +11,7 @@
         </div>
       </div>
     <div class="p-6">
-      <form @submit.prevent="savePost" class="space-y-6">
+      <form @submit.prevent="editPost" class="space-y-6">
         <!-- Título -->
         <div>
           <input
@@ -129,7 +129,7 @@
 
 <script setup>
 import { ref, defineEmits, onMounted } from 'vue';
-import { usePostsStore } from '../../stores/posts';
+import { useGroupPostsStore } from '../../stores/groupPosts';
 import { useCategories } from '../../composable/useCategories';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import { boolean } from 'yup';
@@ -141,7 +141,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update-post', 'close']);
 
-const postsStore = usePostsStore();
+const groupPostsStore = useGroupPostsStore();
 const { categories } = useCategories();
 const { uploadMedia, isUploading } = useMediaUpload();
 
@@ -187,7 +187,7 @@ function handleMediaUpload(event) {
   reader.readAsDataURL(file);
 }
 
-async function savePost() {
+async function editPost() {
   isLoading.value = true;
   if (!editForm.value.title || !editForm.value.body) {
     console.error('Título y cuerpo son obligatorios');
@@ -196,8 +196,9 @@ async function savePost() {
   }
 
   try {
-    // Subir el archivo multimedia si hay uno nuevo
-    const dynamicPath = `post/${props.post.user.email}/${editForm.value.id}`;
+    
+    // subo archivo multimedia si hay uno nuevo, no valido aca porque el metodo en caso de no exisitr base64 retornara los valores enviados.
+    const dynamicPath = `groups/${props.post.group.id}/posts/${props.post.user.email}/${editForm.value.id}`;;
     const { url, path } = await uploadMedia({
       currentUrl: editForm.value.media.url,
       currentPath: editForm.value.media.path,
@@ -218,8 +219,9 @@ async function savePost() {
         imageBase64: null,
       },
     };
-
-    await postsStore.updatePost(updatedPost.idDoc, updatedPost);
+    
+    await groupPostsStore.updatePostGroup(updatedPost.group.id, updatedPost.idDoc, updatedPost);
+    // await postsStore.updatePost(updatedPost.idDoc, updatedPost);
     emit('update-post', updatedPost);
     emit('close');
   } catch (error) {

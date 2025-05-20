@@ -1,6 +1,7 @@
 <template>
   <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800 text-[#2c3e50] dark:text-white">
-    <GroupPostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
+    <GroupPostHeader :post="post" @delete="deletePost" @report="reportPost" />
+    <!-- @share="sharePost"  -->
     <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>
     <p class="mt-1 text-sm text-ellipsis">{{ post?.body }}</p>
     <div v-if="post?.media?.url" class="mt-3">
@@ -111,15 +112,17 @@ import { useAuth } from '../../api/auth/useAuth';
 import CommentForm from '../molecules/CommentForm.vue';
 import CommentList from '../molecules/CommentList.vue';
 import GroupPostHeader from '../molecules/GroupPostHeader.vue';
-import { usePostsStore } from '../../stores/posts';
 import { useGroupPostsStore } from '../../stores/groupPosts';
+import { useGroupsStore } from '../../stores/groups';
 import { useComments } from '../../composable/useComments';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
-const postsStore = usePostsStore();
 const groupPostsStore = useGroupPostsStore();
+const groupsStore = useGroupsStore();
 const { comments } = useComments(props.post.idDoc);
+const snackbarStore = useSnackbarStore();
 
 // Estado del modal
 const showMediaModal = ref(false);
@@ -133,23 +136,24 @@ async function toggleLike() {
     console.log('Usuario no autenticado, no puede dar Like');
     return;
   }
-  await postsStore.toggleLike(props.post.idDoc, {
-    id: user.value.uid,
-    email: user.value.email,
-  });
+  // await postsStore.toggleLike(props.post.idDoc, {
+  //   id: user.value.uid,
+  //   email: user.value.email,
+  // });
+  await groupPostsStore.toggleLikePostGroup(props.post.group.id, props.post.idDoc, { id: user.value.uid, email: user.value.email,}, groupsStore.userGroupFeed.value);
 }
 
 function deletePost() {
   console.log('Eliminar post:', props.post);
-  debugger
   groupPostsStore.deletePostGroup(props.post.group.id, props.post.idDoc);
   props.post.showMenu = false;
+  snackbarStore.show('Post eliminado correctamente','success');
 }
 
-function sharePost() {
-  console.log('Compartir post:', props.post.id);
-  props.post.showMenu = false;
-}
+// function sharePost() {
+//   console.log('Compartir post:', props.post.id);
+//   props.post.showMenu = false;
+// }
 
 function reportPost() {
   console.log('Reportar post:', props.post.id);
