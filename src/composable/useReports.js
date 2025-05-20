@@ -10,7 +10,9 @@ const VALID_ENTITY_TYPES = [
   'post',
   'reel',
   'group',
+  'groupPost',
   'event',
+  'eventPost',
   'user',
 ];
 

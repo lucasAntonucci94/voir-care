@@ -173,19 +173,9 @@
 
   <!-- Modal de edición de un post -->
   <div v-if="showModalEdit" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4 overflow-hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md h-[90vh] overflow-y-auto">
-      <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar posteo</h3>
-          <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
-            <i class="fa-solid fa-xmark w-6 h-6"></i>
-          </button>
-        </div>
-      </div>
-      <div class="p-6">
-        <PostEditForm :post="post" :close-modal="closeEditModal" @update-post="handlePostUpdate" />
-      </div>
-    </div>
+    
+        <PostEditForm :post="post" @close="closeEditModal" @update-post="handlePostUpdate" />
+     
   </div>
 
   <!-- Modal de compartir -->

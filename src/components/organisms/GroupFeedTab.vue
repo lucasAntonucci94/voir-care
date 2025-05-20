@@ -72,7 +72,16 @@ const { user } = useAuth()
 const router = useRouter()
 // Computed property to sort posts
 const sortedPosts = computed(() => {
-  const postsArray = [...posts.value]
+  let postsArray = [...posts.value]
+
+   debugger
+  if(user.value?.hiddenGroupPosts?.length > 0) {
+    console.log(user.value?.hiddenGroupPosts)
+    debugger
+    postsArray = postsArray?.filter(post => 
+      !user.value?.hiddenGroupPosts?.some(hidden => hidden.postId === post.id)
+    );
+  } 
 
   if (sortOption.value === 'newest') {
     return postsArray.sort((a, b) => b.createdAt - a.createdAt)
@@ -81,6 +90,8 @@ const sortedPosts = computed(() => {
   } else if (sortOption.value === 'mostCommented') {
     return postsArray.sort((a, b) => (b.commentCount || 0) - (a.commentCount || 0))
   }
+  
+ 
 
   return postsArray
 })

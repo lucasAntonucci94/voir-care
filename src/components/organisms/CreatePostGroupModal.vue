@@ -29,14 +29,14 @@
 import { ref, watch } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useCategories } from '../../composable/useCategories';
-import { useGroupsStore } from '../../stores/groups';
+import { useGroupPostsStore } from '../../stores/groupPosts';
 
 const props = defineProps({ groupId: String });
 const emit = defineEmits(['close']);
 
 const { categories } = useCategories();
 const { user } = useAuth();
-const groupsStore = useGroupsStore();
+const groupPostsStore = useGroupPostsStore();
 
 const isLoading = ref(false);
 const errorFileMessage = ref('');
@@ -97,7 +97,7 @@ async function createPost() {
   };
 
   try {
-    await groupsStore.createPostGroup(props.groupId, postData);
+    await groupPostsStore.createPostGroup(props.groupId, postData);
     emit('close');
   } catch (err) {
     console.error('Error creando post del grupo:', err);

@@ -91,8 +91,12 @@
                 accept="image/*,video/*"
                 @change="handleMediaUpload"
                 :disabled="isLoading"
-                class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark:hover:file:bg-secondary-md transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
+                :class="[
+                  'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+                  formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+                ]"
               />
+              <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
             </div>
 
             <!-- Previsualización de Media -->
@@ -228,7 +232,6 @@ const { user } = useAuth();
 const groupsStore = useGroupsStore();
 const snackbarStore = useSnackbarStore();
 const formErrors = ref({});
-const errorFileMessage = ref('');
 
 const isLoading = ref(false);
 const currentStep = ref(1);
@@ -261,7 +264,6 @@ const newGroup = ref({
 
 function closeModal() {
   resetForm();
-  errorFileMessage.value = '';
   currentStep.value = 1;
   formErrors.value = {};
   isLoading.value = false;
@@ -297,7 +299,11 @@ function validateStep(step) {
       isValid = false;
     }
   } else if (step === 2) {
-    // La imagen/video es opcional, no se valida aquí
+    debugger
+    if (!newGroup.value.media.url) {
+      errors.media = 'Debe cargarle una portada al grupo';
+      isValid = false;
+    }
   } else if (step === 3) {
     if (newGroup.value.categories.length === 0) {
       errors.categories = 'Debes seleccionar al menos una categoría';
@@ -310,7 +316,6 @@ function validateStep(step) {
   }
   
   formErrors.value = errors;
-
   return isValid;
 }
 
@@ -380,11 +385,11 @@ async function handleCreateGroup() {
 }
 
 function handleMediaUpload(event) {
-  errorFileMessage.value = '';
+  formErrors.value.media = '';
   const file = event.target.files[0];
   if (!file) return;
   if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+    formErrors.value.media = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
     event.target.value = ''; // Limpiar el input
     return;
   }

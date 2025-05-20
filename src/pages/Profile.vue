@@ -81,8 +81,14 @@
               <PostCard v-for="post in postsStore.profilePosts.value" :key="post.id" :post="post" @delete="deletePost(post.id)" />
               <div  v-if="!postsStore.profilePosts?.value?.length" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                 <p class="text-gray-500 dark:text-gray-400">No tienes publicaciones guardadas aún.</p>
-                <button
+                <!-- <button
                   class="mt-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
+                  @click="navigateToFeed"
+                >
+                  Crear publicación
+                </button> -->
+                <button
+                  class="mt-4 ml-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
                   @click="navigateToFeed"
                 >
                   Explorar publicaciones

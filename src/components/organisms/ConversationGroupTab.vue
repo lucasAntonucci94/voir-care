@@ -41,10 +41,9 @@
   import { ref, onMounted, onUnmounted } from 'vue'
   import CreatePostGroupModal from '../organisms/CreatePostGroupModal.vue'
   import PostCard from '../organisms/PostCard.vue'
-  import { useGroupsStore } from '../../stores/groups'
-import { is } from 'date-fns/locale'
+  import { useGroupPostsStore } from '../../stores/groupPosts'
 
-  const groupsStore = useGroupsStore()
+  const groupPostsStore = useGroupPostsStore()
 
   const props = defineProps({
     groupId: {
@@ -63,16 +62,16 @@ import { is } from 'date-fns/locale'
   
   onMounted(() => {
     if (!groupId) return
-    groupsStore.suscribePostsByGroupId(groupId, (data) => {
+    groupPostsStore.suscribePostsByGroupId(groupId, (data) => {
       posts.value = data
       loading.value = false
     })
   })
 
   onUnmounted(() => {
-    if (groupsStore.unsubscribePosts) {
-      groupsStore.unsubscribePosts()
-      groupsStore.unsubscribePosts = null
+    if (groupPostsStore.unsubscribePosts) {
+      groupPostsStore.unsubscribePosts()
+      groupPostsStore.unsubscribePosts = null
     }
   })
   </script>

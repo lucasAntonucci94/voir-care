@@ -215,14 +215,12 @@ export function usePosts() {
     }
   }
 
-  // Nuevo método para quitar un Like
   async function removeLike(postIdDoc, userData) {
     try {
       const docRef = doc(db, 'posts', postIdDoc);
       const likeData = {
         userId: userData.id,
         email: userData.email,
-        // No necesitamos email ni timestamp aquí, Firestore compara por igualdad estricta
       };
       await updateDoc(docRef, {
         likes: arrayRemove(likeData), // Quita el like si existe

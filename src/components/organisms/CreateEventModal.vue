@@ -58,6 +58,7 @@
                 :disabled="isLoading"
                 required
               />
+              <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción -->
@@ -73,6 +74,7 @@
                 :disabled="isLoading"
                 required
               ></textarea>
+              <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
             </div>
           </div>
 
@@ -90,13 +92,13 @@
                 @change="handleMediaUpload"
                 :class="[
                   'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
-                  errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+                  formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
                 :disabled="isLoading"
                 required
               />
               <!-- Mensaje de error -->
-              <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
+              <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
             </div>
 
             <!-- Previsualización de Media -->
@@ -126,6 +128,7 @@
               time-enabled
               required
             />
+            <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p>
             <!-- Fecha y Hora de Fin (opcional) -->
             <SelectDate
               v-model="newEvent.endTime"
@@ -133,6 +136,7 @@
               :disabled="isLoading"
               time-enabled
             />
+            <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p>
             <!-- Ubicación -->
             <div>
               <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -142,6 +146,7 @@
                 v-model="newEvent.location"
                 placeholder="Ingresá una dirección"
               />
+              <p v-if="formErrors.adress" class="text-sm text-red-500 mt-1">{{ formErrors.adress }}</p>
             </div>
 
             <!-- Capacidad -->
@@ -154,9 +159,10 @@
                 id="eventCapacity"
                 type="number"
                 placeholder="Número máximo de asistentes"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 transition-all duration-200"
+                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :disabled="isLoading"
               />
+              <p v-if="formErrors.capacity" class="text-sm text-red-500 mt-1">{{ formErrors.capacity }}</p>
             </div>
           </div>
 
@@ -179,6 +185,7 @@
                 />
                 <span class="font-medium">{{ category.name }}</span>
               </label>
+              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
 
             <!-- Privacidad -->
@@ -201,6 +208,7 @@
                 />
                 Privado
               </label>
+              <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
             </div>
           </div>
 
@@ -272,10 +280,10 @@ const props = defineProps({
 const { uploadMedia } = useMediaUpload();
 const { user } = useAuth();
 const eventsStore = useEventsStore();
-const errorFileMessage = ref('');
 
 const isLoading = ref(false);
 const currentStep = ref(1);
+const formErrors = ref({});
 const steps = ref([
   { label: 'Información' },
   { label: 'Multimedia' },
@@ -314,8 +322,8 @@ const newEvent = ref({
 
 function closeModal() {
   resetForm();
-  errorFileMessage.value = '';
   currentStep.value = 1;
+  formErrors.value = {};
   emits('close');
 }
 
@@ -337,49 +345,51 @@ function resetForm() {
 
 function validateStep(step) {
   let isValid = true;
-
+  const errors = {};
+  
   if (step === 1) {
     if (!newEvent.value.title) {
-      alert('El título es obligatorio');
+      errors.title = 'El título es obligatorio';
       isValid = false;
     }
     if (!newEvent.value.description) {
-      alert('La descripción es obligatoria');
+      errors.description = 'La descripción es obligatorio';
       isValid = false;
     }
   } else if (step === 2) {
     if (!newEvent.value.media) {
-      alert('Debe cargarle una portada al evento.');
+      errors.media = 'Debe cargarle una portada al evento.';
       isValid = false;
     }
   } else if (step === 3) {
     if (!newEvent.value.startTime) {
-      alert('La fecha y hora de inicio son obligatorias');
+      errors.startTime = 'La fecha y hora de inicio son obligatorias';
       isValid = false;
     }
     if (newEvent.value.endTime && new Date(newEvent.value.startTime) >= new Date(newEvent.value.endTime)) {
-      alert('La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio');
+      errors.endTime = 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio';
       isValid = false;
     }
     if (newEvent.value.capacity && newEvent.value.capacity < 0) {
-      alert('La capacidad debe ser un número positivo');
+      errors.capacity = 'La capacidad debe ser un número positivo';
       isValid = false;
     }
     if (!newEvent.value.location.address) {
-      alert('La ubicación es obligatoria');
+      errors.address = 'La ubicación es obligatoria';
       isValid = false;
     }
   } else if (step === 4) {
     if (newEvent.value.categories.length === 0) {
-      alert('Debes seleccionar al menos una categoría');
+      errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
     }
     if (newEvent.value.privacy !== 'public' && newEvent.value.privacy !== 'private') {
-      alert('La privacidad debe ser pública o privada');
+      errors.privacy = 'La privacidad debe ser pública o privada';
       isValid = false;
     }
   }
 
+  formErrors.value = errors;
   return isValid;
 }
 
@@ -450,12 +460,12 @@ async function handleCreateEvent() {
 }
 
 function handleMediaUpload(event) {
-  errorFileMessage.value = '';
+  formErrors.value.media = '';
   const file = event.target.files[0];
 
   if (!file) return;
   if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+    formErrors.value.media = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
     event.target.value = ''; // Limpiar el input
     return;
   }

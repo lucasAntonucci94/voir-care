@@ -209,11 +209,13 @@ export function useUsers() {
 
       const userProfilePromise = getUserProfileByEmail(firebaseUser.email);
       const hiddenPostsPromise = getHiddenPostsForUser(firebaseUser.uid);
+      const hiddenGroupPostsPromise = getHiddenGroupPostsForUser(firebaseUser.uid);
 
-      const [photoURLFile, profile, hiddenPosts] = await Promise.all([
+      const [photoURLFile, profile, hiddenPosts, hiddenGroupPosts] = await Promise.all([
         photoURLFilePromise,
         userProfilePromise,
         hiddenPostsPromise,
+        hiddenGroupPostsPromise,
       ]);
 
       const combinedData = {
@@ -221,6 +223,7 @@ export function useUsers() {
         photoURLFile,
         ...profile,
         hiddenPosts,
+        hiddenGroupPosts,
       };
 
       userProfile.value = combinedData;
@@ -330,6 +333,21 @@ export function useUsers() {
       return hiddenPosts;
     } catch (error) {
       console.error('Error al obtener los hiddenPosts:', error);
+      throw error;
+    }
+  }
+  
+  async function getHiddenGroupPostsForUser(userId) {
+    try {
+      const hiddenGroupPostsRef = collection(db, 'users', userId, 'hiddenGroupPosts');
+      const snapshot = await getDocs(hiddenGroupPostsRef);
+      const hiddenGroupPosts = [];
+      snapshot.forEach((doc) => {
+        hiddenGroupPosts.push({ id: doc.id, ...doc.data() });
+      });
+      return hiddenGroupPosts;
+    } catch (error) {
+      console.error('Error al obtener los hiddenGroupPosts:', error);
       throw error;
     }
   }

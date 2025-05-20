@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800 text-[#2c3e50] dark:text-white">
-    <PostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
+    <GroupPostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
     <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>
     <p class="mt-1 text-sm text-ellipsis">{{ post?.body }}</p>
     <div v-if="post?.media?.url" class="mt-3">
@@ -110,13 +110,15 @@ import { ref } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import CommentForm from '../molecules/CommentForm.vue';
 import CommentList from '../molecules/CommentList.vue';
-import PostHeader from '../molecules/PostHeader.vue';
+import GroupPostHeader from '../molecules/GroupPostHeader.vue';
 import { usePostsStore } from '../../stores/posts';
+import { useGroupPostsStore } from '../../stores/groupPosts';
 import { useComments } from '../../composable/useComments';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
 const postsStore = usePostsStore();
+const groupPostsStore = useGroupPostsStore();
 const { comments } = useComments(props.post.idDoc);
 
 // Estado del modal
@@ -126,7 +128,6 @@ const showMediaModal = ref(false);
 props.post.likes = props.post.likes || [];
 props.post.showMenu = props.post.showMenu || false;
 props.post.showComments = props.post.showComments || false;
-
 async function toggleLike() {
   if (!user.value) {
     console.log('Usuario no autenticado, no puede dar Like');
@@ -140,7 +141,8 @@ async function toggleLike() {
 
 function deletePost() {
   console.log('Eliminar post:', props.post);
-  postsStore.deletePost(props.post.idDoc);
+  debugger
+  groupPostsStore.deletePostGroup(props.post.group.id, props.post.idDoc);
   props.post.showMenu = false;
 }
 
