@@ -221,7 +221,7 @@ async function editPost() {
     };
     
     await groupPostsStore.updatePostGroup(updatedPost.group.id, updatedPost.idDoc, updatedPost);
-    // await postsStore.updatePost(updatedPost.idDoc, updatedPost);
+
     emit('update-post', updatedPost);
     emit('close');
   } catch (error) {

@@ -12,7 +12,7 @@
         >
           <option value="newest">Más recientes</option>
           <option value="mostLiked">Más gustados</option>
-          <option value="mostCommented">Más comentados</option>
+          <!-- <option value="mostCommented">Más comentados</option> -->
         </select>
       </div>
     </div>

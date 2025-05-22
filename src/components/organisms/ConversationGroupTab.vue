@@ -16,7 +16,7 @@
     <CreatePostGroupModal v-if="showModal" :group-id="group.idDoc" @close="showModal = false" />
 
     <!-- Listado de publicaciones del grupo -->
-    <div v-if="groupPostsStore.isLoading" class="text-center py-12">
+    <div v-if="isLoading" class="text-center py-12">
       <p class="text-gray-500 dark:text-gray-400">Cargando publicaciones...</p>
     </div>
 
@@ -57,10 +57,12 @@ const props = defineProps({
 });
 
 const showModal = ref(false);
+const isLoading = ref(false);
 
 onMounted(() => {
   if (!props.group) return;
   groupPostsStore.suscribePostsByGroupId(props.group);
+  isLoading.value = false;
 });
 
 onUnmounted(() => {

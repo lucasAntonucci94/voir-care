@@ -27,7 +27,7 @@
         class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
       >
         <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
-          <li>
+          <!-- <li>
             <button 
               @click="toggleSavePost" 
               class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -37,7 +37,7 @@
               <span v-if="postsStore.isSavingPost">Guardando...</span>
               <span v-else>{{ isSaved ? 'Guardado' : 'Guardar' }}</span>
             </button>
-          </li>
+          </li> -->
           <!-- <li>
             <button 
               @click="showShareModal" 

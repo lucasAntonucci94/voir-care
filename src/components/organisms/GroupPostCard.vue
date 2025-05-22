@@ -1,7 +1,6 @@
 <template>
   <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800 text-[#2c3e50] dark:text-white">
     <GroupPostHeader :post="post" @delete="deletePost" @report="reportPost" />
-    <!-- @share="sharePost"  -->
     <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>
     <p class="mt-1 text-sm text-ellipsis">{{ post?.body }}</p>
     <div v-if="post?.media?.url" class="mt-3">
@@ -115,14 +114,12 @@ import GroupCommentForm from '../molecules/GroupCommentForm.vue';
 import GroupCommentList from '../molecules/GroupCommentList.vue';
 import GroupPostHeader from '../molecules/GroupPostHeader.vue';
 import { useGroupPostsStore } from '../../stores/groupPosts';
-import { useGroupsStore } from '../../stores/groups';
 import { useGroupComments } from '../../composable/useGroupComments';
 import { useSnackbarStore } from '../../stores/snackbar';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
 const groupPostsStore = useGroupPostsStore();
-const groupsStore = useGroupsStore();
 const { comments } = useGroupComments(props.post.group.id, props.post.idDoc);
 const snackbarStore = useSnackbarStore();
 
@@ -142,8 +139,7 @@ async function toggleLike() {
   await groupPostsStore.toggleLikePostGroup(
     props.post.group.id,
     props.post.idDoc,
-    { id: user.value.uid, email: user.value.email },
-    groupsStore.userGroupFeed.value
+    { id: user.value.uid, email: user.value.email }
   );
 }
 

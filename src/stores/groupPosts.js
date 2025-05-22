@@ -14,7 +14,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
     userGroupFeed: ref([]),
     unsubscribePostsUserFeed: ref([]),
     unsubscribeUserGroups: ref(null),
-    groupDetailPosts: ref([]), // New state for group-specific posts
+    groupDetailPosts: ref([]),
   }),
   actions: {
     // Suscribirse al feed de posts de los grupos del usuario
@@ -73,7 +73,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         });
       });
     },
-
     // Cancelar suscripción al feed de grupos del usuario
     unsubscribeUserGroupFeed() {
       const groupsStore = useGroupsStore();
@@ -91,7 +90,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
 
       this.userGroupFeed.value = [];
     },
-
     // Suscribirse a los posts de un grupo
     async suscribePostsByGroupId(group, callback) {
       const { suscribePostsByGroupId } = useGroupPosts();
@@ -109,7 +107,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         throw error;
       }
     },
-
     // Cancelar la suscripción a posts de un grupo
     unsuscribePostsByGroupId() {
       if (this.unsubscribePosts) {
@@ -119,7 +116,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         this.groupDetailPosts.value = []; // Clear the posts state
       }
     },
-
     // Crear un nuevo post en un grupo
     async createPostGroup(idGroup, postData) {
       const { createPostGroup } = useGroupPosts();
@@ -133,7 +129,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         this.isLoading = false;
       }
     },
-
     // Actualizar un post en un grupo
     async updatePostGroup(idGroup, postId, postData) {
       const { updatePostGroup } = useGroupPosts();
@@ -147,7 +142,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         this.isLoading = false;
       }
     },
-
     // Obtener un post por ID en un grupo
     async getGroupPostById(idGroup, postId) {
       const { getPostById } = useGroupPosts();
@@ -161,7 +155,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         this.isLoading = false;
       }
     },
-
     // Eliminar un post en un grupo
     async deletePostGroup(idGroup, postId) {
       const { deletePostGroup } = useGroupPosts();
@@ -175,35 +168,6 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         this.isLoading = false;
       }
     },
-
-    // Agregar un like a un post en un grupo
-    async addLikePostGroup(idGroup, postIdDoc, userData) {
-      const { addLikeGroup } = useGroupPosts();
-      this.isLoading = true;
-      try {
-        await addLikeGroup(idGroup, postIdDoc, userData);
-      } catch (error) {
-        console.error('Error al agregar like en post de grupo:', error);
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    // Quitar un like de un post en un grupo
-    async removeLikePostGroup(idGroup, postIdDoc, userData) {
-      const { removeLikeGroup } = useGroupPosts();
-      this.isLoading = true;
-      try {
-        await removeLikeGroup(idGroup, postIdDoc, userData);
-      } catch (error) {
-        console.error('Error al quitar like en post de grupo:', error);
-        throw error;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
     // Ocultar un post
     async hidePostGroup(userId, postId) {
       const { hidePostGroup } = useGroupPosts();
@@ -220,22 +184,53 @@ export const useGroupPostsStore = defineStore('groupPosts', {
 
     // Alternar like (dar o quitar like)
     async toggleLikePostGroup(idGroup, postIdDoc, userData) {
-      const { addLikeGroup, removeLikeGroup } = useGroupPosts();
-      // Buscar el post en el arreglo del store (posts or userGroupFeed)
-      let post = this.groupDetailPosts.find((p) => p.idDoc === postIdDoc) || this.userGroupFeed.find((p) => p.idDoc === postIdDoc);
-      if (!post) return;
+      const { addLikePostGroup, removeLikePostGroup } = useGroupPosts();
 
-      const userLiked = post?.likes?.some((like) => like.userId === userData.id);
+      // Find the post in both arrays
+      const postInGroupDetail = this.groupDetailPosts?.value?.find((p) => p.idDoc === postIdDoc);
+      const postInUserFeed = this.userGroupFeed?.value?.find((p) => p.idDoc === postIdDoc);
+
+      // If the post is not found in either array, exit early
+      if (!postInGroupDetail && !postInUserFeed) return;
+
+      // Determine if the user has already liked the post (use either post object)
+      const userLiked = (postInGroupDetail || postInUserFeed)?.likes?.some(
+        (like) => like.userId === userData.id
+      );
+
       this.isLoading = true;
       try {
         if (userLiked) {
-          await removeLikeGroup(idGroup, postIdDoc, userData);
-          post.likes = post.likes.filter((like) => like.userId !== userData.id);
+          // Remove like
+          await removeLikePostGroup(idGroup, postIdDoc, userData);
+
+          // Update likes in both arrays if the post exists
+          if (postInGroupDetail) {
+            postInGroupDetail.likes = postInGroupDetail.likes.filter(
+              (like) => like.userId !== userData.id
+            );
+          }
+          if (postInUserFeed) {
+            postInUserFeed.likes = postInUserFeed.likes.filter(
+              (like) => like.userId !== userData.id
+            );
+          }
         } else {
-          await addLikeGroup(idGroup, postIdDoc, userData);
-          post.likes = (post?.likes === null || post?.likes === undefined)
-            ? [{ userId: userData.id, email: userData.email }]
-            : [...post.likes, { userId: userData.id, email: userData.email }];
+          // Add like
+          await addLikePostGroup(idGroup, postIdDoc, userData);
+          const newLike = { userId: userData.id, email: userData.email };
+
+          // Update likes in both arrays if the post exists
+          if (postInGroupDetail) {
+            postInGroupDetail.likes = postInGroupDetail.likes
+              ? [...postInGroupDetail.likes, newLike]
+              : [newLike];
+          }
+          if (postInUserFeed) {
+            postInUserFeed.likes = postInUserFeed.likes
+              ? [...postInUserFeed.likes, newLike]
+              : [newLike];
+          }
         }
       } catch (error) {
         console.error('Error toggling like:', error);
