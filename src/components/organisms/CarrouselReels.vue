@@ -3,7 +3,7 @@
     <h2 class="text-xl font-bold text-[#2c3e50] mb-4 text-center sr-only">Destacados</h2>
     <!-- Carrousel Slider Content -->
     <SliderReels
-      :reels="reelsStore.reels"
+      :reels="filteredReels"
       :is-authenticated="isAuthenticated"
       :is-view-modal-open="showViewModal"
       @show-upload="openCreateModal"
@@ -20,7 +20,7 @@
     <ViewReelModal
       :visible="showViewModal"
       :reel="selectedReel"
-      :reels="reelsStore.reels"
+      :reels="filteredReels"
       @close="closeViewModal"
       @update-reel="updateSelectedReel"
     />
@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue'; // Importamos computed
 import { useReelsStore } from '../../stores/reels';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateReelModal from '../organisms/CreateReelModal.vue';
@@ -36,12 +36,33 @@ import ViewReelModal from './ViewReelModal.vue';
 import SliderReels from './SliderReels.vue';
 
 // Estado del componente
-const { isAuthenticated } = useAuth();
+const { user, isAuthenticated } = useAuth();
 const reelsStore = useReelsStore();
 const carouselSection = ref(null);
 const showCreateModal = ref(false);
 const showViewModal = ref(false);
 const selectedReel = ref(null);
+
+// Propiedad computada para filtrar y manipular los reels
+const filteredReels = computed(() => {
+  // Obtenemos el usuario desde useAuth
+  const { user } = useAuth();
+
+  // Si no hay usuario autenticado o no hay conexiones, devolvemos un array vacío
+  if (!user.value || !user.value.connections || user.value.connections.length === 0) {
+    return [];
+  }
+
+  // Extraemos los uids de las conexiones
+  const connectionUids = user.value.connections
+    .map(connection => connection?.uid)
+    .filter(uid => uid);
+
+  // Filtramos los reels cuyo user.uid esté en connectionUids y ordenamos por createdAt
+  return reelsStore.reels
+    .filter(reel => reel.user?.uid &&(connectionUids.includes(reel.user.uid) || reel.user.uid === user.value.uid))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+});
 
 // Manejo del modal de creación
 const openCreateModal = () => {
@@ -52,6 +73,7 @@ const closeCreateModal = () => {
   showCreateModal.value = false;
   document.body.style.overflow = '';
 };
+
 // Manejo del modal de visualización
 const openViewModal = (reel) => {
   selectedReel.value = reel;

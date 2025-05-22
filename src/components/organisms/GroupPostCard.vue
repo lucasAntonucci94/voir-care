@@ -23,20 +23,49 @@
       ></video>
     </div>
     <div class="flex gap-2 mt-2 flex-wrap">
-      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full">
+      <span
+        v-for="category in post?.categories"
+        :key="category.id"
+        class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full"
+      >
         {{ category.name }}
       </span>
     </div>
-    <div class="flex justify-between mt-3 text-sm text-gray-600 dark:text-white">
+    <div class="flex justify-between mt-3 text-sm text-gray-600 dark:text-white gap-4">
       <button
         @click="toggleLike"
-        :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-        class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
+          post?.likes?.some(l => l.userId === user?.value?.id)
+            ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary',
+          !user ? 'opacity-50 cursor-not-allowed' : ''
+        ]"
         :disabled="!user"
       >
-        <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
+        <i
+          :class="[
+            'fas fa-heart',
+            post?.likes?.some(l => l.userId === user?.value?.id) ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
+          ]"
+        ></i>
+        {{ post?.likes?.length ?? 0 }} Me gusta
       </button>
-      <button @click="post.showComments = !post.showComments" class="hover:text-primary dark:hover:text-secondary transition-colors">
+      <button
+        @click="post.showComments = !post.showComments"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
+          post?.showComments
+            ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary'
+        ]"
+      >
+        <i
+          :class="[
+            post?.showComments ? 'fas fa-comment-slash' : 'fas fa-comment',
+            post?.showComments ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
+          ]"
+        ></i>
         {{ comments?.length ?? 0 }} Comentarios
       </button>
     </div>
@@ -44,7 +73,7 @@
       <GroupCommentList :post="post" />
       <GroupCommentForm :idPost="post.idDoc" :idGroup="post.group.id" />
     </div>
-
+    
     <!-- Modal para el media -->
     <div
       v-if="showMediaModal"
