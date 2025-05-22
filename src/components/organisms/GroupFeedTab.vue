@@ -19,7 +19,7 @@
 
     <!-- Loading State -->
     <div
-      v-if="posts === null"
+      v-if="post === null"
       class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md text-gray-500 dark:text-gray-400"
     >
       Cargando posteos de tus grupos...
@@ -60,16 +60,19 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { useGroupsStore } from '../../stores/groups'
+import { useGroupPostsStore } from '../../stores/groupPosts'
 import GroupPostCard from '../organisms/GroupPostCard.vue'
 import AvatarDefault from '../../assets/avatar1.jpg'
 import { useAuth } from '../../api/auth/useAuth'
 import { useRouter } from 'vue-router'
-const groupsStore = useGroupsStore()
-const posts = computed(() => groupsStore.userGroupFeed.value || [])
+
+const groupPostssStore = useGroupPostsStore()
+debugger
+const posts = computed(() => groupPostssStore.userGroupFeed.value || [])
 const sortOption = ref('newest')
 const { user } = useAuth()
 const router = useRouter()
+
 // Computed property to sort posts
 const sortedPosts = computed(() => {
   let postsArray = [...posts.value]
@@ -81,16 +84,14 @@ const sortedPosts = computed(() => {
     );
   } 
   if (sortOption.value === 'newest') {
-    debugger
     return postsArray.sort((a, b) => b.createdAt - a.createdAt)
   } else if (sortOption.value === 'mostLiked') {
     return postsArray.sort((a, b) => (b.likes.length || 0) - (a.likes.length || 0))
   } else if (sortOption.value === 'mostCommented') {
+    debugger
     return postsArray.sort((a, b) => (b.commentCount || 0) - (a.commentCount || 0))
   }
   
- 
-
   return postsArray
 })
 
@@ -105,13 +106,13 @@ function goToDetail(idGroup) {
 // Suscripción a eventos del usuario
 onMounted(() => {
   if (user.value) {
-    groupsStore.subscribeUserGroupFeed(user.value.uid)
+    groupPostssStore.subscribeUserGroupFeed(user.value.uid)
   }
 })
 
 // Desuscripción al desmontar el componente
 onUnmounted(() => {
-  groupsStore.unsubscribeUserGroupFeed()
+  groupPostssStore.unsubscribeUserGroupFeed()
 })
 </script>
 

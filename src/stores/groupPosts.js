@@ -1,13 +1,100 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useGroupPosts } from '../composable/useGroupPosts';
+import { useGroups } from '../composable/useGroups';
+import { useSavedGroupPosts } from '../composable/useSavedGroupPosts';
+import { useGroupsStore } from './groups'; // Import the groups store
 
 export const useGroupPostsStore = defineStore('groupPosts', {
   state: () => ({
     isLoading: ref(false),
     unsubscribePosts: ref(null),
+    savedPostIds: ref([]),
+    savedPosts: ref([]),
+    userGroupFeed: ref([]), // Already present for the feed
+    unsubscribePostsUserFeed: ref([]), // Already present for post unsubscriptions
+    unsubscribeUserGroups: ref(null), // Already present for group unsubscription
   }),
   actions: {
+    // Suscribirse al feed de posts de los grupos del usuario
+    subscribeUserGroupFeed(uid) {
+      const { subscribeToUserGroups } = useGroups();
+      const { suscribePostsByGroupId } = useGroupPosts();
+      const groupsStore = useGroupsStore(); // Access the groups store
+
+      // Evitar doble suscripción
+      if (groupsStore.unsubscribeUserGroups || this.unsubscribePostsUserFeed?.length) {
+        console.log('[Feed] Ya está suscrito, cancelando...');
+        this.unsubscribeUserGroupFeed();
+      }
+
+      console.log('[Feed] Suscribiendo a los grupos del usuario...');
+      groupsStore.unsubscribeUserGroups = subscribeToUserGroups(uid, (groups) => {
+        if (!Array.isArray(groups)) {
+          console.warn('[Feed] No se pudo obtener la lista de grupos del usuario');
+          this.userGroupFeed.value = [];
+          return;
+        }
+
+        groupsStore.userGroups.value = groups; // Update userGroups in groups store
+        const groupIds = groups.map((g) => g.idDoc);
+
+        if (groupIds.length === 0) {
+          console.log('[Feed] El usuario no tiene grupos, cancelando feed');
+          this.userGroupFeed.value = [];
+          return;
+        }
+
+        // Array para almacenar las funciones de desuscripción de los posteos
+        this.unsubscribePostsUserFeed = [];
+        groupsStore.userGroups?.value?.forEach((group) => {
+          const unsubscribe = suscribePostsByGroupId(group.idDoc, (posts) => {
+            const postsWithGroupDetail = posts.map((post) => ({
+              ...post,
+              group: {
+                id: group.idDoc,
+                title: group.title,
+                media: group.media,
+              },
+            }));
+
+            const uniquePosts = [
+              ...this.userGroupFeed?.value?.filter(
+                (p) => p.group.id !== group.idDoc // Mantener posteos de otros grupos
+              ),
+              ...postsWithGroupDetail, // Agregar los nuevos posteos
+            ];
+
+            // Actualizar el feed, ordenando por fecha
+            this.userGroupFeed.value = uniquePosts.sort(
+              (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
+            );
+          });
+
+          // Guardar la función de desuscripción
+          this.unsubscribePostsUserFeed.push(unsubscribe);
+        });
+      });
+    },
+
+    // Cancelar suscripción al feed de grupos del usuario
+    unsubscribeUserGroupFeed() {
+      const groupsStore = useGroupsStore(); // Access the groups store
+      if (this.unsubscribePostsUserFeed?.length) {
+        console.log('[Feed] Cancelando suscripciones a posteos...');
+        this.unsubscribePostsUserFeed.forEach((unsubscribe) => unsubscribe());
+        this.unsubscribePostsUserFeed = [];
+      }
+
+      if (groupsStore.unsubscribeUserGroups) {
+        console.log('[Feed] Cancelando suscripción a grupos del usuario...');
+        groupsStore.unsubscribeUserGroups();
+        groupsStore.unsubscribeUserGroups = null;
+      }
+
+      this.userGroupFeed.value = [];
+    },
+
     // Crear un nuevo post en un grupo
     async createPostGroup(idGroup, postData) {
       const { createPostGroup } = useGroupPosts();
@@ -131,30 +218,42 @@ export const useGroupPostsStore = defineStore('groupPosts', {
     },
 
     // Alternar like (dar o quitar like)
-    async toggleLikePostGroup(idGroup, postIdDoc, userData, posts) {
-      debugger
-      const { addLikePostGroup, removeLikePostGroup } = useGroupPosts();
-      // Buscar el post en el arreglo proporcionado
-      let post = posts?.find((p) => p.idDoc === postIdDoc);
+    async toggleLikePostGroup(idGroup, postIdDoc, userData) {
+      const { addLikeGroup, removeLikeGroup } = useGroupPosts();
+      // Buscar el post en el arreglo del store (userGroupFeed)
+      let post = this.userGroupFeed.find((p) => p.idDoc === postIdDoc);
       if (!post) return;
 
       const userLiked = post?.likes?.some((like) => like.userId === userData.id);
       this.isLoading = true;
       try {
         if (userLiked) {
-          await removeLikePostGroup(idGroup, postIdDoc, userData);
+          await removeLikeGroup(idGroup, postIdDoc, userData);
           // Actualizar el arreglo local después de quitar el like
           post.likes = post.likes.filter((like) => like.userId !== userData.id);
         } else {
-          await addLikePostGroup(idGroup, postIdDoc, userData);
+          await addLikeGroup(idGroup, postIdDoc, userData);
           // Actualizar el arreglo local después de agregar el like
-          post.likes = (post?.likes === null || post?.likes === undefined) ? [] : [...post.likes, { userId: userData.id, email: userData.email }];
+          post.likes = (post?.likes === null || post?.likes === undefined)
+            ? [{ userId: userData.id, email: userData.email }]
+            : [...post.likes, { userId: userData.id, email: userData.email }];
         }
       } catch (error) {
         console.error('Error toggling like:', error);
         throw error;
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    // Toggle save/unsave post
+    async toggleSavePost(userId, postId, groupId) {
+      const { savePost, unsavePost, isPostSavedQuery } = useSavedGroupPosts();
+      const isSaved = await isPostSavedQuery(userId, postId, groupId);
+      if (isSaved) {
+        await unsavePost(userId, postId, groupId);
+      } else {
+        await savePost(userId, postId, groupId);
       }
     },
   },

@@ -198,6 +198,7 @@ const { user } = useAuth();
 const { saveReport } = useReports();
 // const shareStore = useShareStore();
 const postsStore = usePostsStore();
+const groupPostsStore = useGroupPostsStore();
 const snackbarStore = useSnackbarStore()
 
 // Estados
@@ -219,14 +220,13 @@ const handleClickOutside = (event) => {
 
 // Computed
 const isSaved = computed(() => {
-  return postsStore.savedPostIds.includes(props.post.idDoc);
+  return groupPostsStore.savedPostIds.includes(props.post.idDoc);
 });
 
 // Toggle save/unsave post
 async function toggleSavePost() {
-  debugger
   if (!user.value?.uid) return;
-  // await postsStore.toggleSavePost(user.value.uid, props.post.idDoc);
+  await groupPostsStore.toggleSavePost(user.value.uid, props.post.idDoc, props.post.group.id);
   props.post.showMenu = false;
   snackbarStore.show(isSaved.value ? 'Post guardado' : 'Post eliminado', 'success');
 }

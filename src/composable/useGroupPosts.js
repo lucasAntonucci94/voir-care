@@ -86,6 +86,9 @@ export function useGroupPosts() {
           return {
             idDoc: docSnap.id,
             ...post,
+            group: {
+              id: groupId,
+            },
           };
         });
         callback(posts);

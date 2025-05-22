@@ -102,27 +102,4 @@ const closeModalCreate = () => {
 const handleGroupCreated = (groupData) => {
   console.log('Grupo creado:', groupData)
 }
-
-// // Suscripciones según el tab seleccionado
-// watch(
-//   activeTab,
-//   (newTab, oldTab) => {
-//     // Cancelar todas las suscripciones primero
-//     groupsStore.unsubscribeUserGroupFeed()
-//     groupsStore.unsubscribeAllGroups()
-//     groupsStore.unsubscribeFromUserGroups()
-
-//     if (!user.value?.uid) return
-
-//     // Activar la suscripción según el tab
-//     if (newTab === 'feed') {
-//       groupsStore.subscribeUserGroupFeed(user.value.uid)
-//     } else if (newTab === 'discover') {
-//       groupsStore.subscribeAllGroups()
-//     } else if (newTab === 'yourGroups') {
-//       groupsStore.subscribeUserGroups(user.value.uid)
-//     }
-//   },
-//   { immediate: true }
-// )
 </script>

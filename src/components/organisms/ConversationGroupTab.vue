@@ -13,7 +13,7 @@
       </section>
   
       <!-- Modal para crear publicación -->
-      <CreatePostGroupModal v-if="showModal" :group-id="groupId" @close="showModal = false" />
+      <CreatePostGroupModal v-if="showModal" :group-id="group.id" @close="showModal = false" />
   
       <!-- Listado de publicaciones del grupo -->
       <div v-if="loading" class="text-center py-12">
@@ -26,12 +26,12 @@
   
       <div v-else class="space-y-6 max-w-lg mx-auto">
         <transition-group name="fade" tag="div" class="space-y-6">
-          <PostCard
+          <GroupPostCard
             v-for="post in posts"
             :key="post.idDoc"
             :post="post"
-            class="block bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4"
-          />
+            />
+            <!-- class="block bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4" -->
         </transition-group>
       </div>
     </div>
@@ -40,14 +40,14 @@
   <script setup>
   import { ref, onMounted, onUnmounted } from 'vue'
   import CreatePostGroupModal from '../organisms/CreatePostGroupModal.vue'
-  import PostCard from '../organisms/PostCard.vue'
+  import GroupPostCard from '../organisms/GroupPostCard.vue'
   import { useGroupPostsStore } from '../../stores/groupPosts'
 
   const groupPostsStore = useGroupPostsStore()
 
   const props = defineProps({
-    groupId: {
-      type: String,
+    group: {
+      type: Object,
       required: true
     },
     isMember: {
@@ -55,7 +55,8 @@
       required: false
     },
   })
-  const groupId = props.groupId
+  debugger
+  const groupId = props.group.idDoc
   const posts = ref([])
   const loading = ref(true)
   const showModal = ref(false)
@@ -64,6 +65,12 @@
     if (!groupId) return
     groupPostsStore.suscribePostsByGroupId(groupId, (data) => {
       posts.value = data
+      debugger
+      posts.value = posts.value.map((post) => { 
+        post.group = props.group
+        post.group.id = groupId
+        return post
+      })
       loading.value = false
     })
   })

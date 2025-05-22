@@ -51,7 +51,7 @@
 <script setup>
 import { ref } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp';
-import { useComments } from '../../composable/useComments';
+import { useGroupComments } from '../../composable/useGroupComments';
 
 // Definimos las props
 const props = defineProps({
@@ -61,8 +61,8 @@ const props = defineProps({
   }
 });
 
-// Usamos el composable con el idDoc del post
-const { comments, deleteComment } = useComments(props.post.idDoc);
+// Usamos el composable con el idDoc del post y grupo
+const { comments, deleteComment } = useGroupComments(props.post.group.id, props.post.idDoc);
 
 // Estado para el modal
 const showModal = ref(false);

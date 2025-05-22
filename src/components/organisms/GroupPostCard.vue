@@ -42,8 +42,8 @@
       </button>
     </div>
     <div v-if="post?.showComments" class="mt-4 border-t pt-4">
-      <CommentList :post="post" />
-      <CommentForm :idPost="post.idDoc" />
+      <GroupCommentList :post="post" />
+      <GroupCommentForm :idPost="post.idDoc" :idGroup="post.group.id" />
     </div>
 
     <!-- Modal para el media -->
@@ -90,8 +90,10 @@
               <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
             </button>
             <hr class="border-t border-gray-300 dark:border-gray-700 md:border-gray-400 mb-4" />
-            <CommentList :post="post" />
-            <CommentForm :idPost="post.idDoc" />
+            <div v-if="post?.showComments" class="mt-4 border-t pt-4">
+              <!-- <GroupCommentList :post="post" /> -->
+              <!-- <GroupCommentForm :idPost="post.idDoc" :idGroup="post.group.id" /> -->
+            </div>
           </div>
           <button
             @click="closeMediaModal"
@@ -109,51 +111,49 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
-import CommentForm from '../molecules/CommentForm.vue';
-import CommentList from '../molecules/CommentList.vue';
+import GroupCommentForm from '../molecules/GroupCommentForm.vue';
+import GroupCommentList from '../molecules/GroupCommentList.vue';
 import GroupPostHeader from '../molecules/GroupPostHeader.vue';
 import { useGroupPostsStore } from '../../stores/groupPosts';
 import { useGroupsStore } from '../../stores/groups';
-import { useComments } from '../../composable/useComments';
+import { useGroupComments } from '../../composable/useGroupComments';
 import { useSnackbarStore } from '../../stores/snackbar';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
+debugger
 const groupPostsStore = useGroupPostsStore();
 const groupsStore = useGroupsStore();
-const { comments } = useComments(props.post.idDoc);
+const { comments } = useGroupComments(props.post.group.id, props.post.idDoc);
 const snackbarStore = useSnackbarStore();
 
 // Estado del modal
 const showMediaModal = ref(false);
+// Estado para mostrar comentarios
+const showComments = ref(props.post.showComments || false);
 
 // Inicializamos propiedades faltantes
 props.post.likes = props.post.likes || [];
-props.post.showMenu = props.post.showMenu || false;
-props.post.showComments = props.post.showComments || false;
+
 async function toggleLike() {
   if (!user.value) {
     console.log('Usuario no autenticado, no puede dar Like');
     return;
   }
-  // await postsStore.toggleLike(props.post.idDoc, {
-  //   id: user.value.uid,
-  //   email: user.value.email,
-  // });
-  await groupPostsStore.toggleLikePostGroup(props.post.group.id, props.post.idDoc, { id: user.value.uid, email: user.value.email,}, groupsStore.userGroupFeed.value);
+  await groupPostsStore.toggleLikePostGroup(
+    props.post.group.id,
+    props.post.idDoc,
+    { id: user.value.uid, email: user.value.email },
+    groupsStore.userGroupFeed.value
+  );
 }
 
 function deletePost() {
   console.log('Eliminar post:', props.post);
   groupPostsStore.deletePostGroup(props.post.group.id, props.post.idDoc);
   props.post.showMenu = false;
-  snackbarStore.show('Post eliminado correctamente','success');
+  snackbarStore.show('Post eliminado correctamente', 'success');
 }
-
-// function sharePost() {
-//   console.log('Compartir post:', props.post.id);
-//   props.post.showMenu = false;
-// }
 
 function reportPost() {
   console.log('Reportar post:', props.post.id);
@@ -168,6 +168,11 @@ function openMediaModal() {
 function closeMediaModal() {
   showMediaModal.value = false;
   document.body.style.overflow = ''; // Restaura el scroll del body
+}
+
+// Actualiza el estado de mostrar comentarios
+function toggleComments() {
+  showComments.value = !showComments.value;
 }
 </script>
 

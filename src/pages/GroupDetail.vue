@@ -7,7 +7,7 @@
   </div>
   <div v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
     <!-- Banner -->
-    <div class="relative w-full h-64 md:h-96 overflow-hidden">
+    <div  @click="openMediaModal(group.media)" class="relative w-full h-64 md:h-96 overflow-hidden">
       <template v-if="group.media?.type === 'image' && group.media?.url">
         <img
           :src="group.media.url"
@@ -178,6 +178,12 @@
           @close="closeEditModal"
           @groupUpdated="handleGroupUpdated"
         />
+        <!-- Media Modal -->
+        <MediaModalViewer
+          :visible="showMediaModal"
+          :media="selectedMedia"
+          @close="closeMediaModal"
+        />
       </div>
 
       <!-- Contenido de la pestaña seleccionada -->
@@ -325,7 +331,7 @@
 
         <!-- Pestaña "Conversación" -->
         <div v-else-if="activeTab === 'conversation'" class="text-sm text-gray-600 dark:text-gray-300">
-          <ConversationGroupTab :group-id="group.idDoc" :is-member="isMember" />
+          <ConversationGroupTab :group="group" :is-member="isMember" />
         </div>
 
         <!-- Pestaña "Personas" -->
@@ -356,6 +362,7 @@ import { useReports } from '../composable/useReports';
 import { useSnackbarStore } from '../stores/snackbar'
 import GenericConfirmModal from '../components/molecules/GenericConfirmModal.vue'
 import EditGroupModal from '../components/organisms/EditGroupModal.vue'
+import MediaModalViewer from '../components/molecules/MediaViewerModal.vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -380,6 +387,8 @@ const showReportModal = ref(false)
 const showDeleteModal = ref(false)
 const showEditModal = ref(false)
 const selectedGroup = ref(null)
+const showMediaModal = ref(false)
+const selectedMedia = ref({ src: '', type: 'image' });
 
 // Definir las pestañas
 const tabs = [
@@ -561,6 +570,22 @@ function showHideGroupModal() {
   // Implement modal logic for hiding group
   console.log('Abrir modal para ocultar grupo')
 }
+
+
+  // Modal functions
+  const openMediaModal = (media) => {
+    debugger
+    selectedMedia.value = { src: media.url, type: media.type };
+    showMediaModal.value = true;
+    document.body.style.overflow = 'hidden';
+  };
+  
+  const closeMediaModal = () => {
+    selectedMedia.value = { src: '', type: 'image' };
+    showMediaModal.value = false;
+    document.body.style.overflow = '';
+  };
+  
 </script>
 
 <style scoped>

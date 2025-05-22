@@ -1,17 +1,14 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useGroups } from '../composable/useGroups';
-import { useGroupPosts } from '../composable/useGroupPosts';
 
 export const useGroupsStore = defineStore('groups', {
   state: () => ({
-    userGroups: ref([]),
+    userGroups: ref([]), // Keep for group management
     allGroups: ref([]),
     isLoading: ref(false),
-    unsubscribeUserGroups: ref(null),
+    unsubscribeUserGroups: ref(null), // Keep for group subscription
     unsubscribeAll: ref(null),
-    userGroupFeed: ref([]),
-    unsubscribePostsUserFeed: ref([]),
   }),
   actions: {
     // Suscribirse a los grupos en los que el usuario es miembro
@@ -60,83 +57,6 @@ export const useGroupsStore = defineStore('groups', {
         this.unsubscribeAll();
         this.unsubscribeAll = null;
       }
-    },
-
-    // Suscribirse al feed de posts de los grupos del usuario
-    subscribeUserGroupFeed(uid) {
-      const { subscribeToUserGroups } = useGroups();
-      const { suscribePostsByGroupId } = useGroupPosts(); // Importado desde el composable
-
-      // Evitar doble suscripción
-      if (this.unsubscribeUserGroups || this.unsubscribePostsUserFeed?.length) {
-        console.log('[Feed] Ya está suscrito, cancelando...');
-        this.unsubscribeUserGroupFeed();
-      }
-
-      console.log('[Feed] Suscribiendo a los grupos del usuario...');
-      this.unsubscribeUserGroups = subscribeToUserGroups(uid, (groups) => {
-        if (!Array.isArray(groups)) {
-          console.warn('[Feed] No se pudo obtener la lista de grupos del usuario');
-          this.userGroupFeed.value = [];
-          return;
-        }
-
-        this.userGroups.value = groups;
-        const groupIds = groups.map((g) => g.idDoc);
-
-        if (groupIds.length === 0) {
-          console.log('[Feed] El usuario no tiene grupos, cancelando feed');
-          this.userGroupFeed.value = [];
-          return;
-        }
-
-        // Array para almacenar las funciones de desuscripción de los posteos
-        this.unsubscribePostsUserFeed = [];
-        this.userGroups?.value?.forEach((group) => {
-          const unsubscribe = suscribePostsByGroupId(group.idDoc, (posts) => {
-            const postsWithGroupDetail = posts.map((post) => ({
-              ...post,
-              group: {
-                id: group.idDoc,
-                title: group.title,
-                media: group.media,
-              },
-            }));
-
-            const uniquePosts = [
-              ...this.userGroupFeed?.value?.filter(
-                (p) => p.group.id !== group.idDoc // Mantener posteos de otros grupos
-              ),
-              ...postsWithGroupDetail, // Agregar los nuevos posteos
-            ];
-
-            // Actualizar el feed, ordenando por fecha
-            this.userGroupFeed.value = uniquePosts.sort(
-              (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
-            );
-          });
-
-          // Guardar la función de desuscripción
-          this.unsubscribePostsUserFeed.push(unsubscribe);
-        });
-      });
-    },
-
-    // Cancelar suscripción al feed de grupos del usuario
-    unsubscribeUserGroupFeed() {
-      if (this.unsubscribePostsUserFeed?.length) {
-        console.log('[Feed] Cancelando suscripciones a posteos...');
-        this.unsubscribePostsUserFeed.forEach((unsubscribe) => unsubscribe());
-        this.unsubscribePostsUserFeed = [];
-      }
-
-      if (this.unsubscribeUserGroups) {
-        console.log('[Feed] Cancelando suscripción a grupos del usuario...');
-        this.unsubscribeUserGroups();
-        this.unsubscribeUserGroups = null;
-      }
-
-      this.userGroupFeed.value = [];
     },
 
     // Crear un nuevo grupo
@@ -197,9 +117,9 @@ export const useGroupsStore = defineStore('groups', {
 
     // Unirse a un grupo
     async joinGroup(groupId, userId) {
-      const { joinGroup } = useGroups();
-      this.isLoading = true;
       try {
+        const { joinGroup } = useGroups();
+        this.isLoading = true;
         return await joinGroup(groupId, userId);
       } catch (error) {
         console.error(`Error al unirse al grupo con id: ${groupId}`, error);

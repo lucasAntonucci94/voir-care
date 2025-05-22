@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { getFirestore, doc, setDoc, getDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove, onSnapshot,deleteDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { usePosts } from '../composable/usePosts';
+import { useSavedGroupPosts } from '../composable/useSavedGroupPosts';
 import { useAuth } from '../api/auth/useAuth'
 
 const db = getFirestore();
@@ -201,7 +202,7 @@ export function useUsers() {
    */
   async function loadProfileInfo(firebaseUser) {
     if (!firebaseUser) return null;
-
+    const { fetchSavedPosts } = useSavedGroupPosts();
     try {
       const photoURLFilePromise = firebaseUser.photoURL
         ? getFileUrl(firebaseUser.photoURL)
@@ -210,12 +211,14 @@ export function useUsers() {
       const userProfilePromise = getUserProfileByEmail(firebaseUser.email);
       const hiddenPostsPromise = getHiddenPostsForUser(firebaseUser.uid);
       const hiddenGroupPostsPromise = getHiddenGroupPostsForUser(firebaseUser.uid);
+      const savedGroupPostsPromise = fetchSavedPosts(firebaseUser.uid);
 
-      const [photoURLFile, profile, hiddenPosts, hiddenGroupPosts] = await Promise.all([
+      const [photoURLFile, profile, hiddenPosts, hiddenGroupPosts, savedGroupPosts] = await Promise.all([
         photoURLFilePromise,
         userProfilePromise,
         hiddenPostsPromise,
         hiddenGroupPostsPromise,
+        savedGroupPostsPromise,
       ]);
 
       const combinedData = {
@@ -224,6 +227,7 @@ export function useUsers() {
         ...profile,
         hiddenPosts,
         hiddenGroupPosts,
+        savedGroupPosts,
       };
 
       userProfile.value = combinedData;
