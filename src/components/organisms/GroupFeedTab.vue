@@ -67,7 +67,6 @@ import { useAuth } from '../../api/auth/useAuth'
 import { useRouter } from 'vue-router'
 
 const groupPostssStore = useGroupPostsStore()
-debugger
 const posts = computed(() => groupPostssStore.userGroupFeed.value || [])
 const sortOption = ref('newest')
 const { user } = useAuth()

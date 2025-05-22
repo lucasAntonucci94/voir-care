@@ -18,6 +18,7 @@ import { useAuth } from '../api/auth/useAuth';
 import { useStorage } from './useStorage';
 import { useNotifications } from './useNotifications'; // Asegúrate de tener este composable para las notificaciones
 import { newGuid } from '../utils/newGuid';
+import { id } from 'date-fns/locale';
 
 const db = getFirestore();
 const { user } = useAuth();
@@ -34,6 +35,19 @@ export function useGroupPosts() {
    * @returns {Promise<void>}
    */
   async function createPostGroup(idGroup, postData) {
+    if(!idGroup) {
+      console.error('ID del grupo no proporcionado');
+      return;
+    }
+    if(!postData) { 
+      console.error('Datos del post no proporcionados');
+      return;
+    }
+    if(!user.value) {
+      console.error('Usuario no autenticado');
+      return;
+    }
+    
     try {
       isLoading.value = true;
       postData.id = newGuid();
@@ -76,9 +90,9 @@ export function useGroupPosts() {
    * @param {Function} callback - Función que recibe los posts
    * @returns {Function} - Función para desuscribirse
    */
-  function suscribePostsByGroupId(groupId, callback) {
+  function suscribePostsByGroupId(group, callback) {
     try {
-      const postsRef = collection(db, 'groups', groupId, 'posts');
+      const postsRef = collection(db, 'groups', group.idDoc, 'posts');
       const q = query(postsRef, orderBy('createdAt', 'desc'));
       return onSnapshot(q, (snapshot) => {
         const posts = snapshot.docs.map((docSnap) => {
@@ -86,11 +100,10 @@ export function useGroupPosts() {
           return {
             idDoc: docSnap.id,
             ...post,
-            group: {
-              id: groupId,
-            },
+            group : {...group,  id: group.idDoc},
           };
         });
+        
         callback(posts);
       });
     } catch (error) {

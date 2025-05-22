@@ -574,7 +574,6 @@ function showHideGroupModal() {
 
   // Modal functions
   const openMediaModal = (media) => {
-    debugger
     selectedMedia.value = { src: media.url, type: media.type };
     showMediaModal.value = true;
     document.body.style.overflow = 'hidden';

@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useGroupPosts } from '../composable/useGroupPosts';
 import { useGroups } from '../composable/useGroups';
 import { useSavedGroupPosts } from '../composable/useSavedGroupPosts';
-import { useGroupsStore } from './groups'; // Import the groups store
+import { useGroupsStore } from './groups';
 
 export const useGroupPostsStore = defineStore('groupPosts', {
   state: () => ({
@@ -11,18 +11,18 @@ export const useGroupPostsStore = defineStore('groupPosts', {
     unsubscribePosts: ref(null),
     savedPostIds: ref([]),
     savedPosts: ref([]),
-    userGroupFeed: ref([]), // Already present for the feed
-    unsubscribePostsUserFeed: ref([]), // Already present for post unsubscriptions
-    unsubscribeUserGroups: ref(null), // Already present for group unsubscription
+    userGroupFeed: ref([]),
+    unsubscribePostsUserFeed: ref([]),
+    unsubscribeUserGroups: ref(null),
+    groupDetailPosts: ref([]), // New state for group-specific posts
   }),
   actions: {
     // Suscribirse al feed de posts de los grupos del usuario
     subscribeUserGroupFeed(uid) {
       const { subscribeToUserGroups } = useGroups();
       const { suscribePostsByGroupId } = useGroupPosts();
-      const groupsStore = useGroupsStore(); // Access the groups store
+      const groupsStore = useGroupsStore();
 
-      // Evitar doble suscripción
       if (groupsStore.unsubscribeUserGroups || this.unsubscribePostsUserFeed?.length) {
         console.log('[Feed] Ya está suscrito, cancelando...');
         this.unsubscribeUserGroupFeed();
@@ -36,7 +36,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
           return;
         }
 
-        groupsStore.userGroups.value = groups; // Update userGroups in groups store
+        groupsStore.userGroups.value = groups;
         const groupIds = groups.map((g) => g.idDoc);
 
         if (groupIds.length === 0) {
@@ -45,10 +45,9 @@ export const useGroupPostsStore = defineStore('groupPosts', {
           return;
         }
 
-        // Array para almacenar las funciones de desuscripción de los posteos
         this.unsubscribePostsUserFeed = [];
         groupsStore.userGroups?.value?.forEach((group) => {
-          const unsubscribe = suscribePostsByGroupId(group.idDoc, (posts) => {
+          const unsubscribe = suscribePostsByGroupId(group, (posts) => {
             const postsWithGroupDetail = posts.map((post) => ({
               ...post,
               group: {
@@ -60,18 +59,16 @@ export const useGroupPostsStore = defineStore('groupPosts', {
 
             const uniquePosts = [
               ...this.userGroupFeed?.value?.filter(
-                (p) => p.group.id !== group.idDoc // Mantener posteos de otros grupos
+                (p) => p.group.id !== group.idDoc
               ),
-              ...postsWithGroupDetail, // Agregar los nuevos posteos
+              ...postsWithGroupDetail,
             ];
 
-            // Actualizar el feed, ordenando por fecha
             this.userGroupFeed.value = uniquePosts.sort(
               (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
             );
           });
 
-          // Guardar la función de desuscripción
           this.unsubscribePostsUserFeed.push(unsubscribe);
         });
       });
@@ -79,7 +76,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
 
     // Cancelar suscripción al feed de grupos del usuario
     unsubscribeUserGroupFeed() {
-      const groupsStore = useGroupsStore(); // Access the groups store
+      const groupsStore = useGroupsStore();
       if (this.unsubscribePostsUserFeed?.length) {
         console.log('[Feed] Cancelando suscripciones a posteos...');
         this.unsubscribePostsUserFeed.forEach((unsubscribe) => unsubscribe());
@@ -93,6 +90,34 @@ export const useGroupPostsStore = defineStore('groupPosts', {
       }
 
       this.userGroupFeed.value = [];
+    },
+
+    // Suscribirse a los posts de un grupo
+    async suscribePostsByGroupId(group, callback) {
+      const { suscribePostsByGroupId } = useGroupPosts();
+      if (this.unsubscribePosts) {
+        console.log('Suscripción a posts de grupo ya activa, cancelando...');
+        this.unsuscribePostsByGroupId();
+      }
+      try {
+        this.unsubscribePosts = suscribePostsByGroupId(group, (data) => {
+          this.groupDetailPosts.value = data;
+          if (callback) { callback(this.groupDetailPosts.value); }
+        });
+      } catch (error) {
+        console.error('Error al suscribirse a los posts del grupo:', error);
+        throw error;
+      }
+    },
+
+    // Cancelar la suscripción a posts de un grupo
+    unsuscribePostsByGroupId() {
+      if (this.unsubscribePosts) {
+        console.log('Cancelando suscripción a posts de grupo...');
+        this.unsubscribePosts();
+        this.unsubscribePosts = null;
+        this.groupDetailPosts.value = []; // Clear the posts state
+      }
     },
 
     // Crear un nuevo post en un grupo
@@ -193,35 +218,11 @@ export const useGroupPostsStore = defineStore('groupPosts', {
       }
     },
 
-    // Suscribirse a los posts de un grupo
-    async suscribePostsByGroupId(groupId, callback) {
-      const { suscribePostsByGroupId } = useGroupPosts();
-      if (this.unsubscribePosts) {
-        console.log('Suscripción a posts de grupo ya activa, cancelando...');
-        this.unsuscribePostsByGroupId();
-      }
-      try {
-        this.unsubscribePosts = suscribePostsByGroupId(groupId, callback);
-      } catch (error) {
-        console.error('Error al suscribirse a los posts del grupo:', error);
-        throw error;
-      }
-    },
-
-    // Cancelar la suscripción a posts de un grupo
-    unsuscribePostsByGroupId() {
-      if (this.unsubscribePosts) {
-        console.log('Cancelando suscripción a posts de grupo...');
-        this.unsubscribePosts();
-        this.unsubscribePosts = null;
-      }
-    },
-
     // Alternar like (dar o quitar like)
     async toggleLikePostGroup(idGroup, postIdDoc, userData) {
       const { addLikeGroup, removeLikeGroup } = useGroupPosts();
-      // Buscar el post en el arreglo del store (userGroupFeed)
-      let post = this.userGroupFeed.find((p) => p.idDoc === postIdDoc);
+      // Buscar el post en el arreglo del store (posts or userGroupFeed)
+      let post = this.groupDetailPosts.find((p) => p.idDoc === postIdDoc) || this.userGroupFeed.find((p) => p.idDoc === postIdDoc);
       if (!post) return;
 
       const userLiked = post?.likes?.some((like) => like.userId === userData.id);
@@ -229,11 +230,9 @@ export const useGroupPostsStore = defineStore('groupPosts', {
       try {
         if (userLiked) {
           await removeLikeGroup(idGroup, postIdDoc, userData);
-          // Actualizar el arreglo local después de quitar el like
           post.likes = post.likes.filter((like) => like.userId !== userData.id);
         } else {
           await addLikeGroup(idGroup, postIdDoc, userData);
-          // Actualizar el arreglo local después de agregar el like
           post.likes = (post?.likes === null || post?.likes === undefined)
             ? [{ userId: userData.id, email: userData.email }]
             : [...post.likes, { userId: userData.id, email: userData.email }];
