@@ -196,6 +196,7 @@ import { useLocationsStore } from '../../stores/locations';
 import { useAuth } from '../../api/auth/useAuth';
 import GeolocationInput from '../atoms/GeolocationInput.vue';
 import PhoneInput from '../atoms/PhoneInput.vue';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const emits = defineEmits(['close', 'locationCreated']);
 const props = defineProps({
@@ -204,10 +205,10 @@ const props = defineProps({
     default: false,
   },
 });
-
 const { uploadMedia } = useMediaUpload();
 const { user } = useAuth();
 const locationsStore = useLocationsStore();
+const snackbarStore = useSnackbarStore();
 
 const isSubmitting = ref(false);
 const errorFileMessage = ref('');
@@ -468,9 +469,10 @@ async function handleSubmit() {
     // Guardar en Firestore
     await locationsStore.addLocation(locationData);
     closeModal();
+    snackbarStore.show('Lugar creado exitosamente', 'success');
   } catch (error) {
     console.error('Error al crear location:', error);
-    alert('Error al crear el lugar: ' + error.message);
+    snackbarStore.show('Error al crear el lugar. Por favor, intenta nuevamente.', 'error');
   } finally {
     isSubmitting.value = false;
   }

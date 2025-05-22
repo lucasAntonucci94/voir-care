@@ -89,15 +89,15 @@
               {{ event?.attendees?.going?.length === 1 ? 'participante' : 'participantes' }}
             </span>
             <span
-              v-if="event.modality"
+              v-if="event.modality === 0 || event.modality === 1"
               class="px-2 py-1 text-xs font-medium rounded-full"
               :class="
-                event.modality === 'Presencial'
+                event.modality === 0
                   ? 'bg-blue-100 text-blue-700 dark:bg-blue-600 dark:text-blue-200'
                   : 'bg-purple-100 text-purple-700 dark:bg-purple-600 dark:text-purple-200'
               "
             >
-              {{ event.modality }}
+              {{ event.modality === 0 ? 'Presencial' : 'Virtual' }}
             </span>
           </div>
         </div>
@@ -171,6 +171,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp';
 import { useEventsStore } from '../../stores/events';
 import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 import EditEventModal from './EditEventModal.vue';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const props = defineProps({
   event: {
@@ -182,6 +183,7 @@ const props = defineProps({
 const router = useRouter();
 const { user } = useAuth();
 const eventsStore = useEventsStore();
+const snackbarStore = useSnackbarStore();
 const showDeleteModal = ref(false);
 const showEditModal = ref(false);
 const showMenu = ref(false);
@@ -193,7 +195,7 @@ const selectedEvent = ref({
   privacy: 'public',
   capacity: 0,
   location: { address: '' },
-  modality: 'Presencial',
+  modality: 0, // 0: Presencial, 1: Virtual
 });
 
 function goToDetail() {
@@ -224,13 +226,11 @@ async function handleAttendance() {
   try {
     const status = isGoing.value ? null : 'going';
     await eventsStore.setUserAttendanceStatus(props.event.idDoc, user.value.uid, status);
-    console.log(
-      `Usuario ${status === 'going' ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${
-        props.event.idDoc
-      }, ${props.event.title}`,
-    );
+    console.log(`Asistencia ${status === 'going' ? 'confirmada' : 'cancelada'} para el evento ${props.event.idDoc}`);
+    snackbarStore.show(`Usuario ${status === 'going' ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${props.event.title}`, 'success');
   } catch (error) {
     console.error('Error al actualizar asistencia:', error);
+    snackbarStore.show(`Error al actualizar asistencia:${error}`, 'error');
   }
 }
 
@@ -253,8 +253,10 @@ async function confirmDelete() {
   try {
     await eventsStore.deleteEvent(props.event.idDoc);
     console.log(`Evento ${props.event.idDoc} eliminado`);
+    snackbarStore.show(`Evento ${props.event.title} eliminado exitosamente`, 'success');
   } catch (error) {
     console.error('Error al eliminar evento:', error);
+    snackbarStore.show(`Error al eliminar evento. IdDoc:${props.event.idDoc}, Title: ${props.event.title}.`, 'error');
   }
   closeDeleteModal();
 }

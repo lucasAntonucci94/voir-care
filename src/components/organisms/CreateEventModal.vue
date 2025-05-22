@@ -146,7 +146,7 @@
                 v-model="newEvent.location"
                 placeholder="Ingresá una dirección"
               />
-              <p v-if="formErrors.adress" class="text-sm text-red-500 mt-1">{{ formErrors.adress }}</p>
+              <p v-if="formErrors.address" class="text-sm text-red-500 mt-1">{{ formErrors.address }}</p>
             </div>
 
             <!-- Capacidad -->
@@ -210,6 +210,24 @@
               </label>
               <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
             </div>
+
+            <!-- Modalidad (Presencial/Virtual) -->
+            <div class="mt-4">
+              <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Modalidad
+              </label>
+              <select
+                v-model="newEvent.modality"
+                id="eventModality"
+                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :disabled="isLoading"
+                required
+              >
+                <option :value="0">Presencial</option>
+                <option :value="1">Virtual</option>
+              </select>
+              <p v-if="formErrors.modality" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
+            </div>
           </div>
 
           <!-- Botones de navegación -->
@@ -268,6 +286,7 @@ import { useEventsStore } from '../../stores/events';
 import { useAuth } from '../../api/auth/useAuth';
 import GeolocationInput from '../atoms/GeolocationInput.vue';
 import SelectDate from '../atoms/SelectDate.vue';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const emits = defineEmits(['close', 'eventCreated']);
 const props = defineProps({
@@ -276,10 +295,10 @@ const props = defineProps({
     default: false,
   },
 });
-
 const { uploadMedia } = useMediaUpload();
 const { user } = useAuth();
 const eventsStore = useEventsStore();
+const snackbarStore = useSnackbarStore();
 
 const isLoading = ref(false);
 const currentStep = ref(1);
@@ -318,6 +337,7 @@ const newEvent = ref({
     lng: null,
   },
   capacity: null,
+  modality: 0, // Default to Presencial (0)
 });
 
 function closeModal() {
@@ -340,6 +360,7 @@ function resetForm() {
     endTime: '',
     location: { address: '', lat: null, lng: null },
     capacity: null,
+    modality: 0, // Reset to Presencial
   };
 }
 
@@ -353,7 +374,7 @@ function validateStep(step) {
       isValid = false;
     }
     if (!newEvent.value.description) {
-      errors.description = 'La descripción es obligatorio';
+      errors.description = 'La descripción es obligatoria';
       isValid = false;
     }
   } else if (step === 2) {
@@ -385,6 +406,10 @@ function validateStep(step) {
     }
     if (newEvent.value.privacy !== 'public' && newEvent.value.privacy !== 'private') {
       errors.privacy = 'La privacidad debe ser pública o privada';
+      isValid = false;
+    }
+    if (![0, 1].includes(newEvent.value.modality)) {
+      errors.modality = 'La modalidad debe ser Presencial o Virtual';
       isValid = false;
     }
   }
@@ -437,11 +462,13 @@ async function handleCreateEvent() {
       mediaType: newEvent.value.mediaType || null,
       categories: newEvent.value.categories,
       privacy: newEvent.value.privacy,
+      modality: newEvent.value.modality, // Add modality to eventData
       ownerId: ownerId,
       startTime: newEvent.value.startTime ? new Date(newEvent.value.startTime) : null,
       endTime: newEvent.value.endTime ? new Date(newEvent.value.endTime) : null,
       location: newEvent.value.location,
       capacity: newEvent.value.capacity,
+      modality: newEvent.value.modality,
       attendees: {
         going: [ownerId],
         interested: [],
@@ -451,9 +478,10 @@ async function handleCreateEvent() {
     await eventsStore.createEvent(eventData);
     emits('eventCreated', eventData);
     closeModal();
+    snackbarStore.show('Evento creado exitosamente', 'success');
   } catch (error) {
+    snackbarStore.show('Error al crear evento:'+error, 'error');
     console.error('Error al crear evento:', error);
-    alert('Error al crear evento: ' + error);
   } finally {
     isLoading.value = false;
   }

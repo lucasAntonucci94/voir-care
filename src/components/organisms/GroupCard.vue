@@ -127,6 +127,7 @@ import { useAuth } from '../../api/auth/useAuth';
 import { useGroupsStore } from '../../stores/groups';
 import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 import EditGroupModal from './EditGroupModal.vue';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const props = defineProps({
   group: {
@@ -142,6 +143,7 @@ const showDeleteModal = ref(false);
 const showEditModal = ref(false);
 const groupToEdit = ref(null);
 const showMenu = ref(false);
+const snackbarStore = useSnackbarStore();
 
 function goToDetail() {
   router.push({ name: 'groupDetail', params: { idGroup: props.group.idDoc } });
@@ -177,8 +179,10 @@ async function confirmDelete() {
   try {
     await groupsStore.deleteGroup(props.group.idDoc);
     console.log(`Grupo ${props.group.idDoc} eliminado`);
+    snackbarStore.show(`Evento ${props.group.title} eliminado exitosamente`, 'success');
   } catch (error) {
-    console.error('Error al eliminar grupo:', error);
+    snackbarStore.show(`Error al eliminar grupo. Error: ${error}.`, 'error');
+    console.error('Error al eliminar grupo.', error);
   }
   closeDeleteModal();
 }
@@ -207,7 +211,9 @@ async function toggleMembership() {
     } else {
       await groupsStore.joinGroup(groupId, userId);
     }
+    snackbarStore.show(`Usuario ${!isMember.value ? 'se unio al' : 'ha salido del'} grupo: ${props.group.title}`, 'success');
   } catch (err) {
+    snackbarStore.show(`Error al cambiar la membresía del grupo: ${err}`, 'error');
     console.error('Error al cambiar la membresía del grupo:', err);
   }
 }

@@ -147,7 +147,7 @@
                 placeholder="Ingresá una dirección"
                 :disabled="isLoading"
               />
-              <p v-if="formErrors.adress" class="text-sm text-red-500 mt-1">{{ formErrors.adress }}</p>
+              <p v-if="formErrors.address" class="text-sm text-red-500 mt-1">{{ formErrors.address }}</p>
             </div>
 
             <!-- Capacidad -->
@@ -213,6 +213,24 @@
                 Privado
               </label>
               <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
+            </div>
+
+            <!-- Modalidad (Presencial/Virtual) -->
+            <div class="mt-4">
+              <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Modalidad
+              </label>
+              <select
+                v-model="editForm.modality"
+                id="eventModality"
+                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :disabled="isLoading"
+                required
+              >
+                <option :value="0">Presencial</option>
+                <option :value="1">Virtual</option>
+              </select>
+              <p v-if="formErrors.modality" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
             </div>
           </div>
 
@@ -337,6 +355,7 @@ const editForm = ref({
     interested: [],
     notInterested: [],
   },
+  modality: 0, // Default to Presencial (0) or from props.event.modality
 });
 
 watch(
@@ -346,6 +365,7 @@ watch(
       ...newVal,
       startTime: formatFirebaseTimestamp(newVal.startTime),
       endTime: formatFirebaseTimestamp(newVal.endTime),
+      modality: newVal.modality !== undefined ? newVal.modality : 0, // Set modality from event or default to 0
     };
     newMediaBase64.value = null;
   },
@@ -404,6 +424,10 @@ function validateStep(step) {
     }
     if (editForm.value.privacy !== 'public' && editForm.value.privacy !== 'private') {
       errors.privacy = 'La privacidad debe ser pública o privada';
+      isValid = false;
+    }
+    if (![0, 1].includes(editForm.value.modality)) {
+      errors.modality = 'La modalidad debe ser Presencial o Virtual';
       isValid = false;
     }
   }

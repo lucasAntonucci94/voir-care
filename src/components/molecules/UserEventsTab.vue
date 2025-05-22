@@ -65,6 +65,7 @@ const categories = [
 
 // Computados
 const filteredEvents = computed(() => {
+  debugger
   return eventsStore.events?.value
     ?.filter(event => event.title.toLowerCase().includes(searchQuery.value.toLowerCase()))
     ?.filter(event => !selectedCategory.value || event.categories?.some(c => c.id === selectedCategory.value))
