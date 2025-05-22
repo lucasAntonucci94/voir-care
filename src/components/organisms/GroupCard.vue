@@ -1,99 +1,100 @@
 <template>
-  <div
-    class="bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden w-full max-w-sm border border-gray-100 dark:border-gray-700 transition-transform duration-300 hover:shadow-xl hover:scale-105 cursor-pointer"
-    @click="goToDetail"
-  >
-    <!-- Media -->
-    <div class="relative h-40 w-full">
-      <img
-        v-if="group.media?.url"
-        :src="group.media.url"
-        :alt="group.title"
-        class="w-full h-full object-cover transition-opacity duration-300"
-        loading="lazy"
-      />
-      <div
-        v-else
-        class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500"
-      >
-        <i class="fas fa-image text-3xl"></i>
-      </div>
-      <!-- Badge de privacidad -->
-      <span
-        class="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold text-white rounded-full shadow-sm"
-        :class="group.privacy === 'public' ? 'bg-green-500' : 'bg-red-500'"
-      >
-        {{ group.privacy === 'public' ? 'Público' : 'Privado' }}
-      </span>
-      <!-- Botón de elipsis -->
-      <div class="absolute top-3 right-3">
-        <button
-          v-if="isAdmin(group)"
-          @click.stop="toggleMenu"
-          class="p-2 text-white bg-gray-900/50 dark:bg-gray-900/70 rounded-full hover:bg-gray-900/70 dark:hover:bg-gray-900/90 transition-colors"
-        >
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-        <!-- Menú desplegable -->
+  <div>
+    <!-- Contenedor principal del card -->
+    <div
+      class="bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden w-full max-w-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl cursor-pointer"
+      @click="goToDetail"
+    >
+      <!-- Media -->
+      <div class="relative h-40 w-full">
+        <img
+          v-if="group.media?.url"
+          :src="group.media.url"
+          :alt="group.title"
+          class="w-full h-full object-cover transition-opacity duration-300"
+          loading="lazy"
+        />
         <div
-          v-if="showMenu && isAdmin(group)"
-          class="absolute top-10 right-0 bg-white dark:bg-gray-700 rounded-lg shadow-lg w-48 py-2 z-10 border border-gray-100 dark:border-gray-600"
+          v-else
+          class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500"
         >
+          <i class="fas fa-image text-3xl"></i>
+        </div>
+        <!-- Badge de privacidad -->
+        <span
+          class="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold text-white rounded-full shadow-sm"
+          :class="group.privacy === 'public' ? 'bg-green-500' : 'bg-red-500'"
+        >
+          {{ group.privacy === 'public' ? 'Público' : 'Privado' }}
+        </span>
+        <!-- Botón de elipsis -->
+        <div class="absolute top-3 right-3">
           <button
             v-if="isAdmin(group)"
-            @click.stop="editGroup(group)"
-            class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            @click.stop="toggleMenu"
+            class="p-2 text-white bg-gray-900/50 dark:bg-gray-900/70 rounded-full hover:bg-gray-900/70 dark:hover:bg-gray-900/90 transition-colors"
           >
-            <i class="fas fa-edit"></i>
-            Editar
+            <i class="fas fa-ellipsis-v"></i>
           </button>
-          <button
-            v-if="isAdmin(group)"
-            @click.stop="handleDelete"
-            class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+          <!-- Menú desplegable -->
+          <div
+            v-if="showMenu && isAdmin(group)"
+            class="absolute top-10 right-0 bg-white dark:bg-gray-700 rounded-lg shadow-lg w-48 py-2 z-20 border border-gray-100 dark:border-gray-600"
           >
-            <i class="fas fa-trash-can"></i>
-            Eliminar
-          </button>
+            <button
+              @click.stop="editGroup(group)"
+              class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <i class="fas fa-edit"></i>
+              Editar
+            </button>
+            <button
+              @click.stop="handleDelete"
+              class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            >
+              <i class="fas fa-trash-can"></i>
+              Eliminar
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Contenido -->
-    <div class="p-4 space-y-2 text-sm text-gray-800 dark:text-gray-200">
-      <h3 class="text-xl font-semibold">{{ group.title }}</h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-        {{ group.description || 'Sin descripción' }}
-      </p>
-      <div class="flex justify-between items-center gap-2">
-        <div class="flex gap-2">
-          <span
-            class="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+      <!-- Contenido -->
+      <div class="p-4 space-y-2 text-sm text-gray-800 dark:text-gray-200">
+        <h3 class="text-xl font-semibold">{{ group.title }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+          {{ group.description || 'Sin descripción' }}
+        </p>
+        <div class="flex justify-between items-center gap-2">
+          <div class="flex gap-2">
+            <span
+              class="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+            >
+              <i class="fas fa-users text-primary dark:text-secondary"></i>
+              {{ group.members?.length || 0 }} {{ group.members?.length === 1 ? 'miembro' : 'miembros' }}
+            </span>
+            <span
+              v-if="isMember"
+              class="px-2 py-1 text-xs font-medium rounded-full transition-colors"
+              :class="{
+                'bg-primary text-white dark:bg-secondary hover:bg-primary/80 dark:hover:bg-secondary/80': roleLabel(group) === 'Administrador',
+                'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500': roleLabel(group) === 'Miembro'
+              }"
+            >
+              {{ roleLabel(group) }}
+            </span>
+          </div>
+          <!-- Botón de membresía -->
+          <button
+            v-if="!isAdmin(group)"
+            @click.stop="toggleMembership"
+            class="flex items-center gap-2 px-4 py-2 text-sm text-white rounded-lg shadow-sm transition-colors duration-200"
+            :class="isMember ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'"
           >
-            <i class="fas fa-users text-primary dark:text-secondary"></i>
-            {{ group.members?.length || 0 }} {{ group.members?.length === 1 ? 'miembro' : 'miembros' }}
-          </span>
-          <span
-          v-if="isMember"
-            class="px-2 py-1 text-xs font-medium rounded-full transition-colors"
-            :class="{
-              'bg-primary text-white dark:bg-secondary hover:bg-primary/80 dark:hover:bg-secondary/80': roleLabel(group) === 'Administrador',
-              'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500': roleLabel(group) === 'Miembro'
-            }"
-          >
-            {{ roleLabel(group) }}
-          </span>
+            <i :class="isMember ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
+            {{ isMember ? 'Salir' : 'Unirme' }}
+          </button>
         </div>
-        <!-- Botón de membresía -->
-        <button
-          v-if="!isAdmin(group)"
-          @click.stop="toggleMembership"
-          class="flex items-center gap-2 px-4 py-2 text-sm text-white rounded-lg shadow-sm transition-colors duration-200"
-          :class="isMember ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'"
-        >
-          <i :class="isMember ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-          {{ isMember ? 'Salir' : 'Unirme' }}
-        </button>
       </div>
     </div>
 
