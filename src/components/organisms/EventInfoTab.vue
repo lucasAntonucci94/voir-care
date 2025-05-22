@@ -92,26 +92,39 @@
         </a>
       </div>
 
-      <!-- Card de Conoce al organizador -->
-      <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-        <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Conoce al organizador</h2>
-        <div class="flex items-center gap-4">
-          <img
-            :src="ownerDetails?.photoURLFile || imageToDelete"
-            alt="Organizador"
-            class="w-12 h-12 rounded-full object-cover"
-          />
-          <div>
-            <router-link
-              :to="ownerDetails?.email ? `/profile/${ownerDetails.email}` : '#'"
-              class="text-lg font-semibold text-primary dark:text-secondary hover:underline"
-            >
-              {{ ownerDetails?.displayName || 'Organizador' }}
-            </router-link>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ ownerDetails?.email || '' }}
-            </p>
+     <!-- Card de Conoce al organizador -->
+      <div class="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Conoce al organizador</h2>
+        <div class="flex justify-between items-center gap-4">
+          <div class="flex items-center gap-4">
+            <img
+              :src="ownerDetails?.photoURLFile || imageToDelete"
+              :alt="`Foto de ${ownerDetails?.displayName || 'Organizador'}`"
+              class="w-12 h-12 rounded-full object-cover"
+              loading="lazy"
+            />
+            <div>
+              <router-link
+                :to="ownerDetails?.email ? `/profile/${ownerDetails.email}` : '#'"
+                class="text-lg font-semibold text-primary dark:text-secondary hover:underline"
+                :title="`Ver perfil de ${ownerDetails?.displayName || 'Organizador'}`"
+              >
+                {{ ownerDetails?.displayName || 'Organizador' }}
+              </router-link>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {{ ownerDetails?.email || '' }}
+              </p>
+            </div>
           </div>
+          <button
+            @click="SendMessage(ownerDetails?.email)"
+            class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200"
+            :disabled="!ownerDetails?.email"
+            aria-label="Enviar mensaje al organizador"
+          >
+            <i class="fas fa-envelope"></i>
+            <!-- Enviar mensaje -->
+          </button>
         </div>
       </div>
 
@@ -189,6 +202,9 @@ import imageToDelete from '../../assets/avatar1.jpg';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import { computed } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
+import { usePrivateChatsStore } from '../../stores/privateChats';
+import { usePrivateChats } from '../../composable/usePrivateChats';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -200,9 +216,29 @@ const props = defineProps({
   handleAttendance: { type: Function, required: true },
 });
 
+const router = useRouter();
 const { user } = useAuth();
-
+const { getChatIdByReference } = usePrivateChats();
+const privateChatsStore = usePrivateChatsStore();
+ 
 const isAdmin = computed(() => props.event.ownerId === user.value?.uid || false);
+
+
+// Handle connection selection and chat creation
+const SendMessage = async (toEmail) => {
+  debugger
+  if (!user.value?.email || !toEmail) return;
+
+  try {
+    const chatId = await getChatIdByReference(user.value.email, toEmail);
+    privateChatsStore.setSelectedChatId(chatId);
+    privateChatsStore.setFromEmail(user.value.email);
+    privateChatsStore.setToEmail(toEmail);
+    router.push('/chats');
+  } catch (error) {
+    console.error('Error creating/opening chat:', error);
+  }
+};
 </script>
 
 <style scoped>
