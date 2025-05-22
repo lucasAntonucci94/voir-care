@@ -161,6 +161,15 @@
               Atrás
             </button>
             <button
+              v-if="currentStep === 1"
+              type="button"
+              @click="closeModal"
+              class="px-5 py-2 text-gray-500 dark:text-gray-200 dark:bg-gray-600 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200"
+              :disabled="isSubmitting"
+            >
+              Cancelar
+            </button>
+            <button
               v-if="currentStep < 3"
               type="button"
               @click="nextStep"

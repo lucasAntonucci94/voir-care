@@ -34,6 +34,10 @@
             <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
             <span><strong>Privacidad:</strong> {{ event.privacy || 'Público' }}</span>
           </li>
+          <li class="flex items-center gap-3" v-if="event.modality === 0 || event.modality === 1">
+            <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
+            <span><strong>Modalidad:</strong> {{ event.modality === 0 ? 'Presencial' : 'Virtual' }}</span>
+          </li>
         </ul>
       </div>
 
