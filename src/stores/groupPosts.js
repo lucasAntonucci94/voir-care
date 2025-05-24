@@ -48,6 +48,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         this.unsubscribePostsUserFeed = [];
         groupsStore.userGroups?.value?.forEach((group) => {
           const unsubscribe = suscribePostsByGroupId(group, (posts) => {
+
             const postsWithGroupDetail = posts.map((post) => ({
               ...post,
               group: {
@@ -60,7 +61,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
             const uniquePosts = [
               ...this.userGroupFeed?.value?.filter(
                 (p) => p.group.id !== group.idDoc
-              ),
+              ) ?? [],
               ...postsWithGroupDetail,
             ];
 

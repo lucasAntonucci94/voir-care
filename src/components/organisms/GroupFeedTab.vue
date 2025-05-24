@@ -105,6 +105,7 @@ function goToDetail(idGroup) {
 // Suscripción a eventos del usuario
 onMounted(() => {
   if (user.value) {
+    debugger
     groupPostssStore.subscribeUserGroupFeed(user.value.uid)
   }
 })
