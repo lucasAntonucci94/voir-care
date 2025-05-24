@@ -54,9 +54,11 @@ import { ref, computed, watch } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useNotifications } from '../../composable/useNotifications';
 import AvantarDefault from '../../assets/avatar1.jpg';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const { user } = useAuth();
 const { sendNotification } = useNotifications();
+const snackbarStore = useSnackbarStore();
 
 const props = defineProps({
   visible: {
@@ -125,6 +127,7 @@ const inviteConnection = async (connection) => {
       },
     });
     closeModal();
+    snackbarStore.show(`Invitación enviada a ${connection.displayName || connection.email}`,'success');
   } catch (error) {
     console.error('Error al enviar la invitación:', error);
   }
