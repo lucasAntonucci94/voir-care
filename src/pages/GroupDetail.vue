@@ -80,7 +80,7 @@
                   @click="openEditModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
-                  <i class="fas fa-pen mr-2"></i> Editar Grupo
+                  <i class="fas fa-pen mr-2"></i> Editar
                 </button>
               </li>
               <!-- Delete Group (Owner or Admin) -->
@@ -89,7 +89,7 @@
                   @click="openDeleteModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
-                  <i class="fas fa-trash-can mr-2"></i> Eliminar Grupo
+                  <i class="fas fa-trash-can mr-2"></i> Eliminar
                 </button>
               </li>
               <!-- Report Group (Non-owner, non-admin) -->
@@ -98,7 +98,7 @@
                   @click="showReportGroupModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
-                  <i class="fas fa-flag mr-2"></i> Reportar Grupo
+                  <i class="fas fa-flag mr-2"></i> Reportar
                 </button>
               </li>
               <!-- Hide Group (Non-owner, non-admin) -->
@@ -325,7 +325,7 @@
                 </p>
               </div>
             </section>
-            <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" />
+            <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" :module="'group'" :entity="{ id: group?.idDoc, title: group?.title }"/>
           </div>
         </div>
 
@@ -338,9 +338,9 @@
         <GroupMembersTab v-if="activeTab === 'members'" :members="membersDetails" />
 
         <!-- Pestaña "Multimedia" -->
-        <div v-else-if="activeTab === 'multimedia'" class="text-sm text-gray-600 dark:text-gray-300">
+        <!-- <div v-else-if="activeTab === 'multimedia'" class="text-sm text-gray-600 dark:text-gray-300">
           <p>Galería de fotos y videos compartidos en el grupo (próximamente).</p>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -388,6 +388,7 @@ const showDeleteModal = ref(false)
 const showEditModal = ref(false)
 const selectedGroup = ref(null)
 const showMediaModal = ref(false)
+const membersLoading = ref(false)
 const selectedMedia = ref({ src: '', type: 'image' });
 
 // Definir las pestañas
@@ -413,6 +414,7 @@ onMounted(async () => {
       }
       // Cargar detalles de los miembros
       if (group.value?.members?.length) {
+        membersLoading.value = true
         const userPromises = group.value.members.map(async (userId) => {
           try {
             return await usersStore.getUser(userId)
@@ -422,9 +424,11 @@ onMounted(async () => {
           }
         })
         membersDetails.value = (await Promise.all(userPromises)).filter(user => user !== null)
+        membersLoading.value = false
       }
     } catch (error) {
       console.error('Error al cargar grupo:', error)
+      membersLoading.value = false
     }
   }
   loading.value = false

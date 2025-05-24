@@ -71,7 +71,7 @@
                 aria-label="Cambiar entre modo claro y oscuro"
               />
               <div class="flex items-center gap-2">
-                <i class="fa-solid fa-sun text-yellow-400 dark:text-yellow-700"></i>
+                <i class="fa-solid fa-sun text-yellow-400 dark:text-gray-600"></i>
                 <div class="w-12 h-6 bg-gray-300 dark:bg-gray-600 rounded-full shadow-inner flex items-center px-1">
                   <div
                     class="w-5 h-5 bg-primary dark:bg-secondary rounded-full shadow-md transform transition-transform duration-300"
@@ -123,7 +123,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
-import { useThemeStore } from '../../stores/theme'; // Importa el store de tema
+import { useThemeStore } from '../../stores/theme';
 import { defineEmits } from 'vue';
 import avatarDefault from '../../assets/avatar1.jpg';
 

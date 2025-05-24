@@ -9,10 +9,11 @@
         v-if="groupsStore.userGroups?.value?.length > 0"
         v-model="searchQuery"
         v-model:selectedCategory="selectedCategory"
-        :categories="categories"
+        v-model:selectedOwnership="selectedOwnership"
         :showSearch="true"
         :showSelect="true"
-      />
+        :showOwnership="true"
+        />
       <!-- Lista de grupos -->
       <div v-if="filteredGroups?.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <GroupCard
@@ -55,24 +56,30 @@
   const { user } = useAuth();
   const searchQuery = ref('');
   const selectedCategory = ref('');
-  const categories = [
-    { id: 'educacion', name: 'Educación' },
-    { id: 'ayuda', name: 'Ayuda y Asistencia' },
-    { id: 'interes', name: 'Intereses' },
-    { id: 'cuidado', name: 'Cuidado Animal' },
-    { id: 'voluntariado', name: 'Voluntariado' },
-    { id: 'otros', name: 'Otros' },
-  ];
-  
+  const selectedOwnership = ref('all');
+
   const filteredGroups = computed(() => {
-    return groupsStore.userGroups?.value
-      ?.filter(group =>
-        group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
-      ?.filter(group =>
-        !selectedCategory.value ||
-        group.categories?.some(c => c.id === selectedCategory.value)
-      ) ?? [];
+    let groups = groupsStore.userGroups?.value ?? [];
+
+    // Filtro por búsqueda
+    groups = groups.filter(group =>
+      group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+
+    // Filtro por categoría
+    groups = groups.filter(group =>
+      !selectedCategory.value ||
+      group.categories?.some(c => c.id === selectedCategory.value)
+    );
+    debugger
+    // Filtro por propiedad
+    if (selectedOwnership.value === 'owned') {
+      groups = groups.filter(group => group.ownerId === user.value.uid);
+    } else if (selectedOwnership.value === 'joined') {
+      groups = groups.filter(group => group.ownerId !== user.value.uid);
+    }
+
+    return groups;
   });
   
   const emit = defineEmits(['open-create-modal','open-discover-tab']);

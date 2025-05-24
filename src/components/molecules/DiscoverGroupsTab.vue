@@ -9,10 +9,9 @@
       v-if="groupsStore.allGroups?.value?.length > 0"
       v-model="searchQuery"
       v-model:selectedCategory="selectedCategory"
-      :categories="categories"
       :showSearch="true"
       :showSelect="true"
-    />
+      />
     <!-- Lista de grupos -->
     <div v-if="discoveredGroups.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       <GroupCard
@@ -46,14 +45,6 @@ const { user } = useAuth()
 
 const searchQuery = ref('')
 const selectedCategory = ref('')
-const categories = [
-  { id: 'educacion', name: 'Educación' },
-  { id: 'ayuda', name: 'Ayuda y Asistencia' },
-  { id: 'interes', name: 'Intereses' },
-  { id: 'cuidado', name: 'Cuidado Animal' },
-  { id: 'voluntariado', name: 'Voluntariado' },
-  { id: 'otros', name: 'Otros' },
-]
 
 // Computado reactivo y seguro
 const discoveredGroups = computed(() => {

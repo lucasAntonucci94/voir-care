@@ -157,6 +157,8 @@ import BannerDefault from '../../assets/darkwallpaper.jpg'
 import { useSnackbarStore } from '../../stores/snackbar'
 import MediaModalViewer from '../../components/molecules/MediaViewerModal.vue';
 import avatarDefault from '../../assets/darkwallpaper.jpg';
+import { useNotifications } from '../../composable/useNotifications';
+
 // Props
 const props = defineProps({
   activeUser: { type: Object, required: true },
@@ -176,6 +178,7 @@ const { updateUserBanner } = useUsers();
 const privateChatsStore = usePrivateChatsStore();
 const { getUser, addConnection, removeConnection } = useUsers();
 const snackbarStore = useSnackbarStore()
+const { sendNotification } = useNotifications();
 
 // Estados
 const isAddingConnection = ref(false);
@@ -282,6 +285,20 @@ const handlerAddConnection = async () => {
     };
     await addConnection(authUser.value.uid, connectionData);
     authUser.value.connections.push(connectionData);
+
+    // Enviar notificación al usuario seguido
+    await sendNotification({
+      toUid: props.activeUser.uid, // UID del usuario seguido
+      fromUid: authUser.value.uid, // UID del usuario logueado
+      type: 'newFollower', // Tipo de notificación
+      message: `${authUser.value.displayName} comenzó a seguirte`, // Mensaje
+      entityId: props.activeUser.uid, // ID del usuario seguido
+      entityType: 'user', // Tipo de entidad
+      extra: {
+        senderEmail: authUser.value.email,
+      },
+    });
+    snackbarStore.show(`Ahora sigues a ${props.activeUser.displayName}.`, 'success');
   } catch (error) {
     console.error('Error al seguir al usuario:', error);
     alert('Hubo un error al intentar seguir a este usuario.');
