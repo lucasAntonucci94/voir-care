@@ -230,7 +230,6 @@ const isAdmin = computed(() => props.event.ownerId === user.value?.uid || false)
 
 // Handle connection selection and chat creation
 const SendMessage = async (toEmail) => {
-  debugger
   if (!user.value?.email || !toEmail) return;
 
   try {

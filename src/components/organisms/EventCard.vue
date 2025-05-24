@@ -33,6 +33,7 @@
           class="absolute top-3 right-3"
         >
           <button
+            ref="menuButton"
             @click.stop="toggleMenu"
             class="p-2 text-white bg-gray-900/50 dark:bg-gray-900/70 rounded-full hover:bg-gray-900/70 dark:hover:bg-gray-900/90 transition-colors"
             aria-label="Opciones del evento"
@@ -42,6 +43,7 @@
           <!-- Menú desplegable -->
           <div
             v-if="showMenu"
+            ref="menu"
             class="absolute top-10 right-0 bg-white dark:bg-gray-700 rounded-lg shadow-lg w-48 py-2 z-20 border border-gray-100 dark:border-gray-600"
           >
             <button
@@ -164,8 +166,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, onUnmounted } from 'vue';import { useRouter } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import { useEventsStore } from '../../stores/events';
@@ -187,6 +188,8 @@ const snackbarStore = useSnackbarStore();
 const showDeleteModal = ref(false);
 const showEditModal = ref(false);
 const showMenu = ref(false);
+const menuButton = ref(null);
+const menu = ref(null);
 const selectedEvent = ref({
   title: '',
   description: '',
@@ -218,6 +221,19 @@ const isGoing = computed(() => {
 
 const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar asistencia' : 'Asistiré'));
 
+// Handle clicks outside the menu
+const handleClickOutside = (event) => {
+  if (
+    showMenu.value &&
+    menu.value &&
+    menuButton.value &&
+    !menu.value.contains(event.target) &&
+    !menuButton.value.contains(event.target)
+  ) {
+    showMenu.value = false;
+  }
+};
+
 async function handleAttendance() {
   if (!user.value) {
     console.log('Usuario no autenticado');
@@ -232,10 +248,6 @@ async function handleAttendance() {
     console.error('Error al actualizar asistencia:', error);
     snackbarStore.show(`Error al actualizar asistencia:${error}`, 'error');
   }
-}
-
-function toggleMenu() {
-  showMenu.value = !showMenu.value;
 }
 
 function handleDelete() {
@@ -275,6 +287,18 @@ function closeEditModal() {
 
 function submitEdit(updatedEvent) {
   closeEditModal();
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+function toggleMenu() {
+  showMenu.value = !showMenu.value;
 }
 </script>
 

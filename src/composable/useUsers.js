@@ -41,6 +41,7 @@ export function useUsers() {
           avatar: user.avatar || null,
           isAdmin: user.isAdmin || false,
           isBlocked: user.isBlocked || false,
+          configs: user.configs || {},
         });
       });
 
@@ -107,6 +108,7 @@ export function useUsers() {
         bannerPathFile: user.bannerPathFile || null,
         isAdmin: user.isAdmin || false,
         isBlocked: user.isBlocked || false,
+        configs: user.configs || {},
       };
     } catch (error) {
       console.error('Error al obtener el perfil por email:', error);
@@ -139,6 +141,8 @@ export function useUsers() {
         bannerPathFile: data.bannerPathFile || null,
         isAdmin: data.isAdmin || false,
         isBlocked: false,
+        configs: {theme: 'light'},
+        connections: [],
       });
     } catch (error) {
       console.error('Error al crear usuario:', error);
@@ -170,6 +174,7 @@ export function useUsers() {
         bannerUrlFile: data.bannerUrlFile || null,
         bannerPathFile: data.bannerPathFile || null,
         isBlocked: data.isBlocked || null,
+        configs: data.configs || {},
       };
       await updateDoc(docRef, userData);
       await updateUserFromPost(id, userData);
@@ -202,7 +207,7 @@ export function useUsers() {
    */
   async function loadProfileInfo(firebaseUser) {
     if (!firebaseUser) return null;
-    const { fetchSavedPosts } = useSavedGroupPosts();
+    // const { fetchSavedPosts } = useSavedGroupPosts();
     try {
       const photoURLFilePromise = firebaseUser.photoURL
         ? getFileUrl(firebaseUser.photoURL)
@@ -211,14 +216,14 @@ export function useUsers() {
       const userProfilePromise = getUserProfileByEmail(firebaseUser.email);
       const hiddenPostsPromise = getHiddenPostsForUser(firebaseUser.uid);
       const hiddenGroupPostsPromise = getHiddenGroupPostsForUser(firebaseUser.uid);
-      const savedGroupPostsPromise = fetchSavedPosts(firebaseUser.uid);
+      // const savedGroupPostsPromise = fetchSavedPosts(firebaseUser.uid);
 
       const [photoURLFile, profile, hiddenPosts, hiddenGroupPosts, savedGroupPosts] = await Promise.all([
         photoURLFilePromise,
         userProfilePromise,
         hiddenPostsPromise,
         hiddenGroupPostsPromise,
-        savedGroupPostsPromise,
+        // savedGroupPostsPromise,
       ]);
 
       const combinedData = {
@@ -325,7 +330,13 @@ export function useUsers() {
       throw error;
     }
   }
-
+  
+  /**
+   * Bloquea a un usuario de forma global (sera ejecutado por el admin)
+   * @param {string} id - ID del usuario
+   * @param {boolean} isBlocked - true para bloquear, false para desbloquear
+   * @returns {Promise<void>}
+   */
   async function getHiddenPostsForUser(userId) {
     try {
       const hiddenPostsRef = collection(db, 'users', userId, 'hiddenPosts');
@@ -340,7 +351,13 @@ export function useUsers() {
       throw error;
     }
   }
-  
+
+  /**
+   * Bloquea a un usuario de forma global (sera ejecutado por el admin)
+   * @param {string} id - ID del usuario
+   * @param {boolean} isBlocked - true para bloquear, false para desbloquear
+   * @returns {Promise<void>}
+   */
   async function getHiddenGroupPostsForUser(userId) {
     try {
       const hiddenGroupPostsRef = collection(db, 'users', userId, 'hiddenGroupPosts');
@@ -355,7 +372,13 @@ export function useUsers() {
       throw error;
     }
   }
-
+  
+  /**
+   * Bloquea a un usuario de forma global (sera ejecutado por el admin)
+   * @param {string} id - ID del usuario
+   * @param {boolean} isBlocked - true para bloquear, false para desbloquear
+   * @returns {Promise<void>}
+   */
   async function getUserIdByEmail(email) {
     const usersRef = collection(db, 'users');
     const q = query(usersRef, where('email', '==', email), limit(1));
@@ -442,7 +465,8 @@ export function useUsers() {
       throw error;
     }
   }
- /**
+
+  /**
    * Bloquea a un usuario de forma global (sera ejecutado por el admin)
    * @param {string} id - ID del usuario
    * @param {boolean} isSuscribe - true para suscribir, false para desuscribir
@@ -471,6 +495,29 @@ export function useUsers() {
     }
   }
 
+  /**
+   * Updates the theme preference for a user in Firestore
+   * @param {string} userId - ID of the user
+   * @param {string} theme - Theme to set ('light' or 'dark')
+   * @returns {Promise<void>}
+   */
+  async function updateUserTheme(userId, theme) {
+    try {
+      if (!['light', 'dark'].includes(theme)) {
+        throw new Error('Tema inválido. Debe ser "claro" o "oscuro"');
+      }
+      
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, {
+        'configs.theme': theme
+      });
+      console.log(`Theme updated to ${theme} for user ${userId}`);
+    } catch (error) {
+      console.error('Error updating user theme:', error);
+      throw error;
+    }
+  }
+  
   return {
     userProfile,
     getAllUsers,
@@ -489,5 +536,6 @@ export function useUsers() {
     blockUserIndividually,
     unblockUserIndividually,
     suscribeUser,
+    updateUserTheme,
   };
 }

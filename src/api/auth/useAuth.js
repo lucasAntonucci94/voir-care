@@ -10,10 +10,14 @@ import {
 } from 'firebase/auth';
 import { useUsers } from '../../composable/useUsers';
 import { firebaseApp } from '../../api/firebase/config';
+import { useThemeStore } from '../../stores/theme';
+// Importamos Pinia para asegurarnos que el store esté disponible
+import { getActivePinia } from 'pinia';
 
+// Inicializo la instancia de autenticación de Firebase
 const auth = getAuth(firebaseApp);
 const { createUser, loadProfileInfo } = useUsers();
-
+// Mensajes de error para autenticación
 const AUTH_ERRORS_MESSAGES = {
   'auth/invalid-email': 'El email no tiene un formato correcto.',
   'auth/internal-error': 'Verifique los datos y vuelva a intentarlo',
@@ -47,10 +51,32 @@ const initializeAuthListener = () => {
       isAuthenticated.value = true;
       localStorage.setItem(AUTH_STORAGE_KEY, 'true'); // Guardo en localStorage para asi poder mantener el estado autenticado cuando se reinicia la app. Por unos segundos pierde la autenticacion reactiva genenrando un mal fucionamiento en al redireccion.
       user.value = await loadProfileInfo(firebaseUser); // Cargar perfil completo, datos de collection users
+      // Verifica si Pinia está activo antes de usar el store
+      const pinia = getActivePinia();
+      if (pinia) {
+        // Importa el store dinámicamente para evitar uso antes de inicialización
+        const { useThemeStore } = await import('../../stores/theme');
+        const themeStore = useThemeStore();
+        // Inicializa el tema con la configuración del usuario en Firestore
+        themeStore.initializeTheme(user.value?.configs?.theme || null);
+      } else {
+        console.warn('Pinia no está activo, omitiendo inicialización del tema');
+      }
     } else {
       user.value = null;
       isAuthenticated.value = false;
       localStorage.removeItem(AUTH_STORAGE_KEY); // Limpiar localStorage
+      
+      // Verifica si Pinia está activo antes de usar el store
+      const pinia = getActivePinia();
+      if (pinia) {
+        const { useThemeStore } = await import('../../stores/theme');
+        const themeStore = useThemeStore();
+        // Inicializa el tema sin configuración de usuario
+        themeStore.initializeTheme();
+      } else {
+        console.warn('Pinia no está activo, omitiendo inicialización del tema');
+      }
     }
   });
 };

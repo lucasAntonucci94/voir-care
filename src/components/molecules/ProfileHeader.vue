@@ -336,6 +336,10 @@ async function sendMessage() {
     privateChatsStore.setToEmail(props.activeUser?.email);
   }
 }
+// Expose the editProfile method to child components
+defineExpose({
+  editProfile,
+});
 </script>
 
 <style scoped>

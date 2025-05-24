@@ -11,6 +11,7 @@
     <!-- Contenido del perfil -->
     <div v-if="activeUser" class="contents">
       <ProfileHeader
+        ref="profileHeader"
         :activeUser="activeUser"
         :activeTab="activeTab"
         :isOwnProfile="isOwnProfile"
@@ -95,8 +96,8 @@
                 </button>
               </div>
             </div>
-            <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" />
-            <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" />
+            <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" @trigger-edit="triggerEditProfile" :isOwnProfile="isOwnProfile" />
+            <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" @active-tab="setActiveTab" />
             <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
             <UserEventsTab v-else-if="activeTab === 'eventos'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
             <UserGroupsTab v-else-if="activeTab === 'grupos'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
@@ -139,6 +140,7 @@ const canScrollLeft = ref(false);
 const canScrollRight = ref(false);
 const connections = ref([]);
 const router = useRouter()
+const profileHeader = ref(null); // Ref to ProfileHeader component
 
 // Tabs
 const allTabs = [
@@ -151,6 +153,9 @@ const allTabs = [
   { name: 'Guardado', icon: 'fa-solid fa-bookmark' },
 ];
 
+const setActiveTab = (selectedTab) => {
+  activeTab.value = selectedTab;
+};
 const setTabConexiones = () => {
   activeTab.value = 'conexiones';
 };
@@ -170,6 +175,14 @@ const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.em
 watch(activeUserEmail, async newEmail => {
   if (!newEmail) return;
   await fetchUserData(newEmail);
+  if (activeUser && (activeUser?.value?.uid || activeUser?.value?.id)) {
+    postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
+  }
+  // Subscribe to savedPosts if this is the user's own profile
+  if (isOwnProfile.value && authUser.value?.uid) {
+    console.log('Iniciando suscripción a posts guardados en Profile.vue...');
+    postsStore.subscribeToSavedPosts(authUser.value.uid);
+  }
 });
 
 // Funciones para desplazamiento
@@ -241,20 +254,19 @@ function deletePost(postId) {
   postsStore.posts.value = postsStore.posts.value.filter(p => p.id !== postId);
 }
 
-const handleModalCreate = () => {
-  // Lógica para abrir el modal
-};
-
-const setDiscoverTab = () => {
-  // Lógica para manejar el tab de descubrir
-};
-
- // Navigate to feed
- function navigateToFeed() {
-    router.push('/feed')
-  }
+// Navigate to feed
+function navigateToFeed() {
+  router.push('/feed')
+}
   
-
+// Method to trigger editProfile in ProfileHeader
+function triggerEditProfile() {
+  if (profileHeader.value && profileHeader.value.editProfile) {
+    profileHeader.value.editProfile();
+  } else {
+    console.error('ProfileHeader component does not expose editProfile method');
+  }
+}
 // Ciclo de vida
 onMounted(async () => {
   if (!activeUserEmail.value) return;
@@ -262,8 +274,8 @@ onMounted(async () => {
   if (activeUser && (activeUser?.value?.uid || activeUser?.value?.id)) {
     postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
   }
-   // Subscribe to savedPosts if this is the user's own profile
-   if (isOwnProfile.value && authUser.value?.uid) {
+  // Subscribe to savedPosts if this is the user's own profile
+  if (isOwnProfile.value && authUser.value?.uid) {
     console.log('Iniciando suscripción a posts guardados en Profile.vue...');
     postsStore.subscribeToSavedPosts(authUser.value.uid);
   }

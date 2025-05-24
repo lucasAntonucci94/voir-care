@@ -16,7 +16,8 @@
   </div>
 
   <!-- Contenedor principal -->
-  <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-3rem)] md:h-[calc(80vh-6rem)]">
+  <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-3rem)] md:h-[calc(92vh-6rem)]">
+  <!-- <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-3rem)] md:h-[calc(80vh-6rem)]"> -->
     <!-- Columna izquierda: Listado de chats -->
     <transition name="fade">
       <div

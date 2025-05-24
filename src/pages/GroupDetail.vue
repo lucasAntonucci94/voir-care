@@ -116,7 +116,7 @@
                   @click="toggleMembership"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
-                  <i class="fas fa-close mr-2"></i> Salir del Grupo
+                  <i class="fas fa-close mr-2"></i> Salir
                 </button>
               </li>
             </ul>
@@ -250,7 +250,7 @@
                     :class="isMember ? 'fas fa-check-circle' : 'fas fa-plus-circle'"
                     class="text-white text-sm"
                   ></i>
-                  {{ isMember ? 'Salir del grupo' : 'Unirme al grupo' }}
+                  {{ isMember ? 'Salir' : 'Unirme' }}
                 </button>
               </div>
             </section>

@@ -74,13 +74,21 @@
           <p class="text-base text-gray-500 dark:text-gray-400 mb-2">
             {{ location.address?.street }}
           </p>
+         
           <p
             v-if="location.contact?.phone"
-            class="text-base text-gray-500 dark:text-gray-400 mb-4"
+            class="text-base text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2"
           >
-            Tel: <span class="text-indigo-600 dark:text-indigo-400">{{ location.contact?.phone }}</span>
+            Tel: 
+            <a
+              :href="`https://wa.me/${formatPhoneNumber(location.contact.phone)}`"
+              target="_blank"
+              class="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+            >
+              <i class="fab fa-whatsapp text-lg"></i>
+              {{ location.contact.phone }}
+            </a>
           </p>
-
           <!-- Detalles desplegables -->
           <div v-if="location.description" class="mb-4">
             <button
@@ -110,14 +118,6 @@
               Contactar
             </router-link>
 
-            <a
-              :href="`https://www.google.com/maps/search/?api=1&query=${location.address?.coordinates?.lat},${location.address?.coordinates?.lng}`"
-              target="_blank"
-              class="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 dark:hover:bg-indigo-500 transition duration-200 text-sm"
-            >
-              <i class="fa-solid fa-map-location-dot text-base"></i>
-              Ver en Google Maps
-            </a>
 
             <a
               v-if="location.contact?.socialNetworkLink"
@@ -218,7 +218,14 @@ const locationTypes = ref([
   { id: 'entrenador', label: 'Entrenador', icon: TrainerIcon1, color: 'bg-red-600' },
   { id: 'parque', label: 'Parque', icon: ParcoIcon1, color: 'bg-teal-600' },
 ]);
-
+function formatPhoneNumber(phone) {
+  // Remove any non-digit characters and ensure it starts with +
+  let cleaned = phone.replace(/\D/g, '');
+  if (!cleaned.startsWith('+')) {
+    cleaned = `+${cleaned}`; // Adjust country code as needed, e.g., +54 for Argentina
+  }
+  return cleaned;
+}
 // Encontrar el tipo de ubicación correspondiente
 const locationType = computed(() => {
   return locationTypes.value.find(type => type.id === props.location.type) || {};

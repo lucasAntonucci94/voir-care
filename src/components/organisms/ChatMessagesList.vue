@@ -10,18 +10,24 @@
       >
         <i class="fa-solid fa-arrow-left text-lg"></i>
       </button>
-      <img
-        :src="privateChatsStore.getUserPhoto(privateChatsStore.selectedChatId)"
-        alt="User avatar"
-        class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
-      />
-      <div class="flex-1">
-        <div class="flex justify-between items-center">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
-            {{ getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)) || 'Usuario desconocido' }}
-          </h2>
+      <router-link class="flex items-center gap-3" :to="`/profile/${privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)}`" v-if="privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)" @click.native.stop="goBack" aria-current="page" :aria-label="'Perfil de ' + getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId))"
+      >
+      
+
+        <img
+          :src="privateChatsStore.getUserPhoto(privateChatsStore.selectedChatId)"
+          alt="User avatar"
+          class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
+        />
+        <div class="flex-1">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
+              {{ getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)) || 'Usuario desconocido' }}
+            </h2>
+          </div>
         </div>
-      </div>
+      </router-link>
+
     </div>
 
     <!-- Contenedor de mensajes -->

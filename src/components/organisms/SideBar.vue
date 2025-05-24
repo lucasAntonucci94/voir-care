@@ -55,7 +55,7 @@
 
     <!-- Sección "Otros" -->
     <div class="mt-8 space-y-2">
-      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Otros</h3>
+      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Explorar</h3>
       <router-link
         v-for="item in otherNavItems"
         :key="item.to"
@@ -91,14 +91,14 @@ const mainNavItems = [
   { to: '/home', icon: 'fa-home', label: 'Inicio' },
   { to: '/groups', icon: 'fa-users', label: 'Grupos' },
   { to: '/events', icon: 'fa-calendar', label: 'Eventos' },
-  { to: '/explorar', icon: 'fa-compass', label: 'Explorar' },
+  { to: '/explorar', icon: 'fa-compass', label: 'Mapa interactivo' },
   { to: '/chats', icon: 'fa-message', label: 'Mensajes' },
   { to: '/faqs', icon: 'fa-question', label: 'Preguntas Frecuentes' },
 ];
 
 // Items de navegación "Otros"
 const otherNavItems = [
-  { to: '/education', icon: 'fa-message', label: 'Educación' },
+  { to: '/education', icon: 'fa-graduation-cap', label: 'Educación' },
   { to: '/adoption', icon: 'fa-paw', label: 'Adopción' },
 ];
 
