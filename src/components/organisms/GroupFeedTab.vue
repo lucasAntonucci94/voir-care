@@ -87,7 +87,6 @@ const sortedPosts = computed(() => {
   } else if (sortOption.value === 'mostLiked') {
     return postsArray.sort((a, b) => (b.likes.length || 0) - (a.likes.length || 0))
   } else if (sortOption.value === 'mostCommented') {
-    debugger
     return postsArray.sort((a, b) => (b.commentCount || 0) - (a.commentCount || 0))
   }
   
@@ -105,7 +104,6 @@ function goToDetail(idGroup) {
 // Suscripción a eventos del usuario
 onMounted(() => {
   if (user.value) {
-    debugger
     groupPostssStore.subscribeUserGroupFeed(user.value.uid)
   }
 })

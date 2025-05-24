@@ -111,7 +111,6 @@ const closeModal = () => {
 // Handle connection selection and send invitation notification
 const inviteConnection = async (connection) => {
   if (!user.value || !connection.uid) return;
-  debugger
   try {
     await sendNotification({
       toUid: connection.uid,

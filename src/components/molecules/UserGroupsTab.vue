@@ -71,7 +71,7 @@
       !selectedCategory.value ||
       group.categories?.some(c => c.id === selectedCategory.value)
     );
-    debugger
+
     // Filtro por propiedad
     if (selectedOwnership.value === 'owned') {
       groups = groups.filter(group => group.ownerId === user.value.uid);
