@@ -18,8 +18,9 @@
       <template v-else-if="event.mediaType === 'video' && event.media">
         <video
           :src="event.media"
-          controls
           class="w-full h-full object-cover"
+          autoplay
+          loop
         ></video>
       </template>
       <template v-else>

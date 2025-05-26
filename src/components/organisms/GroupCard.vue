@@ -8,11 +8,19 @@
       <!-- Media -->
       <div class="relative h-40 w-full">
         <img
-          v-if="group.media?.url"
+          v-if="group.media?.url && group?.media.type === 'image'"	
           :src="group.media.url"
           :alt="group.title"
           class="w-full h-full object-cover transition-opacity duration-300"
           loading="lazy"
+        />
+        <video
+          v-else-if="group.media?.url && group?.media.type === 'video'"
+          :src="group?.media?.url"
+          class="w-full h-full object-cover"
+          autoplay
+          loop
+          muted
         />
         <div
           v-else

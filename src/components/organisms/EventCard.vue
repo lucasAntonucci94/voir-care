@@ -18,7 +18,9 @@
           v-else-if="event?.mediaType === 'video'"
           :src="event?.media"
           class="w-full h-full object-cover"
-          controls
+          autoplay
+          loop
+          muted
         />
         <!-- Badge de privacidad -->
         <span

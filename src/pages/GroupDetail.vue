@@ -18,7 +18,8 @@
       <template v-else-if="group.media?.type === 'video' && group.media?.url">
         <video
           :src="group.media.url"
-          controls
+          autoplay
+          loop
           class="w-full h-full object-cover"
         ></video>
       </template>
