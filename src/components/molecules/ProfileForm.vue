@@ -96,7 +96,6 @@
           id="phone"
           :error="stepErrors.phoneNumber"
           :disabled="isLoading"
-          class="hover:bg-transparent dark:hover:bg-transparent"
         />
       </div>
 

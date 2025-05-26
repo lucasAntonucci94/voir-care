@@ -17,6 +17,10 @@
       />
     </div>
     <!-- Sin eventos -->
+    <div v-else-if="(searchQuery !== '' || selectedCategory !== '') && filteredEvents?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
+      <i class="fa-regular fa-calendar-xmark text-4xl mb-3"></i>
+      <p>No hay eventos para los filtros seleccionados.</p>
+    </div>
     <div
       v-else
       class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md"

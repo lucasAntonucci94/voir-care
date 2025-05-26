@@ -20,8 +20,11 @@
         :group="group"
       />
     </div>
-
     <!-- Sin grupos -->
+    <div v-else-if="(searchQuery !== '' || selectedCategory !== '') && discoveredGroups?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
+      <i class="fa-regular fa-calendar-xmark text-4xl mb-3"></i>
+      <p>No hay grupos para los filtros seleccionados.</p>
+    </div>
     <div v-else class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <p class="text-gray-500 dark:text-gray-400">Ya formas parte de todos los grupos disponibles.</p>
       <button
