@@ -33,7 +33,7 @@
             </span>
           </button>
           <button
-          @click="deleteAllChats"
+          @click="openDeleteAllModal"
           class="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
           :disabled="privateChatsStore?.loading || privateChatsStore?.chats?.value.length === 0"
           :class="{ 'cursor-not-allowed opacity-50': privateChatsStore?.loading || privateChatsStore?.chats?.value.length === 0 }"
@@ -90,6 +90,16 @@
       </div>
     </div>
     <NewChatModal ref="newChatModal" />
+    <!-- Modal de confirmacion para eliminar todos los chats -->
+    <GenericConfirmModal
+      :visible="showDeleteAllModal"
+      title="Confirmar eliminación"
+      message="¿Estás seguro de que deseas eliminar todos los chats?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteAllModal"
+      @confirmed="deleteAllChats"
+    />
   </div>
 </template>
 
@@ -99,11 +109,13 @@ import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useSnackbarStore } from '../../stores/snackbar';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import NewChatModal from '../molecules/NewChatModal.vue';
+import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 
 const privateChatsStore = usePrivateChatsStore();
 const snackbarStore = useSnackbarStore();
 const searchQuery = ref('');
 const showActionsMenu = ref(false);
+const showDeleteAllModal = ref(false);
 const newChatModal = ref(null); // Reference to the NewChatModal component
 const dropdownRef = ref(null);
 // Emite eventos para el componente padre
@@ -138,7 +150,18 @@ const createNewChat = () => {
 const deleteAllChats = () => {
   privateChatsStore.deleteAllChats();
   showActionsMenu.value = false;
+  closeDeleteAllModal();
   snackbarStore.show('Chats eliminados', 'success');
+};
+
+const openDeleteAllModal = (messageId) => {
+  console.log('Abriendo modal para mensaje ID:', messageId);
+  showDeleteAllModal.value = true;
+};
+
+const closeDeleteAllModal = () => {
+  console.log('Cerrando modal');
+  showDeleteAllModal.value = false;
 };
 
 // Obtener la foto de perfil para un chat

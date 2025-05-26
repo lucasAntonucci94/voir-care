@@ -124,6 +124,7 @@
             </div>
           </div>
           <button
+            v-if="ownerDetails?.email !== user?.email"
             @click="SendMessage(ownerDetails?.email)"
             class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200"
             :disabled="!ownerDetails?.email"
