@@ -2,7 +2,6 @@ import { ref } from 'vue';
 import { getFirestore, doc, setDoc, getDoc, getDocs, updateDoc, collection, query, where, limit, arrayUnion, arrayRemove, onSnapshot,deleteDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { usePosts } from '../composable/usePosts';
-import { useSavedGroupPosts } from '../composable/useSavedGroupPosts';
 import { useAuth } from '../api/auth/useAuth'
 
 const db = getFirestore();
@@ -41,6 +40,7 @@ export function useUsers() {
           avatar: user.avatar || null,
           isAdmin: user.isAdmin || false,
           isBlocked: user.isBlocked || false,
+          isSuscribed: user.isSuscribed || false,
           configs: user.configs || {},
         });
       });
@@ -108,6 +108,7 @@ export function useUsers() {
         bannerPathFile: user.bannerPathFile || null,
         isAdmin: user.isAdmin || false,
         isBlocked: user.isBlocked || false,
+        isSuscribed: user.isSuscribed || false,
         configs: user.configs || {},
       };
     } catch (error) {
@@ -141,6 +142,7 @@ export function useUsers() {
         bannerPathFile: data.bannerPathFile || null,
         isAdmin: data.isAdmin || false,
         isBlocked: false,
+        isSuscribed: false,
         configs: {theme: 'light'},
         connections: [],
       });
@@ -173,7 +175,8 @@ export function useUsers() {
         photoPathFile: data.photoPathFile || null,
         bannerUrlFile: data.bannerUrlFile || null,
         bannerPathFile: data.bannerPathFile || null,
-        isBlocked: data.isBlocked || null,
+        isBlocked: data.isBlocked || false,
+        isSuscribed: data.isSuscribed || false,
         configs: data.configs || {},
       };
       await updateDoc(docRef, userData);
@@ -216,13 +219,15 @@ export function useUsers() {
       const userProfilePromise = getUserProfileByEmail(firebaseUser.email);
       const hiddenPostsPromise = getHiddenPostsForUser(firebaseUser.uid);
       const hiddenGroupPostsPromise = getHiddenGroupPostsForUser(firebaseUser.uid);
+      const hiddenEventPostsPromise = getHiddenEventPostsForUser(firebaseUser.uid);
       // const savedGroupPostsPromise = fetchSavedPosts(firebaseUser.uid);
 
-      const [photoURLFile, profile, hiddenPosts, hiddenGroupPosts, savedGroupPosts] = await Promise.all([
+      const [photoURLFile, profile, hiddenPosts, hiddenGroupPosts, hiddenEventPosts, savedGroupPosts] = await Promise.all([
         photoURLFilePromise,
         userProfilePromise,
         hiddenPostsPromise,
         hiddenGroupPostsPromise,
+        hiddenEventPostsPromise,
         // savedGroupPostsPromise,
       ]);
 
@@ -232,6 +237,7 @@ export function useUsers() {
         ...profile,
         hiddenPosts,
         hiddenGroupPosts,
+        hiddenEventPosts,
         savedGroupPosts,
       };
 
@@ -372,6 +378,27 @@ export function useUsers() {
       throw error;
     }
   }
+
+  /**
+   * Bloquea a un usuario de forma global (sera ejecutado por el admin)
+   * @param {string} id - ID del usuario
+   * @param {boolean} isBlocked - true para bloquear, false para desbloquear
+   * @returns {Promise<void>}
+   */
+  async function getHiddenEventPostsForUser(userId) {
+    try {
+      const hiddenEventPostsRef = collection(db, 'users', userId, 'hiddenEventPosts');
+      const snapshot = await getDocs(hiddenEventPostsRef);
+      const hiddenEventPosts = [];
+      snapshot.forEach((doc) => {
+        hiddenEventPosts.push({ id: doc.id, ...doc.data() });
+      });
+      return hiddenEventPosts;
+    } catch (error) {
+      console.error('Error al obtener los hiddenEventPosts:', error);
+      throw error;
+    }
+  }
   
   /**
    * Bloquea a un usuario de forma global (sera ejecutado por el admin)
@@ -469,10 +496,10 @@ export function useUsers() {
   /**
    * Bloquea a un usuario de forma global (sera ejecutado por el admin)
    * @param {string} id - ID del usuario
-   * @param {boolean} isSuscribe - true para suscribir, false para desuscribir
+   * @param {boolean} isSuscribed - true para suscribir, false para desuscribir
    * @returns {Promise<void>}
    */
-  async function suscribeUser(id, isSuscribe) {
+  async function suscribeUser(id, isSuscribed) {
     try {
       // verifico que exista usuario logueado
       const { user: authUser } = useAuth();
@@ -483,12 +510,12 @@ export function useUsers() {
       if (!currentUserDoc.exists() || !currentUserDoc.data().isAdmin) {
         throw new Error('Solo los administradores pueden bloquear globalmente');
       }  
-      // Actualizo propiedad isSuscribe en Firestore
+      // Actualizo propiedad isSuscribed en Firestore
       const userRef = doc(db, 'users', id);
       await updateDoc(userRef, {
-        isSuscribe: isSuscribe,
+        isSuscribed: isSuscribed,
       });
-      console.log(`Usuario con ID ${id} ${isSuscribe ? 'suscripto' : 'desuscripto'} exitosamente`);
+      console.log(`Usuario con ID ${id} ${isSuscribed ? 'suscripto' : 'desuscripto'} exitosamente`);
     } catch (error) {
       console.error('Error al suscribir usuario:', error);
       throw error;

@@ -4,10 +4,10 @@ import { useGroups } from '../composable/useGroups';
 
 export const useGroupsStore = defineStore('groups', {
   state: () => ({
-    userGroups: ref([]), // Keep for group management
+    userGroups: ref([]),
     allGroups: ref([]),
     isLoading: ref(false),
-    unsubscribeUserGroups: ref(null), // Keep for group subscription
+    unsubscribeUserGroups: ref(null),
     unsubscribeAll: ref(null),
   }),
   actions: {

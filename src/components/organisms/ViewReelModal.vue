@@ -292,7 +292,7 @@ const handleToggleLike = async () => {
       email: user.value.email,
     });
     emit('update-reel', updatedReel);
-    snackbarStore.show(hasLiked.value ? 'Like removed' : 'Like added', hasLiked.value ? 'error' : 'success');
+    snackbarStore.show(hasLiked.value ? 'Me gusta eliminado' : 'Me gusta agregado', hasLiked.value ? 'error' : 'success');
   } catch (err) {
     snackbarStore.show('Error processing like', 'error');
     console.error('Error in toggleLike:', err);

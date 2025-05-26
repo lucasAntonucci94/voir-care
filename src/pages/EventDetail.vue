@@ -7,20 +7,27 @@
   </div>
   <div v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
     <!-- Banner -->
-    <div class="relative w-full h-64 md:h-96 overflow-hidden">
-      <template v-if="event.mediaType === 'image'">
+    <div  @click="openMediaModal(event.media,event.mediaType)" class="relative w-full h-64 md:h-96 overflow-hidden">
+      <template v-if="event.mediaType === 'image' && event.media">
         <img
           :src="event.media"
-          alt="Banner del evento"
+          alt="Banner del grupo"
           class="w-full h-full object-cover"
         />
       </template>
-      <template v-else-if="event.mediaType === 'video'">
+      <template v-else-if="event.mediaType === 'video' && event.media">
         <video
           :src="event.media"
           controls
           class="w-full h-full object-cover"
         ></video>
+      </template>
+      <template v-else>
+        <img
+          :src="defaultEventBanner"
+          alt="Banner por defecto"
+          class="w-full h-full object-cover"
+        />
       </template>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
       <div class="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
@@ -68,7 +75,7 @@
                   @click="openEditModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
-                  <i class="fas fa-pen mr-2"></i> Editar Evento
+                  <i class="fas fa-pen mr-2"></i> Editar
                 </button>
               </li>
               <!-- Delete Event (Owner or Admin) -->
@@ -77,7 +84,7 @@
                   @click="openDeleteModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
-                  <i class="fas fa-trash-can mr-2"></i> Eliminar Evento
+                  <i class="fas fa-trash-can mr-2"></i> Eliminar
                 </button>
               </li>
               <!-- Report Event (Non-owner, non-admin) -->
@@ -86,7 +93,7 @@
                   @click="showReportEventModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
-                  <i class="fas fa-flag mr-2"></i> Reportar Evento
+                  <i class="fas fa-flag mr-2"></i> Reportar
                 </button>
               </li>
               <!-- Hide Event (Non-owner, non-admin) -->
@@ -130,7 +137,12 @@
         @cancel="closeEditModal"
         @submit="submitEdit"
       />
-
+      <!-- Media Modal -->
+      <MediaModalViewer
+        :visible="showMediaModal"
+        :media="selectedMedia"
+        @close="closeMediaModal"
+      />
       <!-- Contenido de la pestaña seleccionada -->
       <div>
         <!-- Pestaña "Información" -->
@@ -148,10 +160,11 @@
         <!-- Pestaña "Participantes" -->
         <EventParticipantsTab v-else-if="activeTab === 'participants'" :attendees="attendeesDetails" />
 
-        <!-- Pestaña "Comentarios" -->
-        <div v-else-if="activeTab === 'comments'" class="text-sm text-gray-600 dark:text-gray-300">
-          <p>Sección de comentarios (próximamente).</p>
-        </div>
+        <ConversationEventTab
+          v-else-if="activeTab === 'comments'"
+          :event="event"
+          :is-going="isGoing"
+        />
       </div>
     </div>
   </div>
@@ -169,7 +182,8 @@ import ModalReport from '../components/molecules/ReportModal.vue';
 import { useAuth } from '../api/auth/useAuth';
 import GenericConfirmModal from '../components/molecules/GenericConfirmModal.vue'
 import EditEventModal from '../components/organisms/EditEventModal.vue'
-
+import MediaModalViewer from '../components/molecules/MediaViewerModal.vue';
+import ConversationEventTab from '../components/organisms/ConversationEventTab.vue';
 const route = useRoute();
 const router = useRouter();
 const eventsStore = useEventsStore();
@@ -189,6 +203,8 @@ const showDeleteModal = ref(false);
 const isGoing = ref(false);
 const isAdmin = ref(false);
 const showEditModal = ref(false)
+const showMediaModal = ref(false)
+const selectedMedia = ref({ src: '', type: 'image' });
 const selectedEvent = ref({
   title: '',
   description: '',
@@ -202,8 +218,8 @@ const selectedEvent = ref({
 // Definir las pestañas
 const tabs = [
   { id: 'info', label: 'Información' },
-  { id: 'participants', label: 'Participantes' },
   { id: 'comments', label: 'Comentarios' },
+  { id: 'participants', label: 'Participantes' },
 ];
 const activeTab = ref('info');
 
@@ -297,7 +313,20 @@ function submitEdit(updatedEvent) {
   event.value = { ...event.value, ...updatedEvent }
   closeEditModal()
 }
-  
+
+// Modal functions
+const openMediaModal = (url,type) => {
+  selectedMedia.value = { src: url, type: type };
+  showMediaModal.value = true;
+  document.body.style.overflow = 'hidden';
+};
+
+const closeMediaModal = () => {
+  selectedMedia.value = { src: '', type: 'image' };
+  showMediaModal.value = false;
+  document.body.style.overflow = '';
+};
+
 onMounted(async () => {
   const id = route.params.idEvent;
   if (id) {

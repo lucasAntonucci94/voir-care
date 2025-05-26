@@ -215,6 +215,8 @@ async function handleClick(notification) {
     router.push(`/profile/${notification.fromUid}`);
   } else if (notification.type === 'groupInvitation') {
     router.push(`/group/${notification.extra.groupId ?? notification.entityId}`);
+  } else if (notification.type === 'eventInvitation') {
+    router.push(`/event/${notification.extra.eventId ?? notification.entityId}`);
   }
   toggle();
 }

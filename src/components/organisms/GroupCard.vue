@@ -92,7 +92,7 @@
             :class="isMember ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'"
           >
             <i :class="isMember ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-            {{ isMember ? 'Salir' : 'Unirme' }}
+            <p class="hidden lg:block">{{ isMember ? 'Salir' : 'Unirme' }}</p>
           </button>
         </div>
       </div>

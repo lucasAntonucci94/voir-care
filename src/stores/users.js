@@ -102,7 +102,7 @@ export const useUsersStore = defineStore('users', {
         await suscribeUser(id, suscribe);
         const user = this.users.find((u) => u.uid === id);
         if (user) {
-          user.isSuscribe = suscribe;
+          user.isSuscribed = suscribe;
         }
         this.error = null;
         console.log(`Usuario con ID ${id} ${suscribe ? 'suscripto' : 'desuscripto'} en el store`);

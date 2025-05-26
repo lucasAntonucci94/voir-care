@@ -94,8 +94,8 @@
                 </span>
               </td>
                <td class="py-3 px-6 text-center">
-                <span :class="user.isSuscribe ? 'text-green-500' : 'text-red-500'">
-                  {{ user.isSuscribe ? 'Sí' : 'No' }}
+                <span :class="user.isSuscribed ? 'text-green-500' : 'text-red-500'">
+                  {{ user.isSuscribed ? 'Sí' : 'No' }}
                 </span>
               </td>
               <td class="py-3 px-6 text-center">
@@ -126,11 +126,11 @@
                   </button>
                   <button
                     @click="toggleSuscriptionUser(user)"
-                    :class="!user.isSuscribe ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700'"
-                    :title="!user.isSuscribe ? 'Suscribir' : 'Desuscribir'"
-                    :aria-label="!user.isSuscribe ? 'Suscribir usuario' : 'Desuscribir usuario'"
+                    :class="!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700'"
+                    :title="!user.isSuscribed ? 'Suscribir' : 'Desuscribir'"
+                    :aria-label="!user.isSuscribed ? 'Suscribir usuario' : 'Desuscribir usuario'"
                   >
-                    <i :class="!user.isSuscribe ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
+                    <i :class="!user.isSuscribed ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                   </button>
                 </div>
               </td>
@@ -308,11 +308,11 @@ const toggleBlockUser = async (user) => {
 // Toggle suscription status
 const toggleSuscriptionUser = async (user) => {
   try {
-    const suscribe = !user.isSuscribe;
+    const suscribe = !user.isSuscribed;
     await usersStore.suscribeUser(user.uid, suscribe);
     snackbarStore.show(`Usuario ${suscribe ? 'suscripto' : 'desuscripto'} exitosamente`,'success');
   } catch (error) {
-    snackbarStore.show(`Error al ${user.isSuscribe ? 'suscrir' : 'desuscrir'} usuario`, 'error');
+    snackbarStore.show(`Error al ${user.isSuscribed ? 'suscrir' : 'desuscrir'} usuario`, 'error');
   }
 };
 

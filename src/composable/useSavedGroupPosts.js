@@ -52,7 +52,6 @@ export function useSavedGroupPosts() {
    */
   async function isPostSaved(userId, postId, groupId) {
     try {
-      debugger
       const savedPostId = `${userId}_${postId}_${groupId}`;
       const savedPostDocRef = doc(db, 'savedGroupPosts', savedPostId);
       const docSnap = await getDoc(savedPostDocRef);

@@ -74,7 +74,7 @@
             class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
           >
             <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
-              <!-- Edit Group (Owner or Admin) -->
+              <!-- Edit Group -->
               <li v-if="isAdmin || group?.ownerId === user?.uid">
                 <button
                   @click="openEditModal"
@@ -83,7 +83,7 @@
                   <i class="fas fa-pen mr-2"></i> Editar
                 </button>
               </li>
-              <!-- Delete Group (Owner or Admin) -->
+              <!-- Delete Group -->
               <li v-if="isAdmin || group?.ownerId === user?.uid">
                 <button
                   @click="openDeleteModal"
@@ -92,7 +92,7 @@
                   <i class="fas fa-trash-can mr-2"></i> Eliminar
                 </button>
               </li>
-              <!-- Report Group (Non-owner, non-admin) -->
+              <!-- Report Group -->
               <li v-if="group?.ownerId !== user?.uid && !isAdmin">
                 <button
                   @click="showReportGroupModal"
@@ -101,7 +101,7 @@
                   <i class="fas fa-flag mr-2"></i> Reportar
                 </button>
               </li>
-              <!-- Hide Group (Non-owner, non-admin) -->
+              <!-- Hide Group -->
               <!-- <li v-if="group?.ownerId !== user?.uid && !isAdmin">
                 <button
                   @click="showHideGroupModal"
@@ -110,7 +110,7 @@
                   <i class="fas fa-eye-slash mr-2"></i> Ocultar Grupo
                 </button>
               </li> -->
-              <!-- Hide Group (Non-owner, non-admin) -->
+              <!-- Hide Group -->
               <li v-if="group?.ownerId !== user?.uid && !isAdmin && isMember">
                 <button
                   @click="toggleMembership"
@@ -266,7 +266,7 @@
                   class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
                   @click="openInviteFriendsModal"
                 >
-                  Invitar
+                 <i class="fas fa-user-plus"></i> <span class="hidden md:block ml-2">Invitar</span>
                 </button>
               </div>
 
@@ -298,9 +298,10 @@
                   <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Miembros</h2>
                   <button
                     @click="activeTab = 'members'"
-                    class="text-sm text-primary dark:text-secondary hover:underline"
+                    class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1"
                   >
-                    Ver todos
+                    <i class="fas fa-eye"></i>
+                    <span class="hidden md:block ml-2">Ver todos</span>
                   </button>
                 </div>
                 <div v-if="membersLoading" class="text-center text-gray-500 dark:text-gray-400 text-sm">
