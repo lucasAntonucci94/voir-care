@@ -204,7 +204,7 @@ export function usePosts() {
           toUid: post.user?.id,
           fromUid: userData.id,
           type: 'like',
-          message: `${userData.email} le dio like a tu publicación.`,
+          message: `${userData.email} le dio me gusta a tu publicación.`,
           entityId: postIdDoc,
           entityType: 'post',
         })

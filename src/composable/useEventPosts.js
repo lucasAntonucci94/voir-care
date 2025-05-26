@@ -216,7 +216,7 @@ export function useEventPosts() {
           toUid: post.user?.id,
           fromUid: userData.id,
           type: 'like',
-          message: `${userData.email} le dio like a tu publicación en el evento.`,
+          message: `${userData.email} le dio me gusta a tu publicación en el evento.`,
           entityId: postIdDoc,
           entityType: 'eventPost',
         });

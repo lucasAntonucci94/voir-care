@@ -102,18 +102,6 @@
       <!-- Paso 3: Detalles personales -->
       <div v-if="currentStep === 2" class="space-y-4 animate-fade-in">
         <div>
-          <!-- <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de nacimiento</label>
-          <input
-            v-model="editForm.birthday"
-            type="date"
-            :class="[
-              'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent disabled:opacity-50 shadow-sm',
-              stepErrors.birthday ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
-            ]"
-            :disabled="isLoading"
-          />
-          -->
-          
           <SelectDate
             v-model="editForm.birthday"
             label="Fecha de nacimiento"
@@ -187,33 +175,34 @@
     <!-- Botones de navegación -->
     <div class="flex justify-between gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
       <button
+        v-if="currentStep === 0"
         type="button"
         @click="props.closeEditModal"
         :disabled="isLoading"
-        class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         aria-label="Cancelar edición del perfil"
       >
         <i class="fa-solid fa-times"></i>
         <p class="hidden md:block">Cancelar</p>
       </button>
+      <button
+        v-if="currentStep > 0"
+        type="button"
+        @click="prevStep"
+        :disabled="isLoading"
+        class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        aria-label="Volver al paso anterior"
+      >
+        <i class="fa-solid fa-arrow-left"></i>
+        <p class="hidden md:block">Atrás</p>
+      </button>
       <div class="flex items-center gap-2">
-        <button
-          v-if="currentStep > 0"
-          type="button"
-          @click="prevStep"
-          :disabled="isLoading"
-          class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          aria-label="Volver al paso anterior"
-        >
-          <i class="fa-solid fa-arrow-left"></i>
-          <p class="hidden md:block">Atrás</p>
-        </button>
         <button
           v-if="currentStep < steps.length - 1"
           type="button"
           @click="nextStep"
           :disabled="isLoading || hasStepErrors"
-          class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           aria-label="Avanzar al siguiente paso"
         >
           <p class="hidden md:block">Siguiente</p>
@@ -223,7 +212,7 @@
           v-if="currentStep === steps.length - 1"
           type="submit"
           :disabled="isLoading || hasGlobalErrors"
-          class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           aria-label="Guardar perfil"
         >
           <span v-if="isLoading">
@@ -240,7 +229,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useUsers } from '../../composable/useUsers';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import SelectCountry from '../atoms/SelectCountry.vue';
@@ -287,6 +276,39 @@ const hasGlobalErrors = computed(() => {
   return Object.keys(errors.value).length > 0;
 });
 
+// Watch para re-validar el número de teléfono al cambiar
+watch(
+  () => editForm.value.phoneNumber,
+  (newPhone) => {
+    debugger
+    if (currentStep.value === 1) { //valida solo si es step 2
+      stepErrors.phoneNumber = '';
+      validateStep(currentStep.value);
+    }
+  }
+);
+// Watch para re-validar fecha de nacimiento al cambiar
+watch(
+  () => editForm.value.birthday,
+  (newBirthday) => {
+    debugger
+    if (currentStep.value === 2) { //valida solo si es step 3
+      stepErrors.birthday = '';
+      validateStep(currentStep.value);
+    }
+  }
+);
+// Watch para re-validar el displayname al cambiar
+watch(
+  () => editForm.value.displayName,
+  (newDisplayName) => {
+    debugger
+    if (currentStep.value === 0) { //valida solo si es step 1
+      stepErrors.displayName = '';
+      validateStep(currentStep.value);
+    }
+  }
+);
 onMounted(() => {
   editProfile();
 });

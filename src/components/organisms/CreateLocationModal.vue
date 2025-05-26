@@ -155,41 +155,53 @@
               v-if="currentStep > 1"
               type="button"
               @click="previousStep"
-              class="px-5 py-2 text-gray-500 dark:text-gray-200 dark:bg-gray-600 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200"
               :disabled="isSubmitting"
+              class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              aria-label="Cancelar edición del perfil"
             >
-              Atrás
+              <i class="fa-solid fa-arrow-left"></i>
+              <p class="hidden md:block">Atrás</p>
             </button>
             <button
               v-if="currentStep === 1"
               type="button"
               @click="closeModal"
-              class="px-5 py-2 text-gray-500 dark:text-gray-200 dark:bg-gray-600 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200"
               :disabled="isSubmitting"
+              class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              aria-label="Volver al paso anterior"
             >
-              Cancelar
+              <i class="fa-solid fa-times"></i>
+              <p class="hidden md:block">Cancelar</p>
             </button>
+
             <button
               v-if="currentStep < 3"
               type="button"
               @click="nextStep"
-              class="px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg"
               :disabled="isSubmitting"
+               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              aria-label="Avanzar al siguiente paso"
             >
-              Siguiente
+              <p class="hidden md:block">Siguiente</p>
+              <i class="fa-solid fa-arrow-right"></i>
             </button>
+
             <button
               v-if="currentStep === 3"
               type="submit"
-              class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
               :disabled="isSubmitting"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              aria-label="Guardar perfil"
             >
-              <span v-if="!isSubmitting">Crear Lugar</span>
-              <span v-else class="flex items-center gap-2">
-                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                Creando...
+              <span v-if="isSubmitting">
+                <i class="fa-solid fa-spinner animate-spin"></i>
               </span>
+              <p class="hidden md:block">
+                {{ isSubmitting ? 'Creando...' : 'Crear' }}
+              </p>
+              <i v-if="!isSubmitting" class="fa-solid fa-save"></i>
             </button>
+
           </div>
         </form>
       </div>

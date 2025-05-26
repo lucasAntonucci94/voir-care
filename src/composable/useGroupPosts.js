@@ -218,7 +218,7 @@ export function useGroupPosts() {
           toUid: post.user?.id,
           fromUid: userData.id,
           type: 'like',
-          message: `${userData.email} le dio like a tu publicación en el grupo.`,
+          message: `${userData.email} le dio me gusta a tu publicación en el grupo.`,
           entityId: postIdDoc,
           entityType: 'groupPost',
         });
