@@ -322,6 +322,46 @@ export function usePosts() {
     }
   }
 
+  /**
+   * Escucha los últimos 5 posts con categoría "Adopción" en tiempo real.
+   * @param {function} callback - Función que recibe un array de posts
+   * @returns {function} - Función para cancelar la suscripción
+   */
+  function subscribeToAdoptionPosts(callback) {
+    try {
+      const q = query(
+        postRef,
+        where('categories', 'array-contains', { id: '01fef174-f5e6-432b-bb44-6a156927f0af', name: 'Adopción' }),
+        orderBy('created_at', 'desc'),
+        limit(5)
+      );
+      return onSnapshot(q, (snapshot) => {
+        const posts = snapshot.docs.map((doc) => {
+          const post = doc.data();
+          return {
+            idDoc: doc.id,
+            id: post.id,
+            title: post.title,
+            body: post.body,
+            user: post.user,
+            categories: post.categories,
+            created_at: post.created_at,
+            likes: post.likes || [],
+            media: post.media ?? null,
+            userAvatar: post.user.photoURLFile || null, 
+            userName: post.user.displayName || post.user.email,
+            date: post.created_at ? post.created_at : null,
+            image: post.media?.url || null,
+          };
+        });
+        callback(posts);
+      });
+    } catch (err) {
+      console.error('Error al suscribirse a posts de adopción:', err);
+      throw err;
+    }
+  }
+
   return {
     savePost,
     subscribeToIncomingPosts,
@@ -335,5 +375,6 @@ export function usePosts() {
     addLike,
     removeLike,
     hidePost,
+    subscribeToAdoptionPosts,
   };
 }

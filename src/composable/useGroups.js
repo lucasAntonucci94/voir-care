@@ -14,9 +14,10 @@ import {
   getDoc,
   arrayUnion,
   arrayRemove, 
+  limit,
 } from 'firebase/firestore'
 import { useAuth } from '../api/auth/useAuth';
-import { useStorage } from './useStorage'; // Importamos el composable de storage
+import { useStorage } from './useStorage';
 import { newGuid } from '../utils/newGuid';
 
 const db = getFirestore();
@@ -223,6 +224,32 @@ export function useGroups() {
     }
   }
 
+  /**
+   * Se suscribe a los últimos 3 grupos con categoría "adopcion".
+   * @param {function} callback - Función que recibe un array de grupos.
+   * @returns {function} - Función para cancelar la suscripción.
+   */
+  function subscribeToAdoptionGroups(callback) {
+    try {
+      const q = query(
+        groupsRef,
+        where('categories', 'array-contains', { id: 'adopcion', name: 'Adopción' }),
+        orderBy('createdAt', 'desc'),
+        limit(3)
+      )
+      return onSnapshot(q, (snapshot) => {
+        const groups = snapshot.docs.map((docSnap) => ({
+          idDoc: docSnap.id,
+          ...docSnap.data(),
+        }))
+        callback(groups)
+      })
+    } catch (error) {
+      console.error('Error al suscribirse a grupos de adopción:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createGroup,
@@ -235,5 +262,6 @@ export function useGroups() {
     leaveGroup,
     createPostGroup,
     suscribePostsByGroupId,
+    subscribeToAdoptionGroups,
   }
 }

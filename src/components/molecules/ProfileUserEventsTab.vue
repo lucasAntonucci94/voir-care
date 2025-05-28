@@ -21,7 +21,7 @@
       v-else
       class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md"
     >
-      <p class="text-gray-500 dark:text-gray-400">No perteneces a ningún evento aún.</p>
+      <p class="text-gray-500 dark:text-gray-400">No asistirá a ningún evento aún.</p>
       <button
         class="mt-4 px-4 py-2 ml-3 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
         @click="navigateToDiscoverEvent"

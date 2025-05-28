@@ -25,7 +25,7 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
+  import { watch, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { usePostsStore } from '../../stores/posts'
   import PostCard from '../organisms/PostCard.vue'
@@ -33,10 +33,8 @@
   const router = useRouter()
   const postsStore = usePostsStore()
   
-  // Computed property to filter and ensure posts are up-to-date
   const filteredSavedPosts = computed(() => postsStore.savedPosts || [])
   
-  // Watch for changes in savedPostIds to fetch posts
   watch(
     () => postsStore.savedPostIds,
     async (newSavedPostIds) => {
@@ -49,19 +47,9 @@
     { immediate: true }
   )
 
-  // Navigate to feed
   function navigateToFeed() {
     router.push('/feed')
   }
-  
-  // Lifecycle hooks
-  onMounted(() => {
-    console.log('SavedPostTab mounted, savedPostIds:', postsStore.savedPostIds.value)
-  })
-  
-  onUnmounted(() => {
-    console.log('SavedPostTab unmounted')
-  })
   </script>
   
   <style scoped>

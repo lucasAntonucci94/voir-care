@@ -15,9 +15,10 @@
         v-else-if="post?.media?.type === 'video'"
         :src="post?.media?.url"
         :poster="post?.media?.url"
-        :controls="true"
+        :controls="false"
         :autoplay="true"
         :loop="true"
+        muted
         class="w-full h-48 rounded-lg cursor-pointer"
         @click="openMediaModal"
       ></video>
@@ -96,7 +97,6 @@
               alt="Post media"
               :poster="post?.imageUrlFile"
               :controls="true"
-              :autoplay="true"
               :loop="true"
               autoplay
               class="max-w-full max-h-full object-contain rounded-lg"

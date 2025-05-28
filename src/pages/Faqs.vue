@@ -82,7 +82,7 @@ const faqs = ref([
     category: 'general',
     question: '¿Qué es esta red social y cuál es su propósito?',
     answer:
-      'Somos una comunidad apasionada por el cuidado y bienestar animal, enfocada en perros y gatos. Nuestro propósito es concientizar y educar a las personas sobre la tenencia responsable, ofrecer recursos educativos y crear un espacio donde los amantes de los animales puedan conectar, compartir experiencias y crecer juntos. ¡Únete y hagamos del mundo un lugar mejor para nuestras mascotas!',
+      'Somos una comunidad apasionada por el cuidado y bienestar animal. Nuestro propósito es concientizar y educar a las personas sobre la tenencia responsable, ofrecer recursos educativos y crear un espacio donde los amantes de los animales puedan conectar, compartir experiencias y crecer juntos.',
   },
   {
     category: 'general',
@@ -94,7 +94,7 @@ const faqs = ref([
     category: 'general',
     question: '¿Qué beneficios obtengo al unirme?',
     answer:
-      'Al unirte, tendrás acceso a una comunidad vibrante donde puedes aprender sobre el cuidado animal, conectar con otros dueños, participar en eventos y grupos, y encontrar recursos como guías, artículos y mapas con lugares pet-friendly. Además, podrás compartir tu amor por las mascotas y apoyar causas como la adopción responsable.',
+      'Al unirte, tendrás acceso a una comunidad vibrante donde puedes aprender sobre el cuidado animal, conectar con otros dueños, participar en eventos y grupos, y encontrar recursos como guías, artículos y mapas con lugares que permite y son amigables con los animales. Además, podrás compartir tu amor por las mascotas y apoyar causas como la adopción responsable.',
   },
 
   // Categoría: Funcionalidades
@@ -102,13 +102,13 @@ const faqs = ref([
     category: 'features',
     question: '¿Qué herramientas ofrece la plataforma para el cuidado animal?',
     answer:
-      'Ofrecemos una variedad de herramientas para ayudarte a cuidar mejor a tu mascota: chats privados y seguros para conectar con otros dueños o profesionales, un mapa interactivo para encontrar veterinarias, parques y servicios pet-friendly, guías y artículos educativos sobre salud y bienestar, y mucho más. Todo diseñado para que tengas lo que necesitas en un solo lugar.',
+      'Ofrecemos una variedad de herramientas para ayudarte a cuidar mejor a tu mascota: chats privados y seguros para conectar con otros dueños o profesionales, un mapa interactivo para encontrar veterinarias, parques y servicios, guías y artículos educativos sobre salud y bienestar, y mucho más. Todo diseñado para que tengas lo que necesitas en un solo lugar.',
   },
   {
     category: 'features',
-    question: '¿Cómo funciona el mapa de lugares pet-friendly?',
+    question: '¿Cómo funciona el mapa interactivo?',
     answer:
-      'Nuestra sección "Explorar" te permite localizar lugares de interés para tu mascota, como parques, veterinarias, petshops, paseadores y guarderías. Solo selecciona tu ubicación y el tipo de lugar que buscas, y te mostraremos opciones cercanas con información detallada. ¡Es ideal para planificar paseos o encontrar ayuda rápida!',
+      'Nuestro mapa te permite localizar lugares de interés para tu mascota, como parques, veterinarias, refugios, petshops, paseadores, guarderías y más. Solo selecciona tu ubicación y el tipo de lugar que buscas, y te mostraremos opciones cercanas con información detallada. ¡Es ideal para planificar paseos o encontrar ayuda rápida!',
   },
   {
     category: 'features',

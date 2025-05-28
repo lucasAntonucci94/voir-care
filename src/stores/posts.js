@@ -7,22 +7,26 @@ export const usePostsStore = defineStore('posts', {
   state: () => {
     const posts = ref([]); // Posts globales (feed)
     const profilePosts = ref([]); // Posts del perfil
+    const adoptionPosts = ref([]); // Posts de adopción
     const isLoading = ref(true); // Loading global
     const isLoadingProfile = ref(true); // Loading para el perfil
     const unsubscribeGlobal = ref(null); // Suscripción global
     const unsubscribeProfile = ref(null); // Suscripción del perfil
     const savedPostIds = ref([]); // IDs de posts guardados
     const unsubscribeSavedPosts = ref(null); // Suscripción a posts guardados
-
+    const unsubscribeAdoption = ref(null); // Suscripción para adopción
+    
     return {
       posts,
       profilePosts,
+      adoptionPosts,
       isLoading,
       isLoadingProfile,
       unsubscribeGlobal,
       unsubscribeProfile,
       savedPostIds,
       unsubscribeSavedPosts,
+      unsubscribeAdoption,
     };
   },
   actions: {
@@ -90,19 +94,6 @@ export const usePostsStore = defineStore('posts', {
       const { deletePost } = usePosts();
       await deletePost(postIdDoc);
     },
-    // async toggleLike(postIdDoc, userData) {
-    //   const { addLike, removeLike } = usePosts();
-    //   const post = this.posts?.value?.find(p => p.idDoc === postIdDoc) || 
-    //                this.profilePosts?.value?.find(p => p.idDoc === postIdDoc);
-    //   if (!post) return;
-
-    //   const userLiked = post.likes.some(like => like.userId === userData.id);
-    //   if (userLiked) {
-    //     await removeLike(postIdDoc, userData);
-    //   } else {
-    //     await addLike(postIdDoc, userData);
-    //   }
-    // },
     async toggleLike(postIdDoc, userData) {
       const { addLike, removeLike } = usePosts();
       // Find the post in posts, profilePosts, or savedPosts
@@ -182,11 +173,33 @@ export const usePostsStore = defineStore('posts', {
             }
           })
         );
-        // Filter out null values (failed fetches) and store in savedPosts
+        debugger
         this.savedPosts = fetchedPosts.filter(post => post !== null);
+        debugger
       } catch (error) {
         console.error('Error fetching saved posts:', error);
-        this.savedPosts = []; // Reset on error
+        this.savedPosts = []; // Reset si falla
+      }
+    },
+    // Suscribirse a posts de adopción
+    subscribeToAdoptionPosts() {
+      if (this.unsubscribeAdoption) {
+        console.log('Suscripción a posts de adopción ya activa, ignorando...');
+        return;
+      }
+      console.log('Iniciando suscripción a posts de adopción...');
+      const { subscribeToAdoptionPosts } = usePosts();
+      this.unsubscribeAdoption = subscribeToAdoptionPosts((posts) => {
+        this.adoptionPosts.value = posts;
+        // this.isLoading = false;
+      });
+    },
+    // Cancelar suscripción a posts de adopción
+    unsubscribeAdoptionPosts() {
+      if (this.unsubscribeAdoption) {
+        console.log('Cancelando suscripción a posts de adopción...');
+        this.unsubscribeAdoption();
+        this.unsubscribeAdoption = null;
       }
     },
   },

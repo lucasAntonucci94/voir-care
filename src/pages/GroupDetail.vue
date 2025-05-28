@@ -20,6 +20,7 @@
           :src="group.media.url"
           autoplay
           loop
+          muted
           class="w-full h-full object-cover"
         ></video>
       </template>

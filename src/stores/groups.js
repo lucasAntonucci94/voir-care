@@ -6,9 +6,11 @@ export const useGroupsStore = defineStore('groups', {
   state: () => ({
     userGroups: ref([]),
     allGroups: ref([]),
+    adoptionGroups: ref([]),
     isLoading: ref(false),
     unsubscribeUserGroups: ref(null),
     unsubscribeAll: ref(null),
+    unsubscribeAdoption: ref(null),
   }),
   actions: {
     // Suscribirse a los grupos en los que el usuario es miembro
@@ -58,7 +60,28 @@ export const useGroupsStore = defineStore('groups', {
         this.unsubscribeAll = null;
       }
     },
+    // Suscripción a grupos de adopción
+    subscribeToAdoptionGroups() {
+      if (this.unsubscribeAdoption) {
+        console.log('Suscripción a grupos de adopción ya activa, ignorando...');
+        return;
+      }
+      console.log('Iniciando suscripción a grupos de adopción...');
+      const { subscribeToAdoptionGroups } = useGroups();
+      this.unsubscribeAdoption = subscribeToAdoptionGroups((groups) => {
+        this.adoptionGroups.value = groups;
+        this.isLoading = false;
+      });
+    },
 
+    // Cancelar suscripción de grupos de adopción
+    unsubscribeAdoptionGroups() {
+      if (this.unsubscribeAdoption) {
+        console.log('Cancelando suscripción a grupos de adopción...');
+        this.unsubscribeAdoption();
+        this.unsubscribeAdoption = null;
+      }
+    },
     // Crear un nuevo grupo
     async createGroup(groupData) {
       const { createGroup } = useGroups();

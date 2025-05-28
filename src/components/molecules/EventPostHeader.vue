@@ -294,7 +294,6 @@ function showHideModal() {
 
 // Confirmar ocultar post
 async function handleHidePost() {
-  debugger
   const { hidePostEvent } = useEventPostsStore();
   isLoading.value = true;
   const response = await hidePostEvent(user.value.uid, props.post.id);

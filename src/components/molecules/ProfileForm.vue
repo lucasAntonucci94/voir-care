@@ -280,7 +280,6 @@ const hasGlobalErrors = computed(() => {
 watch(
   () => editForm.value.phoneNumber,
   (newPhone) => {
-    debugger
     if (currentStep.value === 1) { //valida solo si es step 2
       stepErrors.phoneNumber = '';
       validateStep(currentStep.value);
@@ -291,7 +290,6 @@ watch(
 watch(
   () => editForm.value.birthday,
   (newBirthday) => {
-    debugger
     if (currentStep.value === 2) { //valida solo si es step 3
       stepErrors.birthday = '';
       validateStep(currentStep.value);
@@ -302,7 +300,6 @@ watch(
 watch(
   () => editForm.value.displayName,
   (newDisplayName) => {
-    debugger
     if (currentStep.value === 0) { //valida solo si es step 1
       stepErrors.displayName = '';
       validateStep(currentStep.value);

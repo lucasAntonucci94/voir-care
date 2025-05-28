@@ -7,11 +7,13 @@ export const useEventsStore = defineStore('events', {
         events:ref([]),
         allEvents:ref([]),
         upcomingEvents:ref([]),
+        adoptionEvents: ref([]),
         isLoading: ref(true),
         isCreating: ref(false),
         unsubscribeAll: ref(null),
         unsubscribeUser: ref(null),
         unsubscribeUpcoming: ref(null),
+        unsubscribeAdoption: ref(null),
     }),
     actions: {
     // Suscribirse a los eventos en los que el usuario es miembro
@@ -133,5 +135,25 @@ export const useEventsStore = defineStore('events', {
             throw error
         }
     },
-},
+     // Suscripción a eventos de adopción
+    subscribeToAdoptionEvents() {
+        if (this.unsubscribeAdoption) {
+            console.log('Suscripción ya activa (adopción), ignorando...')
+            return
+        }
+        console.log('Iniciando suscripción a eventos de adopción...')
+        const { subscribeToAdoptionEvents } = useEvents()
+        this.unsubscribeAdoption = subscribeToAdoptionEvents((events) => {
+            this.adoptionEvents.value = events
+            this.isLoading = false
+        })
+    },
+    // Cancelar suscripción de eventos de adopción
+    unsubscribeAdoptionEvents() {
+        if (this.unsubscribeAdoption) {
+            console.log('Cancelando suscripción a eventos de adopción...')
+            this.unsubscribeAdoption()
+            this.unsubscribeAdoption = null
+        }
+    }},
 })

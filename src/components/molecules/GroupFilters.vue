@@ -52,6 +52,7 @@ const props = defineProps({
 });
 const categories = [
   { id: 'educacion', name: 'Educación' },
+  { id: 'adopcion', name: 'Adopción' },
   { id: 'ayuda', name: 'Ayuda y Asistencia' },
   { id: 'interes', name: 'Intereses' },
   { id: 'cuidado', name: 'Cuidado Animal' },

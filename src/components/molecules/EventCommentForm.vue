@@ -45,7 +45,6 @@ async function submitComment() {
     console.error('Usuario no autenticado');
     return;
   }
-  debugger
   try {
     await saveComment({
       user: {

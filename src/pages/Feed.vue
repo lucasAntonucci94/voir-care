@@ -15,7 +15,7 @@
               :key="post.idDoc"
               :post="post"
             />
-            <p v-if="postsStore.posts.value.length === 0" class="text-center text-gray-500">No hay publicaciones aún.</p>
+            <p v-if="postsStore.posts?.value?.length === 0" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </template>
         </section>
       </div>

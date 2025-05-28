@@ -9,8 +9,10 @@
         v-if="groupsStore.userGroups?.value?.length > 0"
         v-model="searchQuery"
         v-model:selectedCategory="selectedCategory"
+        v-model:selectedOwnership="selectedOwnership"
         :showSearch="true"
         :showSelect="true"
+        :showOwnership="true"
         />
       <!-- Lista de grupos -->
       <div v-if="filteredGroups?.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -50,16 +52,31 @@
   const searchQuery = ref('');
   const selectedCategory = ref('');
   const router = useRouter();
+ const selectedOwnership = ref('all');
 
   const filteredGroups = computed(() => {
-    return groupsStore.userGroups?.value
-      ?.filter(group =>
-        group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
-      ?.filter(group =>
-        !selectedCategory.value ||
-        group.categories?.some(c => c.id === selectedCategory.value)
-      ) ?? [];
+    let groups = groupsStore.userGroups?.value ?? [];
+
+    // Filtro por búsqueda
+    groups = groups.filter(group =>
+      group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+
+    // Filtro por categoría
+    groups = groups.filter(group =>
+      !selectedCategory.value ||
+      group.categories?.some(c => c.id === selectedCategory.value)
+    );
+
+    // Filtro por propiedad
+    if (selectedOwnership.value === 'owned') {
+      groups = groups.filter(group => group.ownerId === user.value.uid);
+    } else if (selectedOwnership.value === 'joined') {
+      groups = groups.filter(group => group.ownerId !== user.value.uid);
+    }
+
+    return groups;
+
   });
   
   const navigateToDiscoverGroup = () => router.push({ name: 'groups' });

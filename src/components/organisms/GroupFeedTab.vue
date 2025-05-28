@@ -2,7 +2,7 @@
   <div class="container mx-auto px-4 py-6">
     <!-- Sticky Header with Sorting -->
     <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 py-4 mb-6 rounded-lg shadow-sm">
-      <div class="flex justify-between items-center max-w-2xl mx-auto">
+      <div class="flex justify-between items-center max-w-2xl mx-5 xs:mx-10 lg:mx-auto">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Feed de Grupos</h2>
         
         <select
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Posts List with Group Context -->
-    <div v-else class="max-w-2xl mx-auto space-y-6">
+    <div v-else class="max-w-xl mx-auto">
       <TransitionGroup name="post-list">
         <div
           v-for="post in sortedPosts"

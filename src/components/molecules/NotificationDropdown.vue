@@ -7,7 +7,7 @@
       title="Notificaciones"
     >
       <i class="fa-solid fa-bell text-xl"></i>
-      <p class="text-xs mt-1 hidden sm:block">Notificaciones</p>
+      <p class="text-xs mt-1 font-bold hidden sm:block">Notificaciones</p>
       <span
         v-if="unreadCount > 0"
         class="absolute -top-1 -right-2 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs font-bold"
@@ -212,7 +212,7 @@ async function handleClick(notification) {
     toggle();
     router.push('/chats');
   } else if (notification.type === 'newFollower') {
-    router.push(`/profile/${notification.fromUid}`);
+    router.push(`/profile/${notification.fromUid ?? notification.extra.senderEmail}`);
   } else if (notification.type === 'groupInvitation') {
     router.push(`/group/${notification.extra.groupId ?? notification.entityId}`);
   } else if (notification.type === 'eventInvitation') {

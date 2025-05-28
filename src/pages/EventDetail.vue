@@ -20,6 +20,7 @@
           :src="event.media"
           class="w-full h-full object-cover"
           autoplay
+          muted
           loop
         ></video>
       </template>
