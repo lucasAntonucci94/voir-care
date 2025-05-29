@@ -1,23 +1,34 @@
 <template>
   <div class="p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-full overflow-y-auto">
-    <button class="px-4 py-2 mb-5 bg-primary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
-      @click="openCreateModal" aria-label="Agregar lugar">
-      <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
-    </button>
+    <div v-if="user?.isSuscribed || user?.isAdmin" class="flex-col items-center mb-2">
+        <p class="text-sm font-bold mb-2">Queres adherirte a nuestro mapa?</p>
+        <button class="px-4 py-2 mb-5 dark:bg-primary bg-secondary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
+        @click="openCreateModal" aria-label="Agregar lugar">
+        <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
+      </button>
+    </div>
     <!-- Título y botón de borrar filtros -->
     <div class="flex items-center justify-between mb-6 bg-gray-100 dark:bg-gray-900 p-4 rounded-xl shadow-sm">
       <div class="flex items-center gap-3">
-        <i class="fa-solid fa-filter text-indigo-600 dark:text-indigo-400 text-lg"></i>
-        <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+        <i class="fa-solid fa-filter  text-primary dark:text-secondary text-lg"></i>
+        <h3 class="text-xl font-bold text-primary dark:text-secondary">
           Filtrar
           <span
             v-if="modelValue.length"
-            class="ml-2 px-2 py-1 bg-indigo-100 dark:bg-indigo-700 text-indigo-800 dark:text-indigo-200 rounded-full text-xs"
+            class="ml-2 px-2 py-1 bg-primary/70 dark:bg-secondary/70 text-gray-100 rounded-full text-xs"
           >
             {{ modelValue.length }}
           </span>
         </h3>
       </div>
+      <button
+        @click="centerOnUserLocation"
+        class="md:hidden flex items-center gap-1 md:gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-white text-primary dark:text-secondary rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300"
+        :disabled="loadingLocation"
+      >
+        <i :class="loadingLocation ? 'fa-solid fa-spinner animate-spin' : 'fa-solid fa-location-crosshairs'" class="h-4 w-4 md:h-5 md:w-5"></i>
+        <span class="text-sm md:text-base">{{ loadingLocation ? 'Buscando...' : 'Mi Ubicación' }}</span>
+      </button>
       <button
         v-if="modelValue.length"
         @click="deleteAllFilters"
@@ -26,7 +37,6 @@
         :disabled="!modelValue.length"
       >
         <i class="fa-solid fa-trash-can"></i>
-        <!-- Borrar filtros -->
       </button>
     </div>
 
@@ -40,7 +50,7 @@
     >
       <span class="font-semibold">
         {{ showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros' }}
-        <span v-if="modelValue.length > 0" class="ml-2 text-sm text-indigo-600 dark:text-indigo-400">
+        <span v-if="modelValue.length > 0" class="ml-2 text-sm text-primary dark:text-secondary">
           ({{ modelValue.length }})
         </span>
       </span>
@@ -93,6 +103,9 @@ import Guarderiacon1 from '../../assets/icons/locations/guarderia1.png';
 import ParqueIcon1 from '../../assets/icons/locations/parque1.png';
 import PetfriendlyIcon1 from '../../assets/icons/locations/petfriendly1.png';
 import CreateLocationModal from '../../components/organisms/CreateLocationModal.vue';
+import { useAuth } from '../../api/auth/useAuth.js'
+
+const { user } = useAuth();
 
 const props = defineProps({
   modelValue: {
@@ -111,12 +124,13 @@ const filters = ref([
     { id: 'parque', label: 'Parque', icon: ParqueIcon1 },
 ]);
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'center-location']);
 
 // Estado Reactivo
 const isDesktop = ref(false);
 const showFilters = ref(false); // Controla si los filtros están expandidos en mobile
 const showCreateModal = ref(false);
+const loadingLocation = ref(false);
 
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
@@ -125,7 +139,11 @@ const checkIfDesktop = () => {
     showFilters.value = true; // En desktop, los filtros siempre están expandidos
   }
 };
-
+function centerOnUserLocation() {
+  loadingLocation.value = true;
+  emit('center-location');
+  loadingLocation.value = false;
+}
 // Logica de modal y formulario
 function openCreateModal() {
   showCreateModal.value = true;

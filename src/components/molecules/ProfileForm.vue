@@ -276,6 +276,17 @@ const hasGlobalErrors = computed(() => {
   return Object.keys(errors.value).length > 0;
 });
 
+
+// Watch para re-validar el displayname al cambiar
+watch(
+  () => editForm.value.displayName,
+  (newDisplayName) => {
+    if (currentStep.value === 0) { //valida solo si es step 1
+      stepErrors.displayName = '';
+      validateStep(currentStep.value);
+    }
+  }
+);
 // Watch para re-validar el número de teléfono al cambiar
 watch(
   () => editForm.value.phoneNumber,
@@ -298,14 +309,25 @@ watch(
 );
 // Watch para re-validar el displayname al cambiar
 watch(
-  () => editForm.value.displayName,
-  (newDisplayName) => {
-    if (currentStep.value === 0) { //valida solo si es step 1
-      stepErrors.displayName = '';
+  () => editForm.value.country,
+  (newCountry) => {
+    if (currentStep.value === 2) { //valida solo si es step 3
+      stepErrors.country = '';
       validateStep(currentStep.value);
     }
   }
 );
+// Watch para re-validar el displayname al cambiar
+watch(
+  () => editForm.value.genre,
+  (newGenre) => {
+    if (currentStep.value === 2) { //valida solo si es step 3
+      stepErrors.genre = '';
+      validateStep(currentStep.value);
+    }
+  }
+);
+
 onMounted(() => {
   editProfile();
 });

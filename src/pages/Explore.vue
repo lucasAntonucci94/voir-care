@@ -17,7 +17,7 @@
         <!-- Botón de "Mi Ubicación" -->
         <button
           @click="centerOnUserLocation"
-          class="flex items-center gap-1 md:gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-white text-primary dark:text-secondary rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300"
+          class="hidden md:block flex items-center gap-1 md:gap-2 px-3 md:px-5 py-1.5 md:py-2 bg-white text-primary dark:text-secondary rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300"
           :disabled="loadingLocation"
         >
           <i :class="loadingLocation ? 'fa-solid fa-spinner animate-spin' : 'fa-solid fa-location-crosshairs'" class="h-4 w-4 md:h-5 md:w-5"></i>
@@ -29,7 +29,7 @@
     <!-- Layout principal -->
     <div class="md:grid md:grid-cols-[280px_1fr]">
       <!-- Componente de acciones (boton de creacion y filtros) -->
-      <ExploreFilters v-model="activeFilters" />
+      <ExploreFilters v-model="activeFilters" @center-location="centerOnUserLocation" />
       <!-- Componente del mapa -->
       <ExploreMap
         ref="exploreMapRef"

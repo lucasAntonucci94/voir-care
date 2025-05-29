@@ -22,6 +22,7 @@ import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
 import AdmEducationsPage from '../pages/admin/EducationsPage.vue';
 import BlogDetailPage from '../pages/BlogDetail.vue';
 import AdoptionPage from '../pages/AdoptionPage.vue';
+import AdmCategoriesPage from '../pages/admin/CategoriesPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -189,6 +190,14 @@ const routes = [
         path:  '/admin/adoption',
         name: 'adoptionAdm',
         component: AdmUsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/categories',
+        name: 'categoriesAdm',
+        component: AdmCategoriesPage,
         meta: {
             requiresAuth: true,
         }

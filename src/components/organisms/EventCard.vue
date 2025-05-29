@@ -29,7 +29,7 @@
         >
           {{ event.privacy === 'public' ? 'Público' : 'Privado' }}
         </span>
-        <!-- Botón de elipsis para administradores -->
+        <!-- Botón de elipsis -->
         <div
           v-if="event.ownerId === user?.uid || event.ownerId === user?.id || user?.isAdmin"
           class="absolute top-3 right-3"

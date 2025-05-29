@@ -49,6 +49,7 @@
   
   const navItems = [
     { label: 'Usuarios', route: '/admin/users', icon: 'fas fa-users' },
+    { label: 'Categorias', route: '/admin/categories', icon: 'fas fa-tags' },
     { label: 'Eventos', route: '/admin/events', icon: 'fas fa-calendar-alt' },
     { label: 'Grupos', route: '/admin/groups', icon: 'fas fa-users-cog' },
     // { label: 'FAQs', route: '/admin/faqs', icon: 'fas fa-question-circle' },

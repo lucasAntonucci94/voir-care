@@ -99,19 +99,19 @@
             <!-- Botón de acciones -->
             <div class="relative">
               <button
-                class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                 @click.stop="toggleActionsMenu(notification.id, $event)"
+                class="p-1 text-gray-600 dark:text-gray-300 bg-gray-300/50 dark:bg-gray-900/50 rounded-full hover:bg-gray-300/90 dark:hover:bg-gray-900/90 transition-colors"
+                aria-label="Opciones de notificación"
               >
-                <i class="fa-solid fa-ellipsis-vertical"></i>
+                <i class="fas fa-ellipsis-v"></i>
               </button>
-
               <!-- Dropdown de acciones -->
               <Teleport to="body">
                 <transition name="fade">
                   <ul
                     v-if="activeActionsMenuId === notification.id"
                     class="notification-actions fixed w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[1000] text-sm"
-                    :style="dropdownPositions.value[notification.id] || {}"
+                    :style="dropdownPositions[notification.id] || {}"
                   >
                     <li
                       @click.stop="toggleRead(notification)"
@@ -240,11 +240,14 @@ function toggleActionsMenu(id, event) {
   if (activeActionsMenuId.value === id) {
     activeActionsMenuId.value = null;
   } else {
+    activeActionsMenuId.value = null; // Close any other open menus
     const button = event.currentTarget.getBoundingClientRect();
-    dropdownPositions.value[id] = {
-      position: 'absolute',
-      top: `${button.bottom + window.scrollY}px`,
-      left: `${button.right - 160 + window.scrollX}px` // Ajusta 160 según el ancho del menú
+    dropdownPositions.value = {
+      [id]: {
+        position: 'absolute',
+        top: `${button.bottom + window.scrollY}px`,
+        left: `${button.right - 160 + window.scrollX}px`
+      }
     };
     activeActionsMenuId.value = id;
   }
@@ -261,7 +264,7 @@ async function deleteNotification(notification) {
 }
 
 function closeMenuOnClickOutside(e) {
-  if (!e.target.closest('.notification-actions') && !e.target.closest('.fa-ellipsis-vertical')) {
+  if (!e.target.closest('.notification-actions') && !e.target.closest('.fa-ellipsis-v')) {
     activeActionsMenuId.value = null;
   }
 }
