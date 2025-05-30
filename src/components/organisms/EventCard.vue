@@ -132,16 +132,20 @@
           :disabled="!user"
         >
           <i :class="isGoing ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-          {{ attendanceLabel }}
+          <p class="hidden md:block">
+            {{ attendanceLabel }}
+          </p>
         </button>
-        <button
+        <!-- <button
           v-else-if="event.ownerId === user?.uid || event.ownerId === user?.id || user?.isAdmin"
           @click.stop="openEditModal"
           class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 shadow-sm"
         >
           <i class="fas fa-edit"></i>
-          Editar
-        </button>
+          <p class="hidden md:block">
+            Editar
+          </p>
+        </button> -->
       </div>
     </div>
 

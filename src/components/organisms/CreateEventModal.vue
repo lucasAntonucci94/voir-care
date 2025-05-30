@@ -237,7 +237,7 @@
               type="button"
               @click="previousStep"
               :disabled="isLoading"
-              class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               aria-label="Volver al paso anterior"
             >
               <i class="fa-solid fa-arrow-left"></i>
@@ -249,7 +249,7 @@
               type="button"
               @click="closeModal"
               :disabled="isLoading"
-              class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               aria-label="Cancelar edición del perfil"
             >
               <i class="fa-solid fa-times"></i>
@@ -261,7 +261,7 @@
               type="button"
               @click="nextStep"
               :disabled="isLoading"
-              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               aria-label="Avanzar al siguiente paso"
             >
               <p class="hidden md:block">Siguiente</p>
@@ -271,7 +271,7 @@
             <button
               v-if="currentStep === steps.length"
               type="submit"
-               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
 
               :disabled="isLoading"
             >

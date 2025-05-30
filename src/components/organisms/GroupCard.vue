@@ -38,6 +38,7 @@
         <!-- Botón de elipsis -->
         <div class="absolute top-3 right-3">
           <button
+            ref="menuButton"
             v-if="isAdmin(group)"
             @click.stop="toggleMenu"
             class="p-2 text-white bg-gray-900/50 dark:bg-gray-900/70 rounded-full hover:bg-gray-900/70 dark:hover:bg-gray-900/90 transition-colors"
@@ -46,6 +47,7 @@
           </button>
           <!-- Menú desplegable -->
           <div
+            ref="menu"
             v-if="showMenu && isAdmin(group)"
             class="absolute top-10 right-0 bg-white dark:bg-gray-700 rounded-lg shadow-lg w-48 py-2 z-20 border border-gray-100 dark:border-gray-600"
           >
@@ -129,7 +131,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { useGroupsStore } from '../../stores/groups';
@@ -152,6 +154,8 @@ const showEditModal = ref(false);
 const groupToEdit = ref(null);
 const showMenu = ref(false);
 const snackbarStore = useSnackbarStore();
+const menuButton = ref(null);
+const menu = ref(null);
 
 function goToDetail() {
   router.push({ name: 'groupDetail', params: { idGroup: props.group.idDoc } });
@@ -171,6 +175,19 @@ function roleLabel(group) {
 function toggleMenu() {
   showMenu.value = !showMenu.value;
 }
+
+// Handle clicks outside the menu
+const handleClickOutside = (event) => {
+  if (
+    showMenu.value &&
+    menu.value &&
+    menuButton.value &&
+    !menu.value.contains(event.target) &&
+    !menuButton.value.contains(event.target)
+  ) {
+    showMenu.value = false;
+  }
+};
 
 function handleDelete() {
   showDeleteModal.value = true;
@@ -225,6 +242,14 @@ async function toggleMembership() {
     console.error('Error al cambiar la membresía del grupo:', err);
   }
 }
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <style scoped>

@@ -28,7 +28,7 @@
         <div class="flex items-center space-x-4">
           <router-link v-if="!isAuthenticated" to="/login" class="flex items-center">
             <i class="fa fa-user mr-2"></i>
-            <h1 class="relative flex items-center gap-2 font-bold text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300 group">Iniciar Sesión</h1>
+            <h1 class="hidden sm:block relative flex items-center gap-2 font-bold text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300 group">Iniciar Sesión</h1>
           </router-link>
           <NotificationDropdown
             v-if="isAuthenticated"
@@ -56,11 +56,11 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
+// import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSidebarStore } from '../../stores/sidebar';
 import UserDropdown from '../molecules/UserDropdown.vue';
-import MessagesDropdown from '../molecules/MessagesDropdown.vue';
+// import MessagesDropdown from '../molecules/MessagesDropdown.vue';
 import NotificationDropdown from '../molecules/NotificationDropdown.vue';
 import { useNavbarStore } from '../../stores/navbar';
 

@@ -100,7 +100,9 @@
               class="px-5 py-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-3"
             >
               <i class="fa-solid fa-sign-in-alt text-lg"></i>
-              Iniciar Sesión
+              <!-- <span class="hidden md:block"> -->
+                Iniciar Sesión
+              <!-- </span> -->
             </li>
           </router-link>
         </ul>

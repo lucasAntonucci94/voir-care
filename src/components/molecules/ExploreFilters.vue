@@ -1,7 +1,7 @@
 <template>
   <div class="p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-full overflow-y-auto">
     <div v-if="user?.isSuscribed || user?.isAdmin" class="flex-col items-center mb-2">
-        <p class="text-sm font-bold mb-2">Queres adherirte a nuestro mapa?</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300 font-bold mb-2">Queres adherirte a nuestro mapa?</p>
         <button class="px-4 py-2 mb-5 dark:bg-primary bg-secondary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
         @click="openCreateModal" aria-label="Agregar lugar">
         <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
@@ -80,7 +80,7 @@
           class="hidden"
         />
         <span
-          :class="modelValue.includes(filter.id) ? 'bg-indigo-600 dark:bg-indigo-400' : 'bg-gray-200 dark:bg-gray-600'"
+          :class="modelValue.includes(filter.id) ? 'bg-primary dark:bg-secondary/80' : 'bg-gray-200 dark:bg-gray-600'"
           class="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200"
         >
           <i v-if="modelValue.includes(filter.id)" class="fa-solid fa-check text-white text-sm"></i>

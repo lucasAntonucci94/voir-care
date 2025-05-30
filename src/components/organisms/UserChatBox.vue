@@ -2,7 +2,7 @@
     <div>
       <!-- Botón flotante -->
     <div
-      class=" fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary dark:bg-secondary rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark dark:hover:bg-secondary-dark cursor-pointer group"
+      class="fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary dark:bg-secondary rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark dark:hover:bg-secondary-dark cursor-pointer group"
       @click="toggleChat"
       aria-label="Abrir mensajes"
     >

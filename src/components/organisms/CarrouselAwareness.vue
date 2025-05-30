@@ -1,11 +1,11 @@
 <template>
-  <section class="py-16 bg-[#F5E8C7] font-poppins">
+  <section class="py-10 bg-gray-200 dark:bg-gray-800 font-poppins">
     <div class="container mx-auto px-4">
-      <h2 class="text-4xl font-bold text-[#333333] text-center mb-12 font-abril">{{ title }}</h2>
+      <h2 class="text-4xl font-bold text-gray-700 dark:text-gray-300 text-center mb-12 font-abril ">{{ title }}</h2>
       <div class="relative">
         <div ref="scrollContainer" class="flex overflow-x-auto space-x-3 scrollbar-hide snap-x snap-mandatory" style="scroll-behavior: smooth;" @scroll="updateActiveIndex">
           <div v-for="(event, index) in events" :key="event.title" class="min-w-[220px] sm:min-w-[200px] bg-white p-4 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all snap-center relative">
-            <span class="absolute top-4 left-4 bg-[#5C8D89] text-white text-xs font-semibold px-2 py-1 rounded-full z-10">
+            <span class="absolute top-4 left-4 bg-primary dark:bg-secondary text-white text-xs font-semibold px-2 py-1 rounded-full z-10">
               {{ event.date.includes('Únete') ? 'Grupo' : 'Evento' }}
             </span>
             <img :src="event.image" :alt="event.title" class="w-full h-32 rounded-md object-cover mb-4" loading="lazy" @error="handleImageError($event)" />
