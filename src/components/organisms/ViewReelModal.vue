@@ -71,7 +71,7 @@
               class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md"
             >
               <i class="fas fa-ellipsis-h"></i>
-              <span class="ml-2 text-sm  hidden md:inline">Opciones</span>
+              <span class="ml-2 text-sm hidden md:inline">Opciones</span>
             </button>
             <div
               v-if="showSettingsMenu"
@@ -96,15 +96,6 @@
                     <i class="fas fa-flag mr-2"></i> Reportar
                   </button>
                 </li>
-                <!-- Hide Reel (Non-owner) -->
-                <!-- <li v-if="!isOwner">
-                  <button
-                    @click="showHideReelModal"
-                    class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                  >
-                    <i class="fas fa-eye-slash mr-2"></i> Ocultar
-                  </button>
-                </li> -->
               </ul>
             </div>
           </div>
@@ -200,7 +191,6 @@ import { formatTimestamp } from '../../utils/formatTimestamp.js';
 import { useReelsStore } from '../../stores/reels.js';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
-import { useReports } from '../../composable/useReports';
 import AvantarDefault from '../../assets/avatar1.jpg';
 import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 import ModalReport from '../molecules/ReportModal.vue';
@@ -244,7 +234,8 @@ const hasLiked = computed(() => {
 });
 
 const currentReelIndex = computed(() => {
-  return props.reel ? props.reels.findIndex((r) => r.id === props.reel.id) : -1;
+  if (!props.reel || !props.reels) return -1;
+  return props.reels.findIndex((group) => group.reels[0].id === props.reel.id);
 });
 
 const hasPreviousReel = computed(() => currentReelIndex.value > 0);
@@ -310,13 +301,15 @@ const closeModal = () => {
 
 const previousReel = () => {
   if (hasPreviousReel.value) {
-    emit('update-reel', props.reels[currentReelIndex.value - 1]);
+    const previousGroup = props.reels[currentReelIndex.value - 1];
+    emit('update-reel', previousGroup.reels[0]);
   }
 };
 
 const nextReel = () => {
   if (hasNextReel.value) {
-    emit('update-reel', props.reels[currentReelIndex.value + 1]);
+    const nextGroup = props.reels[currentReelIndex.value + 1];
+    emit('update-reel', nextGroup.reels[0]);
   }
 };
 
@@ -347,12 +340,6 @@ const openDeleteModal = () => {
   showDeleteModal.value = true;
 };
 
-const showEditReelModal = () => {
-  showSettingsMenu.value = false;
-  console.log('Abrir modal para editar reel');
-  snackbarStore.show('Edición no implementada aún', 'info');
-};
-
 const openReportModal = () => {
   showSettingsMenu.value = false;
   showReportModal.value = true;
@@ -362,12 +349,6 @@ const closeReportModal = () => {
   showSettingsMenu.value = false;
   showReportModal.value = false;
   document.body.style.overflow = '';
-};
-
-const showHideReelModal = () => {
-  showSettingsMenu.value = false;
-  console.log('Ocultar reel');
-  snackbarStore.show('Ocultar no implementado aún', 'info');
 };
 
 // Handle click outside to close dropdown

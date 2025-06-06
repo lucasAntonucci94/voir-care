@@ -29,12 +29,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'; // Importamos computed
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useReelsStore } from '../../stores/reels';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateReelModal from '../organisms/CreateReelModal.vue';
 import ViewReelModal from './ViewReelModal.vue';
 import SliderReels from './SliderReels.vue';
+import LogoVoir from '../../assets/icons/logoVoir.png';
+import DefaultPostImage from '../../assets/1.png';
 
 // Estado del componente
 const { user, isAuthenticated } = useAuth();
@@ -44,14 +46,38 @@ const showCreateModal = ref(false);
 const showViewModal = ref(false);
 const selectedReel = ref(null);
 
-// Propiedad computada para filtrar y manipular los reels
-const filteredReels = computed(() => {
-  // Obtenemos el usuario desde useAuth
-  const { user } = useAuth();
+// Generar reels predeterminados de la marca "Voir"
+const defaultReels = computed(() => {
+  const reels = [];
+  const brandName = "Voir";
+  const logoUrl = LogoVoir;
+  const baseTimestamp = new Date("2024-01-05T22:18:00-03:00").getTime();
 
-  // Si no hay usuario autenticado o no hay conexiones, devolvemos un array vacío
+  for (let i = 1; i <= 20; i++) {
+    reels.push({
+      id: `default-reel-${i}`,
+      title: `Anuncio ${i} de ${brandName}`,
+      timestamp: new Date(baseTimestamp - i * 3600000),
+      thumbnailUrl: DefaultPostImage,
+      user: {
+        displayName: brandName,
+        photoURL: logoUrl,
+      },
+      viewDetails: {},
+    });
+  }
+  return reels;
+});
+
+// Propiedad computada para filtrar, agrupar y manipular los reels
+const filteredReels = computed(() => {
+  let grouped = [];
+  const userMap = new Map();
+
+  // Si no hay usuario autenticado o no hay conexiones, devolvemos solo los reels predeterminados
   if (!user.value || !user.value.connections || user.value.connections.length === 0) {
-    return [];
+    const defaultGroups = defaultReels.value.map((reel) => ({ reels: [reel] }));
+    return [...defaultGroups];
   }
 
   // Extraemos los uids de las conexiones
@@ -59,10 +85,41 @@ const filteredReels = computed(() => {
     .map(connection => connection?.uid)
     .filter(uid => uid);
 
-  // Filtramos los reels cuyo user.uid esté en connectionUids y ordenamos por createdAt
-  return reelsStore.reels
-    .filter(reel => reel.user?.uid &&(connectionUids.includes(reel.user.uid) || reel.user.uid === user.value.uid))
+  // Filtramos los reels cuyo user.uid esté en connectionUids o sea del usuario logueado,
+  // y excluimos los que ya han sido vistos
+  const userReels = reelsStore.reels
+    .filter(reel => {
+      // Filtro por conexiones o reels propios
+      const isFromConnectionOrSelf = reel.user?.uid && (connectionUids.includes(reel.user.uid) || reel.user.uid === user.value.uid);
+      if (!isFromConnectionOrSelf) return false;
+
+      // Filtro por reels no vistos
+      const isViewedByUser = reel.viewDetails && typeof reel.viewDetails === 'object' && reel.viewDetails[user.value?.uid];
+      return !isViewedByUser;
+    })
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  // Agrupar reels de usuarios
+  userReels.forEach((reel) => {
+    const userId = reel.user.displayName; // Usamos displayName como identificador
+    if (!userMap.has(userId)) {
+      userMap.set(userId, []);
+    }
+    userMap.get(userId).push(reel);
+  });
+
+  // Convertir el mapa en un array de grupos
+  userMap.forEach((reels) => {
+    if (reels.length > 0) {
+      grouped.push({ reels });
+    }
+  });
+
+  // Añadir los reels predeterminados de "Voir" al final
+  const defaultGroups = defaultReels.value.map((reel) => ({ reels: [reel] }));
+  grouped = [...grouped, ...defaultGroups];
+
+  return grouped;
 });
 
 // Manejo del modal de creación

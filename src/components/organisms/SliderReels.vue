@@ -33,7 +33,7 @@
 
       <!-- Cards de reels agrupados -->
       <div
-        v-for="(group, index) in groupedReels"
+        v-for="(group, index) in props.reels"
         :key="index"
         class="min-w-[180px] bg-white dark:bg-gray-700 rounded-lg shadow-md snap-center border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer group relative"
         @click="emit('open-reel', group.reels[0])"
@@ -96,9 +96,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, defineEmits, nextTick, computed } from 'vue';
-import LogoVoir from '../../assets/icons/logoVoir.png';
-import DefaultPostImage from '../../assets/1.png';
+import { ref, onMounted, onUnmounted, watch, defineEmits, nextTick } from 'vue';
+
 // Props y eventos
 const props = defineProps({
   reels: {
@@ -125,64 +124,6 @@ const emit = defineEmits(['show-upload', 'open-reel']);
 const carousel = ref(null);
 const showLeftArrow = ref(false);
 const showRightArrow = ref(true);
-
-// Generar reels predeterminados de la marca "Voir"
-const defaultReels = computed(() => {
-  const reels = [];
-  const brandName = "Voir";
-  const logoUrl = LogoVoir;
-  const baseTimestamp = new Date("2025-06-05T22:18:00-03:00").getTime();
-
-  for (let i = 1; i <= 20; i++) {
-    reels.push({
-      id: `default-reel-${i}`,
-      title: `Anuncio ${i} de ${brandName}`,
-      timestamp: new Date(baseTimestamp - i * 3600000),
-      thumbnailUrl: DefaultPostImage,
-      user: {
-        displayName: brandName,
-        photoURL: logoUrl,
-      },
-      viewDetails: {},
-    });
-  }
-  return reels;
-});
-
-// Agrupar reels por usuario y añadir los reels predeterminados al final
-const groupedReels = computed(() => {
-  let grouped = [];
-  const userMap = new Map();
-
-  // Agrupar reels de usuarios y filtrar los no vistos
-  if (props.reels && props.reels.length > 0) {
-    props.reels.forEach((reel) => {
-      const userId = reel.user.displayName; // Usamos displayName como identificador
-      // Verificar si el reel no ha sido visto por el usuario logueado
-      const isViewedByUser = reel.viewDetails && typeof reel.viewDetails === 'object' && reel.viewDetails[props.authUser?.uid];
-      if (!isViewedByUser) { // Solo incluir reels no vistos
-        if (!userMap.has(userId)) {
-          userMap.set(userId, []);
-        }
-        userMap.get(userId).push(reel);
-      }
-    });
-
-    // Convertir el mapa en un array de grupos
-    userMap.forEach((reels) => {
-      if (reels.length > 0) { // Solo agregar grupos con al menos un reel
-        grouped.push({ reels });
-      }
-    });
-  }
-
-  // Añadir los reels predeterminados de "Voir" al final
-  // Cada reel predeterminado se trata como un grupo con un solo elemento
-  const defaultGroups = defaultReels.value.map((reel) => ({ reels: [reel] }));
-  grouped = [...grouped, ...defaultGroups];
-
-  return grouped;
-});
 
 // Funciones de navegación
 const scrollLeft = () => {
