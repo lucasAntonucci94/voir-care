@@ -136,7 +136,7 @@ import { boolean } from 'yup';
 
 const props = defineProps({
   post: { type: Object, required: true },
-  visible: { type: boolean, required: true },
+  visible: { type: Boolean, required: true },
 });
 
 const emit = defineEmits(['update-post', 'close']);

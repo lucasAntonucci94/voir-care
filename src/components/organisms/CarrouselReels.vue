@@ -5,6 +5,7 @@
     <SliderReels
       :reels="filteredReels"
       :is-authenticated="isAuthenticated"
+      :auth-user="user"
       :is-view-modal-open="showViewModal"
       @show-upload="openCreateModal"
       @open-reel="openViewModal"

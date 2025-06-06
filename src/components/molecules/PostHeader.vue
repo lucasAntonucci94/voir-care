@@ -175,17 +175,17 @@
   <PostEditForm :visible="showModalEdit" :post="post" @close="closeEditModal" @update-post="handlePostUpdate" />
 
   <!-- Modal de compartir -->
-  <SharePostModal :post="post" />
+  <!-- <SharePostModal :post="post" /> -->
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { formatTimestamp } from '../../utils/formatTimestamp';
-import { useShareStore } from '../../stores/shareStore';
+// import { useShareStore } from '../../stores/shareStore';
 import { usePostsStore } from '../../stores/posts';
 import PostEditForm from './PostEditForm.vue';
-import SharePostModal from '../molecules/SharePostModal.vue';
+// import SharePostModal from '../molecules/SharePostModal.vue';
 import { useReports } from '../../composable/useReports';
 import { usePosts } from '../../composable/usePosts';
 import DefaultAvatar from '../../assets/avatar1.jpg';
@@ -197,7 +197,7 @@ const emit = defineEmits(['delete', 'report']);
 const { user } = useAuth();
 const { saveReport } = useReports();
 const { hidePost } = usePosts();
-const shareStore = useShareStore();
+// const shareStore = useShareStore();
 const postsStore = usePostsStore();
 const snackbarStore = useSnackbarStore()
 
@@ -276,9 +276,9 @@ async function handleReport() {
 }
 
 // Mostrar el modal de compartir
-function showShareModal() {
-  shareStore.openShareModal(props.post);
-}
+// function showShareModal() {
+//   shareStore.openShareModal(props.post);
+// }
 
 // Mostrar el modal de report
 function showReportModal() {

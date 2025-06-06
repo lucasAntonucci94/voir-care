@@ -31,18 +31,18 @@
         </div>
       </div>
 
-      <!-- Cards de reels existentes -->
+      <!-- Cards de reels agrupados -->
       <div
-        v-for="reel in reels"
-        :key="reel.id"
+        v-for="(group, index) in groupedReels"
+        :key="index"
         class="min-w-[180px] bg-white dark:bg-gray-700 rounded-lg shadow-md snap-center border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer group relative"
-        @click="emit('open-reel', reel)"
+        @click="emit('open-reel', group.reels[0])"
       >
-        <!-- Imagen del reel -->
+        <!-- Imagen del reel (usamos el thumbnail del primer reel) -->
         <div class="relative">
           <img
-            :src="reel.thumbnailUrl"
-            :alt="reel.title"
+            :src="group.reels[0].thumbnailUrl"
+            :alt="group.reels[0].title"
             class="w-full h-28 object-cover rounded-t-lg"
             loading="lazy"
           />
@@ -50,22 +50,35 @@
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-t-lg transition-opacity duration-300"></div>
         </div>
 
-        <!-- Título del reel -->
+        <!-- Título del reel (usamos el título del primer reel) -->
         <p class="mt-2 px-3 text-sm text-gray-700 dark:text-gray-300 font-semibold text-center line-clamp-2">
-          {{ reel.title }}
+          {{ group.reels[0].title }}
         </p>
 
-        <!-- Información del usuario (fija en la parte inferior) -->
-        <div class="absolute bottom-0 left-0 right-0 flex items-center space-x-2 px-3 py-2 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm border-t border-gray-200 dark:border-gray-600 rounded-b-lg">
-          <img
-            :src="reel.user.photoURL"
-            :alt="reel.user.displayName"
-            class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-500"
-            loading="lazy"
-          />
-          <p class="text-xs text-gray-800 dark:text-gray-200 font-medium truncate">
-            {{ reel.user.displayName }}
-          </p>
+        <!-- Información del usuario y progreso -->
+        <div class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm border-t border-gray-200 dark:border-gray-600 rounded-b-lg">
+          <!-- Información del usuario -->
+          <div class="flex items-center space-x-2">
+            <img
+              :src="group.reels[0].user.photoURL"
+              :alt="group.reels[0].user.displayName"
+              class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-500"
+              loading="lazy"
+            />
+            <p class="text-xs text-gray-800 dark:text-gray-200 font-medium truncate">
+              {{ group.reels[0].user.displayName }}
+            </p>
+          </div>
+
+          <!-- Indicador de progreso (puntos) si hay más de un reel -->
+          <div v-if="group.reels.length > 1" class="flex justify-center space-x-1 mt-1">
+            <span
+              v-for="i in group.reels.length"
+              :key="i"
+              class="w-2 h-2 rounded-full"
+              :class="i === 1 ? 'bg-gray-800 dark:bg-gray-200' : 'bg-gray-400 dark:bg-gray-500'"
+            ></span>
+          </div>
         </div>
       </div>
     </div>
@@ -83,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, defineEmits, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, watch, defineEmits, nextTick, computed } from 'vue';
 
 // Props y eventos
 const props = defineProps({
@@ -93,6 +106,10 @@ const props = defineProps({
   },
   isAuthenticated: {
     type: Boolean,
+    required: true,
+  },
+  authUser: {
+    type: Object,
     required: true,
   },
   isViewModalOpen: {
@@ -107,6 +124,38 @@ const emit = defineEmits(['show-upload', 'open-reel']);
 const carousel = ref(null);
 const showLeftArrow = ref(false);
 const showRightArrow = ref(true);
+
+// Agrupar reels por usuario y filtrar los ya vistos
+const groupedReels = computed(() => {
+  if (!props.reels || props.reels.length === 0) {
+    return [];
+  }
+  const grouped = [];
+  const userMap = new Map();
+
+  // Agrupar reels por usuario y filtrar los no vistos
+  props.reels.forEach((reel) => {
+    const userId = reel.user.displayName; // Usamos displayName como identificador
+    // Verificar si el reel no ha sido visto por el usuario logueado
+    const isViewedByUser = reel.viewDetails && typeof reel.viewDetails === 'object' && reel.viewDetails[props.authUser?.uid];
+    if (!isViewedByUser) { // Solo incluir reels no vistos
+      if (!userMap.has(userId)) {
+        userMap.set(userId, []);
+      }
+      userMap.get(userId).push(reel);
+    }
+  });
+
+  // Convertir el mapa en un array de grupos
+  userMap.forEach((reels) => {
+    if (reels.length > 0) { // Solo agregar grupos con al menos un reel
+      grouped.push({ reels });
+    }
+  });
+
+  return grouped;
+});
+
 
 // Funciones de navegación
 const scrollLeft = () => {
