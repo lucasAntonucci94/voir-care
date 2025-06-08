@@ -189,7 +189,6 @@ const openEditModal = (category) => {
 const saveCategory = async () => {
   try {
     if (isEditing.value) {
-        debugger
       await updateCategorie(editCategory.value.idDoc, editCategory.value.name);
       snackbarStore.show('Categoría actualizada exitosamente', 'success');
     } else {

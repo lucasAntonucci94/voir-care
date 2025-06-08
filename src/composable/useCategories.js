@@ -55,12 +55,10 @@ async function saveCategorie(name) {
  * @returns {Promise<void>}
  */
 async function updateCategorie(docId, name) {
-  debugger
   try {
     const categoryDoc = doc(db, 'categories', docId);
     await updateDoc(categoryDoc, { name });
     // Actualizamos localmente para mantener consistencia
-    debugger
     categories.value = categories.value.map(category =>
       category.docId === docId ? { ...category, name } : category
     );

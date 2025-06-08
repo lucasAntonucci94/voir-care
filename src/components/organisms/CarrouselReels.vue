@@ -80,6 +80,14 @@ const filteredReels = computed(() => {
     return [...defaultGroups];
   }
 
+  // Calcular el umbral de 24 horas atrás
+  const now = new Date(); // Fecha actual: 04:04 AM -03, 08/06/2025
+  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Resta 24 horas
+  const thresholdTimestamp = {
+    seconds: Math.floor(twentyFourHoursAgo.getTime() / 1000), // Convertir a segundos
+    nanoseconds: 0 // Ignoramos nanosegundos para simplificar
+  };
+
   // Extraemos los uids de las conexiones
   const connectionUids = user.value.connections
     .map(connection => connection?.uid)
@@ -95,7 +103,11 @@ const filteredReels = computed(() => {
 
       // Filtro por reels no vistos
       const isViewedByUser = reel.viewDetails && typeof reel.viewDetails === 'object' && reel.viewDetails[user.value?.uid];
-      return !isViewedByUser;
+      if (isViewedByUser) return false;
+
+      // Filtro por fecha (menos de 24 horas)
+      const reelDate = new Date((reel.createdAt?.seconds ?? 0) * 1000 + (reel.createdAt?.nanoseconds ?? 0) / 1000000);
+      return reelDate >= twentyFourHoursAgo;
     })
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 

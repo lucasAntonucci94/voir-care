@@ -54,7 +54,6 @@ const flagCentered = ref(false);
 const activeFilters = ref([]);
 
 function centerOnUserLocation() {
-  debugger
   exploreMapRef.value?.centerOnUserLocation()
   flagCentered.value = true;
 }

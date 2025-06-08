@@ -142,30 +142,40 @@
       <!-- Paso 4: Foto de perfil -->
       <div v-if="currentStep === 3" class="space-y-4 animate-fade-in">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto de perfil</label>
           <input
             type="file"
             accept="image/*"
             @change="handlePhotoUpload"
             :class="[
-              'w-full p-2 border dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary/90 dark:hover:file:bg-secondary/90 transition-colors duration-200 shadow-sm',
+              'w-full mt-2 md:mt-4 mb-2 md:mb-4 p-2 border dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary/90 dark:hover:file:bg-secondary/90 transition-colors duration-200 shadow-sm',
               errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             :disabled="isLoading"
           />
           <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
-          <div class="mt-2 flex items-center gap-4">
-            <img
-              v-if="editForm.photoURL"
-              :src="editForm.photoURL"
-              alt="Vista previa"
-              class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-800 shadow-sm"
-            />
-            <div
-              v-else
-              class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-300"
-            >
-              <i class="fa-solid fa-user text-2xl"></i>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vista previa del perfil</label>
+          <div class="mt-2 flex flex-col md:flex-row items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm">
+            <div class="relative">
+              <img
+                v-if="editForm.newMediaBase64 || editForm.photoURLFile"
+                :src="editForm.newMediaBase64 || editForm.photoURLFile"
+                alt="Vista previa del perfil"
+                class="w-15 h-15 md:w-25 md:h-25 rounded-full border-4 border-white object-cover shadow-lg cursor-pointer"
+              />
+              <div
+                v-else
+                class="w-20 h-20 md:w-32 md:h-32 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-300 border-4 border-white shadow-lg"
+              >
+                <i class="fa-solid fa-user text-2xl md:text-4xl"></i>
+              </div>
+            </div>
+            <div class="text-center md:text-left">
+              <h1 class="text-gray-700 md:text-gray-300 dark:text-gray-300 text-xl md:text-2xl font-bold">
+                {{ editForm.displayName || editForm.email || 'Usuario' }}
+              </h1>
+              <p class="text-gray-700 md:text-gray-300 dark:text-gray-300 text-sm">
+                0 conexiones
+              </p>
             </div>
           </div>
         </div>

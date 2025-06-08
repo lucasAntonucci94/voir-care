@@ -154,9 +154,14 @@ export const usePostsStore = defineStore('posts', {
       const isSaved = await isPostSaved(userId, postId);
       if (isSaved) {
         await unsavePost(userId, postId);
-
+        // Quitar el postId del array savedPostIds
+        this.savedPostIds = this.savedPostIds.filter(id => id !== postId);
       } else {
         await savePost(userId, postId);
+        // Agregar el postId al array savedPostIds, evitando duplicados
+        if (!this.savedPostIds.includes(postId)) {
+          this.savedPostIds.push(postId);
+        }
       }
     },
     async fetchSavedPosts() {
@@ -173,9 +178,7 @@ export const usePostsStore = defineStore('posts', {
             }
           })
         );
-        debugger
         this.savedPosts = fetchedPosts.filter(post => post !== null);
-        debugger
       } catch (error) {
         console.error('Error fetching saved posts:', error);
         this.savedPosts = []; // Reset si falla

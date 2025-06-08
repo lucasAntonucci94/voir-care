@@ -132,7 +132,6 @@ const emit = defineEmits(['update:modelValue', 'center-location']);
 
 watch(
   () => [props.flagCentered, props.modelValue], ([flagCentered]) => {
-    debugger
     if (flagCentered) {
       setTimeout(() => {
         centerOnUserLocation();

@@ -131,7 +131,6 @@ const handleResetPassword = async () => {
 const setErrorFromFirebase = (code, message) => {
   email.clearError();
   password.clearError();
-
   switch (code) {
     case 'auth/invalid-email':
     case 'auth/missing-email':
@@ -141,6 +140,10 @@ const setErrorFromFirebase = (code, message) => {
     case 'auth/wrong-password':
     case 'auth/weak-password':
       password.setError(message);
+      break;
+    case 'auth/invalid-credential':
+      email.setError("Credenciales inválidas, revisa tu email");
+      password.setError("Credenciales inválidas, revisa tu contraseña");
       break;
     case 'auth/internal-error':
     case 'auth/admin-restricted-operation':
