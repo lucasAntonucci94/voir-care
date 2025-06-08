@@ -37,6 +37,13 @@
           {{ event.title }}
         </h1>
       </div>
+       <!-- Fecha de inicio superpuesta -->
+      <div class="absolute bottom-4 left-8 z-20">
+        <div class="w-16 h-16 bg-red-500 text-white flex items-center justify-center rounded-lg font-bold text-2xl shadow-md">
+          {{ formatEventDate(event.startTime).dayBox }}
+        </div>
+        <span class="text-xs mt-1 text-white text-center font-bold block bg-red-700 p-1 rounded-lg">{{ formatEventDate(event.startTime).label.split(' a las ')[0] }}</span>
+      </div>
     </div>
 
     <!-- Navegación de Tabs -->
@@ -68,7 +75,7 @@
           </button>
           <div
             v-if="showSettingsMenu"
-            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
+            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg"
           >
             <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
               <!-- Edit Event (Owner or Admin) -->
@@ -329,6 +336,26 @@ const closeMediaModal = () => {
   document.body.style.overflow = '';
 };
 
+// Nueva función para formatear la fecha como en el modal
+function formatEventDate(timestamp) {
+  if (!timestamp) return { dayBox: 'N/A', label: 'Fecha no definida' };
+  const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const months = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ];
+  const dayOfWeek = days[date.getUTCDay()];
+  const day = date.getUTCDate();
+  const month = months[date.getUTCMonth()];
+  const year = date.getUTCFullYear();
+  const time = date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return {
+    dayBox: day,
+    label: `${dayOfWeek}, ${day} de ${month} de ${year} a las ${time}`
+  };
+}
+
 onMounted(async () => {
   const id = route.params.idEvent;
   if (id) {
@@ -345,6 +372,9 @@ onMounted(async () => {
       if (event.value?.attendees?.going?.length) {
         attendeesLoading.value = true;
         const userPromises = event.value.attendees.going.map(async (userId) => {
+          if (userId === event.value?.ownerId) {
+            return null; // Omito el usuario propietario.
+          }
           try {
             return await usersStore.getUser(userId);
           } catch (error) {

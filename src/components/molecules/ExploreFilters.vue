@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, onMounted } from 'vue';
+import { ref, defineEmits, onMounted, watch } from 'vue';
 import CatIcon from '../../assets/icons/cat_1998592.png';
 import VetIcon1 from '../../assets/icons/locations/vet1.png';
 import TrainerIcon1 from '../../assets/icons/locations/entrenador1.png';
@@ -111,6 +111,10 @@ const props = defineProps({
   modelValue: {
     type: Array,
     default: () => []
+  },
+  flagCentered: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -126,6 +130,16 @@ const filters = ref([
 
 const emit = defineEmits(['update:modelValue', 'center-location']);
 
+watch(
+  () => [props.flagCentered, props.modelValue], ([flagCentered]) => {
+    debugger
+    if (flagCentered) {
+      setTimeout(() => {
+        centerOnUserLocation();
+      }, 1000);    }
+  }
+);
+
 // Estado Reactivo
 const isDesktop = ref(false);
 const showFilters = ref(false); // Controla si los filtros están expandidos en mobile
@@ -140,9 +154,7 @@ const checkIfDesktop = () => {
   }
 };
 function centerOnUserLocation() {
-  loadingLocation.value = true;
   emit('center-location');
-  loadingLocation.value = false;
 }
 // Logica de modal y formulario
 function openCreateModal() {

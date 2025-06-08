@@ -35,7 +35,7 @@
       <button
         @click="toggleLike"
         :class="[
-          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
+          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer',
           post?.likes?.some(l => l.userId === user?.value?.id)
             ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
             : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary',
@@ -54,7 +54,7 @@
       <button
         @click="post.showComments = !post.showComments"
         :class="[
-          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
+          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 cursor-pointer',
           post?.showComments
             ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
             : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary'

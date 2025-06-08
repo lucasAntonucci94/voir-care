@@ -16,10 +16,9 @@
         </select>
       </div>
     </div>
-
     <!-- Contenido -->
-    <div v-if="totalFilteredEvents > 0">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div v-if="totalFilteredEvents > 0" class="flex justify-center md:block">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-1">
         <EventCard
           v-for="event in filteredByCategory"
           :key="event.idDoc"
@@ -54,7 +53,10 @@ onUnmounted(() => {
 
 const selectedFilter = ref('all')
 const notOwnedEvents = computed(() =>
-  eventsStore.upcomingEvents?.value?.filter(e => e.ownerId !== user?.value?.uid) ?? []
+  eventsStore.upcomingEvents?.value
+  ?.filter(e => e.ownerId !== user?.value?.uid)
+  ?.filter(e => e.privacy === 'public')
+  ?? []
 )
 
 const { filteredEvents, filterEventsByCategory } = useUpcomingEventFilters(notOwnedEvents)

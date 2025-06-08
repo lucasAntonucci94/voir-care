@@ -92,23 +92,46 @@
   const isLoading = ref(false);
   const errorFileMessage = ref('')
 
-  // Generar thumbnail para videos
   const generateVideoThumbnail = (file) => {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video');
+      video.preload = 'metadata';
       video.src = URL.createObjectURL(file);
+      video.muted = true;
+      video.playsInline = true;
+
       video.addEventListener('loadeddata', () => {
-        video.currentTime = 1; // Toma el frame en el segundo 1
+        // Asegura que tenga suficiente data para hacer seek
+        video.currentTime = 1;
       });
+
       video.addEventListener('seeked', () => {
+        // Medidas originales del video
+        const videoWidth = video.videoWidth;
+        const videoHeight = video.videoHeight;
+
+        // Tamaño del thumbnail cuadrado
+        const thumbSize = 160;
+
         const canvas = document.createElement('canvas');
-        canvas.width = 160;
-        canvas.height = 90;
+        canvas.width = thumbSize;
+        canvas.height = thumbSize;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Calcular el área central del video para crop 1:1
+        const side = Math.min(videoWidth, videoHeight);
+        const sx = (videoWidth - side) / 2;
+        const sy = (videoHeight - side) / 2;
+
+        // Recortar cuadrado central y escalar al canvas 1:1
+        ctx.drawImage(video, sx, sy, side, side, 0, 0, thumbSize, thumbSize);
+
         resolve(canvas.toDataURL('image/jpeg'));
       });
-      video.addEventListener('error', (error) => reject(error));
+
+      video.addEventListener('error', (error) => {
+        reject(error);
+      });
     });
   };
   

@@ -431,6 +431,10 @@ function validateStep(step) {
       errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
     }
+    if (editForm.value.categories.length > 3) {
+      errors.categories = 'Debes seleccionar como máximo 3 categorías';
+      isValid = false;
+    }
     if (editForm.value.privacy !== 'public' && editForm.value.privacy !== 'private') {
       errors.privacy = 'La privacidad debe ser pública o privada';
       isValid = false;

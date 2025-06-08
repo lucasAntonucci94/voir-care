@@ -9,12 +9,15 @@
       :showSearch="true"
       :showSelect="true"
     />
-    <div v-if="filteredEvents.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center mt-4">
-      <EventCard
-        v-for="event in filteredEvents"
-        :key="event.idDoc"
-        :event="event"
-      />
+    <div v-if="filteredEvents.length > 0" class="flex justify-center md:block">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <!-- <div v-if="filteredEvents.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center mt-4"> -->
+        <EventCard
+          v-for="event in filteredEvents"
+          :key="event.idDoc"
+          :event="event"
+        />
+      </div>
     </div>
     <!-- Sin eventos -->
     <div v-else-if="(searchQuery !== '' || selectedCategory !== '') && filteredEvents?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">

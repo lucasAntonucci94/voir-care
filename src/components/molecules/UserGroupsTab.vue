@@ -15,12 +15,14 @@
         :showOwnership="true"
         />
       <!-- Lista de grupos -->
-      <div v-if="filteredGroups?.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <GroupCard
-          v-for="group in filteredGroups"
-          :key="group.idDoc"
-          :group="group"
-        />
+      <div v-if="filteredGroups?.length > 0" class="flex justify-center md:block">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <GroupCard
+            v-for="group in filteredGroups"
+            :key="group.idDoc"
+            :group="group"
+          />
+        </div>
       </div>
 
       <!-- Sin grupos -->

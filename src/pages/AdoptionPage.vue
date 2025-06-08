@@ -80,7 +80,7 @@
     </section>
 
     <!-- Sección: Posteos -->
-    <section class="mb-12">
+    <!-- <section class="mb-12">
       <div v-if="filteredBlogs.length > 3" class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Posteos Destacados</h2>
         <button
@@ -100,7 +100,7 @@
           :post="post"
           />
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 
@@ -114,7 +114,7 @@ import { usePostsStore } from '../stores/posts';
 import BlogPostCard from '../components/organisms/BlogCard.vue';
 import EventCard from '../components/organisms/EventCard.vue';
 import GroupCard from '../components/organisms/GroupCard.vue';
-import PostCard from '../components/organisms/PostCard.vue';
+// import PostCard from '../components/organisms/PostCard.vue';
 
 const router = useRouter();
 const eventsStore = useEventsStore();
@@ -147,20 +147,20 @@ const viewMoreFeed = () => { router.push('/feed'); };
 // Referencia reactiva para eventos (conectada al store)
 const events = computed(() => eventsStore.adoptionEvents?.value || []);
 const groups = computed(() => groupsStore.adoptionGroups?.value || []);
-const posts = computed(() => postsStore.adoptionPosts?.value || []);
+// const posts = computed(() => postsStore.adoptionPosts?.value || []);
 
 // Suscripción a eventos y grupos de adopción al montar el componente
 onMounted(() => {
   eventsStore.subscribeToAdoptionEvents();
   groupsStore.subscribeToAdoptionGroups();
-  postsStore.subscribeToAdoptionPosts();
+  // postsStore.subscribeToAdoptionPosts();
 });
 
 // Cancelar suscripción al desmontar el componente
 onUnmounted(() => {
   eventsStore.unsubscribeAdoptionEvents();
   groupsStore.unsubscribeAdoptionGroups();
-  postsStore.unsubscribeAdoptionPosts();
+  // postsStore.unsubscribeAdoptionPosts();
 });
 </script>
 

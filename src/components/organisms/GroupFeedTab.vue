@@ -42,7 +42,7 @@
           class="relative"
         >
           <!-- Group Context -->
-          <div class="flex items-center mb-2" @click="goToDetail(post.group.id)">
+          <div class="flex items-center mb-2 mt-5 cursor-pointer" @click="goToDetail(post.group.id)">
             <img
               :src="post.group.media.url || AvatarDefault"
               alt="Group Avatar"

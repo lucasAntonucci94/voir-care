@@ -2,7 +2,7 @@
   <div>
     <!-- Contenedor principal del card -->
     <div
-      class="bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden w-full max-w-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl cursor-pointer"
+      class="bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden w-full max-w-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl cursor-pointer flex flex-col h-full"
       @click="goToDetail"
     >
       <!-- Media -->
@@ -46,7 +46,7 @@
           <div
             v-if="showMenu"
             ref="menu"
-            class="absolute top-10 right-0 bg-white dark:bg-gray-700 rounded-lg shadow-lg w-48 py-2 z-20 border border-gray-100 dark:border-gray-600"
+            class="absolute top-10 right-0 bg-white dark:bg-gray-700 rounded-lg shadow-lg w-48 py-2 z-22 border border-gray-100 dark:border-gray-600"
           >
             <button
               @click.stop="openEditModal"
@@ -64,6 +64,13 @@
             </button>
           </div>
         </div>
+        <!-- Fecha de inicio superpuesta -->
+        <div class="absolute bottom-1 left-2 z-20">
+          <div class="w-10 h-10 bg-red-500 text-white flex items-center justify-center rounded-lg font-bold text-2xl shadow-md">
+            {{ formatEventDate(event.startTime).dayBox }}
+          </div>
+          <span class="text-xs mt-1 text-white text-center font-bold block bg-red-700 p-1 rounded-lg">{{ formatEventDate(event.startTime).label.split(' a las ')[0] }}</span>
+        </div>
       </div>
       <div
         v-else
@@ -73,17 +80,32 @@
       </div>
 
       <!-- Contenido -->
-      <div class="p-4 space-y-2 text-sm text-gray-800 dark:text-gray-200">
-        <h3 class="text-xl font-semibold">{{ event?.title }}</h3>
+      <div class="p-4 space-y-2 text-sm text-gray-800 dark:text-gray-200 flex-grow">
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ event.location?.address || 'Ubicación no definida' }}
         </p>
+        <h3 class="text-xl font-semibold">{{ event?.title }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
           {{ event.description || 'Sin descripción' }}
         </p>
         <div class="flex flex-col gap-1">
-          <span><strong>Inicio:</strong> {{ formattedStartTime }}</span>
-          <span v-if="event?.endTime"><strong>Fin:</strong> {{ formattedEndTime }}</span>
+          <!-- <span><strong>Inicio:</strong> {{ formattedStartTime }}</span> -->
+          <!-- Categorías -->
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="category in event.categories"
+              :key="category.id"
+              class="text-xs px-2 py-1 rounded-full bg-teal-200 text-teal-900 dark:bg-teal-600 dark:text-white"
+            >
+              {{ category.name }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer con miembros, modalidad y botón -->
+      <div class="p-4 border-t border-gray-100 dark:border-gray-700">
+        <div class="flex justify-between items-center flex-wrap gap-y-2">
           <div class="flex gap-2">
             <span
               class="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
@@ -104,48 +126,24 @@
               {{ event.modality === 0 ? 'Presencial' : 'Virtual' }}
             </span>
           </div>
-        </div>
-      </div>
-
-      <!-- Acción + Categorías -->
-      <div class="p-4 pt-0 flex justify-between items-center flex-wrap gap-y-2">
-        <!-- Categorías -->
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="category in event.categories"
-            :key="category.id"
-            class="text-xs px-2 py-1 rounded-full bg-teal-200 text-teal-900 dark:bg-teal-600 dark:text-white"
+          <!-- Botón de asistencia/editar -->
+          <button
+            v-if="event.ownerId !== user?.uid && event.ownerId !== user?.id && !user?.isAdmin"
+            @click.stop="handleAttendance"
+            class="flex items-center gap-2 px-4 py-2 text-sm text-white rounded-lg shadow-sm transition-colors duration-200"
+            :class="
+              isGoing
+                ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+                : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
+            "
+            :disabled="!user"
           >
-            {{ category.name }}
-          </span>
+            <i :class="isGoing ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
+            <p class="hidden lg:block">
+              {{ attendanceLabel }}
+            </p>
+          </button>
         </div>
-        <!-- Botón de asistencia/editar -->
-        <button
-          v-if="event.ownerId !== user?.uid && event.ownerId !== user?.id && !user?.isAdmin"
-          @click.stop="handleAttendance"
-          class="flex items-center gap-2 px-4 py-2 text-sm text-white rounded-lg shadow-sm transition-colors duration-200"
-          :class="
-            isGoing
-              ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-              : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
-          "
-          :disabled="!user"
-        >
-          <i :class="isGoing ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-          <p class="hidden md:block">
-            {{ attendanceLabel }}
-          </p>
-        </button>
-        <!-- <button
-          v-else-if="event.ownerId === user?.uid || event.ownerId === user?.id || user?.isAdmin"
-          @click.stop="openEditModal"
-          class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 shadow-sm"
-        >
-          <i class="fas fa-edit"></i>
-          <p class="hidden md:block">
-            Editar
-          </p>
-        </button> -->
       </div>
     </div>
 
@@ -172,13 +170,34 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import { useEventsStore } from '../../stores/events';
 import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 import EditEventModal from './EditEventModal.vue';
 import { useSnackbarStore } from '../../stores/snackbar';
+
+// Nueva función para formatear la fecha como en el modal
+function formatEventDate(timestamp) {
+  if (!timestamp) return { dayBox: 'N/A', label: 'Fecha no definida' };
+  const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const months = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ];
+  const dayOfWeek = days[date.getUTCDay()];
+  const day = date.getUTCDate();
+  const month = months[date.getUTCMonth()];
+  const year = date.getUTCFullYear();
+  const time = date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return {
+    dayBox: day,
+    label: `${dayOfWeek}, ${day} de ${month} de ${year} a las ${time}`
+  };
+}
 
 const props = defineProps({
   event: {
@@ -225,7 +244,7 @@ const isGoing = computed(() => {
   return props.event?.attendees?.going?.includes(user.value?.uid);
 });
 
-const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar asistencia' : 'Asistiré'));
+const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar' : 'Asistiré'));
 
 // Handle clicks outside the menu
 const handleClickOutside = (event) => {
@@ -342,5 +361,22 @@ function toggleMenu() {
 .rounded-full {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+/* Asegura que el card ocupe toda la altura disponible */
+.card-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Hacer que el contenido crezca para ocupar el espacio disponible */
+.card-content {
+  flex-grow: 1;
+}
+
+/* Footer no necesita position absolute, se queda al final del flex */
+.card-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 </style>

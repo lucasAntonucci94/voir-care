@@ -28,7 +28,8 @@
           </li>
           <li class="flex items-center gap-3">
             <i class="fas fa-users text-primary dark:text-secondary text-xl"></i>
-            <span><strong>Capacidad:</strong> {{ event.capacity - (event?.attendees?.going?.length || 0) || 'Ilimitada' }}</span>
+            <!-- <span><strong>Capacidad:</strong> {{ event.capacity - (event?.attendees?.going?.length || 0) || 'Ilimitada' }}</span> -->
+            <span><strong>Capacidad:</strong> {{ event.capacity - (event?.attendees?.going && event?.attendees?.going?.length ? event.attendees.going.length - 1 : 0) || 0 }}</span>
           </li>
           <li class="flex items-center gap-3">
             <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
@@ -59,7 +60,7 @@
     <div class="space-y-6">
       <!-- Card de Acciones -->
       <section
-        v-if="!isAdmin && !isGoing"
+        v-if="!isAdmin && !isGoing && event?.attendees?.going && (event.capacity - (event?.attendees?.going && event?.attendees?.going?.length ? event.attendees.going.length - 1 : 0) || 0)"
         class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
       >
         <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100 sr-only">Acciones</h2>
@@ -154,7 +155,7 @@
         <div class="flex items-center justify-between mb-6 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
           <div class="flex items-center gap-2">
             <span class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center">
-              <i class="fas fa-check-circle mr-2"></i> {{ event?.attendees?.going?.length || 0 }}
+              <i class="fas fa-check-circle mr-2"></i>  {{ (event?.attendees?.going && event?.attendees?.going?.length ? event.attendees.going.length - 1 : 0) || 0 }}
             </span>
             <span class="text-sm text-gray-600 dark:text-gray-400">Confirmados</span>
           </div>

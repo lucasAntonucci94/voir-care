@@ -319,6 +319,10 @@ function validateStep(step) {
       errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
     }
+    if (newGroup.value.categories.length > 3) {
+      errors.categories = 'Debes seleccionar como máximo 3 categorías';
+      isValid = false;
+    }
     if (newGroup.value.privacy !== 'public' && newGroup.value.privacy !== 'private') {
       errors.privacy = 'La privacidad debe ser pública o privada';
       isValid = false;

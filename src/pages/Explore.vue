@@ -29,7 +29,7 @@
     <!-- Layout principal -->
     <div class="md:grid md:grid-cols-[280px_1fr]">
       <!-- Componente de acciones (boton de creacion y filtros) -->
-      <ExploreFilters v-model="activeFilters" @center-location="centerOnUserLocation" />
+      <ExploreFilters v-model="activeFilters" :flag-centered="flagCentered" @center-location="centerOnUserLocation" />
       <!-- Componente del mapa -->
       <ExploreMap
         ref="exploreMapRef"
@@ -50,12 +50,13 @@ import { useLocationsStore } from '../stores/locations';
 const locationsStore = useLocationsStore();
 const exploreMapRef = ref(null) //que hace esta ref? me permite acceder al componente hijo ExploreMap y llamar a sus métodos desde aquí. Magic :D
 const loadingLocation = ref(false);
+const flagCentered = ref(false);
 const activeFilters = ref([]);
 
 function centerOnUserLocation() {
-  loadingLocation.value = true
+  debugger
   exploreMapRef.value?.centerOnUserLocation()
-  loadingLocation.value = false
+  flagCentered.value = true;
 }
 
 const filteredLocations = computed(() => {

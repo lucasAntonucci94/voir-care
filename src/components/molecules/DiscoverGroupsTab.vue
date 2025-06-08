@@ -13,12 +13,14 @@
       :showSelect="true"
       />
     <!-- Lista de grupos -->
-    <div v-if="discoveredGroups.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <GroupCard
-        v-for="group in discoveredGroups"
-        :key="group.idDoc"
-        :group="group"
-      />
+    <div v-if="discoveredGroups.length > 0" class="flex justify-center md:block">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <GroupCard
+          v-for="group in discoveredGroups"
+          :key="group.idDoc"
+          :group="group"
+          />
+      </div>
     </div>
     <!-- Sin grupos -->
     <div v-else-if="(searchQuery !== '' || selectedCategory !== '') && discoveredGroups?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
@@ -56,6 +58,7 @@ const discoveredGroups = computed(() => {
     .filter(group => !group.members?.includes(userId)) // no está en el grupo
     .filter(group => group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())) // por nombre
     .filter(group => !selectedCategory.value || group.categories?.some(c => c.id === selectedCategory.value)) // por categoría
+    .filter(group => group.privacy === "public") // tomo solo los publicos.
 })
 
 // Navegación
