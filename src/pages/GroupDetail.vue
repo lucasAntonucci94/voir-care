@@ -328,7 +328,7 @@
                 </p>
               </div>
             </section>
-            <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" :module="'group'" :entity="{ id: group?.idDoc, title: group?.title }"/>
+            <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" :module="'group'" :entity="{ id: group?.idDoc, title: group?.title }" :members="group?.members ?? []"/>
           </div>
         </div>
 

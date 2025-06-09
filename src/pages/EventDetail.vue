@@ -180,7 +180,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useEventsStore } from '../stores/events';
 import { useUsersStore } from '../stores/users';
@@ -265,12 +265,15 @@ async function handleAttendance() {
     if (currentStatus) {
       // Cancel attendance: remove user.uid from attendees.going
       event.value.attendees.going = event.value.attendees.going.filter(uid => uid !== user.value.uid);
+      attendeesDetails.value = attendeesDetails.value.filter(member => member.id !== user.value.uid);
       isGoing.value = false;
       console.log(`Usuario cancela asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
       snackbarStore.show(`Usuario cancela asistencia al evento: ${event.value.title}`, 'success');
     } else {
       // Join attendance: add user.uid to attendees.going
       event.value.attendees.going = [...event.value.attendees.going, user.value.uid];
+      const newAttendee = await usersStore.getUser(user.value.uid);
+      if (newAttendee) attendeesDetails.value.push(newAttendee);
       isGoing.value = true;
       console.log(`Usuario confirma asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
       snackbarStore.show(`Usuario confirma asistencia al evento: ${event.value.title}`, 'success');
@@ -356,40 +359,77 @@ function formatEventDate(timestamp) {
   };
 }
 
-onMounted(async () => {
-  const id = route.params.idEvent;
-  if (id) {
-    try {
-      event.value = await eventsStore.findEventById(id);
-      isGoing.value = event.value?.attendees?.going?.includes(user.value?.uid) || false;
-      isAdmin.value = event.value?.ownerId === user.value?.uid || false;
-      // Cargar detalles del propietario
-      if (event.value?.ownerId) {
-        ownerDetails.value = await usersStore.getUser(event.value.ownerId);
-      }
-
-      // Cargar detalles de los asistentes (going)
-      if (event.value?.attendees?.going?.length) {
-        attendeesLoading.value = true;
-        const userPromises = event.value.attendees.going.map(async (userId) => {
-          if (userId === event.value?.ownerId) {
-            return null; // Omito el usuario propietario.
-          }
-          try {
-            return await usersStore.getUser(userId);
-          } catch (error) {
-            console.warn(`No se pudo obtener el usuario con ID ${userId}:`, error);
-            return null;
-          }
-        });
-        attendeesDetails.value = (await Promise.all(userPromises)).filter(user => user !== null);
-        attendeesLoading.value = false;
-      }
-    } catch (error) {
-      console.error('Error al cargar evento:', error);
+const loadEventData = async (id) => {
+  if (!id) {
+    loading.value = false;
+    return;
+  }
+  try {
+    event.value = await eventsStore.findEventById(id);
+    isGoing.value = event.value?.attendees?.going?.includes(user.value?.uid) || false;
+    isAdmin.value = event.value?.ownerId === user.value?.uid || false;
+    // Cargar detalles del propietario
+    if (event.value?.ownerId) {
+      ownerDetails.value = await usersStore.getUser(event.value.ownerId);
     }
+
+    // Cargar detalles de los asistentes (going)
+    if (event.value?.attendees?.going?.length) {
+      attendeesLoading.value = true;
+      const userPromises = event.value.attendees.going.map(async (userId) => {
+        if (userId === event.value?.ownerId) {
+          return null; // Omito el usuario propietario.
+        }
+        try {
+          return await usersStore.getUser(userId);
+        } catch (error) {
+          console.warn(`No se pudo obtener el usuario con ID ${userId}:`, error);
+          return null;
+        }
+      });
+      attendeesDetails.value = (await Promise.all(userPromises)).filter(user => user !== null);
+      attendeesLoading.value = false;
+    }
+  } catch (error) {
+    console.error('Error al cargar evento:', error);
+    event.value = null; // Asegura que se muestre "Evento no encontrado" si falla
   }
   loading.value = false;
+};
+
+// Watch para cambios por ID del evento
+watch(
+  () => route.params.idEvent,
+  async (newId) => {
+    if (newId) {
+      loading.value = true;
+      event.value = null;
+      attendeesDetails.value = [];
+      ownerDetails.value = {};
+      isGoing.value = false;
+      isAdmin.value = false;
+      showSettingsMenu.value = false;
+      showReportModal.value = false;
+      showDeleteModal.value = false;
+      showEditModal.value = false;
+      selectedEvent.value = {
+        title: '',
+        description: '',
+        startTime: '',
+        endTime: '',
+        privacy: 'public',
+        capacity: 0,
+        location: { address: '' }
+      };
+      selectedMedia.value = { src: '', type: 'image' };
+      await loadEventData(newId);
+    }
+  },
+  { immediate: true } // Ejecutar inmediatamente al montar si hay un idEvent
+);
+
+// onMounted para inicializar eventos
+onMounted(() => {
   document.addEventListener('click', handleClickOutside);
 });
 

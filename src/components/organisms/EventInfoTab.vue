@@ -202,7 +202,7 @@
       </div>
     </div>
     <!-- Modal para invitar amigos -->
-    <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" :module="'event'" :entity="{ id: event?.idDoc, title: event?.title }"/>
+    <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" :module="'event'" :entity="{ id: event?.idDoc, title: event?.title }" :members="event?.attendees?.going ?? []"/>
   </div>
 </template>
 

@@ -80,6 +80,11 @@ const props = defineProps({
     required: true,
     validator: entity => entity.id && entity.title,
   },
+  members: {
+    type: Array,
+    default: () => [],
+    required: true,
+  },
 });
 
 const emit = defineEmits(['close']);
@@ -96,11 +101,10 @@ const filteredConnections = computed(() => {
   if (!user.value?.connections) return [];
 
   const query = searchQuery.value.toLowerCase();
-  if (!query) return user.value.connections;
-
   return user.value.connections.filter(connection =>
-    connection.email.toLowerCase().includes(query) ||
-    connection.displayName?.toLowerCase().includes(query)
+    (!props.members.includes(connection.uid) &&
+    (connection.email.toLowerCase().includes(query) ||
+    connection.displayName?.toLowerCase().includes(query)))
   );
 });
 

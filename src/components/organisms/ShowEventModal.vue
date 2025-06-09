@@ -37,7 +37,7 @@
             <!-- Botón cerrar -->
             <button
               @click="emit('close')"
-              class="absolute top-3 right-3 p-2 text-white bg-gray-900/50 dark:bg-gray-900/70 rounded-full hover:bg-gray-900/70 dark:hover:bg-gray-900/90 transition-colors"
+              class="absolute top-3 right-3 w-8 h-8 p-2 text-white bg-gray-900/50 dark:bg-gray-900/70 rounded-full hover:bg-gray-900/70 dark:hover:bg-gray-900/90 flex items-center justify-center transition-colors"
               aria-label="Cerrar modal"
             >
               <i class="fas fa-xmark text-xl"></i>
@@ -58,7 +58,7 @@
             <!-- Botón cerrar (sin media) -->
             <button
               @click="emit('close')"
-              class="absolute top-3 right-3 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 rounded-full transition-colors"
+              class="absolute top-3 right-3 w-8 h-8 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 rounded-full flex items-center justify-center transition-colors"
               aria-label="Cerrar modal"
             >
               <i class="fas fa-xmark text-xl"></i>
