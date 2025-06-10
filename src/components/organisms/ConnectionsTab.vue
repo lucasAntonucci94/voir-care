@@ -41,6 +41,7 @@
 
     <!-- Modal para mostrar información del usuario -->
     <UserInfoModal
+      v-if="showModal && selectedUser"
       :visible="showModal"
       :user="selectedUser"
       @close="closeModal"

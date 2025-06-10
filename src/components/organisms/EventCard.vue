@@ -111,7 +111,7 @@
               class="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
             >
               <i class="fas fa-users text-primary dark:text-secondary"></i>
-              {{ event?.attendees?.going?.length || 0 }}
+              {{ event?.attendees?.going?.length > 0 ? event?.attendees?.going?.length - 1 : 0 }}
               {{ event?.attendees?.going?.length === 1 ? 'participante' : 'participantes' }}
             </span>
             <span

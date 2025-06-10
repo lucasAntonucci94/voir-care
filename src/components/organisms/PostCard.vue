@@ -163,9 +163,9 @@ const { comments } = useComments(props.post.idDoc);
 const showMediaModal = ref(false);
 
 // Inicializamos propiedades faltantes
-props.post.likes = props.post.likes || [];
-props.post.showMenu = props.post.showMenu || false;
-props.post.showComments = props.post.showComments || false;
+// props.post.likes = props.post.likes || [];
+// props.post.showMenu = props.post.showMenu || false;
+// props.post.showComments = props.post.showComments || false;
 
 async function toggleLike() {
   if (!user.value) {

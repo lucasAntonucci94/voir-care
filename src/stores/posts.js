@@ -13,6 +13,8 @@ export const usePostsStore = defineStore('posts', {
     const unsubscribeGlobal = ref(null); // Suscripción global
     const unsubscribeProfile = ref(null); // Suscripción del perfil
     const savedPostIds = ref([]); // IDs de posts guardados
+    const savedPost = ref([]); // fetch guardados
+    const hiddenPosts = ref([]); // fetch guardados
     const unsubscribeSavedPosts = ref(null); // Suscripción a posts guardados
     const unsubscribeAdoption = ref(null); // Suscripción para adopción
     
@@ -25,6 +27,8 @@ export const usePostsStore = defineStore('posts', {
       unsubscribeGlobal,
       unsubscribeProfile,
       savedPostIds,
+      savedPost,
+      hiddenPosts,
       unsubscribeSavedPosts,
       unsubscribeAdoption,
     };
@@ -182,6 +186,48 @@ export const usePostsStore = defineStore('posts', {
       } catch (error) {
         console.error('Error fetching saved posts:', error);
         this.savedPosts = []; // Reset si falla
+      }
+    },
+    async fetchHiddenPosts(postIds) {
+      const { getPostById } = usePosts()
+      try {
+        this.isLoading = true
+        const fetchedPosts = await Promise.all(
+          postIds.map(async (postId) => {
+            try {
+              const post = await getPostById(postId)
+              return post
+            } catch (error) {
+              console.error(`Error fetching post with ID ${postId}:`, error)
+              return null
+            }
+          })
+        )
+        this.hiddenPosts = fetchedPosts.filter(post => post !== null)
+      } catch (error) {
+        console.error('Error fetching hidden posts:', error)
+        this.hiddenPosts = []
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async unhidePost(userId, postId) {
+      const { deleteHiddenPost } = usePosts();
+      try {
+        console.log(`Eliminando hiddenPost para userId: ${userId}, postId: ${postId}`);
+        const success = await deleteHiddenPost(userId, postId);
+        
+        if (success) {
+          this.hiddenPosts = this.hiddenPosts.filter(post => post.idDoc !== postId);
+          console.log('HiddenPost eliminado correctamente');
+          return true
+        } else {
+          console.warn('No se encontró el hiddenPost para eliminar');
+          return false
+        }
+      } catch (error) {
+        console.error('Error al eliminar hiddenPost:', error);
+        return false
       }
     },
     // Suscribirse a posts de adopción

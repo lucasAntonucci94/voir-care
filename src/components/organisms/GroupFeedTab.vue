@@ -67,14 +67,14 @@ import { useAuth } from '../../api/auth/useAuth'
 import { useRouter } from 'vue-router'
 
 const groupPostssStore = useGroupPostsStore()
-const posts = computed(() => groupPostssStore.userGroupFeed.value || [])
+const posts = computed(() => groupPostssStore.userGroupFeed?.value || [])
 const sortOption = ref('newest')
 const { user } = useAuth()
 const router = useRouter()
 
 // Computed property to sort posts
 const sortedPosts = computed(() => {
-  let postsArray = [...posts.value]
+  let postsArray = [...posts?.value]
 
   if(user.value?.hiddenGroupPosts?.length > 0) {
     console.log(user.value?.hiddenGroupPosts)

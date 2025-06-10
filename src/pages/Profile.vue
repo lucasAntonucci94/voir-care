@@ -99,9 +99,10 @@
             <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" @trigger-edit="triggerEditProfile" :isOwnProfile="isOwnProfile" />
             <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" @active-tab="setActiveTab" />
             <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
-            <UserEventsTab v-else-if="activeTab === 'eventos'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
-            <UserGroupsTab v-else-if="activeTab === 'grupos'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
+            <UserEventsTab v-else-if="activeTab === 'eventos'" />
+            <UserGroupsTab v-else-if="activeTab === 'grupos'" />
             <SavedPostTab v-else-if="activeTab === 'guardado'" />
+            <HiddenPostsTab v-else-if="activeTab === 'oculto'" />
           </div>
         </div>
       </div>
@@ -124,6 +125,7 @@ import GalleryTab from '../components/organisms/ProfileGalleryTab.vue';
 import UserEventsTab from '../components/molecules/ProfileUserEventsTab.vue';
 import UserGroupsTab from '../components/molecules/ProfileUserGroupsTab.vue';
 import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
+import HiddenPostsTab from '../components/molecules/HiddenPostsTab.vue';
 
 // Instancias
 const route = useRoute();
@@ -151,6 +153,7 @@ const allTabs = [
   { name: 'Eventos', icon: 'fa-solid fa-calendar-days' },
   { name: 'Grupos', icon: 'fa-solid fa-users' },
   { name: 'Guardado', icon: 'fa-solid fa-bookmark' },
+  { name: 'Oculto', icon: 'fa-solid fa-ban' },
 ];
 
 const setActiveTab = (selectedTab) => {

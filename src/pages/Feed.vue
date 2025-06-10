@@ -35,9 +35,8 @@ const { user } = useAuth();
 const postsStore = usePostsStore();
 
 const visiblePosts = computed(() => {
-  console.log(user.value.hiddenPosts)
   return postsStore.posts.value?.filter(post => 
-    !user.value?.hiddenPosts?.some(hidden => hidden.postId === post.id)
+    !user.value?.hiddenPosts?.some(hidden => hidden.postId === post.idDoc)
   );
 });
 onMounted(() => {

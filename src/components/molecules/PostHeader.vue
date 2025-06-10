@@ -17,7 +17,7 @@
     </router-link>
     <div class="relative" ref="dropdownRef">
       <button 
-        @click="post.showMenu = !post.showMenu" 
+        @click="toogleActionsMenu" 
         class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
       >
         <i class="fas fa-ellipsis-h"></i>
@@ -217,6 +217,10 @@ const handleClickOutside = (event) => {
     props.post.showMenu = false;
   }
 };
+// Toggle menu acciones
+const toogleActionsMenu = () => {
+  props.post.showMenu = !props.post.showMenu
+};
 
 // Computed
 const isSaved = computed(() => {
@@ -301,12 +305,12 @@ function showHideModal() {
 // Confirmar ocultar post
 async function handleHidePost() {
   isLoading.value = true;
-  const response = await hidePost(user.value.uid, props.post.id);
+  const response = await hidePost(user.value.uid, props.post.idDoc);
   if (response) {
     isLoading.value = false;
     showModalHide.value = false;
     document.body.style.overflow = '';
-    user.value.hiddenPosts.push({ id: user.value.uid, postId: props.post.id });
+    user.value.hiddenPosts.push({ id: user.value.uid, postId: props.post.idDoc }); //TO DO: utilizo id de post y no idDoc como identificador y esto rompe cuando lo quiero fetchear proque necesito el idDoc para hacer un get y no un find x id.
     snackbarStore.show('Se oculto la publicación.', 'success');
   } else {
     console.error('Error hiding post');

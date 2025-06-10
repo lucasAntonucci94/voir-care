@@ -321,6 +321,23 @@ export function usePosts() {
       return false
     }
   }
+  async function deleteHiddenPost(userId, postId) {
+    try {
+      const hiddenPostsRef = collection(db, 'users', userId, 'hiddenPosts');
+      const q = query(hiddenPostsRef, where('postId', '==', postId));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        const docRef = querySnapshot.docs[0].ref;
+        await deleteDoc(docRef);
+        return true;
+      }
+      return false; // No se encontró el hiddenPost
+    } catch (err) {
+      console.error('Error al eliminar el hiddenPost:', err);
+      return false;
+    }
+  }
 
   /**
    * Escucha los últimos 5 posts con categoría "Adopción" en tiempo real.
@@ -375,6 +392,7 @@ export function usePosts() {
     addLike,
     removeLike,
     hidePost,
+    deleteHiddenPost,
     subscribeToAdoptionPosts,
   };
 }
