@@ -17,7 +17,7 @@
       ></video>
       <!-- Unhide Button -->
       <button
-        @click="handleUnhidePost"
+        @click="openModal"
         :disabled="isLoading"
         class="absolute top-2 right-2 px-3 py-1 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md flex items-center gap-2"
         :class="{ 'opacity-50 cursor-not-allowed': isLoading }"
@@ -33,7 +33,7 @@
     <!-- Placeholder for No Media -->
     <div v-else class="relative w-full h-48 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
       <button
-        @click="handleUnhidePost"
+        @click="openModal"
         :disabled="isLoading"
         class="px-3 py-1 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md flex items-center gap-2"
         :class="{ 'opacity-50 cursor-not-allowed': isLoading }"
@@ -72,6 +72,16 @@
         {{ post?.body }}
       </p>
     </div>
+    <!-- Modal de confirmacion para mostrar un post (elimina idDoc de array de hiddenPosts) -->
+    <GenericConfirmModal
+      :visible="showModal"
+      title="¿Desea mostrar esta publicación?"
+      message="Esta acción mostrará la publicación nuevamente en tu feed."
+      confirmButtonText="Mostrar"
+      cancelButtonText="Cancelar"
+      @cancel="closeModal"
+      @confirmed="handleUnhidePost"
+    />
   </div>
 </template>
 
@@ -82,12 +92,26 @@ import { usePostsStore } from '../../stores/posts';
 import { useSnackbarStore } from '../../stores/snackbar';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import DefaultAvatar from '../../assets/avatar1.jpg';
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 
 const props = defineProps(['post']);
 const { user } = useAuth();
 const snackbarStore = useSnackbarStore();
 const postsStore = usePostsStore();
 const isLoading = ref(false);
+const showModal = ref(false);
+
+
+const openModal = () => {
+  showModal.value = true;
+  document.body.style.overflow = 'hidden';
+};
+
+const closeModal = () => {
+  showModal.value = false;
+  document.body.style.overflow = '';
+};
+
 
 async function handleUnhidePost() {
   if (!user.value?.uid) {

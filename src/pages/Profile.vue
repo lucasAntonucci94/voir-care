@@ -79,8 +79,8 @@
           <div class="md:col-span-2">
             <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
             <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
-              <PostCard v-for="post in postsStore.profilePosts.value" :key="post.id" :post="post" @delete="deletePost(post.id)" />
-              <div  v-if="!postsStore.profilePosts?.value?.length" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+              <PostCard v-for="post in filteredProfilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
+              <div  v-if="!filteredProfilePosts?.length" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                 <p class="text-gray-500 dark:text-gray-400">No tienes publicaciones guardadas aún.</p>
                 <!-- <button
                   class="mt-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
@@ -107,6 +107,7 @@
         </div>
       </div>
     </div>
+     
   </div>
 </template>
 
@@ -173,6 +174,11 @@ const updateDataFromChild = updatedData => {
 // Computados
 const activeUserEmail = computed(() => route.params.email || authUser.value?.email);
 const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.email);
+const filteredProfilePosts = computed(() => {
+  const profilePosts = postsStore.profilePosts?.value || [];
+  const hiddenPostIds = authUser.value?.hiddenPosts?.map(hp => hp.postId) || [];
+  return profilePosts.filter(post => !hiddenPostIds.includes(post.idDoc));
+});
 
 // Watcher
 watch(activeUserEmail, async newEmail => {

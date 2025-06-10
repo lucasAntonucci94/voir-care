@@ -6,22 +6,20 @@
         <button v-if="isAuthenticated" class="md:hidden mr-4 text-lg hover:text-primary transition-colors duration-200" @click="sidebarStore.toggleSidebar">
           <i class="fa-solid fa-arrow-right"></i>
         </button>
+        <h1 class="sr-only">Voir</h1>
         <router-link v-if="isAuthenticated" to="/feed" class="flex items-center">
-          <!-- <img src="../../assets/icons/logoGreen.png" alt="Logo de mi red social" class="h-10 mr-4"> -->
           <!-- Logo para tema claro -->
-          <img src="../../assets/icons/logoGreen.png" alt="Logo claro" class="h-10 mr-4 dark:hidden" />
+          <img src="../../assets/icons/logoGreen.png" alt="Logo claro" class="h-10 dark:hidden" />
 
           <!-- Logo para tema oscuro -->
-          <img src="../../assets/icons/logoOrange.png" alt="Logo oscuro" class="h-10 mr-4 hidden dark:inline" />
+          <img src="../../assets/icons/logoOrange.png" alt="Logo oscuro" class="h-10 hidden dark:inline" />
 
-          <h1 class="text-xl md:text-2xl font-semibold tracking-tight hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-200">Voir</h1>
         </router-link>
         <router-link v-else to="/" class="flex items-center">
-          <img src="../../assets/icons/logoGreen.png" alt="Logo claro" class="h-10 mr-4 dark:hidden" />
+          <img src="../../assets/icons/logoGreen.png" alt="Logo claro" class="h-10 dark:hidden" />
 
           <!-- Logo para tema oscuro -->
-          <img src="../../assets/icons/logoOrange.png" alt="Logo oscuro" class="h-10 mr-4 hidden dark:inline" />
-          <h1 class="text-xl md:text-2xl font-semibold tracking-tight hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-200">Voir</h1>
+          <img src="../../assets/icons/logoOrange.png" alt="Logo oscuro" class="h-10 hidden dark:inline" />
         </router-link>
       </div>
       <nav class="flex flex-nowrap">

@@ -124,6 +124,8 @@
             </ul>
           </div>
         </div>
+        <!-- MODALES -->
+
         <!-- Modal de confirmación para reportar un post -->
         <div v-if="showReportModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
           <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
@@ -180,7 +182,7 @@
           @close="closeEditModal"
           @groupUpdated="handleGroupUpdated"
         />
-        <!-- Media Modal -->
+        <!-- Modal para ver contenido media -->
         <MediaModalViewer
           :visible="showMediaModal"
           :media="selectedMedia"
@@ -333,17 +335,10 @@
         </div>
 
         <!-- Pestaña "Conversación" -->
-        <div v-else-if="activeTab === 'conversation'" class="text-sm text-gray-600 dark:text-gray-300">
-          <ConversationGroupTab :group="group" :is-member="isMember" />
-        </div>
+        <ConversationGroupTab v-else-if="activeTab === 'conversation'" :group="group" :is-member="isMember" />
 
         <!-- Pestaña "Personas" -->
-        <GroupMembersTab v-if="activeTab === 'members'" :members="membersDetails" />
-
-        <!-- Pestaña "Multimedia" -->
-        <!-- <div v-else-if="activeTab === 'multimedia'" class="text-sm text-gray-600 dark:text-gray-300">
-          <p>Galería de fotos y videos compartidos en el grupo (próximamente).</p>
-        </div> -->
+        <GroupMembersTab v-else-if="activeTab === 'members'" :members="membersDetails" />
       </div>
     </div>
   </div>
