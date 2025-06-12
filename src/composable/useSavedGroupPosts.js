@@ -71,7 +71,6 @@ export function useSavedGroupPosts() {
    */
   async function isPostSavedQuery(userId, postId, groupId) {
     try {
-      debugger
       const savedPostsCollectionRef = collection(db, 'savedGroupPosts');
       const q = query(
         savedPostsCollectionRef,

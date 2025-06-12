@@ -110,6 +110,9 @@ export const useEventsStore = defineStore('events', {
         const { deleteEvent } = useEvents()
         try {
             await deleteEvent(idDoc)
+            debugger
+            this.events.value = this.events?.value?.filter(event => event.idDoc !== idDoc);
+
         } catch (error) {
             console.error('Error al eliminar evento:', error)
             throw error

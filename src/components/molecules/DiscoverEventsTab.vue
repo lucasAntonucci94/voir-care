@@ -58,6 +58,7 @@ const filteredEvents = computed(() => {
   console.log(eventsStore.allEvents?.value)
   return eventsStore.allEvents?.value
     ?.filter(event => event.ownerId !== user?.value?.uid) //Busco los eventos que no sean del usuario logueado
+    ?.filter(event => !event.attendees?.going?.includes(user?.value?.uid)) // no está en el grupo
     ?.filter(event => event.title.toLowerCase().includes(searchQuery.value.toLowerCase())) //filtro por searchQuery
     ?.filter(event => !selectedCategory.value || event.categories?.some(c => c.id === selectedCategory.value)) //filtro por categorias
     ?.filter(event => event.privacy === 'public') //filtro por privacidad

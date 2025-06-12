@@ -83,7 +83,7 @@ export function useEvents() {
     try {
       const q = query(
         eventsRef,
-        where('ownerId', '==', uid),
+        // where('ownerId', '==', uid),
         where('attendees.going', 'array-contains', uid),
         orderBy('createdAt', 'desc')
       )

@@ -35,8 +35,6 @@ import { useAuth } from '../../api/auth/useAuth';
 import CreateReelModal from '../organisms/CreateReelModal.vue';
 import ViewReelModal from './ViewReelModal.vue';
 import SliderReels from './SliderReels.vue';
-import LogoVoir from '../../assets/icons/logoVoir.png';
-import DefaultPostImage from '../../assets/1.png';
 
 // Estado del componente
 const { user, isAuthenticated } = useAuth();
@@ -46,74 +44,57 @@ const showCreateModal = ref(false);
 const showViewModal = ref(false);
 const selectedReel = ref(null);
 
-// Generar reels predeterminados de la marca "Voir"
-const defaultReels = computed(() => {
-  const reels = [];
-  const brandName = "Voir";
-  const logoUrl = LogoVoir;
-  const baseTimestamp = new Date("2024-01-05T22:18:00-03:00").getTime();
-
-  for (let i = 1; i <= 20; i++) {
-    reels.push({
-      id: `default-reel-${i}`,
-      title: `Anuncio ${i} de ${brandName}`,
-      timestamp: new Date(baseTimestamp - i * 3600000),
-      thumbnailUrl: DefaultPostImage,
-      user: {
-        displayName: brandName,
-        photoURL: logoUrl,
-      },
-      viewDetails: {},
-    });
-  }
-  return reels;
-});
-
 // Propiedad computada para filtrar, agrupar y manipular los reels
 const filteredReels = computed(() => {
   let grouped = [];
   const userMap = new Map();
 
-  // Si no hay usuario autenticado o no hay conexiones, devolvemos solo los reels predeterminados
-  if (!user.value || !user.value.connections || user.value.connections.length === 0) {
-    const defaultGroups = defaultReels.value.map((reel) => ({ reels: [reel] }));
-    return [...defaultGroups];
-  }
-
   // Calcular el umbral de 24 horas atrás
-  const now = new Date(); // Fecha actual: 04:04 AM -03, 08/06/2025
-  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Resta 24 horas
-  const thresholdTimestamp = {
-    seconds: Math.floor(twentyFourHoursAgo.getTime() / 1000), // Convertir a segundos
-    nanoseconds: 0 // Ignoramos nanosegundos para simplificar
-  };
+  const now = new Date();
+  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
   // Extraemos los uids de las conexiones
-  const connectionUids = user.value.connections
-    .map(connection => connection?.uid)
-    .filter(uid => uid);
+  const connectionUids = user.value?.connections
+    ? user.value.connections.map((connection) => connection?.uid).filter((uid) => uid)
+    : [];
 
   // Filtramos los reels cuyo user.uid esté en connectionUids o sea del usuario logueado,
   // y excluimos los que ya han sido vistos
   const userReels = reelsStore.reels
-    .filter(reel => {
-      // Filtro por conexiones o reels propios
-      const isFromConnectionOrSelf = reel.user?.uid && (connectionUids.includes(reel.user.uid) || reel.user.uid === user.value.uid);
+    .filter((reel) => {
+      const isFromConnectionOrSelf =
+        reel.user?.uid &&
+        (connectionUids.includes(reel.user.uid) || reel.user.uid === user.value?.uid);
       if (!isFromConnectionOrSelf) return false;
 
-      // Filtro por reels no vistos
-      const isViewedByUser = reel.viewDetails && typeof reel.viewDetails === 'object' && reel.viewDetails[user.value?.uid];
+      const isViewedByUser =
+        reel.viewDetails &&
+        typeof reel.viewDetails === 'object' &&
+        reel.viewDetails[user.value?.uid];
       if (isViewedByUser) return false;
 
-      // Filtro por fecha (menos de 24 horas)
-      const reelDate = new Date((reel.createdAt?.seconds ?? 0) * 1000 + (reel.createdAt?.nanoseconds ?? 0) / 1000000);
+      const reelDate = new Date(
+        (reel.createdAt?.seconds ?? 0) * 1000 + (reel.createdAt?.nanoseconds ?? 0) / 1000000
+      );
       return reelDate >= twentyFourHoursAgo;
     })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    .map((reel) => ({
+      ...reel,
+      default: false,
+    }))
+    .sort((a, b) => {
+      const dateA = new Date(
+        (a.createdAt?.seconds ?? 0) * 1000 + (a.createdAt?.nanoseconds ?? 0) / 1000000
+      );
+      const dateB = new Date(
+        (b.createdAt?.seconds ?? 0) * 1000 + (b.createdAt?.nanoseconds ?? 0) / 1000000
+      );
+      return dateB - dateA;
+    });
 
   // Agrupar reels de usuarios
   userReels.forEach((reel) => {
-    const userId = reel.user.displayName; // Usamos displayName como identificador
+    const userId = reel.user.displayName;
     if (!userMap.has(userId)) {
       userMap.set(userId, []);
     }
@@ -127,10 +108,38 @@ const filteredReels = computed(() => {
     }
   });
 
-  // Añadir los reels predeterminados de "Voir" al final
-  const defaultGroups = defaultReels.value.map((reel) => ({ reels: [reel] }));
-  grouped = [...grouped, ...defaultGroups];
+  // Determinar si se deben incluir reels predeterminados
+  const shouldIncludeDefaultReels =
+    !user.value ||
+    !user.value.connections ||
+    user.value.connections.length === 0 ||
+    !userReels ||
+    userReels.length < 10;
 
+  if (shouldIncludeDefaultReels) {
+    const defaultGroups = reelsStore.defaultReels.map((reel) => ({
+      reels: [{ ...reel, videoUrl: reel.mediaUrl, default: true }], // Normalizar para ViewReelModal
+    }));
+    debugger
+    grouped = [...grouped, ...defaultGroups];
+  }
+  // Fallback si no hay reels
+  if (grouped.length === 0) {
+    grouped = [
+      {
+        reels: [
+          {
+            idDoc: 'placeholder',
+            title: 'No hay reels disponibles',
+            thumbnailUrl: '/placeholder.jpg',
+            mediaType: 'image',
+            user: { displayName: 'Voir', photoURL: '/voir-logo.png' },
+            default: true,
+          },
+        ],
+      },
+    ];
+  }
   return grouped;
 });
 
@@ -169,18 +178,20 @@ const handleKeydown = (event) => {
 // Ciclo de vida
 onMounted(() => {
   reelsStore.subscribeToReels();
+  reelsStore.subscribeToDefaultReels(); // Real-time subscription
+  // Alternative: reelsStore.fetchDefaultReels(); // One-time fetch
   window.addEventListener('keydown', handleKeydown);
 });
 
 onUnmounted(() => {
   reelsStore.unsubscribeFromReels();
+  reelsStore.unsubscribeFromDefaultReels();
   window.removeEventListener('keydown', handleKeydown);
   document.body.style.overflow = '';
 });
 </script>
 
 <style scoped>
-/* Estilo para mejorar la transición del modal */
 .fixed {
   transition: opacity 0.3s ease-in-out;
 }

@@ -2,13 +2,14 @@
   <div>
     <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 sr-only">Tus Eventos</h2>
     <EventFilters
-      v-if="eventsStore.events?.value?.length > 0"
-      v-model="searchQuery"
-      v-model:selectedCategory="selectedCategory"
-      :categories="categories"
-      :showSearch="true"
-      :showSelect="true"
-    />
+        v-if="eventsStore.events?.value?.length > 0"
+        v-model="searchQuery"
+        v-model:selectedCategory="selectedCategory"
+        v-model:selectedOwnership="selectedOwnership"
+        :showSearch="true"
+        :showSelect="true"
+        :showOwnership="true"
+      />
     <div v-if="filteredEvents.length > 0" class="flex justify-center md:block">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
       <!-- <div v-if="filteredEvents.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center mt-4"> -->
@@ -57,25 +58,27 @@ const eventsStore = useEventsStore()
 const emit = defineEmits(['open-create-modal', 'open-discover-tab'])
 
 // Estados
-const searchQuery = ref('')
-const selectedCategory = ref('')
-const categories = [
-  { id: 'adopcion', name: 'Adopción' },
-  { id: 'educacion', name: 'Educación' },
-  { id: 'salud', name: 'Salud y Bienestar' },
-  { id: 'recreativo', name: 'Recreativo' },
-  { id: 'competencia', name: 'Concursos y Muestras' },
-  { id: 'voluntariado', name: 'Voluntariado' },
-  { id: 'beneficencia', name: 'Solidarios' },
-  { id: 'otros', name: 'Otros' }
-]
+const searchQuery = ref('');
+const selectedCategory = ref('');
+const selectedOwnership = ref('all');
 
 // Computados
 const filteredEvents = computed(() => {
-  return eventsStore.events?.value
-    ?.filter(event => event.title.toLowerCase().includes(searchQuery.value.toLowerCase()))
-    ?.filter(event => !selectedCategory.value || event.categories?.some(c => c.id === selectedCategory.value))
-    ?? []
+  let events = eventsStore.events?.value ?? [];
+
+  // Filtro por búsqueda
+  events = events.filter(event => event.title.toLowerCase().includes(searchQuery.value.toLowerCase()))
+
+  // Filtro por categoría
+  events = events.filter(event => !selectedCategory.value || event.categories?.some(c => c.id === selectedCategory.value))
+
+  // Filtro por propiedad
+  if (selectedOwnership.value === 'owned') {
+    events = events.filter(event => event.ownerId === user.value.uid);
+  } else if (selectedOwnership.value === 'joined') {
+    events = events.filter(event => event.ownerId !== user.value.uid);
+  }
+  return events;
 })
 
 // Suscripción a eventos del usuario

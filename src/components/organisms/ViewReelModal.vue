@@ -53,11 +53,23 @@
             :to="`/profile/${reel?.user?.email}`"
             class="flex items-center gap-3 rounded hover:bg-gray-300/50 dark:hover:bg-gray-700/50 p-2 transition-all duration-200"
           >
-            <img
+            <img v-if="!reel?.default"
               :src="reel?.user?.photoURL || AvantarDefault"
               alt="User avatar"
               class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md"
             />
+            <div v-else>
+              <img
+                src="../../assets/icons/logoGreen.png"
+                alt="User avatar"
+                class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md dark:hidden"
+              />
+              <img
+                src="../../assets/icons/logoOrange.png" 
+                alt="User avatar"
+                class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md hidden dark:inline"
+              />
+            </div>
             <div>
               <p class="text-lg font-semibold text-primary dark:text-secondary">{{ reel?.user?.displayName }}</p>
               <p class="text-xs text-gray-600 dark:text-gray-400">{{ formatTimestamp(reel?.createdAt) }}</p>
@@ -65,7 +77,7 @@
           </router-link>
 
           <!-- Botón de opciones -->
-          <div class="absolute ml-5 left-0 bottom-0 z-10" ref="dropdownRef">
+          <div v-if="!reel?.default" class="absolute ml-5 left-0 bottom-0 z-10" ref="dropdownRef">
             <button
               @click="showSettingsMenu = !showSettingsMenu"
               class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md"
@@ -122,8 +134,8 @@
             </div>
           </transition>
 
-          <!-- Estadísticas -->
-          <div class="text-sm space-y-4">
+          <!-- Acciones -->
+          <div v-if="!reel?.default" class="text-sm space-y-4">
             <p class="flex items-center space-x-2">
               <span class="font-semibold text-gray-600 dark:text-gray-300">Visualizaciones:</span>
               <span class="text-gray-600 dark:text-gray-100 flex items-center">
@@ -300,6 +312,7 @@ const closeModal = () => {
 };
 
 const previousReel = () => {
+  debugger
   if (hasPreviousReel.value) {
     const previousGroup = props.reels[currentReelIndex.value - 1];
     emit('update-reel', previousGroup.reels[0]);
@@ -307,6 +320,7 @@ const previousReel = () => {
 };
 
 const nextReel = () => {
+  debugger
   if (hasNextReel.value) {
     const nextGroup = props.reels[currentReelIndex.value + 1];
     emit('update-reel', nextGroup.reels[0]);
@@ -374,13 +388,13 @@ onUnmounted(() => {
 
 // Watch for modal visibility and reel changes
 watch(
-  [() => props.visible, () => props.reel?.idDoc],
-  ([newVisible, newReelId], [oldVisible, oldReelId]) => {
-    if (newVisible && newReelId && (newReelId !== oldReelId || !oldVisible)) {
+  [() => props.visible, () => props.reel],
+  ([newVisible, newReel], [oldVisible, oldReel]) => {
+    if (newVisible && newReel?.idDoc && (newReel?.idDoc !== oldReel?.idDoc || !oldVisible)) {
       nextTick(() => {
         if (viewModal.value) {
           viewModal.value.focus();
-          incrementView();
+          if(!newReel?.default) incrementView();
         }
       });
     }

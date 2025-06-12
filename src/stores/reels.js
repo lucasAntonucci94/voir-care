@@ -1,18 +1,22 @@
-// src/store/reels.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useReels } from '../composable/useReels';
+import { useDefaultReels } from '../composable/useDefaultReels';
 
 export const useReelsStore = defineStore('reels', {
   state: () => {
     const reels = ref([]);
+    const defaultReels = ref([]);
     const isLoading = ref(true);
     const unsubscribe = ref(null);
+    const unsubscribeDefaultReels = ref(null);
 
     return {
       reels,
+      defaultReels,
       isLoading,
       unsubscribe,
+      unsubscribeDefaultReels,
     };
   },
   actions: {
@@ -38,6 +42,40 @@ export const useReelsStore = defineStore('reels', {
         this.unsubscribe = null;
       }
     },
+    // Subscribe to default reels
+    subscribeToDefaultReels() {
+      if (this.unsubscribeDefaultReels) {
+        console.log('Default reels subscription already active, ignoring...');
+        return;
+      }
+      console.log('Initiating subscription to default reels...');
+      const { subscribeToDefaultReels } = useDefaultReels();
+      this.unsubscribeDefaultReels = subscribeToDefaultReels((updatedDefaultReels) => {
+        this.defaultReels = updatedDefaultReels;
+        console.log('Default reels received from Firebase:', updatedDefaultReels);
+      });
+    },
+    // Cancelar la suscripción a default reels
+    unsubscribeFromDefaultReels() {
+      if (this.unsubscribeDefaultReels) {
+        console.log('Cancelando suscripción a default reels...');
+        this.unsubscribeDefaultReels();
+        this.unsubscribeDefaultReels = null;
+      }
+    },
+    // Fetch default reels once
+    // async fetchDefaultReels() {
+    //   console.log('Fetching default reels...');
+    //   const { fetchDefaultReels } = useDefaultReels();
+    //   try {
+    //     const reels = await fetchDefaultReels();
+    //     this.defaultReels = reels;
+    //     console.log('Default reels fetched from Firebase:', reels);
+    //   } catch (err) {
+    //     console.error('Error fetching default reels:', err);
+    //     throw err;
+    //   }
+    // },
     // Añadir un nuevo reel
     async addReel(newReelData) {
       console.log('Añadiendo nuevo reel:', newReelData);
@@ -63,22 +101,22 @@ export const useReelsStore = defineStore('reels', {
         const { addLike, removeLike } = useReels();
         const reel = this.reels.find((r) => r.idDoc === reelIdDoc);
         if (!reel) throw new Error('Reel no encontrado');
-    
+
         const userLiked = reel.likes.some((like) => like.userId === userData.uid);
         if (userLiked) {
           await removeLike(reelIdDoc, userData);
         } else {
           await addLike(reelIdDoc, userData);
         }
-    
-        // 💡 Buscar el reel actualizado luego del cambio
+
+        // Buscar el reel actualizado luego del cambio
         const updatedReel = this.reels.find((r) => r.idDoc === reelIdDoc);
-        return { ...updatedReel }; // devolver copia para generar nueva referencia reactiva
+        return { ...updatedReel }; // Devolver copia para nueva referencia reactiva
       } catch (err) {
         console.error('Error al alternar like:', err);
         throw err;
       }
-    },    
+    },
     // Incrementar visualizaciones de un reel
     async incrementView(reelIdDoc, userData) {
       try {

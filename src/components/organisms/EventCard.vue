@@ -287,6 +287,7 @@ function closeDeleteModal() {
 }
 
 async function confirmDelete() {
+  debugger
   try {
     await eventsStore.deleteEvent(props.event.idDoc);
     console.log(`Evento ${props.event.idDoc} eliminado`);

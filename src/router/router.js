@@ -19,6 +19,7 @@ import ReportsPage from '../pages/admin/ReportsPage.vue';
 import AdmUsersPage from '../pages/admin/UsersPage.vue';
 import AdmEventsPage from '../pages/admin/EventsPage.vue';
 import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
+import AdmDefaultReelsPage from '../pages/admin/DefaultReelsPage.vue';
 import AdmEducationsPage from '../pages/admin/EducationsPage.vue';
 import BlogDetailPage from '../pages/BlogDetail.vue';
 import AdoptionPage from '../pages/AdoptionPage.vue';
@@ -158,6 +159,14 @@ const routes = [
         path:  '/admin/users',
         name: 'usersAdm',
         component: AdmUsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/defaultReels',
+        name: 'defaultReelsAdm',
+        component: AdmDefaultReelsPage,
         meta: {
             requiresAuth: true,
         }

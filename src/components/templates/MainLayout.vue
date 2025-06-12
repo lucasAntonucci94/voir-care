@@ -8,6 +8,11 @@ MainLayout.vue
           :show="sidebarStore.showSidebar"
            @toggle="sidebarStore.toggleSidebar"
          />
+        <SidebarAdmin
+          v-if="permitedAdminRoutes"
+          :show="sidebarStore.showSidebar"
+           @toggle="sidebarStore.toggleSidebar"
+         />
         <main class="flex-grow bg-gray-50 dark:bg-gray-900 font-poppins overflow-y-auto flex-1">
           <router-view />
         </main>
@@ -33,6 +38,7 @@ import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useCategories } from '../../composable/useCategories';
 import UserChatBox from '../../components/organisms/UserChatBox.vue';
 import SnackBar from '../../components/atoms/SnackBar.vue'
+import SidebarAdmin from '../../components/organisms/SidebarAdmin.vue';
 
 const $route = useRoute();
 const { user, isAuthenticated } = useAuth();
@@ -67,6 +73,11 @@ const permitedRoutes = computed(() => {
   const isBlockedPath = blockedExactPaths.includes($route.path) //rutas donde no quiero que muestre el side.
   const isAdminPath = $route.path.startsWith('/admin') //si la ruta empieza con /admin oculto sidebar general.
   return !isBlockedPath && !isAdminPath && isAuthenticated.value
+})
+
+const permitedAdminRoutes = computed(() => {
+  const isAdminPath = $route.path.includes('admin') //si la ruta empieza con /admin oculto sidebar general.
+  return isAdminPath && isAuthenticated.value
 })
 
 const shouldShowChatBox = computed(() => {

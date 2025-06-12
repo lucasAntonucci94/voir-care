@@ -2,16 +2,7 @@
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
     <!-- Header with Back Button and Create Blog Button -->
     <div class="flex justify-between items-center mb-6">
-      <div class="flex items-center gap-4">
-        <RouterLink
-          to="/admin/dashboard"
-          class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark flex items-center gap-2"
-          aria-label="Volver al Dashboard"
-        >
-          <i class="fas fa-arrow-left"></i> Volver al Dashboard
-        </RouterLink>
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Administración de Blogs</h1>
-      </div>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Administración de Blogs</h1>
       <div class="flex gap-4">
         <button
           @click="openCreateModal"
