@@ -22,20 +22,20 @@ export const useUsersStore = defineStore('users', {
     },
     subscribeUsers() {
       if (this.unsubscribeUsersFn) {
-        console.log('Suscripción a usuarios ya activa, ignorando...');
+        // console.log('Suscripción a usuarios ya activa, ignorando...');
         return;
       }
-      console.log('Iniciando suscripción a usuarios...');
+      // console.log('Iniciando suscripción a usuarios...');
       const { subscribeToUsers } = useUsers();
       this.unsubscribeUsersFn = subscribeToUsers((updatedUsers) => {
-        console.log('Usuarios recibidos desde Firebase:', updatedUsers);
+        // console.log('Usuarios recibidos desde Firebase:', updatedUsers);
         this.users = updatedUsers;
         this.isLoading = false;
       });
     },
     unsubscribeUsers() {
       if (this.unsubscribeFn) {
-        console.log('Cancelando suscripción a usuarios...');
+        // console.log('Cancelando suscripción a usuarios...');
         this.unsubscribeUsersFn();
         this.unsubscribeUsersFn = null;
       }
@@ -49,7 +49,7 @@ export const useUsersStore = defineStore('users', {
         // Remove user from cache
         delete this.usersCache[id];
         this.error = null;
-        console.log(`Usuario con ID ${id} eliminado del store`);
+        // console.log(`Usuario con ID ${id} eliminado del store`);
       } catch (error) {
         console.error('Error al eliminar usuario en el store:', error);
         this.error = error.message || 'Error al eliminar el usuario';
@@ -65,7 +65,7 @@ export const useUsersStore = defineStore('users', {
           user.isBlockedGlobally = block;
         }
         this.error = null;
-        console.log(`Usuario con ID ${id} ${block ? 'bloqueado' : 'desbloqueado'} en el store`);
+        // console.log(`Usuario con ID ${id} ${block ? 'bloqueado' : 'desbloqueado'} en el store`);
       } catch (error) {
         console.error('Error al bloquear/desbloquear usuario globalmente en el store:', error);
         this.error = error.message || 'Error al bloquear/desbloquear usuario';
@@ -77,7 +77,7 @@ export const useUsersStore = defineStore('users', {
         const { blockUserIndividually } = useUsers();
         await blockUserIndividually(targetId);
         this.error = null;
-        console.log(`Usuario con ID ${targetId} bloqueado individualmente en el store`);
+        // console.log(`Usuario con ID ${targetId} bloqueado individualmente en el store`);
       } catch (error) {
         console.error('Error al bloquear usuario individualmente en el store:', error);
         this.error = error.message || 'Error al bloquear usuario';
@@ -89,7 +89,7 @@ export const useUsersStore = defineStore('users', {
         const { unblockUserIndividually } = useUsers();
         await unblockUserIndividually(targetId);
         this.error = null;
-        console.log(`Usuario con ID ${targetId} desbloqueado individualmente en el store`);
+        // console.log(`Usuario con ID ${targetId} desbloqueado individualmente en el store`);
       } catch (error) {
         console.error('Error al desbloquear usuario individualmente en el store:', error);
         this.error = error.message || 'Error al desbloquear usuario';
@@ -105,7 +105,7 @@ export const useUsersStore = defineStore('users', {
           user.isSuscribed = suscribe;
         }
         this.error = null;
-        console.log(`Usuario con ID ${id} ${suscribe ? 'suscripto' : 'desuscripto'} en el store`);
+        // console.log(`Usuario con ID ${id} ${suscribe ? 'suscripto' : 'desuscripto'} en el store`);
       } catch (error) {
         console.error('Error al suscribir/desuscribir usuario en el store:', error);
         this.error = error.message || 'Error al suscribir/desuscribir usuario';

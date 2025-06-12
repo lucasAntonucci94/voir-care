@@ -134,14 +134,14 @@ onMounted(() => {
   checkIfDesktop();
   window.addEventListener('resize', checkIfDesktop);
 
-  console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
+  // console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
   if (privateChatsStore?.selectedChatId) {
     usePrivateChats().markMessagesAsRead(privateChatsStore?.selectedChatId, user.value.email);
   }
 });
 
 onUnmounted(() => {
-  console.log('ChatMessagesList desmontado');
+  // console.log('ChatMessagesList desmontado');
   if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
     unsubscribeMessages.value();
     unsubscribeMessages.value = null;
@@ -171,7 +171,7 @@ watch(
         user.value.email,
         otherUserEmail,
         (msgs) => {
-          console.log('Mensajes recibidos:', msgs);
+          // console.log('Mensajes recibidos:', msgs);
           messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
           loadingMessages.value = false;
           scrollToBottom();
@@ -193,7 +193,7 @@ watch(messages, () => {
 
 // Métodos
 const deleteMessage = async (messageId) => {
-  console.log('Confirmando eliminación de mensaje ID:', messageId);
+  // console.log('Confirmando eliminación de mensaje ID:', messageId);
   privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
   closeDeleteModal();
   snackbarStore.show('Mensaje eliminado', 'success');
@@ -208,13 +208,13 @@ const getUserName = (email) => {
 };
 
 const openDeleteModal = (messageId) => {
-  console.log('Abriendo modal para mensaje ID:', messageId);
+  // console.log('Abriendo modal para mensaje ID:', messageId);
   messageToDelete.value = messageId;
   showDeleteModal.value = true;
 };
 
 const closeDeleteModal = () => {
-  console.log('Cerrando modal');
+  // console.log('Cerrando modal');
   showDeleteModal.value = false;
   messageToDelete.value = null;
 };

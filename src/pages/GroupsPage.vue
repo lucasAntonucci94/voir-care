@@ -100,6 +100,6 @@ const closeModalCreate = () => {
 
 // Ejemplo de manejo del evento groupCreated (podrías actualizar la lista o mostrar una notificación)
 const handleGroupCreated = (groupData) => {
-  console.log('Grupo creado:', groupData)
+  // console.log('Grupo creado:', groupData)
 }
 </script>

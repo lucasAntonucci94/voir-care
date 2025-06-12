@@ -71,7 +71,7 @@ function goBack() {
 }
 
 const handleMapReady = () => {
-  console.log('Mapa listo');
+  // console.log('Mapa listo');
 };
 
 

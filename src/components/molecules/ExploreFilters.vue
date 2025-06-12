@@ -95,15 +95,24 @@
 
 <script setup>
 import { ref, defineEmits, onMounted, watch } from 'vue';
-import CatIcon from '../../assets/icons/cat_1998592.png';
-import VetIcon1 from '../../assets/icons/locations/vet1.png';
-import TrainerIcon1 from '../../assets/icons/locations/entrenador1.png';
-import PaseadorIcon1 from '../../assets/icons/locations/paseador1.png';
-import Guarderiacon1 from '../../assets/icons/locations/guarderia1.png';
-import ParqueIcon1 from '../../assets/icons/locations/parque1.png';
-import PetfriendlyIcon1 from '../../assets/icons/locations/petfriendly1.png';
 import CreateLocationModal from '../../components/organisms/CreateLocationModal.vue';
 import { useAuth } from '../../api/auth/useAuth.js'
+
+import CatIcon from '../../assets/icons/cat_1.png';
+import VetIcon from '../../assets/icons/locations/veterinary 2.png';
+import TrainerIcon from '../../assets/icons/locations/trainer1.png';
+import GroomingIcon from '../../assets/icons/locations/groomer2.png';
+import PaseadorIcon from '../../assets/icons/locations/walking-the-dog.png';
+import GuarderiaIcon from '../../assets/icons/locations/guardery4.png';
+import ParqueIcon from '../../assets/icons/locations/park.png';
+import PetfriendlyIcon from '../../assets/icons/locations/petfriendly3.png';
+import PetShopIcon from '../../assets/icons/locations/assistant.png';
+import EtologoIcon from '../../assets/icons/locations/veterinary.png';
+import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
+import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
+import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
+import TherapyIcon from '../../assets/icons/locations/rehab1.png';
+
 
 const { user } = useAuth();
 
@@ -119,13 +128,22 @@ const props = defineProps({
 });
 
 const filters = ref([
-    { id: 'veterinaria', label: 'Veterinaria', icon: VetIcon1 },
-    { id: 'petshop', label: 'Pet Shop', icon: CatIcon }, // Considera crear PetshopIcon1
-    { id: 'guarderia', label: 'Guardería', icon: Guarderiacon1 },
-    { id: 'petfriendly', label: 'Pet Friendly', icon: PetfriendlyIcon1 },
-    { id: 'paseador', label: 'Paseador', icon: PaseadorIcon1 },
-    { id: 'entrenador', label: 'Entrenador', icon: TrainerIcon1 },
-    { id: 'parque', label: 'Parque', icon: ParqueIcon1 },
+  { id: 'veterinaria', label: 'Veterinaria', icon: VetIcon },
+  { id: 'petshop', label: 'Pet Shop', icon: PetShopIcon },
+  { id: 'guarderia', label: 'Guardería', icon: GuarderiaIcon },
+  { id: 'peluqueria', label: 'Peluquería y Baño', icon: GroomingIcon },
+  { id: 'cuidador', label: 'Cuidadores', icon: PetSitterIcon },
+  { id: 'etologo', label: 'Etólogo', icon: EtologoIcon },
+  { id: 'paseador', label: 'Paseador', icon: PaseadorIcon },
+  { id: 'entrenador', label: 'Entrenadores de Mascotas', icon: TrainerIcon },
+  { id: 'parque', label: 'Parques y Plazas', icon: ParqueIcon },
+  { id: 'petfriendly', label: 'Lugares Pet-Friendly', icon: PetfriendlyIcon },
+  { id: 'refugio', label: 'Refugios y Adopción', icon: ShelterIcon },
+  // { id: 'eventos', label: 'Eventos Pet-Friendly', icon: EventIcon },
+  { id: 'emergencias', label: 'Emergencias', icon: EmergencyIcon },
+  // { id: 'alojamiento', label: 'Alojamientos Pet-Friendly', icon: AccommodationIcon },
+  // { id: 'suministros', label: 'Entrega de Suministros', icon: DeliveryIcon },
+  { id: 'rehabilitacion', label: 'Rehabilitación y Terapia', icon: TherapyIcon },
 ]);
 
 const emit = defineEmits(['update:modelValue', 'center-location']);

@@ -569,7 +569,7 @@ async function confirmDelete() {
   try {
     await groupsStore.deleteGroup(group.value.idDoc);
     closeDeleteModal();
-    console.log('Grupo eliminado');
+    // console.log('Grupo eliminado');
     router.push({ name: 'groups' });
     snackbarStore.show('Grupo eliminado', 'success');
   } catch (error) {
@@ -596,7 +596,7 @@ function handleGroupUpdated(updatedGroup) {
 
 function showHideGroupModal() {
   showSettingsMenu.value = false;
-  console.log('Abrir modal para ocultar grupo');
+  // console.log('Abrir modal para ocultar grupo');
 }
 
 const openMediaModal = (media) => {

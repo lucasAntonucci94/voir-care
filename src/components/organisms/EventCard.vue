@@ -261,13 +261,13 @@ const handleClickOutside = (event) => {
 
 async function handleAttendance() {
   if (!user.value) {
-    console.log('Usuario no autenticado');
+    // console.log('Usuario no autenticado');
     return;
   }
   try {
     const status = isGoing.value ? null : 'going';
     await eventsStore.setUserAttendanceStatus(props.event.idDoc, user.value.uid, status);
-    console.log(`Asistencia ${status === 'going' ? 'confirmada' : 'cancelada'} para el evento ${props.event.idDoc}`);
+    // console.log(`Asistencia ${status === 'going' ? 'confirmada' : 'cancelada'} para el evento ${props.event.idDoc}`);
     snackbarStore.show(`Usuario ${status === 'going' ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${props.event.title}`, 'success');
   } catch (error) {
     console.error('Error al actualizar asistencia:', error);
@@ -287,10 +287,9 @@ function closeDeleteModal() {
 }
 
 async function confirmDelete() {
-  debugger
   try {
     await eventsStore.deleteEvent(props.event.idDoc);
-    console.log(`Evento ${props.event.idDoc} eliminado`);
+    // console.log(`Evento ${props.event.idDoc} eliminado`);
     snackbarStore.show(`Evento ${props.event.title} eliminado exitosamente`, 'success');
   } catch (error) {
     console.error('Error al eliminar evento:', error);

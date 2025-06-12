@@ -51,10 +51,10 @@ watch(
   () => user.value?.email,
   (newEmail, oldEmail) => {
     if (newEmail && newEmail !== oldEmail) {
-      console.log('Usuario autenticado, iniciando suscripción a chats para:', newEmail);
+      // console.log('Usuario autenticado, iniciando suscripción a chats para:', newEmail);
       privateChatsStore.initializeSubscription(newEmail);
     } else if (!newEmail && oldEmail) {
-      console.log('Usuario desautenticado, cancelando suscripción a chats...');
+      // console.log('Usuario desautenticado, cancelando suscripción a chats...');
       privateChatsStore.initializeUnsubscribe();
     }
     if(isAuthenticated.value) loadCategories(); 
@@ -63,7 +63,7 @@ watch(
 );
 // Cancelar suscripción al desmontar el componente
 onUnmounted(() => {
-  console.log('MainLayout.vue desmontado, cancelando suscripción a chats...');
+  // console.log('MainLayout.vue desmontado, cancelando suscripción a chats...');
   privateChatsStore.initializeUnsubscribe();
 });
 

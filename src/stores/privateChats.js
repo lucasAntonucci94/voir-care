@@ -82,14 +82,14 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     },
     initializeSubscription(email) {
       if (this.unsubscribe) {
-        console.log('Ya hay una suscripción activa, ignorando...');
+        // console.log('Ya hay una suscripción activa, ignorando...');
         return;
       }
 
       this.loading = true;
       const { subscribeToPrivateChats } = usePrivateChats();
       this.unsubscribe = subscribeToPrivateChats(email, async (updatedChats) => {
-        console.log('Chats actualizados:', updatedChats);
+        // console.log('Chats actualizados:', updatedChats);
         if (this.deletedChatId.length > 0) {
           updatedChats = updatedChats.filter(chat => !this.deletedChatId.includes(chat.idDoc));
         }
@@ -106,11 +106,11 @@ export const usePrivateChatsStore = defineStore('privateChats', {
     },
     initializeUnsubscribe() {
       if (this.unsubscribe) {
-        console.log('Cancelando suscripción a chats...');
+        // console.log('Cancelando suscripción a chats...');
         this.unsubscribe();
         this.unsubscribe = null;
       } else {
-        console.log('No hay suscripción activa para cancelar.');
+        // console.log('No hay suscripción activa para cancelar.');
       }
       this.chats.value = [];
       this.loading = true;

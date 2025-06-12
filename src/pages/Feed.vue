@@ -40,16 +40,16 @@ const visiblePosts = computed(() => {
   );
 });
 onMounted(() => {
-  console.log('Feed.vue montado, iniciando suscripción global...');
+  // console.log('Feed.vue montado, iniciando suscripción global...');
   postsStore.subscribeGlobal(); // Suscripción global
   if (user.value?.uid) {
-    console.log('Iniciando suscripción a posts guardados en Feed.vue...');
+    // console.log('Iniciando suscripción a posts guardados en Feed.vue...');
     postsStore.subscribeToSavedPosts(user.value.uid); // Suscripción a savedPosts
   }
 });
 
 onUnmounted(() => {
-  console.log('Feed.vue desmontado, cancelando suscripción global...');
+  // console.log('Feed.vue desmontado, cancelando suscripción global...');
   postsStore.unsubscribeGlobal(); // Cancela solo la suscripción global
   postsStore.unsubscribeSavedPosts(); // Cancela la suscripción a savedPosts
 });

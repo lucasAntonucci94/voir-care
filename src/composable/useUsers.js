@@ -196,7 +196,7 @@ export function useUsers() {
     try {
       const userRef = doc(db, 'users', id);
       await deleteDoc(userRef);
-      console.log(`Usuario con ID ${id} eliminado exitosamente`);
+      // console.log(`Usuario con ID ${id} eliminado exitosamente`);
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
       throw error;
@@ -269,7 +269,7 @@ export function useUsers() {
       await updateDoc(userRef, {
         connections: arrayUnion(connection),
       });
-      console.log(`Conexión con ${connectionData.displayName} agregada exitosamente`);
+      // console.log(`Conexión con ${connectionData.displayName} agregada exitosamente`);
     } catch (error) {
       console.error('Error al agregar conexión:', error);
       throw error;
@@ -291,7 +291,7 @@ export function useUsers() {
       await updateDoc(userRef, {
         connections: arrayRemove(connection),
       });
-      console.log(`Conexión con ${connectionData.displayName} eliminada exitosamente`);
+      // console.log(`Conexión con ${connectionData.displayName} eliminada exitosamente`);
     } catch (error) {
       console.error('Error al eliminar conexión:', error);
       throw error;
@@ -438,7 +438,7 @@ export function useUsers() {
       await updateDoc(userRef, {
         isBlocked: isBlocked,
       });
-      console.log(`Usuario con ID ${id} ${isBlocked ? 'bloqueado' : 'desbloqueado'} exitosamente`);
+      // console.log(`Usuario con ID ${id} ${isBlocked ? 'bloqueado' : 'desbloqueado'} exitosamente`);
     } catch (error) {
       console.error('Error al bloquear usuario:', error);
       throw error;
@@ -462,7 +462,7 @@ export function useUsers() {
       await updateDoc(targetRef, {
         blockedBy: arrayUnion(authUser.value.uid),
       });
-      console.log(`Usuario con ID ${targetId} bloqueado por ${authUser.value.uid}`);
+      // console.log(`Usuario con ID ${targetId} bloqueado por ${authUser.value.uid}`);
     } catch (error) {
       console.error('Error al bloquear usuario individualmente:', error);
       throw error;
@@ -486,7 +486,7 @@ export function useUsers() {
       await updateDoc(targetRef, {
         blockedBy: arrayRemove(authUser.value.uid),
       });
-      console.log(`Usuario con ID ${targetId} desbloqueado por ${authUser.value.uid}`);
+      // console.log(`Usuario con ID ${targetId} desbloqueado por ${authUser.value.uid}`);
     } catch (error) {
       console.error('Error al desbloquear usuario individualmente:', error);
       throw error;
@@ -515,7 +515,7 @@ export function useUsers() {
       await updateDoc(userRef, {
         isSuscribed: isSuscribed,
       });
-      console.log(`Usuario con ID ${id} ${isSuscribed ? 'suscripto' : 'desuscripto'} exitosamente`);
+      // console.log(`Usuario con ID ${id} ${isSuscribed ? 'suscripto' : 'desuscripto'} exitosamente`);
     } catch (error) {
       console.error('Error al suscribir usuario:', error);
       throw error;
@@ -538,7 +538,7 @@ export function useUsers() {
       await updateDoc(userRef, {
         'configs.theme': theme
       });
-      console.log(`Theme updated to ${theme} for user ${userId}`);
+      // console.log(`Theme updated to ${theme} for user ${userId}`);
     } catch (error) {
       console.error('Error updating user theme:', error);
       throw error;

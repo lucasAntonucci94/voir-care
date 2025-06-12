@@ -5,7 +5,7 @@ export function useShare() {
   const { user } = useAuth();
   const { copy } = useClipboard();
 
-  // Mock DM sending (simulates sending a message)
+  // Mock DM sending
   async function sendDM(postId, recipientEmail, message) {
     // Mock validation and processing
     if (!user.value) {
@@ -18,14 +18,14 @@ export function useShare() {
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // Log mock message (replace with Firestore logic later)
-    console.log('Mock DM sent:', {
-      senderId: user.value.uid,
-      recipientEmail,
-      postId,
-      message,
-      timestamp: new Date().toISOString(),
-    });
+    // Log mock message
+    // console.log('Mock DM sent:', {
+    //   senderId: user.value.uid,
+    //   recipientEmail,
+    //   postId,
+    //   message,
+    //   timestamp: new Date().toISOString(),
+    // });
 
     return { success: true };
   }

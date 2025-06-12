@@ -169,7 +169,7 @@ const showMediaModal = ref(false);
 
 async function toggleLike() {
   if (!user.value) {
-    console.log('Usuario no autenticado, no puede dar Like');
+    // console.log('Usuario no autenticado, no puede dar Like');
     return;
   }
   await postsStore.toggleLike(props.post.idDoc, {
@@ -179,18 +179,18 @@ async function toggleLike() {
 }
 
 function deletePost() {
-  console.log('Eliminar post:', props.post);
+  // console.log('Eliminar post:', props.post);
   postsStore.deletePost(props.post.idDoc);
   props.post.showMenu = false;
 }
 
 function sharePost() {
-  console.log('Compartir post:', props.post.id);
+  // console.log('Compartir post:', props.post.id);
   props.post.showMenu = false;
 }
 
 function reportPost() {
-  console.log('Reportar post:', props.post.id);
+  // console.log('Reportar post:', props.post.id);
   props.post.showMenu = false;
 }
 

@@ -254,7 +254,7 @@ function closeDeleteModal() {
 async function confirmDelete() {
   try {
     await groupsStore.deleteGroup(props.group.idDoc);
-    console.log(`Grupo ${props.group.idDoc} eliminado`);
+    // console.log(`Grupo ${props.group.idDoc} eliminado`);
     snackbarStore.show(`Evento ${props.group.title} eliminado exitosamente`, 'success');
   } catch (error) {
     snackbarStore.show(`Error al eliminar grupo. Error: ${error}.`, 'error');

@@ -120,7 +120,6 @@ const filteredReels = computed(() => {
     const defaultGroups = reelsStore.defaultReels.map((reel) => ({
       reels: [{ ...reel, videoUrl: reel.mediaUrl, default: true }], // Normalizar para ViewReelModal
     }));
-    debugger
     grouped = [...grouped, ...defaultGroups];
   }
   // Fallback si no hay reels

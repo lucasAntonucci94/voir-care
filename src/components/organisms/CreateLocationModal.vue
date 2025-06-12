@@ -219,6 +219,22 @@ import GeolocationInput from '../atoms/GeolocationInput.vue';
 import PhoneInput from '../atoms/PhoneInput.vue';
 import { useSnackbarStore } from '../../stores/snackbar';
 
+// logos
+import CatIcon from '../../assets/icons/cat_1.png';
+import VetIcon from '../../assets/icons/locations/veterinary 2.png';
+import TrainerIcon from '../../assets/icons/locations/trainer1.png';
+import GroomingIcon from '../../assets/icons/locations/groomer2.png';
+import PaseadorIcon from '../../assets/icons/locations/walking-the-dog.png';
+import GuarderiaIcon from '../../assets/icons/locations/guardery4.png';
+import ParqueIcon from '../../assets/icons/locations/park.png';
+import PetfriendlyIcon from '../../assets/icons/locations/petfriendly3.png';
+import PetShopIcon from '../../assets/icons/locations/assistant.png';
+import EtologoIcon from '../../assets/icons/locations/veterinary.png';
+import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
+import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
+import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
+import TherapyIcon from '../../assets/icons/locations/rehab1.png';
+
 const emits = defineEmits(['close', 'locationCreated']);
 const props = defineProps({
   visible: {
@@ -245,13 +261,22 @@ const steps = ref([
 ]);
 
 const locationTypes = ref([
-  { id: 'parque', label: 'Parque' },
-  { id: 'veterinaria', label: 'Veterinaria' },
-  { id: 'petshop', label: 'Pet Shop' },
-  { id: 'guarderia', label: 'Guardería' },
-  { id: 'petfriendly', label: 'Pet Friendly' },
-  { id: 'paseador', label: 'Paseador' },
-  { id: 'entrenador', label: 'Entrenador' },
+  { id: 'veterinaria', label: 'Veterinaria', icon: VetIcon },
+  { id: 'petshop', label: 'Pet Shop', icon: PetShopIcon },
+  { id: 'guarderia', label: 'Guardería', icon: GuarderiaIcon },
+  { id: 'peluqueria', label: 'Peluquería y Baño', icon: GroomingIcon },
+  { id: 'cuidador', label: 'Cuidadores', icon: PetSitterIcon },
+  { id: 'etologo', label: 'Etólogo', icon: EtologoIcon },
+  { id: 'paseador', label: 'Paseador', icon: PaseadorIcon },
+  { id: 'entrenador', label: 'Entrenadores de Mascotas', icon: TrainerIcon },
+  { id: 'parque', label: 'Parques y Plazas', icon: ParqueIcon },
+  { id: 'petfriendly', label: 'Lugares Pet-Friendly', icon: PetfriendlyIcon },
+  { id: 'refugio', label: 'Refugios y Adopción', icon: ShelterIcon },
+  // { id: 'eventos', label: 'Eventos Pet-Friendly', icon: EventIcon },
+  { id: 'emergencias', label: 'Emergencias', icon: EmergencyIcon },
+  // { id: 'alojamiento', label: 'Alojamientos Pet-Friendly', icon: AccommodationIcon },
+  // { id: 'suministros', label: 'Entrega de Suministros', icon: DeliveryIcon },
+  { id: 'rehabilitacion', label: 'Rehabilitación y Terapia', icon: TherapyIcon },
 ]);
 
 const newLocation = ref({

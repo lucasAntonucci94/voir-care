@@ -13,7 +13,7 @@ export const useEventPostsStore = defineStore('eventPosts', {
     async subscribePostsByEventId(event, callback) {
       const { subscribePostsByEventId } = useEventPosts();
       if (this.unsubscribePosts) {
-        console.log('Suscripción a posts de evento ya activa, cancelando...');
+        // console.log('Suscripción a posts de evento ya activa, cancelando...');
         this.unsubscribePostsByEventId();
       }
       try {
@@ -32,7 +32,7 @@ export const useEventPostsStore = defineStore('eventPosts', {
     // Unsubscribe from event posts
     unsubscribePostsByEventId() {
       if (this.unsubscribePosts) {
-        console.log('Cancelando suscripción a posts de evento...');
+        // console.log('Cancelando suscripción a posts de evento...');
         this.unsubscribePosts();
         this.unsubscribePosts = null;
         this.eventDetailPosts.value = [];

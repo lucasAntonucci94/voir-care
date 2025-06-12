@@ -37,13 +37,13 @@ export const usePostsStore = defineStore('posts', {
     // Suscribirse a los posts globales
     subscribeGlobal() {
       if (this.unsubscribeGlobal.value) {
-        console.log('Suscripción global ya activa, ignorando...');
+        // console.log('Suscripción global ya activa, ignorando...');
         return;
       }
-      console.log('Iniciando suscripción global a posts...');
+      // console.log('Iniciando suscripción global a posts...');
       const { subscribeToIncomingPosts } = usePosts();
       this.unsubscribeGlobal.value = subscribeToIncomingPosts((updatedPosts) => {
-        console.log('Posts globales recibidos desde Firebase:', updatedPosts);
+        // console.log('Posts globales recibidos desde Firebase:', updatedPosts);
         this.posts.value = updatedPosts;
         this.isLoading = false;
       });
@@ -51,7 +51,7 @@ export const usePostsStore = defineStore('posts', {
     // Suscribirse a los posts de un perfil específico
     subscribeProfile(userId) {
       if (this.unsubscribeProfile.value) {
-        console.log('Cancelando suscripción anterior del perfil...');
+        // console.log('Cancelando suscripción anterior del perfil...');
         this.unsubscribeProfile.value();
         this.unsubscribeProfile.value = null;
       }
@@ -59,10 +59,10 @@ export const usePostsStore = defineStore('posts', {
         console.warn('No se proporcionó userId para la suscripción del perfil');
         return;
       }
-      console.log(`Iniciando suscripción a posts del perfil para userId: ${userId}...`);
+      // console.log(`Iniciando suscripción a posts del perfil para userId: ${userId}...`);
       const { subscribeToIncomingProfilePosts } = usePosts();
       this.unsubscribeProfile.value = subscribeToIncomingProfilePosts(userId, (updatedPosts) => {
-        console.log('Posts del perfil recibidos desde Firebase:', updatedPosts);
+        // console.log('Posts del perfil recibidos desde Firebase:', updatedPosts);
         this.profilePosts.value = updatedPosts;
         this.isLoadingProfile = false;
       });
@@ -70,7 +70,7 @@ export const usePostsStore = defineStore('posts', {
     // Cancelar suscripción global
     unsubscribeGlobal() {
       if (this.unsubscribeGlobal.value) {
-        console.log('Cancelando suscripción global a posts...');
+        // console.log('Cancelando suscripción global a posts...');
         this.unsubscribeGlobal.value();
         this.unsubscribeGlobal.value = null;
       }
@@ -78,23 +78,23 @@ export const usePostsStore = defineStore('posts', {
     // Cancelar suscripción del perfil
     unsubscribeProfile() {
       if (this.unsubscribeProfile.value) {
-        console.log('Cancelando suscripción a posts del perfil...');
+        // console.log('Cancelando suscripción a posts del perfil...');
         this.unsubscribeProfile.value();
         this.unsubscribeProfile.value = null;
       }
     },
     async addPost(postData) {
-      console.log('Añadiendo nuevo post:', postData);
+      // console.log('Añadiendo nuevo post:', postData);
       const { savePost } = usePosts();
       await savePost(postData);
     },
     async updatePost(postId, updatedPostData) {
-      console.log('Actualizando post:', postId, updatedPostData);
+      // console.log('Actualizando post:', postId, updatedPostData);
       const { updatePost } = usePosts();
       await updatePost(postId, updatedPostData);
     },
     async deletePost(postIdDoc) {
-      console.log('Eliminando post con idDoc:', postIdDoc);
+      // console.log('Eliminando post con idDoc:', postIdDoc);
       const { deletePost } = usePosts();
       await deletePost(postIdDoc);
     },
@@ -129,7 +129,7 @@ export const usePostsStore = defineStore('posts', {
     // Suscribirse a los posts guardados del usuario
     subscribeToSavedPosts(userId) {
       if (this.unsubscribeSavedPosts.value) {
-        console.log('Cancelando suscripción anterior a posts guardados...');
+        // console.log('Cancelando suscripción anterior a posts guardados...');
         this.unsubscribeSavedPosts.value();
         this.unsubscribeSavedPosts.value = null;
       }
@@ -137,17 +137,17 @@ export const usePostsStore = defineStore('posts', {
         console.warn('No se proporcionó userId para la suscripción a posts guardados');
         return;
       }
-      console.log(`Iniciando suscripción a posts guardados para userId: ${userId}...`);
+      // console.log(`Iniciando suscripción a posts guardados para userId: ${userId}...`);
       const { subscribeToSavedPosts } = useSavedPosts();
       this.unsubscribeSavedPosts.value = subscribeToSavedPosts(userId, (savedPosts) => {
-        console.log('Posts guardados recibidos desde Firebase:', savedPosts.value);
+        // console.log('Posts guardados recibidos desde Firebase:', savedPosts.value);
         this.savedPostIds = savedPosts.map(sp => sp.postId);
       });
     },
     // Cancelar suscripción a posts guardados
     unsubscribeSavedPosts() {
       if (this.unsubscribeSavedPosts.value) {
-        console.log('Cancelando suscripción a posts guardados...');
+        // console.log('Cancelando suscripción a posts guardados...');
         this.unsubscribeSavedPosts.value();
         this.unsubscribeSavedPosts.value = null;
       }
@@ -214,12 +214,12 @@ export const usePostsStore = defineStore('posts', {
     async unhidePost(userId, postId) {
       const { deleteHiddenPost } = usePosts();
       try {
-        console.log(`Eliminando hiddenPost para userId: ${userId}, postId: ${postId}`);
+        // console.log(`Eliminando hiddenPost para userId: ${userId}, postId: ${postId}`);
         const success = await deleteHiddenPost(userId, postId);
         
         if (success) {
           this.hiddenPosts = this.hiddenPosts.filter(post => post.idDoc !== postId);
-          console.log('HiddenPost eliminado correctamente');
+          // console.log('HiddenPost eliminado correctamente');
           return true
         } else {
           console.warn('No se encontró el hiddenPost para eliminar');
@@ -233,10 +233,10 @@ export const usePostsStore = defineStore('posts', {
     // Suscribirse a posts de adopción
     subscribeToAdoptionPosts() {
       if (this.unsubscribeAdoption) {
-        console.log('Suscripción a posts de adopción ya activa, ignorando...');
+        // console.log('Suscripción a posts de adopción ya activa, ignorando...');
         return;
       }
-      console.log('Iniciando suscripción a posts de adopción...');
+      // console.log('Iniciando suscripción a posts de adopción...');
       const { subscribeToAdoptionPosts } = usePosts();
       this.unsubscribeAdoption = subscribeToAdoptionPosts((posts) => {
         this.adoptionPosts.value = posts;
@@ -246,7 +246,7 @@ export const usePostsStore = defineStore('posts', {
     // Cancelar suscripción a posts de adopción
     unsubscribeAdoptionPosts() {
       if (this.unsubscribeAdoption) {
-        console.log('Cancelando suscripción a posts de adopción...');
+        // console.log('Cancelando suscripción a posts de adopción...');
         this.unsubscribeAdoption();
         this.unsubscribeAdoption = null;
       }

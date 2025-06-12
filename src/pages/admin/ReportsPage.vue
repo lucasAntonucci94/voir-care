@@ -100,11 +100,11 @@
   }
   
   function viewDetails(report) {
-    console.log('Ver detalles del reporte:', report)
+    // console.log('Ver detalles del reporte:', report)
   }
   
   function takeAction(report) {
-    console.log('Tomar acción sobre el reporte:', report)
+    // console.log('Tomar acción sobre el reporte:', report)
   }
   </script>
   

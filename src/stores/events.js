@@ -19,10 +19,10 @@ export const useEventsStore = defineStore('events', {
     // Suscribirse a los eventos en los que el usuario es miembro
     subscribeUserEvents(uid) {
         if (this.unsubscribeUser) {
-            console.log('Suscripción ya activa, ignorando...')
+            // console.log('Suscripción ya activa, ignorando...')
             return
         }
-        console.log('Iniciando suscripción a eventos del usuario...')
+        // console.log('Iniciando suscripción a eventos del usuario...')
         const { subscribeToUserEvents } = useEvents()
         this.unsubscribeUser = subscribeToUserEvents(uid, (events) => {
             this.events.value = events
@@ -32,7 +32,7 @@ export const useEventsStore = defineStore('events', {
     // Cancelar la suscripción
     unsubscribeUserEvents() {
         if (this.unsubscribeUser) {
-        console.log('Cancelando suscripción a eventos...')
+        // console.log('Cancelando suscripción a eventos...')
         this.unsubscribeUser()
         this.unsubscribeUser = null
         }
@@ -40,10 +40,10 @@ export const useEventsStore = defineStore('events', {
     // Suscribirse a los eventos en los que el usuario es miembro
     subscribeAllEvents() {
         if (this.unsubscribeAll) {
-            console.log('Suscripción ya activa, ignorando...')
+            // console.log('Suscripción ya activa, ignorando...')
             return
         }
-        console.log('Iniciando suscripción a todos los eventos...')
+        // console.log('Iniciando suscripción a todos los eventos...')
         const { subscribeToEvents } = useEvents()
         this.unsubscribeAll = subscribeToEvents((events) => {
             this.allEvents.value = events
@@ -53,7 +53,7 @@ export const useEventsStore = defineStore('events', {
     // Cancelar la suscripción
     unsubscribeAllEvents() {
         if (this.unsubscribeAll) {
-        console.log('Cancelando suscripción a todos los eventos...')
+        // console.log('Cancelando suscripción a todos los eventos...')
         this.unsubscribeAll()
         this.unsubscribeAll = null
         }
@@ -61,10 +61,10 @@ export const useEventsStore = defineStore('events', {
     // Suscripción a eventos próximos
     subscribeUpcomingEvents() {
         if (this.unsubscribeUpcoming) {
-            console.log('Suscripción ya activa (próximos), ignorando...')
+            // console.log('Suscripción ya activa (próximos), ignorando...')
             return
         }
-        console.log('Suscribiendo a eventos próximos...')
+        // console.log('Suscribiendo a eventos próximos...')
         const { subscribeToUpcomingEvents } = useEvents()
         this.unsubscribeUpcoming = subscribeToUpcomingEvents((events) => {
             this.upcomingEvents.value = events
@@ -74,7 +74,7 @@ export const useEventsStore = defineStore('events', {
     // Cancelar suscripción de eventos próximos
     unsubscribeUpcomingEvents() {
     if (this.unsubscribeUpcoming) {
-        console.log('Cancelando suscripción a eventos próximos...')
+        // console.log('Cancelando suscripción a eventos próximos...')
         this.unsubscribeUpcoming()
         this.unsubscribeUpcoming = null
     }
@@ -110,9 +110,7 @@ export const useEventsStore = defineStore('events', {
         const { deleteEvent } = useEvents()
         try {
             await deleteEvent(idDoc)
-            debugger
             this.events.value = this.events?.value?.filter(event => event.idDoc !== idDoc);
-
         } catch (error) {
             console.error('Error al eliminar evento:', error)
             throw error
@@ -141,10 +139,10 @@ export const useEventsStore = defineStore('events', {
      // Suscripción a eventos de adopción
     subscribeToAdoptionEvents() {
         if (this.unsubscribeAdoption) {
-            console.log('Suscripción ya activa (adopción), ignorando...')
+            // console.log('Suscripción ya activa (adopción), ignorando...')
             return
         }
-        console.log('Iniciando suscripción a eventos de adopción...')
+        // console.log('Iniciando suscripción a eventos de adopción...')
         const { subscribeToAdoptionEvents } = useEvents()
         this.unsubscribeAdoption = subscribeToAdoptionEvents((events) => {
             this.adoptionEvents.value = events
@@ -154,7 +152,7 @@ export const useEventsStore = defineStore('events', {
     // Cancelar suscripción de eventos de adopción
     unsubscribeAdoptionEvents() {
         if (this.unsubscribeAdoption) {
-            console.log('Cancelando suscripción a eventos de adopción...')
+            // console.log('Cancelando suscripción a eventos de adopción...')
             this.unsubscribeAdoption()
             this.unsubscribeAdoption = null
         }

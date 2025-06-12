@@ -118,7 +118,6 @@
               Contactar
             </router-link>
 
-
             <a
               v-if="location.contact?.socialNetworkLink"
               :href="location.contact?.socialNetworkLink"
@@ -176,18 +175,26 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useRouter } from 'vue-router';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { usePrivateChats } from '../../composable/usePrivateChats';
-import CatIcon from '../../assets/icons/cat_1998592.png';
-import VetIcon1 from '../../assets/icons/locations/vet1.png';
-import TrainerIcon1 from '../../assets/icons/locations/entrenador1.png';
-import PaseadorIcon1 from '../../assets/icons/locations/paseador1.png';
-import Guarderiacon1 from '../../assets/icons/locations/guarderia1.png';
-import ParcoIcon1 from '../../assets/icons/locations/parque1.png';
-import PetfriendlyIcon1 from '../../assets/icons/locations/petfriendly1.png';
+import CatIcon from '../../assets/icons/cat_1.png';
+import VetIcon from '../../assets/icons/locations/veterinary 2.png';
+import TrainerIcon from '../../assets/icons/locations/trainer1.png';
+import GroomingIcon from '../../assets/icons/locations/groomer2.png';
+import PaseadorIcon from '../../assets/icons/locations/walking-the-dog.png';
+import GuarderiaIcon from '../../assets/icons/locations/guardery4.png';
+import ParqueIcon from '../../assets/icons/locations/park.png';
+import PetfriendlyIcon from '../../assets/icons/locations/petfriendly3.png';
+import PetShopIcon from '../../assets/icons/locations/assistant.png';
+import EtologoIcon from '../../assets/icons/locations/veterinary.png';
+import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
+import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
+import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
+import TherapyIcon from '../../assets/icons/locations/rehab1.png';
+
 
 const props = defineProps({
   visible: {
@@ -208,16 +215,26 @@ const showUserProfile = ref(false);
 const router = useRouter();
 const privateChatsStore = usePrivateChatsStore();
 
-// Lista de tipos de ubicación con íconos
+// Lista de tipos de ubicación con íconos y colores
 const locationTypes = ref([
-  { id: 'veterinaria', label: 'Veterinaria', icon: VetIcon1, color: 'bg-indigo-600' },
-  { id: 'petshop', label: 'Pet Shop', icon: CatIcon, color: 'bg-purple-600' },
-  { id: 'guarderia', label: 'Guardería', icon: Guarderiacon1, color: 'bg-green-600' },
-  { id: 'petfriendly', label: 'Pet Friendly', icon: PetfriendlyIcon1, color: 'bg-blue-600' },
-  { id: 'paseador', label: 'Paseador', icon: PaseadorIcon1, color: 'bg-yellow-600' },
-  { id: 'entrenador', label: 'Entrenador', icon: TrainerIcon1, color: 'bg-red-600' },
-  { id: 'parque', label: 'Parque', icon: ParcoIcon1, color: 'bg-teal-600' },
+  { id: 'veterinaria', label: 'Veterinaria', icon: VetIcon, color: 'bg-indigo-600' },
+  { id: 'petshop', label: 'Pet Shop', icon: PetShopIcon, color: 'bg-purple-600' },
+  { id: 'guarderia', label: 'Guardería', icon: GuarderiaIcon, color: 'bg-green-600' },
+  { id: 'peluqueria', label: 'Peluquería y Baño', icon: GroomingIcon, color: 'bg-pink-600' },
+  { id: 'cuidador', label: 'Cuidadores', icon: PetSitterIcon, color: 'bg-blue-600' },
+  { id: 'etologo', label: 'Etólogo', icon: EtologoIcon, color: 'bg-cyan-600' },
+  { id: 'paseador', label: 'Paseador', icon: PaseadorIcon, color: 'bg-yellow-600' },
+  { id: 'entrenador', label: 'Entrenadores de Mascotas', icon: TrainerIcon, color: 'bg-red-600' },
+  { id: 'parque', label: 'Parques y Plazas', icon: ParqueIcon, color: 'bg-teal-600' },
+  { id: 'petfriendly', label: 'Lugares Pet-Friendly', icon: PetfriendlyIcon, color: 'bg-orange-600' },
+  { id: 'refugio', label: 'Refugios y Adopción', icon: ShelterIcon, color: 'bg-rose-600' },
+  { id: 'emergencias', label: 'Emergencias', icon: EmergencyIcon, color: 'bg-red-700' },
+  { id: 'rehabilitacion', label: 'Rehabilitación y Terapia', icon: TherapyIcon, color: 'bg-violet-600' },
+  // { id: 'eventos', label: 'Eventos Pet-Friendly', icon: EventIcon, color: 'bg-amber-600' },
+  // { id: 'alojamiento', label: 'Alojamientos Pet-Friendly', icon: AccommodationIcon, color: 'bg-sky-600' },
+  // { id: 'suministros', label: 'Entrega de Suministros', icon: DeliveryIcon, color: 'bg-lime-600' },
 ]);
+
 function formatPhoneNumber(phone) {
   // Remove any non-digit characters and ensure it starts with +
   let cleaned = phone.replace(/\D/g, '');
@@ -226,14 +243,35 @@ function formatPhoneNumber(phone) {
   }
   return cleaned;
 }
+
 // Encontrar el tipo de ubicación correspondiente
 const locationType = computed(() => {
-  return locationTypes.value.find(type => type.id === props.location.type) || {};
+  return locationTypes.value.find(type => type.id === props.location.type) || { label: 'Desconocido', icon: CatIcon, color: 'bg-gray-600' };
 });
 
 // Estilo dinámico para el chip basado en el tipo
 const chipStyle = computed(() => {
   return locationType.value.color || 'bg-gray-600';
+});
+
+// Manejar la tecla Escape para cerrar el modal o submodal
+function handleEscape(event) {
+  if (event.key === 'Escape') {
+    if (showUserProfile.value) {
+      showUserProfile.value = false; // Cierra el submodal primero
+    } else if (props.visible) {
+      emit('close'); // Cierra el modal principal
+    }
+  }
+}
+
+// Agregar y remover el listener de la tecla Escape
+onMounted(() => {
+  document.addEventListener('keydown', handleEscape);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape);
 });
 
 // Resetear estados cuando el modal se cierra

@@ -33,18 +33,21 @@
 import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useGoogleMaps } from '../../composable/useGoogleMaps';
 import LocationDetailModal from '../organisms/LocationDetailModal.vue';
-import CatIcon from '../../assets/icons/cat_1998592.png';
-import DogIcon from '../../assets/icons/dog_1998627.png';
-import TrainerIcon1 from '../../assets/icons/locations/entrenador1.png';
-import TrainerIcon2 from '../../assets/icons/locations/entrenador2.png';
-import VetIcon1 from '../../assets/icons/locations/vet1.png';
-import VetIcon2 from '../../assets/icons/locations/vet2.png';
-import PaseadorIcon1 from '../../assets/icons/locations/paseador1.png';
-import PaseadorIcon2 from '../../assets/icons/locations/paseador2.png';
-import Guarderiacon1 from '../../assets/icons/locations/guarderia1.png';
-import Guarderiacon2 from '../../assets/icons/locations/guarderia2.png';
-import ParqueIcon1 from '../../assets/icons/locations/parque1.png';
-import PetfriendlyIcon1 from '../../assets/icons/locations/petfriendly1.png';
+
+import CatIcon from '../../assets/icons/cat_1.png';
+import VetIcon from '../../assets/icons/locations/veterinary 2.png';
+import TrainerIcon from '../../assets/icons/locations/trainer1.png';
+import GroomingIcon from '../../assets/icons/locations/groomer2.png';
+import PaseadorIcon from '../../assets/icons/locations/walking-the-dog.png';
+import GuarderiaIcon from '../../assets/icons/locations/guardery4.png';
+import ParqueIcon from '../../assets/icons/locations/park.png';
+import PetfriendlyIcon from '../../assets/icons/locations/petfriendly3.png';
+import PetShopIcon from '../../assets/icons/locations/assistant.png';
+import EtologoIcon from '../../assets/icons/locations/veterinary.png';
+import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
+import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
+import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
+import TherapyIcon from '../../assets/icons/locations/rehab1.png';
 
 const props = defineProps({
   locations: Array,
@@ -168,14 +171,22 @@ function addCustomMarker(position, title, iconUrl) {
 
 function getMarkerIcon(type) {
   const iconMap = {
-    parque: ParqueIcon1,
-    petfriendly: PetfriendlyIcon1,
-    veterinaria: VetIcon1,
-    petshop: Guarderiacon1,
-    servicio: CatIcon,
-    guarderia: Guarderiacon2,
-    paseador: PaseadorIcon2,
-    entrenador: TrainerIcon1,
+    veterinaria: VetIcon,
+    petshop: PetShopIcon,
+    guarderia: GuarderiaIcon,
+    peluqueria: GroomingIcon,
+    cuidador: PetSitterIcon,
+    etologo: EtologoIcon,
+    paseador: PaseadorIcon,
+    entrenador: TrainerIcon,
+    parque: ParqueIcon,
+    petfriendly: PetfriendlyIcon,
+    refugio: ShelterIcon,
+    emergencias: EmergencyIcon,
+    rehabilitacion: TherapyIcon,
+    // eventos: EventIcon, // Uncomment when filter is added
+    // alojamiento: AccommodationIcon, // Uncomment when filter is added
+    // suministros: DeliveryIcon, // Uncomment when filter is added
   };
   return {
     url: iconMap[type] || CatIcon,
@@ -185,7 +196,7 @@ function getMarkerIcon(type) {
 
 async function updateMapMarkers() {
   if (!map.value || !MarkerConstructor.value) {
-    console.log('Mapa o MarkerConstructor no disponibles');
+    // console.log('Mapa o MarkerConstructor no disponibles');
     return;
   }
 

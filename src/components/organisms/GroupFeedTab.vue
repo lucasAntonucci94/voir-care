@@ -77,7 +77,7 @@ const sortedPosts = computed(() => {
   let postsArray = [...posts?.value]
 
   if(user.value?.hiddenGroupPosts?.length > 0) {
-    console.log(user.value?.hiddenGroupPosts)
+    // console.log(user.value?.hiddenGroupPosts)
     postsArray = postsArray?.filter(post => 
       !user.value?.hiddenGroupPosts?.some(hidden => hidden.postId === post.id)
     );

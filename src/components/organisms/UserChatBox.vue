@@ -261,13 +261,13 @@ function closeChatActions() {
 }
 
 function deleteChat(chatId) {
-  console.log('Eliminar chat:', chatId)
+  // console.log('Eliminar chat:', chatId)
   closeChatActions()
   privateChatsStore.deleteChat(chatId)
 }
 
 function markAsUnread(chatId) {
-  console.log('Marcar como no leído:', chatId)
+  // console.log('Marcar como no leído:', chatId)
   closeChatActions()
 }
 
@@ -283,7 +283,6 @@ function closeChatActionsOnOutsideClick(e) {
     closeChatActions()
   }
 }
-
 </script>
     
 <style scoped>

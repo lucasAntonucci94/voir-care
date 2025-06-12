@@ -252,7 +252,7 @@ function closeReportModal() {
 
 async function handleAttendance() {
   if (!user.value) {
-    console.log('Usuario no autenticado');
+    // console.log('Usuario no autenticado');
     return;
   }
 
@@ -267,7 +267,7 @@ async function handleAttendance() {
       event.value.attendees.going = event.value.attendees.going.filter(uid => uid !== user.value.uid);
       attendeesDetails.value = attendeesDetails.value.filter(member => member.id !== user.value.uid);
       isGoing.value = false;
-      console.log(`Usuario cancela asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
+      // console.log(`Usuario cancela asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
       snackbarStore.show(`Usuario cancela asistencia al evento: ${event.value.title}`, 'success');
     } else {
       // Join attendance: add user.uid to attendees.going
@@ -275,7 +275,7 @@ async function handleAttendance() {
       const newAttendee = await usersStore.getUser(user.value.uid);
       if (newAttendee) attendeesDetails.value.push(newAttendee);
       isGoing.value = true;
-      console.log(`Usuario confirma asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
+      // console.log(`Usuario confirma asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
       snackbarStore.show(`Usuario confirma asistencia al evento: ${event.value.title}`, 'success');
     }
     showSettingsMenu.value = false;
@@ -300,7 +300,7 @@ async function confirmDelete() {
   try {
     await eventsStore.deleteEvent(event.value.idDoc)
     closeDeleteModal()
-    console.log('Evento eliminado')
+    // console.log('Evento eliminado')
     router.push({ name: 'events' })
     snackbarStore.show('Evento eliminado', 'success')
   } catch (error) {

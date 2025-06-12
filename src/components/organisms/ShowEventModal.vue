@@ -185,17 +185,17 @@ const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar' : 'Asistiré'
 
 async function handleAttendance() {
   if (!user.value) {
-    console.log('Usuario no autenticado');
+    // console.log('Usuario no autenticado');
     return;
   }
   try {
     const status = isGoing.value ? null : 'going';
     await eventsStore.setUserAttendanceStatus(internalEvent.value.idDoc, user.value.uid, status);
-    console.log(
-      `Usuario ${status === 'going' ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${
-        internalEvent.value.idDoc
-      }, ${internalEvent.value.title}`,
-    );
+    // console.log(
+    //   `Usuario ${status === 'going' ? 'Confirma asistencia' : 'Cancela asistencia'} al evento: ${
+    //     internalEvent.value.idDoc
+    //   }, ${internalEvent.value.title}`,
+    // );
     if (!internalEvent.value.attendees) {
       internalEvent.value.attendees = { going: [] };
     }
@@ -208,9 +208,9 @@ async function handleAttendance() {
         (id) => id !== user.value.uid,
       );
     }
-    console.log(
-      `Usuario ${status ? 'inscrito' : 'removido'} del evento: ${internalEvent.value.title}`,
-    );
+    // console.log(
+    //   `Usuario ${status ? 'inscrito' : 'removido'} del evento: ${internalEvent.value.title}`,
+    // );
   } catch (error) {
     console.error('Error al actualizar asistencia:', error);
   }

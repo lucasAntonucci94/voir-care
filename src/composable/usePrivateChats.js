@@ -187,7 +187,7 @@ export function usePrivateChats() {
         // Eliminar el documento del chat
         await deleteDoc(chatRef);
 
-        console.log('Chat y mensajes eliminados correctamente.');
+        // console.log('Chat y mensajes eliminados correctamente.');
       } catch (err) {
         console.error('Error al eliminar el chat y sus mensajes:', err);
         throw err;

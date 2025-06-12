@@ -15,11 +15,11 @@ export const useGroupsStore = defineStore('groups', {
   actions: {
     // Suscribirse a los grupos en los que el usuario es miembro
     subscribeUserGroups(uid) {
-      console.log('Iniciando suscripción a grupos del usuario...');
+      // console.log('Iniciando suscripción a grupos del usuario...');
       const { subscribeToUserGroups } = useGroups();
 
       if (this.unsubscribeUserGroups) {
-        console.log('Suscripción a grupo de usuario ya activa, ignorando...');
+        // console.log('Suscripción a grupo de usuario ya activa, ignorando...');
         return;
       }
 
@@ -32,7 +32,7 @@ export const useGroupsStore = defineStore('groups', {
     // Cancelar la suscripción a grupos de usuario
     unsubscribeFromUserGroups() {
       if (this.unsubscribeUserGroups) {
-        console.log('Cancelando suscripción a grupos de usuario...');
+        // console.log('Cancelando suscripción a grupos de usuario...');
         this.unsubscribeUserGroups();
         this.unsubscribeUserGroups = null;
       }
@@ -41,10 +41,10 @@ export const useGroupsStore = defineStore('groups', {
     // Suscribirse a todos los grupos
     subscribeAllGroups() {
       if (this.unsubscribeAll) {
-        console.log('Suscripción a todos los grupos ya activa, ignorando...');
+        // console.log('Suscripción a todos los grupos ya activa, ignorando...');
         return;
       }
-      console.log('Iniciando suscripción a todos los grupos...');
+      // console.log('Iniciando suscripción a todos los grupos...');
       const { subscribeToGroups } = useGroups();
       this.unsubscribeAll = subscribeToGroups((groups) => {
         this.allGroups.value = groups;
@@ -55,7 +55,7 @@ export const useGroupsStore = defineStore('groups', {
     // Cancelar la suscripción a todos los grupos
     unsubscribeAllGroups() {
       if (this.unsubscribeAll) {
-        console.log('Cancelando suscripción a todos los grupos...');
+        // console.log('Cancelando suscripción a todos los grupos...');
         this.unsubscribeAll();
         this.unsubscribeAll = null;
       }
@@ -63,10 +63,10 @@ export const useGroupsStore = defineStore('groups', {
     // Suscripción a grupos de adopción
     subscribeToAdoptionGroups() {
       if (this.unsubscribeAdoption) {
-        console.log('Suscripción a grupos de adopción ya activa, ignorando...');
+        // console.log('Suscripción a grupos de adopción ya activa, ignorando...');
         return;
       }
-      console.log('Iniciando suscripción a grupos de adopción...');
+      // console.log('Iniciando suscripción a grupos de adopción...');
       const { subscribeToAdoptionGroups } = useGroups();
       this.unsubscribeAdoption = subscribeToAdoptionGroups((groups) => {
         this.adoptionGroups.value = groups;
@@ -77,7 +77,7 @@ export const useGroupsStore = defineStore('groups', {
     // Cancelar suscripción de grupos de adopción
     unsubscribeAdoptionGroups() {
       if (this.unsubscribeAdoption) {
-        console.log('Cancelando suscripción a grupos de adopción...');
+        // console.log('Cancelando suscripción a grupos de adopción...');
         this.unsubscribeAdoption();
         this.unsubscribeAdoption = null;
       }

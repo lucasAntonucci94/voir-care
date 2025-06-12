@@ -155,12 +155,12 @@ const deleteAllChats = () => {
 };
 
 const openDeleteAllModal = (messageId) => {
-  console.log('Abriendo modal para mensaje ID:', messageId);
+  // console.log('Abriendo modal para mensaje ID:', messageId);
   showDeleteAllModal.value = true;
 };
 
 const closeDeleteAllModal = () => {
-  console.log('Cerrando modal');
+  // console.log('Cerrando modal');
   showDeleteAllModal.value = false;
 };
 

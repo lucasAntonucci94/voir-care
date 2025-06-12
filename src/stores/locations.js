@@ -11,14 +11,14 @@ export const useLocationsStore = defineStore('locations', {
   actions: {
     // Suscribirse a los locations en tiempo real
     subscribe() {
-      console.log('Iniciando suscripción a locations...');
+      // console.log('Iniciando suscripción a locations...');
       const { subscribeToIncomingLocations } = useLocations();
       try {
         this.unsubscribeFn = subscribeToIncomingLocations((updatedLocations) => {
-          console.log('Locations recibidos desde Firebase:', updatedLocations);
+          // console.log('Locations recibidos desde Firebase:', updatedLocations);
           this.locations.value = updatedLocations;
           this.isLoading = false;
-          console.log('Locations actualizados en el store:', this.locations.value);
+          // console.log('Locations actualizados en el store:', this.locations.value);
         });
       } catch (error) {
         console.error('Error al suscribirse a locations:', error);
@@ -28,18 +28,18 @@ export const useLocationsStore = defineStore('locations', {
     // Cancelar la suscripción
     unsubscribe() {
       if (typeof this.unsubscribeFn === 'function') {
-        console.log('Cancelando suscripción a locations...');
+        // console.log('Cancelando suscripción a locations...');
         this.unsubscribeFn();
         this.unsubscribeFn = null;
       }
     },
     // Agregar un nuevo location
     async addLocation(locationData) {
-      console.log('Añadiendo nuevo location:', locationData);
+      // console.log('Añadiendo nuevo location:', locationData);
       const { saveLocation } = useLocations();
       try {
         await saveLocation(locationData);
-        console.log('Location añadido exitosamente a Firebase');
+        // console.log('Location añadido exitosamente a Firebase');
       } catch (error) {
         console.error('Error al añadir el location:', error);
         throw error;
@@ -47,11 +47,11 @@ export const useLocationsStore = defineStore('locations', {
     },
     // Actualizar un location
     async updateLocation(locationIdDoc, updatedLocationData) {
-      console.log('Actualizando location:', locationIdDoc, updatedLocationData);
+      // console.log('Actualizando location:', locationIdDoc, updatedLocationData);
       const { updateLocation } = useLocations();
       try {
         await updateLocation(locationIdDoc, updatedLocationData);
-        console.log('Location actualizado exitosamente en Firebase');
+        // console.log('Location actualizado exitosamente en Firebase');
       } catch (error) {
         console.error('Error al actualizar el location:', error);
         throw error;
@@ -59,11 +59,11 @@ export const useLocationsStore = defineStore('locations', {
     },
     // Eliminar un location
     async deleteLocation(locationIdDoc) {
-      console.log('Eliminando location con idDoc:', locationIdDoc);
+      // console.log('Eliminando location con idDoc:', locationIdDoc);
       const { deleteLocation } = useLocations();
       try {
         await deleteLocation(locationIdDoc);
-        console.log('Location eliminado, esperando actualización de Firebase...');
+        // console.log('Location eliminado, esperando actualización de Firebase...');
       } catch (error) {
         console.error('Error al eliminar el location:', error);
         throw error;
@@ -71,11 +71,11 @@ export const useLocationsStore = defineStore('locations', {
     },
     // Cambiar estado pending
     async togglePending(location) {
-      console.log('Cambiando estado pending de location:', location.idDoc);
+      // console.log('Cambiando estado pending de location:', location.idDoc);
       const { changeStateLocation } = useLocations();
       try {
         await changeStateLocation(location);
-        console.log('Estado pending actualizado en Firebase');
+        // console.log('Estado pending actualizado en Firebase');
       } catch (error) {
         console.error('Error al cambiar estado pending:', error);
         throw error;

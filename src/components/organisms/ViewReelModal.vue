@@ -312,7 +312,6 @@ const closeModal = () => {
 };
 
 const previousReel = () => {
-  debugger
   if (hasPreviousReel.value) {
     const previousGroup = props.reels[currentReelIndex.value - 1];
     emit('update-reel', previousGroup.reels[0]);
@@ -320,7 +319,6 @@ const previousReel = () => {
 };
 
 const nextReel = () => {
-  debugger
   if (hasNextReel.value) {
     const nextGroup = props.reels[currentReelIndex.value + 1];
     emit('update-reel', nextGroup.reels[0]);

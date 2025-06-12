@@ -23,13 +23,13 @@ export const useReelsStore = defineStore('reels', {
     // Suscribirse a los reels en tiempo real
     subscribeToReels() {
       if (this.unsubscribe) {
-        console.log('Suscripción a reels ya activa, ignorando...');
+        // console.log('Suscripción a reels ya activa, ignorando...');
         return;
       }
-      console.log('Iniciando suscripción a reels...');
+      // console.log('Iniciando suscripción a reels...');
       const { subscribeToIncomingReels } = useReels();
       this.unsubscribe = subscribeToIncomingReels((updatedReels) => {
-        console.log('Reels recibidos desde Firebase:', updatedReels);
+        // console.log('Reels recibidos desde Firebase:', updatedReels);
         this.reels = updatedReels;
         this.isLoading = false;
       });
@@ -37,7 +37,7 @@ export const useReelsStore = defineStore('reels', {
     // Cancelar la suscripción
     unsubscribeFromReels() {
       if (this.unsubscribe) {
-        console.log('Cancelando suscripción a reels...');
+        // console.log('Cancelando suscripción a reels...');
         this.unsubscribe();
         this.unsubscribe = null;
       }
@@ -45,20 +45,20 @@ export const useReelsStore = defineStore('reels', {
     // Subscribe to default reels
     subscribeToDefaultReels() {
       if (this.unsubscribeDefaultReels) {
-        console.log('Default reels subscription already active, ignoring...');
+        // console.log('Default reels subscription already active, ignoring...');
         return;
       }
-      console.log('Initiating subscription to default reels...');
+      // console.log('Initiating subscription to default reels...');
       const { subscribeToDefaultReels } = useDefaultReels();
       this.unsubscribeDefaultReels = subscribeToDefaultReels((updatedDefaultReels) => {
         this.defaultReels = updatedDefaultReels;
-        console.log('Default reels received from Firebase:', updatedDefaultReels);
+        // console.log('Default reels received from Firebase:', updatedDefaultReels);
       });
     },
     // Cancelar la suscripción a default reels
     unsubscribeFromDefaultReels() {
       if (this.unsubscribeDefaultReels) {
-        console.log('Cancelando suscripción a default reels...');
+        // console.log('Cancelando suscripción a default reels...');
         this.unsubscribeDefaultReels();
         this.unsubscribeDefaultReels = null;
       }
@@ -78,7 +78,7 @@ export const useReelsStore = defineStore('reels', {
     // },
     // Añadir un nuevo reel
     async addReel(newReelData) {
-      console.log('Añadiendo nuevo reel:', newReelData);
+      // console.log('Añadiendo nuevo reel:', newReelData);
       const { saveReel } = useReels();
       const reelData = {
         user: newReelData.user,
@@ -91,7 +91,7 @@ export const useReelsStore = defineStore('reels', {
     },
     // Eliminar un reel
     async deleteReel(reelIdDoc) {
-      console.log('Eliminando reel con idDoc:', reelIdDoc);
+      // console.log('Eliminando reel con idDoc:', reelIdDoc);
       const { deleteReel } = useReels();
       await deleteReel(reelIdDoc);
     },

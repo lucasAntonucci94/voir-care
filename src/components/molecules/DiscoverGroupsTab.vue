@@ -63,7 +63,7 @@ const discoveredGroups = computed(() => {
 
 // Navegación
 const navigateToCreateGroup = () => {
-  console.log("Crear grupo")
+  // console.log("Crear grupo")
 }
 
   // Suscripción a eventos del usuario

@@ -1,38 +1,32 @@
 <template>
-    <div class="relative w-full h-[60vh] md:h-[70vh]">
-      <div
-        v-if="loading"
-        class="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 z-10"
-      >
-        <i class="fa-solid fa-spinner animate-spin h-8 w-8 text-indigo-600"></i>
-      </div>
-      <div v-else id="map" class="w-full h-full rounded-b-2xl"></div>
+  <div class="relative w-full h-[60vh] md:h-[70vh]">
+    <div
+      v-if="loading"
+      class="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 z-10"
+    >
+      <i class="fa-solid fa-spinner animate-spin h-8 w-8 text-indigo-600"></i>
     </div>
-  </template>
+    <div v-else id="map" class="w-full h-full rounded-b-2xl"></div>
+  </div>
+</template>
   
-  <script setup>
-  import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue'
-  import { useGoogleMaps } from '../../composable/useGoogleMaps'
-  import CatIcon from '../../assets/icons/cat_1998592.png'
-  import DogIcon from '../../assets/icons/dog_1998627.png'
+<script setup>
+import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue'
+import { useGoogleMaps } from '../../composable/useGoogleMaps'
+import CatIcon from '../../assets/icons/cat_1.png'
+import DogIcon from '../../assets/icons/dog_1998627.png'
+
+const props = defineProps({
+  locations: Array,
+  loading: Boolean
+})
+const emit = defineEmits(['map-ready'])
+const { loadGoogleMaps } = useGoogleMaps()
+
+const map = ref(null)
+const markers = ref(new Map())
+let AdvancedMarkerElement = null
   
-  const props = defineProps({
-    locations: Array,
-    loading: Boolean
-  })
-  const emit = defineEmits(['map-ready'])
-  const { loadGoogleMaps } = useGoogleMaps()
-  
-  const map = ref(null)
-  const markers = ref(new Map())
-  const isMapReady = ref(false)
-  let AdvancedMarkerElement = null
-  
-//   onMounted(async () => {
-//   await initMap()
-//   isMapReady.value = true
-//   emit('map-ready')
-// })
 onMounted(async () => {
   await initMap();
   emit('map-ready');

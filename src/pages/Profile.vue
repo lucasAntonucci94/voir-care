@@ -189,7 +189,7 @@ watch(activeUserEmail, async newEmail => {
   }
   // Subscribe to savedPosts if this is the user's own profile
   if (isOwnProfile.value && authUser.value?.uid) {
-    console.log('Iniciando suscripción a posts guardados en Profile.vue...');
+    // console.log('Iniciando suscripción a posts guardados en Profile.vue...');
     postsStore.subscribeToSavedPosts(authUser.value.uid);
   }
 });
@@ -285,7 +285,7 @@ onMounted(async () => {
   }
   // Subscribe to savedPosts if this is the user's own profile
   if (isOwnProfile.value && authUser.value?.uid) {
-    console.log('Iniciando suscripción a posts guardados en Profile.vue...');
+    // console.log('Iniciando suscripción a posts guardados en Profile.vue...');
     postsStore.subscribeToSavedPosts(authUser.value.uid);
   }
   checkScroll();

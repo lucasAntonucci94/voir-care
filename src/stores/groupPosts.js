@@ -24,11 +24,11 @@ export const useGroupPostsStore = defineStore('groupPosts', {
       const groupsStore = useGroupsStore();
 
       if (groupsStore.unsubscribeUserGroups || this.unsubscribePostsUserFeed?.length) {
-        console.log('[Feed] Ya está suscrito, cancelando...');
+        // console.log('[Feed] Ya está suscrito, cancelando...');
         this.unsubscribeUserGroupFeed();
       }
 
-      console.log('[Feed] Suscribiendo a los grupos del usuario...');
+      // console.log('[Feed] Suscribiendo a los grupos del usuario...');
       groupsStore.unsubscribeUserGroups = subscribeToUserGroups(uid, (groups) => {
         if (!Array.isArray(groups)) {
           console.warn('[Feed] No se pudo obtener la lista de grupos del usuario');
@@ -40,7 +40,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
         const groupIds = groups.map((g) => g.idDoc);
 
         if (groupIds.length === 0) {
-          console.log('[Feed] El usuario no tiene grupos, cancelando feed');
+          // console.log('[Feed] El usuario no tiene grupos, cancelando feed');
           this.userGroupFeed.value = [];
           return;
         }
@@ -78,13 +78,13 @@ export const useGroupPostsStore = defineStore('groupPosts', {
     unsubscribeUserGroupFeed() {
       const groupsStore = useGroupsStore();
       if (this.unsubscribePostsUserFeed?.length) {
-        console.log('[Feed] Cancelando suscripciones a posteos...');
+        // console.log('[Feed] Cancelando suscripciones a posteos...');
         this.unsubscribePostsUserFeed.forEach((unsubscribe) => unsubscribe());
         this.unsubscribePostsUserFeed = [];
       }
 
       if (groupsStore.unsubscribeUserGroups) {
-        console.log('[Feed] Cancelando suscripción a grupos del usuario...');
+        // console.log('[Feed] Cancelando suscripción a grupos del usuario...');
         groupsStore.unsubscribeUserGroups();
         groupsStore.unsubscribeUserGroups = null;
       }
@@ -95,7 +95,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
     async suscribePostsByGroupId(group, callback) {
       const { suscribePostsByGroupId } = useGroupPosts();
       if (this.unsubscribePosts) {
-        console.log('Suscripción a posts de grupo ya activa, cancelando...');
+        // console.log('Suscripción a posts de grupo ya activa, cancelando...');
         this.unsuscribePostsByGroupId();
       }
       try {
@@ -111,7 +111,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
     // Cancelar la suscripción a posts de un grupo
     unsuscribePostsByGroupId() {
       if (this.unsubscribePosts) {
-        console.log('Cancelando suscripción a posts de grupo...');
+        // console.log('Cancelando suscripción a posts de grupo...');
         this.unsubscribePosts();
         this.unsubscribePosts = null;
         this.groupDetailPosts.value = []; // Clear the posts state
