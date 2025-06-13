@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-full overflow-y-auto">
+  <div class="relative p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 max-h-[100vh]">
     <div v-if="user?.isSuscribed || user?.isAdmin" class="flex-col items-center mb-2">
         <p class="text-sm text-gray-700 dark:text-gray-300 font-bold mb-2">Queres adherirte a nuestro mapa?</p>
         <button class="px-4 py-2 mb-5 dark:bg-primary bg-secondary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
@@ -15,7 +15,7 @@
           Filtrar
           <span
             v-if="modelValue.length"
-            class="ml-2 px-2 py-1 bg-primary/70 dark:bg-secondary/70 text-gray-100 rounded-full text-xs"
+            class="ml-2 px-2 py-1 bg-primary/70 dark:bg-secondary/70 text-gray-100 rounded-full text-xs hidden md:inline-block"
           >
             {{ modelValue.length }}
           </span>
@@ -60,9 +60,8 @@
     <!-- Lista de filtros -->
     <div
       :class="{
-        'max-h-0': !isDesktop && !showFilters,
-        'max-h-screen': isDesktop || showFilters,
-        'overflow-hidden': !isDesktop
+        'max-h-0 overflow-hidden': !isDesktop && !showFilters,
+        'max-h-[35vh] md:max-h-[83vh] overflow-y-auto': isDesktop || showFilters
       }"
       class="flex flex-col gap-2 transition-all duration-300"
     >
