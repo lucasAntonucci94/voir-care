@@ -1,5 +1,5 @@
 <template>
-  <div class="relative p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 max-h-[100vh]">
+  <div class="relative p-6 md:p-3 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 max-h-[100vh]">
     <div v-if="user?.isSuscribed || user?.isAdmin" class="flex-col items-center mb-2">
         <p class="text-sm text-gray-700 dark:text-gray-300 font-bold mb-2">Queres adherirte a nuestro mapa?</p>
         <button class="px-4 py-2 mb-5 dark:bg-primary bg-secondary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
@@ -61,7 +61,9 @@
     <div
       :class="{
         'max-h-0 overflow-hidden': !isDesktop && !showFilters,
-        'max-h-[35vh] md:max-h-[83vh] overflow-y-auto': isDesktop || showFilters
+        'overflow-y-auto': isDesktop || showFilters,
+        'max-h-[35vh] md:max-h-[60vh]': (isDesktop || showFilters) && user?.isSuscribed,
+        'max-h-[35vh] md:max-h-[73vh]': (isDesktop || showFilters) && !user?.isSuscribed,
       }"
       class="flex flex-col gap-2 transition-all duration-300"
     >
@@ -97,7 +99,6 @@ import { ref, defineEmits, onMounted, watch } from 'vue';
 import CreateLocationModal from '../../components/organisms/CreateLocationModal.vue';
 import { useAuth } from '../../api/auth/useAuth.js'
 
-import CatIcon from '../../assets/icons/cat_1.png';
 import VetIcon from '../../assets/icons/locations/veterinary 2.png';
 import TrainerIcon from '../../assets/icons/locations/trainer1.png';
 import GroomingIcon from '../../assets/icons/locations/groomer2.png';
@@ -111,7 +112,6 @@ import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
 import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
 import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
 import TherapyIcon from '../../assets/icons/locations/rehab1.png';
-
 
 const { user } = useAuth();
 
