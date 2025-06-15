@@ -151,23 +151,21 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount, watchEffect } from 'vue';
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useAuth } from '../../api/auth/useAuth';
 import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useStorage } from '../../composable/useStorage';
 import { useRouter } from 'vue-router';
 import AvatarFallback from '../../assets/avatar1.jpg';
-import { useUserStatus } from '../../composable/useUserStatus';
-import { useUsers } from '../../composable/useUsers';
+import { useUserStatusStore } from '../../stores/userStatus'; // Nuevo store
 
 const { user } = useAuth();
 const { getChatIdByReference } = usePrivateChats();
 const { getFileUrl } = useStorage();
 const privateChatsStore = usePrivateChatsStore();
 const router = useRouter();
-const { listenToUserStatus } = useUserStatus();
-const { getUidsByEmails } = useUsers();
+const userStatusStore = useUserStatusStore(); // Instanciar el store
 
 const isChatOpen = ref(false);
 const userEmail = computed(() => user.value?.email ?? '');
@@ -180,8 +178,6 @@ const showSearch = ref(false);
 const activeMenuId = ref(null);
 const dropdownPositions = ref({});
 const avatars = ref(new Map());
-const chatStatuses = ref(new Map()); // Mapa para almacenar el estado de conectividad por email
-let unsubscribeStatuses = []; // Array para almacenar funciones de desuscripción
 
 function toggleSearch() {
   showSearch.value = !showSearch.value;
@@ -191,10 +187,9 @@ function toggleSearch() {
 const filteredChats = computed(() =>
   chats.value.map(chat => {
     const otherEmail = getOtherUserEmail(chat.users);
-    debugger
     return {
       ...chat,
-      isOnline: chatStatuses.value.get(otherEmail)?.isOnline ?? false,
+      isOnline: userStatusStore.getUserStatus(otherEmail), // Usar el store
     };
   }).filter(chat => {
     const other = getOtherUserEmail(chat.users);
@@ -213,15 +208,15 @@ function getOtherUserEmail(users) {
 async function loadAvatarForChat(chat) {
   const email = getOtherUserEmail(chat.users);
   if (!email || avatars.value.has(email)) return;
-    try {
-      const filepath = `profile/${email}.jpg`;
-      const imageUrl = await getFileUrl(filepath);
-      avatars.value.set(email, imageUrl || AvatarFallback);
-    } catch (error) {
-      console.error(`Error fetching avatar for ${email}:`, error);
-      avatars.value.set(email, AvatarFallback); // Fallback en caso de error
-    }
+  try {
+    const filepath = `profile/${email}.jpg`;
+    const imageUrl = await getFileUrl(filepath);
+    avatars.value.set(email, imageUrl || AvatarFallback);
+  } catch (error) {
+    console.error(`Error fetching avatar for ${email}:`, error);
+    avatars.value.set(email, AvatarFallback);
   }
+}
 
 function getLastMessagePreview(chat) {
   const message = chat.message?.message || '';
@@ -243,57 +238,29 @@ function getLastMessagePreview(chat) {
   return `${prefix}`;
 }
 
-// Inicialización manual al montar el componente
 onMounted(async () => {
   document.addEventListener('click', closeChatActionsOnOutsideClick);
   if (chats.value.length) {
-    await initializeChatStatuses();
+    await userStatusStore.initializeChatStatuses(chats.value); // Inicializar estados
+    for (const chat of chats.value) {
+      await loadAvatarForChat(chat);
+    }
   }
 });
 
-// Limpieza al desmontar
 onBeforeUnmount(() => {
   document.removeEventListener('click', closeChatActionsOnOutsideClick);
-  unsubscribeStatuses.forEach(unsubscribe => unsubscribe());
-  unsubscribeStatuses = [];
+  userStatusStore.clearSubscriptions(); // Limpiar suscripciones
 });
 
-// Watch para reaccionar a cambios en chats
 watch(chats, async (newChats) => {
-  console.log('watch triggered for chats:', newChats.length);
-  await initializeChatStatuses();
+  if (newChats.length) {
+    await userStatusStore.initializeChatStatuses(newChats); // Actualizar estados
+    for (const chat of newChats) {
+      await loadAvatarForChat(chat);
+    }
+  }
 }, { immediate: true });
-
-// Efecto reactivo para manejar la lógica asíncrona de manera más orgánica
-watchEffect(async () => {
-  if (!privateChatsStore.chats?.value) return;
-  if (chats.value.length) {
-    await initializeChatStatuses();
-  }
-});
-
-// Función para inicializar los estados de conectividad
-async function initializeChatStatuses() {
-  const emails = [];
-  for (const chat of chats.value) {
-    await loadAvatarForChat(chat);
-    const otherUserEmail = getOtherUserEmail(chat.users);
-    if (otherUserEmail) emails.push(otherUserEmail);
-  }
-  if (!emails.length) return;
-  // Obtener UIDs
-  const uids = await getUidsByEmails(emails);
-  // Limpiar suscripciones anteriores
-  unsubscribeStatuses.forEach(unsubscribe => unsubscribe());
-  unsubscribeStatuses = [];
-  // Suscribirse a los estados de conectividad
-  uids.forEach((uid) => {
-    const unsubscribe = listenToUserStatus(uid, (status) => {
-      chatStatuses.value.set(status.email, { uid, isOnline: status?.isOnline ?? false }); // seteo mapa por email de usuario
-    });
-    unsubscribeStatuses.push(unsubscribe);
-  });
-}
 
 async function goToChat(chat) {
   const otherUser = getOtherUserEmail(chat.users);
@@ -308,7 +275,7 @@ function toggleChatActions(chatId, event) {
   const rect = event.currentTarget.getBoundingClientRect();
   dropdownPositions.value[chatId] = {
     top: rect.bottom + window.scrollY,
-    left: rect.right - 160 + window.scrollX, // ancho del dropdown
+    left: rect.right - 160 + window.scrollX,
   };
   activeMenuId.value = activeMenuId.value === chatId ? null : chatId;
 }
