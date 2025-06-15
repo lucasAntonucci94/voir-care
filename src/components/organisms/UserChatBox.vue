@@ -158,7 +158,7 @@ import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useStorage } from '../../composable/useStorage';
 import { useRouter } from 'vue-router';
 import AvatarFallback from '../../assets/avatar1.jpg';
-import { useUserStatusStore } from '../../stores/userStatus'; // Nuevo store
+import { useUserStatusStore } from '../../stores/userStatus';
 
 const { user } = useAuth();
 const { getChatIdByReference } = usePrivateChats();

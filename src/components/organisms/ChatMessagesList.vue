@@ -10,15 +10,27 @@
       >
         <i class="fa-solid fa-arrow-left text-lg"></i>
       </button>
-      <router-link class="flex items-center gap-3" :to="`/profile/${privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)}`" v-if="privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)" @click.native.stop="goBack" aria-current="page" :aria-label="'Perfil de ' + getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId))"
+      <router-link
+        class="flex items-center gap-3"
+        :to="`/profile/${privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)}`"
+        v-if="privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)"
+        @click.native.stop="goBack"
+        aria-current="page"
+        :aria-label="'Perfil de ' + getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId))"
       >
-      
-
-        <img
-          :src="privateChatsStore.getUserPhoto(privateChatsStore.selectedChatId)"
-          alt="User avatar"
-          class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
-        />
+        <div class="relative">
+          <img
+            :src="privateChatsStore.getUserPhoto(privateChatsStore.selectedChatId)"
+            alt="User avatar"
+            class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
+          />
+          <!-- Círculo de estado -->
+          <div
+            class="absolute bottom-0 right-2 w-3 h-3 rounded-full border-2 border-white"
+            :class="isOtherUserOnline ? 'bg-green-500' : 'bg-gray-500'"
+            :title="isOtherUserOnline ? 'En línea' : 'Desconectado'"
+          ></div>
+        </div>
         <div class="flex-1">
           <div class="flex justify-between items-center">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
@@ -27,7 +39,6 @@
           </div>
         </div>
       </router-link>
-
     </div>
 
     <!-- Contenedor de mensajes -->
@@ -87,7 +98,7 @@
       <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" />
     </div>
 
-    <!-- Modal de confirmacion al eliminar un mensaje -->
+    <!-- Modal de confirmación al eliminar un mensaje -->
     <GenericConfirmModal
       :visible="showDeleteModal"
       title="Confirmar eliminación"
@@ -112,16 +123,19 @@ import ChatMessageInput from '../atoms/ChatMessageInput.vue';
 import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
+import { useUserStatusStore } from '../../stores/userStatus';
 
 // Estado reactivo
 const { user } = useAuth();
 const privateChatsStore = usePrivateChatsStore();
+const userStatusStore = useUserStatusStore();
 const messages = ref([]);
 const loadingMessages = ref(false);
 const unsubscribeMessages = ref(null);
 const showDeleteModal = ref(false);
 const messageToDelete = ref(null);
 const messagesContainer = ref(null);
+const isOtherUserOnline = ref(false);
 const isDesktop = ref(false);
 const snackbarStore = useSnackbarStore();
 
@@ -134,23 +148,22 @@ onMounted(() => {
   checkIfDesktop();
   window.addEventListener('resize', checkIfDesktop);
 
-  // console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
   if (privateChatsStore?.selectedChatId) {
     usePrivateChats().markMessagesAsRead(privateChatsStore?.selectedChatId, user.value.email);
   }
 });
 
 onUnmounted(() => {
-  // console.log('ChatMessagesList desmontado');
   if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
     unsubscribeMessages.value();
     unsubscribeMessages.value = null;
   }
   messages.value = [];
   window.removeEventListener('resize', checkIfDesktop);
+  // NO limpiar suscripciones de userStatusStore aquí para no afectar otras suscripciones
 });
 
-// Cargar mensajes y precargar foto cuando cambia el chat seleccionado
+// Cargar mensajes y estado cuando cambia el chat seleccionado
 watch(
   () => privateChatsStore?.selectedChatId,
   async (newChatId) => {
@@ -163,6 +176,7 @@ watch(
       const otherUserEmail = privateChatsStore.getOtherUserEmail(newChatId);
       if (!user?.value || !otherUserEmail) {
         loadingMessages.value = false;
+        isOtherUserOnline.value = false;
         return;
       }
       // Precargar la foto del usuario
@@ -171,19 +185,34 @@ watch(
         user.value.email,
         otherUserEmail,
         (msgs) => {
-          // console.log('Mensajes recibidos:', msgs);
           messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
           loadingMessages.value = false;
           scrollToBottom();
         }
       );
       usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
+      // Obtener el estado inicial del usuario desde el store
+      isOtherUserOnline.value = userStatusStore.getUserStatus(otherUserEmail);
     } else {
       messages.value = [];
       loadingMessages.value = false;
+      isOtherUserOnline.value = false;
     }
   },
   { immediate: true }
+);
+
+// Observar cambios en el store para actualizar isOtherUserOnline
+watch(
+  () => userStatusStore.chatStatuses,
+  () => {
+    debugger
+    const otherUserEmail = privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId);
+    if (otherUserEmail) {
+      isOtherUserOnline.value = userStatusStore.getUserStatus(otherUserEmail);
+    }
+  },
+  { deep: true } // Necesario porque chatStatuses es un Map
 );
 
 // Auto-scroll al final de los mensajes
@@ -193,7 +222,6 @@ watch(messages, () => {
 
 // Métodos
 const deleteMessage = async (messageId) => {
-  // console.log('Confirmando eliminación de mensaje ID:', messageId);
   privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
   closeDeleteModal();
   snackbarStore.show('Mensaje eliminado', 'success');
@@ -208,13 +236,11 @@ const getUserName = (email) => {
 };
 
 const openDeleteModal = (messageId) => {
-  // console.log('Abriendo modal para mensaje ID:', messageId);
   messageToDelete.value = messageId;
   showDeleteModal.value = true;
 };
 
 const closeDeleteModal = () => {
-  // console.log('Cerrando modal');
   showDeleteModal.value = false;
   messageToDelete.value = null;
 };
