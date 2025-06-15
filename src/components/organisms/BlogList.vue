@@ -15,29 +15,36 @@
       </div>
       <div class="flex flex-wrap gap-2">
         <button
-            v-for="category in categories"
-            :key="category"
-            :class="[
+          v-for="category in uniqueCategories"
+          :key="category"
+          :class="[
             'px-3 py-1 rounded-full text-sm font-semibold transition',
             selectedFilter === category
-                ? 'bg-primary text-white'
-                : 'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
-            ]"
-            @click="selectedFilter = category"
+              ? 'bg-primary text-white'
+              : 'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
+          ]"
+          @click="selectedFilter = category"
         >
-            {{ category }}
+          {{ category }}
+        </button>
+        <button
+          v-if="selectedFilter"
+          class="px-3 py-1 rounded-full text-sm font-semibold bg-red-500 text-white hover:bg-red-600 transition"
+          @click="selectedFilter = ''"
+        >
+          Limpiar Filtro
         </button>
       </div>
     </div>
 
     <!-- Estado de carga -->
-    <div v-if="loading" class="text-center py-8">
+    <div v-if="blogsStore.isLoading" class="text-center py-8">
       <p class="text-gray-600 dark:text-gray-300">Cargando blogs...</p>
     </div>
 
     <!-- Estado de error -->
-    <div v-else-if="error" class="text-center py-8 text-red-600">
-      {{ error }}
+    <div v-else-if="blogsStore.error" class="text-center py-8 text-red-600">
+      {{ blogsStore.error }}
     </div>
 
     <!-- Lista de blogs -->
@@ -52,10 +59,54 @@
 </template>
 
 <script setup>
-import { useBlogs } from '../../composable/useBlogs'
-import BlogPostCard from './BlogCard.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useEducationBlogsStore } from '../../stores/educationBlogs';
+import BlogPostCard from './BlogCard.vue';
 
-const { categories, selectedFilter, searchQuery, filteredBlogs, loading, error, loadData } = useBlogs()
+const blogsStore = useEducationBlogsStore();
+const searchQuery = ref('');
+const selectedFilter = ref('');
 
-loadData()
+// Computed properties
+const uniqueCategories = computed(() => {
+  const categories = new Set();
+  debugger
+  blogsStore?.blogs?.value?.forEach((blog) => {
+    blog.categories?.forEach((cat) => categories.add(cat));
+  });
+  return ['Todos', ...categories].sort();
+});
+
+const filteredBlogs = computed(() => {
+  let filtered = blogsStore.blogs.value || [];
+
+  // Apply category filter
+  if (selectedFilter.value && selectedFilter.value !== 'Todos') {
+    filtered = filtered.filter((blog) =>
+      blog.categories?.includes(selectedFilter.value)
+    );
+  }
+
+  // Apply search query
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (blog) =>
+        blog.title?.toLowerCase().includes(query) ||
+        blog.intro?.toLowerCase().includes(query) ||
+        blog.summary?.toLowerCase().includes(query)
+    );
+  }
+
+  return filtered;
+});
+
+// Lifecycle hooks
+onMounted(() => {
+  blogsStore.subscribeToBlogs();
+});
+
+onUnmounted(() => {
+  blogsStore.unsubscribeFromBlogs();
+});
 </script>

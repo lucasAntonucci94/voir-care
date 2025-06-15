@@ -10,34 +10,44 @@
 
     <!-- Sección: Blogs -->
     <section class="mb-12">
-      <div v-if="filteredBlogs.length > 3" class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Blogs</h2>
-        <button
-          class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
-          @click="viewMoreBlogs"
-        >
-          Ver más
-        </button>
+      <div v-if="blogsStore.isLoading" class="text-center py-8">
+        <p class="text-gray-600 dark:text-gray-300">Cargando blogs...</p>
       </div>
-      <div v-if="filteredBlogs.length === 0" class="text-center text-gray-500 dark:text-gray-400 italic">
-        No hay blogs disponibles en este momento.
+      <div v-else-if="blogsStore.error" class="text-center py-8 text-red-600">
+        {{ blogsStore.error }}
       </div>
       <div v-else>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          <BlogPostCard
-            v-for="blog in displayedBlogs"
-            :key="blog.id"
-            :post="blog"
-          />
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Blogs</h2>
+          <button
+            v-if="filteredBlogs.length > 5"
+            class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
+            @click="viewMoreBlogs"
+          >
+            Ver más
+          </button>
+        </div>
+        <div v-if="filteredBlogs.length === 0" class="text-center text-gray-500 dark:text-gray-400 italic">
+          No hay blogs disponibles en este momento.
+        </div>
+        <div v-else>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <BlogPostCard
+              v-for="blog in displayedBlogs"
+              :key="blog.id"
+              :post="blog"
+            />
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Sección: Eventos -->
     <section class="mb-12">
-      <div v-if="filteredBlogs.length > 3" class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Eventos</h2>
         <button
+          v-if="events.length > 3"  
           class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
           @click="viewMoreEvents"
         >
@@ -56,11 +66,12 @@
       </div>
     </section>
 
-     <!-- Sección: Grupos -->
+    <!-- Sección: Grupos -->
     <section class="mb-12">
-      <div v-if="filteredBlogs.length > 3" class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Grupos</h2>
         <button
+          v-if="groups.length > 3" 
           class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
           @click="viewMoreGroups"
         >
@@ -78,89 +89,67 @@
         />
       </div>
     </section>
-
-    <!-- Sección: Posteos -->
-    <!-- <section class="mb-12">
-      <div v-if="filteredBlogs.length > 3" class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Posteos Destacados</h2>
-        <button
-          class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
-          @click="viewMoreFeed"
-        >
-          Ver más
-        </button>
-      </div>
-      <div v-if="posts.length === 0" class="text-center text-gray-500 dark:text-gray-400 italic">
-        No hay posteos disponibles en este momento.
-      </div>
-      <div v-else  class="space-y-6 flex flex-col items-center">
-        <PostCard
-          v-for="post in posts"
-          :key="post.idDoc"
-          :post="post"
-          />
-      </div>
-    </section> -->
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { blogs } from '../data/blogs.js';
+import { useEducationBlogsStore } from '../stores/educationBlogs';
 import { useEventsStore } from '../stores/events';
 import { useGroupsStore } from '../stores/groups';
-import { usePostsStore } from '../stores/posts';
 import BlogPostCard from '../components/organisms/BlogCard.vue';
-import EventCard from '../components/organisms/EventCard.vue';
-import GroupCard from '../components/organisms/GroupCard.vue';
-// import PostCard from '../components/organisms/PostCard.vue';
+import EventCard from '../components/organisms/EventSimpleCard.vue';
+import GroupCard from '../components/organisms/GroupSimpleCard.vue';
 
 const router = useRouter();
+const blogsStore = useEducationBlogsStore();
 const eventsStore = useEventsStore();
 const groupsStore = useGroupsStore();
-const postsStore = usePostsStore();
 
-// Filtrado de blogs por categoría "adopcion"
+// Filtrado de blogs por categoría "Adopción"
 const filteredBlogs = computed(() => {
-  if (!blogs.value) return [];
-  return blogs.value.filter(blog =>
-    blog.categories?.includes('Adopcion') || blog.categories?.includes('Adopción')
+  return blogsStore.blogs.value.filter(blog =>
+    blog.categories?.includes('Adopción') || blog.categories?.includes('Adopcion')
   );
 });
 
-// Limitar a los primeros 3 blogs
-const displayedBlogs = computed(() => { return filteredBlogs.value.slice(0, 5); });
+// Limitar a los primeros 5 blogs
+const displayedBlogs = computed(() => {
+  return filteredBlogs.value.slice(0, 5);
+});
 
 // Método para redirigir a la pantalla de educación
-const viewMoreBlogs = () => { router.push('/education'); };
+const viewMoreBlogs = () => {
+  router.push('/education');
+};
 
 // Método para redirigir a la pantalla de eventos
-const viewMoreEvents = () => { router.push('/events'); };
+const viewMoreEvents = () => {
+  router.push('/events');
+};
 
 // Método para redirigir a la pantalla de grupos
-const viewMoreGroups = () => { router.push('/groups'); };
+const viewMoreGroups = () => {
+  router.push('/groups');
+};
 
-// Método para redirigir a la pantalla de grupos
-const viewMoreFeed = () => { router.push('/feed'); };
-
-// Referencia reactiva para eventos (conectada al store)
+// Referencia reactiva para eventos y grupos (conectada al store)
 const events = computed(() => eventsStore.adoptionEvents?.value || []);
 const groups = computed(() => groupsStore.adoptionGroups?.value || []);
-// const posts = computed(() => postsStore.adoptionPosts?.value || []);
 
-// Suscripción a eventos y grupos de adopción al montar el componente
+// Suscripción a blogs, eventos y grupos de adopción al montar el componente
 onMounted(() => {
+  blogsStore.subscribeToBlogs();
   eventsStore.subscribeToAdoptionEvents();
   groupsStore.subscribeToAdoptionGroups();
-  // postsStore.subscribeToAdoptionPosts();
 });
 
 // Cancelar suscripción al desmontar el componente
 onUnmounted(() => {
+  blogsStore.unsubscribeFromBlogs();
   eventsStore.unsubscribeAdoptionEvents();
   groupsStore.unsubscribeAdoptionGroups();
-  // postsStore.unsubscribeAdoptionPosts();
 });
 </script>
 

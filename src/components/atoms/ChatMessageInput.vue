@@ -69,7 +69,6 @@ function sanitizeMessage(message) {
 watch(
   () => props.selectedChatId,
   async (newChatId, oldChatId) => {
-    debugger
     if (newChatId && user?.value?.email) {
       // Marcar al usuario como presente en el nuevo chat
       await setUserPresence(newChatId, user.value.email, true);

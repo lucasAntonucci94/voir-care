@@ -1,4 +1,4 @@
-import { blogs } from '../data/blogs.js'
+import { jsonBlogs } from '../data/blogs.js'
 
 /**
  * Simula una llamada a una API para obtener blogs
@@ -7,7 +7,7 @@ import { blogs } from '../data/blogs.js'
 export const fetchBlogs = async () => {
   // Simulación de retardo de red
   return new Promise((resolve) => {
-    setTimeout(() => resolve(blogs.value), 50)
+    setTimeout(() => resolve(jsonBlogs.value), 50)
   })
 }
 

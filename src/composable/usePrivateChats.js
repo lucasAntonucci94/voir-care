@@ -95,10 +95,8 @@ export function usePrivateChats() {
         created_at: serverTimestamp(),
         readBy: [senderEmail]
       });
-      debugger
       const isRecipientPresent = await getUserPresence(chatId, to);
       
-      debugger
       if (!isRecipientPresent) {
         // Incrementar unreadCount del receptor
         const chatDocRef = doc(db, 'chats-private', chatId);

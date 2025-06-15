@@ -1,7 +1,7 @@
 import Img from '../assets/3.png'
 import { ref } from 'vue'
 
-export const blogs = ref([
+export const jsonBlogs = ref([
   {
     id: 1,
     title: 'Cómo preparar tu hogar para un nuevo perro',

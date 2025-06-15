@@ -39,7 +39,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { blogs } from '../data/blogs.js'
+import { jsonBlogs } from '../data/blogs.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -47,7 +47,7 @@ const blog = ref(null)
 
 onMounted(() => {
   const blogId = parseInt(route.params.idBlog)
-  const found = blogs.value.find(b => b.id === blogId)
+  const found = jsonBlogs.value.find(b => b.id === blogId)
   if (!found) {
     router.push('/blog') // fallback si no se encuentra
   } else {
