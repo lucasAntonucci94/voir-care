@@ -8,7 +8,8 @@
                 class="w-20 h-20 md:w-32 md:h-32 rounded-full border-4 border-white object-cover shadow-lg cursor-pointer" 
             />
             <!-- Círculo de estado -->
-            <div 
+            <div
+                v-if="!isOwnProfile" 
                 class="absolute bottom-2 right-2 w-4 h-4 md:w-5 md:h-5 rounded-full border-2 border-white"
                 :class="userIsOnline ? 'bg-green-500' : 'bg-gray-500'"
                 :title="userIsOnline ? 'En línea' : 'Desconectado'"
@@ -59,43 +60,43 @@ import { useUserStatus } from '../../composable/useUserStatus';
 // Props
 const props = defineProps({
     activeUser: { type: Object, required: true },
+    isOwnProfile: { type: Boolean, default: false },
     connections: { type: Array, required: true },
     setTabConexiones: { type: Function, required: true },
 });
 
+// Modal state
+const showModal = ref(false);
+const userIsOnline = ref(false);
+const selectedMedia = ref({ src: '', type: 'image' });
+const userStatus = useUserStatus();
 
-  // Modal state
-  const showModal = ref(false);
-  const userIsOnline = ref(false);
-  const selectedMedia = ref({ src: '', type: 'image' });
-  const userStatus = useUserStatus();
+// Modal functions
+const openModal = () => {
+  selectedMedia.value.src = props.activeUser?.photoURLFile || avatarDefault;
+  showModal.value = true;
+  document.body.style.overflow = 'hidden';
+};
 
-  // Modal functions
-  const openModal = () => {
-    selectedMedia.value.src = props.activeUser?.photoURLFile || avatarDefault;
-    showModal.value = true;
-    document.body.style.overflow = 'hidden';
-  };
-  
-  const closeModal = () => {
-    showModal.value = false;
-    selectedMedia.value = { src: '', type: 'image' };
-    document.body.style.overflow = '';
-  };
+const closeModal = () => {
+  showModal.value = false;
+  selectedMedia.value = { src: '', type: 'image' };
+  document.body.style.overflow = '';
+};
 
-  let unsubscribe = () => {};
+let unsubscribe = () => {};
 
-  onMounted(() => {
-    // Escuchar el estado de un usuario específico
-    unsubscribe = userStatus.listenToUserStatus(props.activeUser?.uid, (status) => {
-      // console.log('User status updated:', status);
-      userIsOnline.value = status.isOnline ?? false;
-    });
+onMounted(() => {
+  // Escuchar el estado de un usuario específico
+  unsubscribe = userStatus.listenToUserStatus(props.activeUser?.uid, (status) => {
+    // console.log('User status updated:', status);
+    userIsOnline.value = status.isOnline ?? false;
   });
-  
-  onUnmounted(() => {
-    unsubscribe();
-  });
+});
+
+onUnmounted(() => {
+  unsubscribe();
+});
 </script>
 
 <style scoped>

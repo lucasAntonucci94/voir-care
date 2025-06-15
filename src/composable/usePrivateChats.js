@@ -19,8 +19,10 @@ const privateRefCache = ref([]);
 export function usePrivateChats() {
     // Funciones internas
     async function createPrivateChatRef(from, to) {
-      const users = [from,to];
+      const users = [from, to];
       const chatKey = [from, to].sort().join('_');
+      const sanitizedFrom = from.replace(/\./g, '_');
+      const sanitizedTo = to.replace(/\./g, '_');
       const docRef = await addDoc(privateChatRef, {
         users,
         chatKey,
@@ -28,6 +30,10 @@ export function usePrivateChats() {
         unreadCount: {
           [from]: 0,
           [to]: 0
+        },
+        presence: {
+          [sanitizedFrom]: false,
+          [sanitizedTo]: false
         }
       });
       const id = docRef.id;
@@ -74,7 +80,7 @@ export function usePrivateChats() {
     }
 
     // Funciones públicas
-    async function savePrivateMessage(from, to, message) {      
+    async function savePrivateMessage(from, to, message) {
       const currentChatRef = await getPrivateChatRef(from, to);
       const chatId = currentChatRef.path.split('/')[1]; // Extraer chatId
       const senderEmail = user?.value?.email ?? from;
@@ -89,25 +95,33 @@ export function usePrivateChats() {
         created_at: serverTimestamp(),
         readBy: [senderEmail]
       });
-      // Incrementar unreadCount del receptor
-      const chatDocRef = doc(db, 'chats-private', chatId);
-      await updateDoc(chatDocRef, new FieldPath('unreadCount', to), increment(1));
-      const { getUserIdByEmail } = useUsers()
-      const { sendNotification } = useNotifications()
-      // NOTIFICO DEL MENSAJE
-      if (to !== from) {
-        const toUid = await getUserIdByEmail(to)
-        const fromUid = user?.value?.id ?? await getUserIdByEmail(from)
+      debugger
+      const isRecipientPresent = await getUserPresence(chatId, to);
+      
+      debugger
+      if (!isRecipientPresent) {
+        // Incrementar unreadCount del receptor
+        const chatDocRef = doc(db, 'chats-private', chatId);
+        await updateDoc(chatDocRef, new FieldPath('unreadCount', to), increment(1));
 
-        await sendNotification({
-          toUid,
-          fromUid,
-          type: 'message',
-          message: `${user.value?.displayName || from} te ha enviado un mensaje.`,
-          entityId: chatId,
-          entityType: 'chat',
-          extra: null
-        })
+        const { getUserIdByEmail } = useUsers();
+        const { sendNotification } = useNotifications();
+
+        // Notificar solo si el receptor no está presente en el chat
+        if (to !== from) {
+          const toUid = await getUserIdByEmail(to);
+          const fromUid = user?.value?.id ?? await getUserIdByEmail(from);
+
+          await sendNotification({
+            toUid,
+            fromUid,
+            type: 'message',
+            message: `${user.value?.displayName || from} te ha enviado un mensaje.`,
+            entityId: chatId,
+            entityType: 'chat',
+            extra: null
+          });
+        }
       }
     }
 
@@ -369,6 +383,37 @@ export function usePrivateChats() {
       await updateDoc(chatDocRef, fieldPath, 0); 
     }
     
+    async function setUserPresence(chatId, userEmail, isPresent) {
+      try {
+        const chatDocRef = doc(db, 'chats-private', chatId);
+        // Sanitize the email by replacing dots with underscores to avoid nested paths
+        const sanitizedEmail = userEmail.replace(/\./g, '_');
+        // Use a merge option to ensure the presence field is updated as an object
+        await updateDoc(chatDocRef, {
+          [`presence.${sanitizedEmail}`]: isPresent
+        }, { merge: true });
+      } catch (err) {
+        console.error('Error updating user presence:', err);
+        throw err;
+      }
+    }
+
+    async function getUserPresence(chatId, userEmail) {
+      try {
+        const chatDocRef = doc(db, 'chats-private', chatId);
+        const chatDoc = await getDoc(chatDocRef);
+        if (chatDoc.exists()) {
+          const presence = chatDoc.data().presence || {};
+          const sanitizedEmail = userEmail.replace(/\./g, '_');
+          return !!presence[sanitizedEmail];
+        }
+        return false;
+      } catch (err) {
+        console.error('Error fetching user presence:', err);
+        return false;
+      }
+    }
+
   return {
     savePrivateMessage,
     subscribeToIncomingPrivateMessages,
@@ -380,6 +425,8 @@ export function usePrivateChats() {
     privateRefCache,
     getChatIdByReference,
     markMessagesAsRead,
-    markChatAsRead
+    markChatAsRead,
+    setUserPresence,
+    getUserPresence
   };
 }

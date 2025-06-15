@@ -95,7 +95,7 @@
 
     <!-- Input de escritura -->
     <div class="border-t border-gray-200 dark:border-gray-600 mt-4">
-      <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" />
+      <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" :isOtherUserOnline="isOtherUserOnline" />
     </div>
 
     <!-- Modal de confirmación al eliminar un mensaje -->
@@ -206,7 +206,6 @@ watch(
 watch(
   () => userStatusStore.chatStatuses,
   () => {
-    debugger
     const otherUserEmail = privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId);
     if (otherUserEmail) {
       isOtherUserOnline.value = userStatusStore.getUserStatus(otherUserEmail);

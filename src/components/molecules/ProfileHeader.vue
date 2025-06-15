@@ -5,7 +5,7 @@
   </div>
   <div class="container mx-auto px-4 md:px-8 lg:px-16 -mt-12 md:-mt-16 relative">
     <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
-      <ProfileInfoCard :activeUser="activeUser" :connections="connections" :setTabConexiones="setTabConexiones" />
+      <ProfileInfoCard :activeUser="activeUser" :isOwnProfile="isOwnProfile" :connections="connections" :setTabConexiones="setTabConexiones" />
       <div v-if="isOwnProfile" class="flex flex-col gap-4 h-30 w-full md:w-auto">
         <div class="hidden md:flex justify-center md:justify-end gap-2">
           <button @click="openBannerModal" class="px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700/80 dark:text-gray-300 dark:hover:bg-gray-500 dark:hover:text-gray-100 rounded-full transition-all shadow-md">

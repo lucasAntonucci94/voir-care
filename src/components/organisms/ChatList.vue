@@ -222,9 +222,8 @@ const filteredChats = computed(() => {
 });
 
 onMounted(async () => {
-  privateChatsStore.loadChatPhotos();
-  debugger
   if(!privateChatsStore?.chats?.value) return;
+  privateChatsStore.loadChatPhotos();
   for (const chat of privateChatsStore.chats.value) {
     await getChatUserPhoto(chat.idDoc);
   }

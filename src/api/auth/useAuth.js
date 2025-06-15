@@ -113,7 +113,6 @@ async function logout() {
   try {
     // // Marcar como desconectado antes de cerrar sesión
     if (user.value?.uid) {
-      debugger
       const rtdb = getDatabase(firebaseApp);
       const rtdbStatusRef = rtdbRef(rtdb, `status/${user.value.uid}`);
       await set(rtdbStatusRef, { isOnline: false, email: user.value.email, lastActivity: Date.now() });
