@@ -134,8 +134,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import CarouselAwareness from '../components/organisms/CarrouselAwareness.vue';
-import HeroLight from '../assets/hero/heroLight.jpeg'; // Reemplazar con una imagen de un perro y gato juntos
-import HeroDark from '../assets/hero/heroDark.jpeg'; // Reemplazar con una imagen de un perro y gato juntos
+import HeroLight from '../assets/hero/heroLight1.png'; // Reemplazar con una imagen de un perro y gato juntos
+import HeroDark from '../assets/hero/heroDark1.png'; // Reemplazar con una imagen de un perro y gato juntos
+// import HeroLight from '../assets/hero/heroLight.jpeg'; // Reemplazar con una imagen de un perro y gato juntos
+// import HeroDark from '../assets/hero/heroDark.jpeg'; // Reemplazar con una imagen de un perro y gato juntos
 import BannerImage from '../assets/1.png';
 import ServiceImage1 from '../assets/1.png';
 import ServiceImage2 from '../assets/2.png';
