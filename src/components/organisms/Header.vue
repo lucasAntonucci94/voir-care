@@ -44,7 +44,7 @@
             v-if="isAuthenticated"
             :is-open="navbarStore.isUserMenuOpen"
             @toggle="navbarStore.toggleMenu('user')"
-            class="flex-shrink-0"
+            class="flex-shrink-0 ml-4"
           />
         </div>
       </nav>

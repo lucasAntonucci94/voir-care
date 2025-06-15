@@ -12,7 +12,9 @@
         v-else-if="post?.media?.type === 'video'"
         :src="post.media.url"
         :poster="post?.media?.url"
-        controls
+        muted
+        autoplay
+        loop
         class="w-full h-full object-cover"
       ></video>
       <!-- Unhide Button -->
@@ -136,6 +138,7 @@ async function handleUnhidePost() {
     snackbarStore.show('Error al mostrar la publicación', 'error');
   } finally {
     isLoading.value = false;
+    document.body.style.overflow = '';
   }
 }
 </script>

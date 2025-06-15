@@ -42,6 +42,7 @@ export function useUsers() {
           isBlocked: user.isBlocked || false,
           isSuscribed: user.isSuscribed || false,
           configs: user.configs || {},
+          socialNetwork: user.socialNetwork || [],
         });
       });
 
@@ -110,6 +111,7 @@ export function useUsers() {
         isBlocked: user.isBlocked || false,
         isSuscribed: user.isSuscribed || false,
         configs: user.configs || {},
+        socialNetwork: user.socialNetwork || [],
       };
     } catch (error) {
       console.error('Error al obtener el perfil por email:', error);
@@ -145,6 +147,7 @@ export function useUsers() {
         isSuscribed: false,
         configs: {theme: 'light'},
         connections: [],
+        socialNetwork: [],
       });
     } catch (error) {
       console.error('Error al crear usuario:', error);
@@ -178,6 +181,8 @@ export function useUsers() {
         isBlocked: data.isBlocked || false,
         isSuscribed: data.isSuscribed || false,
         configs: data.configs || {},
+        configs: data.configs || {},
+        socialNetwork: data.socialNetwork || {},
       };
       await updateDoc(docRef, userData);
       await updateUserFromPost(id, userData);
@@ -545,6 +550,41 @@ export function useUsers() {
     }
   }
   
+  /**
+   * Obtiene los UIDs de los usuarios a partir de un array de correos electrónicos
+   * @param {Array<string>} emails - Array de correos electrónicos
+   * @returns {Promise<Array<string>>} - Array de UIDs correspondientes
+   */
+  async function getUidsByEmails(emails) {
+    try {
+      if (!emails?.length) return [];
+      const uids = [];
+      // Dividir en lotes de 30 correos (límite de Firestore para 'in')
+      const batches = [];
+      for (let i = 0; i < emails.length; i += 30) {
+        batches.push(emails.slice(i, i + 30));
+      }
+
+      for (const batch of batches) {
+        // Verificar que el lote no esté vacío
+        if (!batch.length) {
+          console.warn('getUidsByEmails: Se encontró un lote vacío, omitiendo');
+          continue;
+        }
+        const q = query(usersRef, where('email', 'in', batch));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          uids.push(doc.id); // El ID del documento es el UID
+        });
+      }
+
+      return uids;
+    } catch (error) {
+      console.error('Error al obtener UIDs por correos electrónicos:', error);
+      throw error;
+    }
+  }
+  
   return {
     userProfile,
     getAllUsers,
@@ -564,5 +604,6 @@ export function useUsers() {
     unblockUserIndividually,
     suscribeUser,
     updateUserTheme,
+    getUidsByEmails,
   };
 }

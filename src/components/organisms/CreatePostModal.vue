@@ -254,12 +254,21 @@ function validatePostForm() {
   if (!newPost.value.title || newPost.value.title.trim() === '') {
     errors.title = 'El título es obligatorio';
   }
+  
+  // Título requerido
+  if (newPost.value.title.length > 50) {
+    errors.title = 'El título no debe superar los 50 caracteres';
+  }
 
   // Descripción requerida
   if (!newPost.value.description || newPost.value.description.trim() === '') {
     errors.description = 'La descripción es obligatoria';
   }
 
+  // Título requerido
+  if (newPost.value.description.length > 250) {
+    errors.description = 'El título no debe superar los 250 caracteres';
+  }
   // Media opcional
   // if (!newPost.value.media) {
   //   errors.media = 'Debes subir una imagen o video';

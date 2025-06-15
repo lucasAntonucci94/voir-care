@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 overflow-y-auto h-full">
     <!-- Campo de búsqueda y botón de acciones -->
@@ -33,10 +34,10 @@
             </span>
           </button>
           <button
-          @click="openDeleteAllModal"
-          class="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-          :disabled="privateChatsStore?.loading || privateChatsStore?.chats?.value.length === 0"
-          :class="{ 'cursor-not-allowed opacity-50': privateChatsStore?.loading || privateChatsStore?.chats?.value.length === 0 }"
+            @click="openDeleteAllModal"
+            class="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            :disabled="privateChatsStore?.loading || privateChatsStore?.chats?.value.length === 0"
+            :class="{ 'cursor-not-allowed opacity-50': privateChatsStore?.loading || privateChatsStore?.chats?.value.length === 0 }"
           >
             <i class="fas fa-trash-can mr-2"></i>
             <span class="hidden md:block">
@@ -65,11 +66,19 @@
         }"
         @click="selectChat(chat.idDoc)"
       >
-        <img
-          :src="getChatUserPhoto(chat.idDoc)"
-          alt="User avatar"
-          class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
-        />
+        <div class="relative">
+          <img
+            :src="avatars.get(getOtherUserEmail(chat.idDoc)) || AvatarFallback"
+            alt="User avatar"
+            class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
+          />
+          <!-- Círculo de estado -->
+          <div
+            class="absolute bottom-0 right-2 w-3 h-3 rounded-full border-2 border-white"
+            :class="chat.isOnline ? 'bg-green-500' : 'bg-gray-500'"
+            :title="chat.isOnline ? 'En línea' : 'Desconectado'"
+          ></div>
+        </div>
         <div class="flex-1">
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-200">
@@ -90,7 +99,7 @@
       </div>
     </div>
     <NewChatModal ref="newChatModal" />
-    <!-- Modal de confirmacion para eliminar todos los chats -->
+    <!-- Modal de confirmación para eliminar todos los chats -->
     <GenericConfirmModal
       :visible="showDeleteAllModal"
       title="Confirmar eliminación"
@@ -104,24 +113,35 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { useSnackbarStore } from '../../stores/snackbar';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import NewChatModal from '../molecules/NewChatModal.vue';
 import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
+import { useUserStatus } from '../../composable/useUserStatus';
+import { useUsers } from '../../composable/useUsers';
+import { useStorage } from '../../composable/useStorage';
+import AvatarFallback from '../../assets/avatar1.jpg';
 
 const privateChatsStore = usePrivateChatsStore();
 const snackbarStore = useSnackbarStore();
+const { listenToUserStatus } = useUserStatus();
+const { getUidsByEmails } = useUsers();
+const { getFileUrl } = useStorage();
 const searchQuery = ref('');
 const showActionsMenu = ref(false);
 const showDeleteAllModal = ref(false);
-const newChatModal = ref(null); // Reference to the NewChatModal component
+const newChatModal = ref(null);
 const dropdownRef = ref(null);
-// Emite eventos para el componente padre
 const emit = defineEmits(['selectChat', 'openDeleteChatModal']);
 
-// Manejo los click del contenedor del dropdown
+// Estado para manejar avatares y estados de conexión
+const avatars = ref(new Map());
+const chatStatuses = ref(new Map()); // Mapa reactivo: { email: { uid, isOnline } }
+let unsubscribeStatuses = []; // Array para almacenar funciones de desuscripción
+
+// Manejo de clics fuera del contenedor del dropdown
 const handleClickOutside = (event) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     showActionsMenu.value = false;
@@ -154,48 +174,123 @@ const deleteAllChats = () => {
   snackbarStore.show('Chats eliminados', 'success');
 };
 
-const openDeleteAllModal = (messageId) => {
-  // console.log('Abriendo modal para mensaje ID:', messageId);
+const openDeleteAllModal = () => {
   showDeleteAllModal.value = true;
 };
 
 const closeDeleteAllModal = () => {
-  // console.log('Cerrando modal');
   showDeleteAllModal.value = false;
 };
 
 // Obtener la foto de perfil para un chat
-const getChatUserPhoto = (chatId) => {
-  return privateChatsStore.getUserPhoto(chatId);
+const getChatUserPhoto = async (chatId) => {
+  const email = getOtherUserEmail(chatId);
+  if (!email || avatars.value.has(email)) return avatars.value.get(email);
+  try {
+    const filepath = `profile/${email}.jpg`;
+    const imageUrl = await getFileUrl(filepath);
+    avatars.value.set(email, imageUrl || AvatarFallback);
+    return imageUrl || AvatarFallback;
+  } catch (error) {
+    console.error(`Error fetching avatar for ${email}:`, error);
+    avatars.value.set(email, AvatarFallback);
+    return AvatarFallback;
+  }
 };
 
 // Obtener el nombre del otro usuario
 const getUserName = (chatId) => {
-  const email = privateChatsStore.getOtherUserEmail(chatId);
-  return email?.split('@')[0].replace('.', ' ') || '';
+  const email = getOtherUserEmail(chatId);
+  return email?.split('@')[0].replace('.', ' ') || 'Usuario desconocido';
 };
 
-// Filtrar chats según la búsqueda
+// Obtener el email del otro usuario en el chat
+const getOtherUserEmail = (chatId) => {
+  return privateChatsStore.getOtherUserEmail(chatId);
+};
+
+// Obtener correos electrónicos de los usuarios en los chats
+const fetchChatUserEmails = () => {
+  if (!privateChatsStore?.chats?.value) return [];
+  const emails = privateChatsStore.chats.value
+    .map(chat => getOtherUserEmail(chat.idDoc))
+    .filter(email => email); // Filtra emails nulos o vacíos
+  return [...new Set(emails)]; // Elimina duplicados
+};
+
+// Inicializar estados de conectividad
+const initializeChatStatuses = async () => {
+  const emails = fetchChatUserEmails();
+  if (!emails.length) return;
+
+  // Obtener UIDs
+  const uids = await getUidsByEmails(emails);
+
+  // Limpiar suscripciones anteriores
+  unsubscribeStatuses.forEach(unsubscribe => unsubscribe());
+  unsubscribeStatuses = [];
+
+  // Suscribirse a los estados de conectividad
+  uids.forEach((uid) => {
+    const unsubscribe = listenToUserStatus(uid, (status) => {
+      chatStatuses.value.set(status.email, { uid, isOnline: status?.isOnline ?? false });
+    });
+    unsubscribeStatuses.push(unsubscribe);
+  });
+};
+
+// Filtrar chats según la búsqueda y mapear estados de conexión
 const filteredChats = computed(() => {
   if (!privateChatsStore?.chats?.value) return [];
-  if (!searchQuery.value) return privateChatsStore.chats.value;
+  let chats = privateChatsStore.chats.value;
 
-  const query = searchQuery.value.toLowerCase();
-  return privateChatsStore.chats.value.filter(chat => {
-    const userName = getUserName(chat.idDoc)?.toLowerCase() || '';
-    const userEmail = privateChatsStore.getOtherUserEmail(chat.idDoc)?.toLowerCase() || '';
-    return userName.includes(query) || userEmail.includes(query);
+  // Aplicar filtro de búsqueda si existe
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    chats = chats.filter(chat => {
+      const userName = getUserName(chat.idDoc)?.toLowerCase() || '';
+      const userEmail = getOtherUserEmail(chat.idDoc)?.toLowerCase() || '';
+      return userName.includes(query) || userEmail.includes(query);
+    });
+  }
+
+  // Mapear estados de conexión
+  return chats.map(chat => {
+    const email = getOtherUserEmail(chat.idDoc);
+    return {
+      ...chat,
+      isOnline: chatStatuses.value.get(email)?.isOnline ?? false,
+    };
   });
 });
 
-// Cargar fotos iniciales
-onMounted(() => {
+// Cargar fotos y estados iniciales
+onMounted(async () => {
   privateChatsStore.loadChatPhotos();
+  // Cargar avatares y estados de conexión
+  for (const chat of privateChatsStore.chats.value) {
+    await getChatUserPhoto(chat.idDoc);
+  }
+  await initializeChatStatuses();
   document.addEventListener('click', handleClickOutside);
 });
 
+// Watch para reaccionar a cambios en los chats
+watch(
+  () => privateChatsStore.chats.value,
+  async (newChats) => {
+    for (const chat of newChats) {
+      await getChatUserPhoto(chat.idDoc);
+    }
+    await initializeChatStatuses();
+  },
+  { deep: true }
+);
+
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
+  unsubscribeStatuses.forEach(unsubscribe => unsubscribe());
+  unsubscribeStatuses = [];
 });
 </script>
 
@@ -230,3 +325,4 @@ onUnmounted(() => {
   background: #555;
 }
 </style>
+```

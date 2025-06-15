@@ -180,6 +180,58 @@
           </div>
         </div>
       </div>
+      <!-- Paso 5: Redes sociales -->
+      <div v-if="currentStep === 4" class="space-y-4 animate-fade-in">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Redes sociales</label>
+          <div class="space-y-2">
+            <div v-for="(network, index) in editForm.socialNetwork" :key="index" class="flex items-center gap-2">
+              <select
+                v-model="network.name"
+                :class="[
+                  'w-1/4 px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
+                  stepErrors[`socialNetwork[${index}].name`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+                ]"
+                :disabled="isLoading"
+              >
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Facebook">Facebook</option>
+                <option value="X">X</option>
+                <option value="TikTok">TikTok</option>
+                <option value="Website">Website</option>
+              </select>
+              <input
+                v-model="network.value"
+                type="text"
+                placeholder="URL"
+                :class="[
+                  'flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
+                  stepErrors[`socialNetwork[${index}].value`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+                ]"
+                :disabled="isLoading"
+              />
+              <button
+                type="button"
+                @click="removeNetwork(index)"
+                :disabled="isLoading || editForm.socialNetwork.length <= 1"
+                class="px-2 py-1 text-red-500 hover:text-red-700"
+              >
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+            <button
+              type="button"
+              @click="addNetwork"
+              :disabled="isLoading"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50"
+            >
+              Agregar más
+            </button>
+          </div>
+          <p v-if="stepErrors.socialNetwork" class="text-red-500 text-sm mt-1">{{ stepErrors.socialNetwork }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- Botones de navegación -->
@@ -274,6 +326,7 @@ const steps = ref([
   { label: 'Contacto', fields: ['phoneNumber'] },
   { label: 'Detalles personales', fields: ['birthday', 'genre', 'country'] },
   { label: 'Foto de perfil', fields: ['photoURL'] },
+  { label: 'Redes sociales', fields: ['socialNetwork'] }, 
 ]);
 
 // Validar si el paso actual tiene errores
@@ -337,6 +390,16 @@ watch(
     }
   }
 );
+watch(
+  () => editForm.value.socialNetwork,
+  (newSocialNetwork) => {
+    if (currentStep.value === 4) {
+      stepErrors.value = {};
+      validateStep(currentStep.value);
+    }
+  },
+  { deep: true } // Detecta cambios en el array y sus objetos
+);
 
 onMounted(() => {
   editProfile();
@@ -369,6 +432,7 @@ function editProfile() {
     photoURLFile: props.activeUser?.photoURLFile || null,
     newMediaBase64: null,
     mediaType: props.activeUser?.mediaType || '',
+    socialNetwork: props.activeUser?.socialNetwork || [{ name: 'LinkedIn', value: '' }, { name: 'Instagram', value: '' }],
   };
 }
 
@@ -450,6 +514,19 @@ function validateStep(stepIndex) {
     if (!editForm.value.country || editForm.value.country.trim() === '') {
       stepErrors.value.country = 'El país es obligatorio';
     }
+  }
+
+  if (stepFields.includes('socialNetwork')) {
+    editForm.value.socialNetwork.forEach((network, index) => {
+      if (!network.name || network.name.trim() === '') {
+        stepErrors.value[`socialNetwork[${index}].name`] = 'El nombre de la red social es obligatorio';
+      }
+      if (!network.value || network.value.trim() === '') {
+        stepErrors.value[`socialNetwork[${index}].value`] = 'La URL es obligatoria';
+      } else if (!isValidUrl(network.value)) {
+        stepErrors.value[`socialNetwork[${index}].value`] = 'La URL no es válida';
+      }
+    });
   }
 
   // Actualizar errores globales
@@ -564,7 +641,36 @@ function validateForm() {
     validationErrors.country = 'El país es obligatorio';
   }
 
+  editForm.value.socialNetwork.forEach((network, index) => {
+    if (!network.name || network.name.trim() === '') {
+      validationErrors[`socialNetwork[${index}].name`] = 'El nombre de la red social es obligatorio';
+    }
+    if (!network.value || network.value.trim() === '') {
+      validationErrors[`socialNetwork[${index}].value`] = 'La URL es obligatoria';
+    } else if (!isValidUrl(network.value)) {
+      validationErrors[`socialNetwork[${index}].value`] = 'La URL no es válida';
+    }
+  });
+
   return validationErrors;
+}
+
+// Métodos para redes sociales
+function addNetwork() {
+  editForm.value.socialNetwork.push({ name: 'Website', value: '' });
+}
+
+function removeNetwork(index) {
+  editForm.value.socialNetwork.splice(index, 1);
+}
+
+function isValidUrl(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 </script>
 

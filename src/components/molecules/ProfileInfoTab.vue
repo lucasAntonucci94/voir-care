@@ -66,17 +66,86 @@
         <span class="font-medium dark:text-gray-300">País</span>
         <span class="text-sm text-right">{{ userInfo.country || 'No definido' }}</span>
       </div>
+
+      <!-- Redes sociales (si existen) -->
+      <div v-if="userInfo.socialNetwork && userInfo.socialNetwork.length > 0" class="mt-6">
+        <h3 class="text-lg font-semibold mb-4 dark:text-gray-300">Redes Sociales</h3>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+          <a
+            v-for="(network, index) in userInfo.socialNetwork"
+            :key="index"
+            :href="network.value"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200"
+            :title="network.name"
+          >
+            <img
+              :src="getSocialIcon(network.name)"
+              :alt="`${network.name} logo`"
+              class="w-6 h-6 object-contain"
+            >
+            <span class="text-sm truncate">{{ network.name }}</span>
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup>
+import LinkedInLogo from '../../assets/icons/redessociales/linkedin.png';
+import InstagramLogo from '../../assets/icons/redessociales/instagram.png';
+import FacebookLogo from '../../assets/icons/redessociales/facebook.png';
+import TikTokLogo from '../../assets/icons/redessociales/tiktok.png';
+import XLogo from '../../assets/icons/redessociales/x.png';
+import WebLogo from '../../assets/icons/redessociales/website.png';
+
 // Props
 const props = defineProps({
   userInfo: { type: Object, required: true },
   isOwnProfile: { type: Boolean, required: false },
 });
-
-// Define emits for the trigger-edit event
+// emit para mostrar modal de edición
 defineEmits(['trigger-edit']);
+
+// Metodo para obtener el ícono de la red social
+function getSocialIcon(networkName) {
+  const iconMap = {
+    'linkedin': LinkedInLogo,
+    'instagram': InstagramLogo,
+    'facebook': FacebookLogo,
+    'tiktok': TikTokLogo,
+    'x': XLogo, 
+    'website': WebLogo
+  };
+  return iconMap[networkName.toLowerCase()] || WebLogo;
+}
 </script>
+
+<style scoped>
+/* Responsive */
+@media (max-width: 640px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .grid-cols-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (min-width: 769px) {
+  .grid-cols-4 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+}
+
+/* Formateo imagen */
+img {
+  max-width: 100%;
+  height: auto;
+}
+</style>
