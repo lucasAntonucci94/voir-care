@@ -32,13 +32,20 @@
           ></div>
         </div>
         <div class="flex-1">
-          <div class="flex justify-between items-center">
+          <div class="flex  flex-col justify-between ">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
               {{ getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)) || 'Usuario desconocido' }}
             </h2>
+            <span
+              class="text-xs text-gray-600 dark:text-gray-400"
+              :class="{ 'text-green-600': isOtherUserInChat, 'text-gray-600': !isOtherUserInChat }"
+            >
+              {{ isOtherUserInChat ? 'En chat' : 'Fuera del chat' }}
+            </span>
           </div>
         </div>
       </router-link>
+      
     </div>
 
     <!-- Contenedor de mensajes -->
@@ -95,7 +102,7 @@
 
     <!-- Input de escritura -->
     <div class="border-t border-gray-200 dark:border-gray-600 mt-4">
-      <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" :isOtherUserOnline="isOtherUserOnline" />
+      <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" />
     </div>
 
     <!-- Modal de confirmación al eliminar un mensaje -->
@@ -132,12 +139,15 @@ const userStatusStore = useUserStatusStore();
 const messages = ref([]);
 const loadingMessages = ref(false);
 const unsubscribeMessages = ref(null);
+const unsubscribePresence = ref(null); // Nueva suscripción para presencia
 const showDeleteModal = ref(false);
 const messageToDelete = ref(null);
 const messagesContainer = ref(null);
 const isOtherUserOnline = ref(false);
+const isOtherUserInChat = ref(false); // Nuevo estado para presencia en chat
 const isDesktop = ref(false);
 const snackbarStore = useSnackbarStore();
+const { setUserPresence, subscribeToChatPresence } = usePrivateChats();
 
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
@@ -158,9 +168,12 @@ onUnmounted(() => {
     unsubscribeMessages.value();
     unsubscribeMessages.value = null;
   }
+  if (unsubscribePresence.value && typeof unsubscribePresence.value === 'function') {
+    unsubscribePresence.value();
+    unsubscribePresence.value = null;
+  }
   messages.value = [];
   window.removeEventListener('resize', checkIfDesktop);
-  // NO limpiar suscripciones de userStatusStore aquí para no afectar otras suscripciones
 });
 
 // Cargar mensajes y estado cuando cambia el chat seleccionado
@@ -171,12 +184,17 @@ watch(
       unsubscribeMessages.value();
       unsubscribeMessages.value = null;
     }
+    if (unsubscribePresence.value && typeof unsubscribePresence.value === 'function') {
+      unsubscribePresence.value();
+      unsubscribePresence.value = null;
+    }
     if (newChatId) {
       loadingMessages.value = true;
       const otherUserEmail = privateChatsStore.getOtherUserEmail(newChatId);
       if (!user?.value || !otherUserEmail) {
         loadingMessages.value = false;
         isOtherUserOnline.value = false;
+        isOtherUserInChat.value = false;
         return;
       }
       // Precargar la foto del usuario
@@ -190,13 +208,19 @@ watch(
           scrollToBottom();
         }
       );
+      unsubscribePresence.value = subscribeToChatPresence(newChatId, (presence) => {
+        const sanitizedOtherEmail = otherUserEmail.replace(/\./g, '_');
+        isOtherUserInChat.value = !!presence[sanitizedOtherEmail];
+      });
       usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
       // Obtener el estado inicial del usuario desde el store
       isOtherUserOnline.value = userStatusStore.getUserStatus(otherUserEmail);
+      await setUserPresence(newChatId, user.value.email, true); // Marcar al usuario actual como presente
     } else {
       messages.value = [];
       loadingMessages.value = false;
       isOtherUserOnline.value = false;
+      isOtherUserInChat.value = false;
     }
   },
   { immediate: true }
@@ -211,7 +235,7 @@ watch(
       isOtherUserOnline.value = userStatusStore.getUserStatus(otherUserEmail);
     }
   },
-  { deep: true } // Necesario porque chatStatuses es un Map
+  { deep: true }
 );
 
 // Auto-scroll al final de los mensajes

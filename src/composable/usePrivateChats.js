@@ -414,6 +414,18 @@ export function usePrivateChats() {
       }
     }
 
+    function subscribeToChatPresence(chatId, callback) {
+      const chatDocRef = doc(db, 'chats-private', chatId);
+      return onSnapshot(chatDocRef, (doc) => {
+        if (doc.exists()) {
+          const presence = doc.data().presence || {};
+          callback(presence);
+        }
+      }, (err) => {
+        console.error('Error subscribing to chat presence:', err);
+      });
+    }
+
   return {
     savePrivateMessage,
     subscribeToIncomingPrivateMessages,
@@ -427,6 +439,7 @@ export function usePrivateChats() {
     markMessagesAsRead,
     markChatAsRead,
     setUserPresence,
-    getUserPresence
+    getUserPresence,
+    subscribeToChatPresence
   };
 }
