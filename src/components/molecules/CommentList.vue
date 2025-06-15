@@ -50,8 +50,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import { formatTimestamp } from '../../utils/formatTimestamp'; // Ruta correcta
-import { useComments } from '../../composable/useComments'; // Ruta correcta
+import { formatTimestamp } from '../../utils/formatTimestamp';
+import { useComments } from '../../composable/useComments';
 
 // Definimos las props
 const props = defineProps({

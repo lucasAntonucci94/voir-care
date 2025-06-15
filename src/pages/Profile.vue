@@ -8,9 +8,10 @@
       </div>
     </div>
 
-    <!-- Contenido del perfil (solo se muestra cuando activeUser existe) -->
+    <!-- Contenido del perfil -->
     <div v-if="activeUser" class="contents">
       <ProfileHeader
+        ref="profileHeader"
         :activeUser="activeUser"
         :activeTab="activeTab"
         :isOwnProfile="isOwnProfile"
@@ -20,35 +21,43 @@
         :updateRefData="updateDataFromChild"
       />
       <!-- Tabs con flechas -->
-      <div class="container mx-auto mt-10 px-4 md:px-8 lg:px-16 sticky top-0 bg-white dark:bg-gray-800 shadow-sm">
+      <div class="container mx-auto  mt-10 md:mt-5  sticky top-0 bg-white dark:bg-gray-800 shadow-sm z-10 rounded-lg">
         <div class="relative">
           <!-- Botón de flecha izquierda -->
           <button
             v-if="showArrows && canScrollLeft"
             @click="scrollLeft"
-            class="absolute left-0 top-1/2 -translate-y-1/2 bg-primary dark:bg-secondary text-white p-2 rounded-full shadow-md hover:bg-primary-md dark:hover:bg-secondary-md transition-colors md:hidden z-30"
+            class="absolute left-0 top-1/2 -translate-y-1/2 bg-primary dark:bg-secondary text-white p-2 rounded-full shadow-md hover:bg-primary-md dark:hover:bg-secondary-md transition-colors md:hidden z-20"
+            aria-label="Desplazar pestañas a la izquierda"
           >
-            <i class="fa-solid fa-chevron-left w-6 h-6 text-white"></i>
+            <i class="fa-solid fa-chevron-left w-5 h-5"></i>
           </button>
 
           <!-- Contenedor de tabs -->
           <div
             ref="tabsContainer"
-            class="flex gap-2 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap md:justify-center md:overflow-x-visible"
+            class=" flex gap-1 md:gap-3 py-3 overflow-x-auto scrollbar-hide whitespace-nowrap snap-x snap-mandatory md:justify-center"
             @scroll="updateScrollState"
           >
             <button
               v-for="tab in allTabs"
-              :key="tab"
-              @click="activeTab = tab.toLowerCase()"
+              :key="tab.name"
+              @click="activeTab = tab.name.toLowerCase()"
               :class="[
-                'flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200',
-                activeTab === tab.toLowerCase()
-                  ? 'bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white'
-                  : 'bg-gray-100  dark:bg-gray-700 text-gray-800  dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600'
+                'relative py-2 px-2 md:px-5 text-sm font-medium transition-all duration-300 snap-start flex items-center space-x-2',
+                activeTab === tab.name.toLowerCase()
+                  ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
               ]"
+              :aria-selected="activeTab === tab.name.toLowerCase()"
+              role="tab"
             >
-              {{ tab }}
+              <i :class="tab.icon" aria-hidden="true"></i>
+              <span>{{ tab.name }}</span>
+              <span
+                v-if="activeTab === tab.name.toLowerCase()"
+                class="absolute inset-x-0 bottom-0 h-0.5 bg-primary dark:bg-secondary"
+              ></span>
             </button>
           </div>
 
@@ -56,9 +65,10 @@
           <button
             v-if="showArrows && canScrollRight"
             @click="scrollRight"
-            class="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary-md transition-colors md:hidden z-30"
+            class="absolute right-0 top-1/2 -translate-y-1/2 bg-primary dark:bg-secondary text-white p-2 rounded-full shadow-md hover:bg-primary-md dark:hover:bg-secondary-md transition-colors md:hidden z-20"
+            aria-label="Desplazar pestañas a la derecha"
           >
-            <i class="fa-solid fa-chevron-right w-6 h-6 text-white"></i>
+            <i class="fa-solid fa-chevron-right w-5 h-5"></i>
           </button>
         </div>
       </div>
@@ -66,50 +76,63 @@
       <!-- Contenido del perfil -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
         <div class="grid grid-cols-1 gap-6 max-w-full mx-4 md:mx-0">
-          <!-- Publicaciones -->
           <div class="md:col-span-2">
             <h2 class="text-lg font-semibold text-[#2c3e50] mb-4 sr-only">Publicaciones</h2>
             <div v-if="activeTab === 'publicaciones'" class="space-y-6 mx-auto max-w-lg">
-              <!-- <CreatePostModal /> -->
-              <PostCard v-for="post in postsStore.profilePosts.value" :key="post.id" :post="post" @delete="deletePost(post.id)" />
-              <p v-if="!postsStore.profilePosts?.value?.length" class="text-center text-gray-500">No hay publicaciones aún.</p>
+              <PostCard v-for="post in filteredProfilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
+              <div  v-if="!filteredProfilePosts?.length" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <p class="text-gray-500 dark:text-gray-400">No tienes publicaciones guardadas aún.</p>
+                <!-- <button
+                  class="mt-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
+                  @click="navigateToFeed"
+                >
+                  Crear publicación
+                </button> -->
+                <button
+                  class="mt-4 ml-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
+                  @click="navigateToFeed"
+                >
+                  Explorar publicaciones
+                </button>
+              </div>
             </div>
-            <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" />
-            <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" />
-            
-            <div v-else-if="activeTab === 'galería'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-              <p>Galería (pendiente de implementación)</p>
-            </div>
-            <div v-else-if="activeTab === 'eventos'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-              <p>Eventos (pendiente de implementación)</p>
-            </div>
-            <div v-else-if="activeTab === 'grupos'" class="bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-sm mx-auto max-w-lg">
-              <p>Grupos (pendiente de implementación)</p>
-            </div>
+            <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" @trigger-edit="triggerEditProfile" :isOwnProfile="isOwnProfile" />
+            <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" @active-tab="setActiveTab" />
+            <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
+            <UserEventsTab v-else-if="activeTab === 'eventos'" />
+            <UserGroupsTab v-else-if="activeTab === 'grupos'" />
+            <SavedPostTab v-else-if="activeTab === 'guardado'" />
+            <HiddenPostsTab v-else-if="activeTab === 'oculto'" />
           </div>
         </div>
       </div>
     </div>
+     
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router'
 import { useAuth } from '../api/auth/useAuth';
 import { usePostsStore } from '../stores/posts';
 import PostCard from '../components/organisms/PostCard.vue';
 import { useUsers } from '../composable/useUsers';
-import { usePosts } from '../composable/usePosts';
 import ProfileHeader from '../components/molecules/ProfileHeader.vue';
 import ProfileInfo from '../components/molecules/ProfileInfoTab.vue';
 import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
+import GalleryTab from '../components/organisms/ProfileGalleryTab.vue';
+import UserEventsTab from '../components/molecules/ProfileUserEventsTab.vue';
+import UserGroupsTab from '../components/molecules/ProfileUserGroupsTab.vue';
+import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
+import HiddenPostsTab from '../components/molecules/HiddenPostsTab.vue';
+
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();
 const postsStore = usePostsStore();
 const { getUserProfileByEmail } = useUsers();
-const { subscribeToIncomingProfilePosts } = usePosts();
 
 // Estados
 const activeUser = ref(null);
@@ -119,9 +142,24 @@ const showArrows = ref(false);
 const canScrollLeft = ref(false);
 const canScrollRight = ref(false);
 const connections = ref([]);
+const router = useRouter()
+const profileHeader = ref(null); // Ref to ProfileHeader component
 
 // Tabs
-const allTabs = ['Publicaciones', 'Información', 'Conexiones', 'Galería', 'Eventos', 'Grupos', 'Configuración'];
+const allTabs = [
+  { name: 'Publicaciones', icon: 'fa-solid fa-square-share-nodes' },
+  { name: 'Información', icon: 'fa-solid fa-circle-info' },
+  { name: 'Conexiones', icon: 'fa-solid fa-user-group' },
+  { name: 'Galería', icon: 'fa-solid fa-images' },
+  { name: 'Eventos', icon: 'fa-solid fa-calendar-days' },
+  { name: 'Grupos', icon: 'fa-solid fa-users' },
+  { name: 'Guardado', icon: 'fa-solid fa-bookmark' },
+  { name: 'Oculto', icon: 'fa-solid fa-ban' },
+];
+
+const setActiveTab = (selectedTab) => {
+  activeTab.value = selectedTab;
+};
 const setTabConexiones = () => {
   activeTab.value = 'conexiones';
 };
@@ -136,23 +174,66 @@ const updateDataFromChild = updatedData => {
 // Computados
 const activeUserEmail = computed(() => route.params.email || authUser.value?.email);
 const isOwnProfile = computed(() => activeUserEmail.value === authUser.value?.email);
+const filteredProfilePosts = computed(() => {
+  const profilePosts = postsStore.profilePosts?.value || [];
+  const hiddenPostIds = authUser.value?.hiddenPosts?.map(hp => hp.postId) || [];
+  return profilePosts.filter(post => !hiddenPostIds.includes(post.idDoc));
+});
 
 // Watcher
 watch(activeUserEmail, async newEmail => {
   if (!newEmail) return;
   await fetchUserData(newEmail);
+  if (activeUser && (activeUser?.value?.uid || activeUser?.value?.id)) {
+    postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
+  }
+  // Subscribe to savedPosts if this is the user's own profile
+  if (isOwnProfile.value && authUser.value?.uid) {
+    // console.log('Iniciando suscripción a posts guardados en Profile.vue...');
+    postsStore.subscribeToSavedPosts(authUser.value.uid);
+  }
 });
 
 // Funciones para desplazamiento
 const scrollLeft = () => {
   if (tabsContainer.value) {
-    tabsContainer.value.scrollBy({ left: -150, behavior: 'smooth' });
+    const currentScroll = tabsContainer.value.scrollLeft;
+    const tabElements = tabsContainer.value.querySelectorAll('button[role="tab"]');
+    let targetScroll = 0;
+
+    // Encuentra la pestaña más cercana a la izquierda
+    for (let i = tabElements.length - 1; i >= 0; i--) {
+      const tab = tabElements[i];
+      const tabLeft = tab.offsetLeft;
+      if (tabLeft < currentScroll) {
+        targetScroll = tabLeft;
+        break;
+      }
+    }
+
+    tabsContainer.value.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    requestAnimationFrame(updateScrollState);
   }
 };
 
 const scrollRight = () => {
   if (tabsContainer.value) {
-    tabsContainer.value.scrollBy({ left: 150, behavior: 'smooth' });
+    const currentScroll = tabsContainer.value.scrollLeft;
+    const tabElements = tabsContainer.value.querySelectorAll('button[role="tab"]');
+    let targetScroll = tabsContainer.value.scrollWidth;
+
+    // Encuentra la pestaña más cercana a la derecha
+    for (let i = 0; i < tabElements.length; i++) {
+      const tab = tabElements[i];
+      const tabLeft = tab.offsetLeft;
+      if (tabLeft > currentScroll) {
+        targetScroll = tabLeft;
+        break;
+      }
+    }
+
+    tabsContainer.value.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    requestAnimationFrame(updateScrollState);
   }
 };
 
@@ -160,7 +241,7 @@ const updateScrollState = () => {
   if (tabsContainer.value) {
     const { scrollLeft, scrollWidth, clientWidth } = tabsContainer.value;
     canScrollLeft.value = scrollLeft > 0;
-    canScrollRight.value = scrollLeft + clientWidth < scrollWidth - 1;
+    canScrollRight.value = Math.ceil(scrollLeft + clientWidth) < scrollWidth;
   }
 };
 
@@ -175,24 +256,45 @@ const checkScroll = () => {
 // Fetch de datos
 const fetchUserData = async userEmail => {
   activeUser.value = await getUserProfileByEmail(userEmail);
-  connections.value = activeUser?.value?.connections?.filter(c => c.email !== activeUser?.email) ?? []; 
+  connections.value = activeUser?.value?.connections?.filter(c => c.email !== activeUser?.email) ?? [];
 };
 
 function deletePost(postId) {
   postsStore.posts.value = postsStore.posts.value.filter(p => p.id !== postId);
 }
 
+// Navigate to feed
+function navigateToFeed() {
+  router.push('/feed')
+}
+  
+// Method to trigger editProfile in ProfileHeader
+function triggerEditProfile() {
+  if (profileHeader.value && profileHeader.value.editProfile) {
+    profileHeader.value.editProfile();
+  } else {
+    console.error('ProfileHeader component does not expose editProfile method');
+  }
+}
 // Ciclo de vida
 onMounted(async () => {
   if (!activeUserEmail.value) return;
   await fetchUserData(activeUserEmail.value);
-  postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
+  if (activeUser && (activeUser?.value?.uid || activeUser?.value?.id)) {
+    postsStore.subscribeProfile(activeUser?.value?.uid || activeUser?.value?.id);
+  }
+  // Subscribe to savedPosts if this is the user's own profile
+  if (isOwnProfile.value && authUser.value?.uid) {
+    // console.log('Iniciando suscripción a posts guardados en Profile.vue...');
+    postsStore.subscribeToSavedPosts(authUser.value.uid);
+  }
   checkScroll();
   window.addEventListener('resize', checkScroll);
 });
 
 onUnmounted(() => {
   postsStore.unsubscribeProfile();
+  postsStore.unsubscribeSavedPosts(); // Cancela la suscripción a savedPosts
   window.removeEventListener('resize', checkScroll);
 });
 </script>
@@ -201,22 +303,44 @@ onUnmounted(() => {
 .font-poppins {
   font-family: 'Poppins', sans-serif;
 }
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE y Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Estilo para el foco en las pestañas (accesibilidad) */
+button[role="tab"]:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  z-index: 10;
+}
+
+/* Transiciones suaves para la línea indicadora */
+button[role="tab"] > span {
+  transition: background-color 0.3s ease;
+}
+
+/* Ajustes para las flechas */
+button[aria-label^="Desplazar pestañas"] {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Estilos del loader */
 .loader {
   width: 70px;
   height: 70px;
-  border: 8px solid #e5e7eb; /* Gris claro */
+  border: 8px solid #e5e7eb;
   border-top: 8px solid transparent;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #4f46e5, #7c3aed, #4f46e5); /* Degradado */
+  background: conic-gradient(from 0deg, #4f46e5, #7c3aed, #4f46e5);
   animation: spin 1.2s ease-in-out infinite;
   position: relative;
 }
@@ -228,10 +352,11 @@ onUnmounted(() => {
   left: 50%;
   width: 50px;
   height: 50px;
-  background: #fff; /* Fondo blanco para el centro */
+  background: #fff;
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

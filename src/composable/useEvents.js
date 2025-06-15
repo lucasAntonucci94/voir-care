@@ -83,8 +83,8 @@ export function useEvents() {
     try {
       const q = query(
         eventsRef,
-        where('ownerId', '==', uid),
-        // where('members', 'array-contains', uid),
+        // where('ownerId', '==', uid),
+        where('attendees.going', 'array-contains', uid),
         orderBy('createdAt', 'desc')
       )
       return onSnapshot(q, (snapshot) => {
@@ -173,6 +173,33 @@ export function useEvents() {
     await updateDoc(docRef, updateData)
   }
 
+  
+  /**
+   * Se suscribe a los últimos 3 eventos con categoría "adopcion".
+   * @param {function} callback - Función que recibe un array de eventos.
+   * @returns {function} - Función para cancelar la suscripción.
+   */
+  function subscribeToAdoptionEvents(callback) {
+    try {
+      const q = query(
+        eventsRef,
+        where('categories', 'array-contains', { id: 'adopcion', name: 'Adopción' }),
+        orderBy('createdAt', 'desc'),
+        limit(3)
+      )
+      return onSnapshot(q, (snapshot) => {
+        const events = snapshot.docs.map((docSnap) => ({
+          idDoc: docSnap.id,
+          ...docSnap.data(),
+        }))
+        callback(events)
+      })
+    } catch (error) {
+      console.error('Error al suscribirse a eventos de adopción:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createEvent,
@@ -183,5 +210,6 @@ export function useEvents() {
     deleteEvent,
     findById,
     setUserAttendanceStatus,
+    subscribeToAdoptionEvents,
   }
 }

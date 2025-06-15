@@ -7,7 +7,4 @@ export default defineConfig({
     vue(),
     tailwindcss(),
   ],
-  define: {
-    'process.env': {}
-  }
 })

@@ -4,7 +4,7 @@
       type="text" 
       placeholder="¿Qué tienes en mente?" 
       @click="showModal = true" 
-      class="w-full hover:bg-gray-50 max-w-xl p-4 rounded-full bg-white dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-300 dark:border-gray-800 border border-gray-200 dark:border-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary cursor-pointer text-gray-700 placeholder-gray-400 transition-all duration-200 hover:shadow-lg" 
+      class="w-full hover:bg-gray-50 max-w-lg p-4 rounded-full bg-white dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-300 dark:border-gray-800 border border-gray-200 dark:border-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary cursor-pointer text-gray-700 placeholder-gray-400 transition-all duration-200 hover:shadow-lg" 
       readonly 
     />
   </section>
@@ -129,10 +129,12 @@ import { ref, watch } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { usePostsStore } from '../../stores/posts';
 import { useCategories } from '../../composable/useCategories';
+import { useSnackbarStore } from '../../stores/snackbar'
 
 const { categories } = useCategories();
 const { user } = useAuth();
 const postsStore = usePostsStore();
+const snackbarStore = useSnackbarStore()
 const showModal = ref(false);
 const isLoading = ref(false);
 const errorFileMessage = ref('');
@@ -237,8 +239,9 @@ async function createPost() {
       categories: [],
     };
     showModal.value = false;
+    snackbarStore.show("Publicación creada exitosamente.","success")
   } catch (error) {
-    console.error('Error al crear el post:', error);
+    snackbarStore.show(`Error al crear la publicación.Error: ${error}`,"error")
   } finally {
     isLoading.value = false;
   }
@@ -251,12 +254,21 @@ function validatePostForm() {
   if (!newPost.value.title || newPost.value.title.trim() === '') {
     errors.title = 'El título es obligatorio';
   }
+  
+  // Título requerido
+  if (newPost.value.title.length > 50) {
+    errors.title = 'El título no debe superar los 50 caracteres';
+  }
 
   // Descripción requerida
   if (!newPost.value.description || newPost.value.description.trim() === '') {
     errors.description = 'La descripción es obligatoria';
   }
 
+  // Título requerido
+  if (newPost.value.description.length > 250) {
+    errors.description = 'El título no debe superar los 250 caracteres';
+  }
   // Media opcional
   // if (!newPost.value.media) {
   //   errors.media = 'Debes subir una imagen o video';

@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full h-38 md:h-64 overflow-hidden">
+  <div @click="openMediaModal" class="relative w-full h-38 md:h-64 overflow-hidden">
     <img :src="activeUser?.bannerUrlFile ?? bannerUrl" alt="Banner" class="w-full h-full object-cover" />
     <div class="absolute inset-0 bg-black/50"></div>
   </div>
@@ -120,7 +120,7 @@
 
   <!-- Modal de edición de perfil -->
   <div v-if="showEditModal" class="fixed inset-0 bg-black/50 z-101 flex items-center justify-center p-4 overflow-hidden">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-xl overflow-y-auto">
       <div class="sticky top-0 z-10 p-4 border-b bg-white dark:bg-gray-800">
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Perfil</h2>
@@ -134,6 +134,13 @@
       </div>
     </div>
   </div>
+
+  <!-- Media Modal -->
+  <MediaModalViewer
+      :visible="showModalMedia"
+      :media="selectedMedia"
+      @close="closeMediaModal"
+    />
 </template>
 
 <script setup>
@@ -147,6 +154,10 @@ import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateStoryModal from '../organisms/CreateStoryModal.vue';
 import BannerDefault from '../../assets/darkwallpaper.jpg'
+import { useSnackbarStore } from '../../stores/snackbar'
+import MediaModalViewer from '../../components/molecules/MediaViewerModal.vue';
+import avatarDefault from '../../assets/darkwallpaper.jpg';
+import { useNotifications } from '../../composable/useNotifications';
 
 // Props
 const props = defineProps({
@@ -166,6 +177,8 @@ const { getChatIdByReference } = usePrivateChats();
 const { updateUserBanner } = useUsers();
 const privateChatsStore = usePrivateChatsStore();
 const { getUser, addConnection, removeConnection } = useUsers();
+const snackbarStore = useSnackbarStore()
+const { sendNotification } = useNotifications();
 
 // Estados
 const isAddingConnection = ref(false);
@@ -178,6 +191,10 @@ const uploading = ref(false);
 const bannerUrl = ref(BannerDefault);
 const errorBannerFileMessage = ref('');
 
+  // Modal state
+  const showModalMedia = ref(false);
+  const selectedMedia = ref({ src: '', type: 'image' });
+  
 // Computados
 const isFollowing = computed(() => {
   return authUser.value?.connections?.some(conn => conn.uid === props?.activeUser?.uid);
@@ -195,6 +212,20 @@ function closeBannerModal() {
   previewUrl.value = null;
   document.body.style.overflow = ''; // Restaura el scroll del body
 }
+
+// Abrir Modal ver media
+const openMediaModal = () => {
+  selectedMedia.value.src = props.activeUser?.bannerUrlFile || avatarDefault;
+  showModalMedia.value = true;
+  document.body.style.overflow = 'hidden';
+};
+
+// Cerrar Modal ver media
+const closeMediaModal = () => {
+  selectedMedia.value = { src: '', type: 'image' };
+  showModalMedia.value = false;
+  document.body.style.overflow = '';
+};
 
 function handleFileChange(event) {
   errorBannerFileMessage.value = ''; // Reiniciar mensaje de error
@@ -229,9 +260,10 @@ async function saveBanner() {
 
     props.activeUser.bannerUrlFile = url;
     closeBannerModal();
+    snackbarStore.show("Banner actualizado exitosamente.","success")
   } catch (err) {
     console.error('Error al actualizar el banner:', err);
-    alert('Hubo un error al subir el banner. Intenta de nuevo.');
+    snackbarStore.show("Ocurrió un error al subir el banner. Intentalo nuevamente.","error")
   } finally {
     uploading.value = false;
   }
@@ -253,6 +285,20 @@ const handlerAddConnection = async () => {
     };
     await addConnection(authUser.value.uid, connectionData);
     authUser.value.connections.push(connectionData);
+
+    // Enviar notificación al usuario seguido
+    await sendNotification({
+      toUid: props.activeUser.uid, // UID del usuario seguido
+      fromUid: authUser.value.uid, // UID del usuario logueado
+      type: 'newFollower', // Tipo de notificación
+      message: `${authUser.value.displayName} comenzó a seguirte`, // Mensaje
+      entityId: props.activeUser.uid, // ID del usuario seguido
+      entityType: 'user', // Tipo de entidad
+      extra: {
+        senderEmail: authUser.value.email,
+      },
+    });
+    snackbarStore.show(`Ahora sigues a ${props.activeUser.displayName}.`, 'success');
   } catch (error) {
     console.error('Error al seguir al usuario:', error);
     alert('Hubo un error al intentar seguir a este usuario.');
@@ -307,6 +353,10 @@ async function sendMessage() {
     privateChatsStore.setToEmail(props.activeUser?.email);
   }
 }
+// Expose the editProfile method to child components
+defineExpose({
+  editProfile,
+});
 </script>
 
 <style scoped>

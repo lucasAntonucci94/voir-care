@@ -1,4 +1,3 @@
-<!-- src/components/SupportChat.vue -->
 <template>
     <div>
       <!-- Botón flotante para abrir/cerrar el chat -->
@@ -86,7 +85,7 @@
   
   const sendMessage = () => {
     if (message.value.trim()) {
-      console.log('Mensaje enviado:', message.value);
+      // console.log('Mensaje enviado:', message.value);
       message.value = '';
     }
   };

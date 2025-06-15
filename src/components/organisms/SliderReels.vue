@@ -20,7 +20,7 @@
       <!-- Card para agregar nuevo reel -->
       <div
         v-if="isAuthenticated"
-        class="min-w-[160px] bg-gray-50 dark:bg-gray-600 p-4 rounded-lg shadow-md snap-center border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-500 transition-all duration-200 cursor-pointer"
+        class="min-w-[160px] bg-gray-50 dark:bg-gray-600 p-4 rounded-lg shadow-md snap-center border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 cursor-pointer"
         @click="emit('show-upload')"
       >
         <div class="w-full h-24 flex flex-col items-center justify-center gap-2">
@@ -31,43 +31,13 @@
         </div>
       </div>
 
-      <!-- Cards de reels existentes -->
-      <div
-        v-for="reel in reels"
-        :key="reel.id"
-        class="min-w-[180px] bg-white dark:bg-gray-700 rounded-lg shadow-md snap-center border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer group relative"
-        @click="emit('open-reel', reel)"
-      >
-        <!-- Imagen del reel -->
-        <div class="relative">
-          <img
-            :src="reel.thumbnailUrl"
-            :alt="reel.title"
-            class="w-full h-28 object-cover rounded-t-lg"
-            loading="lazy"
-          />
-          <!-- Overlay para efecto moderno -->
-          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-t-lg transition-opacity duration-300"></div>
-        </div>
-
-        <!-- Título del reel -->
-        <p class="mt-2 px-3 text-sm text-gray-700 dark:text-gray-300 font-semibold text-center line-clamp-2">
-          {{ reel.title }}
-        </p>
-
-        <!-- Información del usuario (fija en la parte inferior) -->
-        <div class="absolute bottom-0 left-0 right-0 flex items-center space-x-2 px-3 py-2 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm border-t border-gray-200 dark:border-gray-600 rounded-b-lg">
-          <img
-            :src="reel.user.photoURL"
-            :alt="reel.user.displayName"
-            class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-500"
-            loading="lazy"
-          />
-          <p class="text-xs text-gray-800 dark:text-gray-200 font-medium truncate">
-            {{ reel.user.displayName }}
-          </p>
-        </div>
-      </div>
+      <!-- Cards de reels agrupados usando ReelCard -->
+      <ReelCard
+        v-for="(group, index) in props.reels"
+        :key="index"
+        :group="group"
+        @open-reel="emit('open-reel', $event)"
+      />
     </div>
 
     <!-- Botón de navegación derecha -->
@@ -84,6 +54,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, defineEmits, nextTick } from 'vue';
+import ReelCard from '../molecules/ReelCard.vue';
 
 // Props y eventos
 const props = defineProps({
@@ -93,6 +64,10 @@ const props = defineProps({
   },
   isAuthenticated: {
     type: Boolean,
+    required: true,
+  },
+  authUser: {
+    type: Object,
     required: true,
   },
   isViewModalOpen: {

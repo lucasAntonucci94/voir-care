@@ -7,7 +7,7 @@
       title="Notificaciones"
     >
       <i class="fa-solid fa-bell text-xl"></i>
-      <p class="text-xs mt-1 hidden sm:block">Notificaciones</p>
+      <p class="text-xs mt-1 font-bold hidden sm:block">Notificaciones</p>
       <span
         v-if="unreadCount > 0"
         class="absolute -top-1 -right-2 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs font-bold"
@@ -51,10 +51,32 @@
         <!-- Acciones -->
         <div class="flex justify-end px-4 py-2 border-b border-gray-100 dark:border-gray-700">
           <button
+            v-if="activeTab === 'unread'"
             @click="markAllAsRead"
-            class="text-xs text-gray-600 dark:text-gray-300 hover:underline"
+            :class="[
+              'text-xs',
+              {
+                'text-gray-800 dark:text-gray-400 opacity-50 cursor-not-allowed': filteredNotifications.length === 0,
+                'text-gray-600 dark:text-gray-300 hover:underline': filteredNotifications.length > 0
+              }
+            ]"
+            :disabled="filteredNotifications.length === 0"
           >
             Marcar todas como leídas
+          </button>
+          <button
+            v-else-if="activeTab === 'read'"
+            @click="deleteAllRead"
+            :class="[
+              'text-xs',
+              {
+                'text-red-500 dark:text-red-400 opacity-50 cursor-not-allowed': filteredNotifications.length === 0,
+                'text-red-600 dark:text-red-400 hover:underline': filteredNotifications.length > 0
+              }
+            ]"
+            :disabled="filteredNotifications.length === 0"
+          >
+            Borrar todo
           </button>
         </div>
 
@@ -77,28 +99,31 @@
             <!-- Botón de acciones -->
             <div class="relative">
               <button
-                class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                 @click.stop="toggleActionsMenu(notification.id, $event)"
+                class="p-1 text-gray-600 dark:text-gray-300 bg-gray-300/50 dark:bg-gray-900/50 rounded-full hover:bg-gray-300/90 dark:hover:bg-gray-900/90 transition-colors"
+                aria-label="Opciones de notificación"
               >
-                <i class="fa-solid fa-ellipsis-vertical"></i>
+                <i class="fas fa-ellipsis-v"></i>
               </button>
-
               <!-- Dropdown de acciones -->
               <Teleport to="body">
                 <transition name="fade">
                   <ul
                     v-if="activeActionsMenuId === notification.id"
-                    :style="getDropdownPosition($event, notification.id)"
                     class="notification-actions fixed w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[1000] text-sm"
+                    :style="dropdownPositions[notification.id] || {}"
                   >
-                    <li @click.stop="toggleRead(notification)" class="px-4 py-2 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                    <li
+                      @click.stop="toggleRead(notification)"
+                      class="px-4 py-2 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                    >
                       {{ notification.read ? 'Marcar como no leída' : 'Marcar como leída' }}
                     </li>
-                    <li @click.stop="deleteNotification(notification)" class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-red-500">
+                    <li
+                      @click.stop="deleteNotification(notification)"
+                      class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-red-500"
+                    >
                       Eliminar
-                    </li>
-                    <li @click.stop="reportNotification(notification)" class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-yellow-500">
-                      Reportar
                     </li>
                   </ul>
                 </transition>
@@ -115,125 +140,142 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { useNotificationsStore } from '../../stores/notifications'
-import { useAuth } from '../../api/auth/useAuth'
-import { usePrivateChatsStore } from '../../stores/privateChats'
-import { useSnackbarStore } from '../../stores/snackbar'
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useNotificationsStore } from '../../stores/notifications';
+import { useAuth } from '../../api/auth/useAuth';
+import { usePrivateChatsStore } from '../../stores/privateChats';
+import { useSnackbarStore } from '../../stores/snackbar';
 
-const props = defineProps({ isOpen: Boolean })
-const emit = defineEmits(['toggle'])
+const props = defineProps({ isOpen: Boolean });
+const emit = defineEmits(['toggle']);
 
-const { user } = useAuth()
-const notificationsStore = useNotificationsStore()
-const privateChatsStore = usePrivateChatsStore()
-const snackbarStore = useSnackbarStore()
-const { notifications, unreadCount } = storeToRefs(notificationsStore)
-const router = useRouter()
+const { user } = useAuth();
+const notificationsStore = useNotificationsStore();
+const privateChatsStore = usePrivateChatsStore();
+const snackbarStore = useSnackbarStore();
+const { notifications, unreadCount } = storeToRefs(notificationsStore);
+const router = useRouter();
 
-const activeTab = ref('unread')
-const activeActionsMenuId = ref(null)
-const dropdownPositions = ref({})
+const activeTab = ref('unread');
+const activeActionsMenuId = ref(null);
+const dropdownPositions = ref({});
+
 watch(() => props.isOpen, (val) => {
-  if (val) notificationsStore.markAllAsViewed(user.value.uid)
-})
+  if (val) notificationsStore.markAllAsViewed(user.value.uid);
+});
 
 function toggle() {
-  emit('toggle')
+  emit('toggle');
 }
 
 const filteredNotifications = computed(() =>
   notifications.value.filter(n =>
     activeTab.value === 'unread' ? !n.read : n.read
   )
-)
+);
 
 async function markAllAsRead() {
   const promises = filteredNotifications.value.map(n =>
     notificationsStore.markNotificationAsRead(n.recipientId, n.id)
-  )
-  await Promise.all(promises)
+  );
+  try {
+    await Promise.all(promises);
+    snackbarStore.show('Todas las notificaciones marcadas como leídas', 'success');
+  } catch (error) {
+    snackbarStore.show('Error al marcar las notificaciones', 'error');
+    console.error('Error marking all as read:', error);
+  }
+}
+
+async function deleteAllRead() {
+  const readNotifications = filteredNotifications.value;
+  const promises = readNotifications.map(n =>
+    notificationsStore.deleteNotification(user.value.uid, n.id)
+  );
+  try {
+    await Promise.all(promises);
+    snackbarStore.show('Todas las notificaciones leídas han sido eliminadas', 'success');
+  } catch (error) {
+    snackbarStore.show('Error al eliminar las notificaciones', 'error');
+    console.error('Error deleting read notifications:', error);
+  }
 }
 
 async function handleClick(notification) {
-  await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id)
+  await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id);
   if (notification.type === 'message') {
-    await privateChatsStore.markChatAsReaded(user.value.email, notification.entityId)
-    privateChatsStore.setSelectedChatId(notification.entityId)
-    toggle()
-    router.push('/chats')
-  } else if (notification.type === 'friendRequest') {
-    router.push({ name: 'friends' })
-  } else if (notification.type === 'groupInvite') {
-    router.push({ name: 'groups' })
+    await privateChatsStore.markChatAsReaded(user.value.email, notification.entityId);
+    privateChatsStore.setSelectedChatId(notification.entityId);
+    toggle();
+    router.push('/chats');
+  } else if (notification.type === 'newFollower') {
+    router.push(`/profile/${notification.fromUid ?? notification.extra.senderEmail}`);
+  } else if (notification.type === 'groupInvitation') {
+    router.push(`/group/${notification.extra.groupId ?? notification.entityId}`);
+  } else if (notification.type === 'eventInvitation') {
+    router.push(`/event/${notification.extra.eventId ?? notification.entityId}`);
   }
+  toggle();
 }
 
 async function toggleRead(notification) {
-  if (notification.read) {
-    await notificationsStore.markNotificationAsUnread(notification.recipientId, notification.id)
-    snackbarStore.show('Notificación actualizada', 'success')
-  } else {
-    await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id)
-    snackbarStore.show('Notificación actualizada', 'success')
+  try {
+    if (notification.read) {
+      await notificationsStore.markNotificationAsUnread(notification.recipientId, notification.id);
+      snackbarStore.show('Notificación marcada como no leída', 'success');
+    } else {
+      await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id);
+      snackbarStore.show('Notificación marcada como leída', 'success');
+    }
+  } catch (error) {
+    snackbarStore.show('Error al actualizar la notificación', 'error');
+    console.error('Error toggling read status:', error);
   }
-}
-
-function getDropdownPosition(event, id) {
-  const position = dropdownPositions.value[id]
-  return position ? {
-    position: 'absolute',
-    top: `${position.top}px`,
-    left: `${position.left}px`
-  } : {}
 }
 
 function toggleActionsMenu(id, event) {
-  const button = event.currentTarget.getBoundingClientRect()
-  dropdownPositions.value[id] = {
-    top: button.bottom + window.scrollY,
-    left: button.right - 160 + window.scrollX // ajustá 160 a tu ancho de menú
+  if (activeActionsMenuId.value === id) {
+    activeActionsMenuId.value = null;
+  } else {
+    activeActionsMenuId.value = null; // Close any other open menus
+    const button = event.currentTarget.getBoundingClientRect();
+    dropdownPositions.value = {
+      [id]: {
+        position: 'absolute',
+        top: `${button.bottom + window.scrollY}px`,
+        left: `${button.right - 160 + window.scrollX}px`
+      }
+    };
+    activeActionsMenuId.value = id;
   }
-  activeActionsMenuId.value = activeActionsMenuId.value === id ? null : id
 }
 
 async function deleteNotification(notification) {
   try {
-    await notificationsStore.deleteNotification(user.value.uid, notification.id)
-    snackbarStore.show('Notificación eliminada', 'success')
+    await notificationsStore.deleteNotification(user.value.uid, notification.id);
+    snackbarStore.show('Notificación eliminada', 'success');
   } catch (error) {
-    snackbarStore.show('Error al eliminar la notificación', 'error')
+    snackbarStore.show('Error al eliminar la notificación', 'error');
+    console.error('Error deleting notification:', error);
   }
 }
-
-function reportNotification(notification) {
-  console.log('Reportar notificación:', notification)
-  // TODO: Implementar lógica de reporte
-  snackbarStore.show('Notificación reportada', 'warning')
-}
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.notification-item')) {
-    activeActionsMenuId.value = null
-  }
-})
-
-onMounted(() => {
-  document.addEventListener('click', closeMenuOnClickOutside)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('click', closeMenuOnClickOutside)
-})
 
 function closeMenuOnClickOutside(e) {
-  if (!e.target.closest('.notification-actions')) {
-    activeActionsMenuId.value = null
+  if (!e.target.closest('.notification-actions') && !e.target.closest('.fa-ellipsis-v')) {
+    activeActionsMenuId.value = null;
   }
 }
+
+onMounted(() => {
+  document.addEventListener('click', closeMenuOnClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeMenuOnClickOutside);
+});
 </script>
 
 <style scoped>

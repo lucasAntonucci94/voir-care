@@ -9,20 +9,24 @@
       v-if="groupsStore.allGroups?.value?.length > 0"
       v-model="searchQuery"
       v-model:selectedCategory="selectedCategory"
-      :categories="categories"
       :showSearch="true"
       :showSelect="true"
-    />
-    <!-- Lista de grupos -->
-    <div v-if="discoveredGroups.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <GroupCard
-        v-for="group in discoveredGroups"
-        :key="group.idDoc"
-        :group="group"
       />
+    <!-- Lista de grupos -->
+    <div v-if="discoveredGroups.length > 0" class="flex justify-center md:block">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <GroupCard
+          v-for="group in discoveredGroups"
+          :key="group.idDoc"
+          :group="group"
+          />
+      </div>
     </div>
-
     <!-- Sin grupos -->
+    <div v-else-if="(searchQuery !== '' || selectedCategory !== '') && discoveredGroups?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
+      <i class="fa-regular fa-calendar-xmark text-4xl mb-3"></i>
+      <p>No hay grupos para los filtros seleccionados.</p>
+    </div>
     <div v-else class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <p class="text-gray-500 dark:text-gray-400">Ya formas parte de todos los grupos disponibles.</p>
       <button
@@ -35,7 +39,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useGroupsStore } from '../../stores/groups'
 import { useAuth } from '../../api/auth/useAuth'
 import GroupCard from '../organisms/GroupCard.vue'
@@ -46,14 +50,6 @@ const { user } = useAuth()
 
 const searchQuery = ref('')
 const selectedCategory = ref('')
-const categories = [
-  { id: 'educacion', name: 'Educación' },
-  { id: 'ayuda', name: 'Ayuda y Asistencia' },
-  { id: 'interes', name: 'Intereses' },
-  { id: 'cuidado', name: 'Cuidado Animal' },
-  { id: 'voluntariado', name: 'Voluntariado' },
-  { id: 'otros', name: 'Otros' },
-]
 
 // Computado reactivo y seguro
 const discoveredGroups = computed(() => {
@@ -62,10 +58,23 @@ const discoveredGroups = computed(() => {
     .filter(group => !group.members?.includes(userId)) // no está en el grupo
     .filter(group => group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())) // por nombre
     .filter(group => !selectedCategory.value || group.categories?.some(c => c.id === selectedCategory.value)) // por categoría
+    .filter(group => group.privacy === "public") // tomo solo los publicos.
 })
 
 // Navegación
 const navigateToCreateGroup = () => {
-  console.log("Crear grupo")
+  // console.log("Crear grupo")
 }
+
+  // Suscripción a eventos del usuario
+  onMounted(() => {
+    if (user.value) {
+      groupsStore.subscribeAllGroups()
+    }
+  })
+
+  // Desuscripción al desmontar el componente
+  onUnmounted(() => {
+    groupsStore.unsubscribeAllGroups()
+  })
 </script>

@@ -6,23 +6,30 @@
       </div>
       <!-- Filtro -->
       <GroupFilters
-        v-if="groupsStore.userGroups?.value.length > 0"
+        v-if="groupsStore.userGroups?.value?.length > 0"
         v-model="searchQuery"
         v-model:selectedCategory="selectedCategory"
-        :categories="categories"
+        v-model:selectedOwnership="selectedOwnership"
         :showSearch="true"
         :showSelect="true"
-      />
-      <!-- Lista de grupos -->
-      <div v-if="filteredGroups.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <GroupCard
-          v-for="group in filteredGroups"
-          :key="group.idDoc"
-          :group="group"
+        :showOwnership="true"
         />
+      <!-- Lista de grupos -->
+      <div v-if="filteredGroups?.length > 0" class="flex justify-center md:block">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <GroupCard
+            v-for="group in filteredGroups"
+            :key="group.idDoc"
+            :group="group"
+          />
+        </div>
       </div>
 
       <!-- Sin grupos -->
+      <div v-else-if="(searchQuery !== '' || selectedCategory !== '') && filteredGroups?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
+        <i class="fa-regular fa-calendar-xmark text-4xl mb-3"></i>
+        <p>No hay grupos para los filtros seleccionados.</p>
+      </div>
       <div
         v-else
         class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md"
@@ -45,39 +52,59 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted, onUnmounted } from 'vue';
   import { useGroupsStore } from '../../stores/groups';
   import GroupCard from '../organisms/GroupCard.vue';
   import GroupFilters from '../molecules/GroupFilters.vue';
-  
+  import { useAuth } from '../../api/auth/useAuth';
+
   const groupsStore = useGroupsStore();
-  
+  const { user } = useAuth();
   const searchQuery = ref('');
   const selectedCategory = ref('');
-  const categories = [
-    { id: 'educacion', name: 'Educación' },
-    { id: 'ayuda', name: 'Ayuda y Asistencia' },
-    { id: 'interes', name: 'Intereses' },
-    { id: 'cuidado', name: 'Cuidado Animal' },
-    { id: 'voluntariado', name: 'Voluntariado' },
-    { id: 'otros', name: 'Otros' },
-  ];
-  
+  const selectedOwnership = ref('all');
+
   const filteredGroups = computed(() => {
-    return groupsStore.userGroups?.value
-      ?.filter(group =>
-        group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
-      ?.filter(group =>
-        !selectedCategory.value ||
-        group.categories?.some(c => c.id === selectedCategory.value)
-      ) ?? [];
+    let groups = groupsStore.userGroups?.value ?? [];
+
+    // Filtro por búsqueda
+    groups = groups.filter(group =>
+      group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+
+    // Filtro por categoría
+    groups = groups.filter(group =>
+      !selectedCategory.value ||
+      group.categories?.some(c => c.id === selectedCategory.value)
+    );
+
+    // Filtro por propiedad
+    if (selectedOwnership.value === 'owned') {
+      groups = groups.filter(group => group.ownerId === user.value.uid);
+    } else if (selectedOwnership.value === 'joined') {
+      groups = groups.filter(group => group.ownerId !== user.value.uid);
+    }
+
+    return groups;
   });
   
   const emit = defineEmits(['open-create-modal','open-discover-tab']);
   
   const navigateToCreateGroup = () => emit('open-create-modal');
   const navigateToDiscoverGroup = () => emit('open-discover-tab');
+
+  
+  // Suscripción a eventos del usuario
+  onMounted(() => {
+    if (user.value) {
+      groupsStore.subscribeUserGroups(user.value.uid)
+    }
+  })
+
+  // Desuscripción al desmontar el componente
+  onUnmounted(() => {
+    groupsStore.unsubscribeFromUserGroups()
+  })
   </script>
 
   <style scoped>

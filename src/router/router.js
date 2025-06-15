@@ -16,8 +16,14 @@ import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
+import AdmUsersPage from '../pages/admin/UsersPage.vue';
+import AdmEventsPage from '../pages/admin/EventsPage.vue';
+import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
+import AdmDefaultReelsPage from '../pages/admin/DefaultReelsPage.vue';
+import AdmEducationsPage from '../pages/admin/EducationsPage.vue';
 import BlogDetailPage from '../pages/BlogDetail.vue';
 import AdoptionPage from '../pages/AdoptionPage.vue';
+import AdmCategoriesPage from '../pages/admin/CategoriesPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -143,8 +149,64 @@ const routes = [
       },
       {
         path:  '/admin/reports',
-        name: 'reports',
+        name: 'reportsAdm',
         component: ReportsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/users',
+        name: 'usersAdm',
+        component: AdmUsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/defaultReels',
+        name: 'defaultReelsAdm',
+        component: AdmDefaultReelsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/events',
+        name: 'eventsAdm',
+        component: AdmEventsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/groups',
+        name: 'groupsAdm',
+        component: AdmGroupsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/education',
+        name: 'educationAdm',
+        component: AdmEducationsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/adoption',
+        name: 'adoptionAdm',
+        component: AdmUsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/categories',
+        name: 'categoriesAdm',
+        component: AdmCategoriesPage,
         meta: {
             requiresAuth: true,
         }

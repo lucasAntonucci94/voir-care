@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800 text-[#2c3e50] dark:text-white">
-    <PostHeader :post="post" @delete="deletePost" @share="sharePost" @report="reportPost" />
+    <PostHeader :post="post" @delete="deletePost" @report="reportPost" /> <!--  @share="sharePost" -->
     <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>
     <p class="mt-1 text-sm text-ellipsis">{{ post?.body }}</p>
     <div v-if="post?.media?.url" class="mt-3">
@@ -15,28 +15,58 @@
         v-else-if="post?.media?.type === 'video'"
         :src="post?.media?.url"
         :poster="post?.media?.url"
-        :controls="true"
+        :controls="false"
         :autoplay="true"
         :loop="true"
+        muted
         class="w-full h-48 rounded-lg cursor-pointer"
         @click="openMediaModal"
       ></video>
     </div>
     <div class="flex gap-2 mt-2 flex-wrap">
-      <span v-for="category in post?.categories" :key="category.id" class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full">
+      <span
+        v-for="category in post?.categories"
+        :key="category.id"
+        class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full"
+      >
         {{ category.name }}
       </span>
     </div>
-    <div class="flex justify-between mt-3 text-sm text-gray-600 dark:text-white">
+    <div class="flex justify-between mt-3 text-sm text-gray-600 dark:text-white gap-4">
       <button
         @click="toggleLike"
-        :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-        class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
+          post?.likes?.some(l => l.userId === user?.value?.id)
+            ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary',
+          !user ? 'opacity-50 cursor-not-allowed' : ''
+        ]"
         :disabled="!user"
       >
-        <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
+        <i
+          :class="[
+            'fas fa-heart',
+            post?.likes?.some(l => l.userId === user?.value?.id) ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
+          ]"
+        ></i>
+        {{ post?.likes?.length ?? 0 }} Me gusta
       </button>
-      <button @click="post.showComments = !post.showComments" class="hover:text-primary dark:hover:text-secondary transition-colors">
+      <button
+        @click="post.showComments = !post.showComments"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
+          post?.showComments
+            ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary'
+        ]"
+      >
+        <i
+          :class="[
+            post?.showComments ? 'fas fa-comment-slash' : 'fas fa-comment',
+            post?.showComments ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
+          ]"
+        ></i>
         {{ comments?.length ?? 0 }} Comentarios
       </button>
     </div>
@@ -67,8 +97,7 @@
               alt="Post media"
               :poster="post?.imageUrlFile"
               :controls="true"
-              :autoplay="true"
-              :loop="true" 
+              :loop="true"
               autoplay
               class="max-w-full max-h-full object-contain rounded-lg"
             ></video>
@@ -82,11 +111,22 @@
             <p class="text-sm md:text-base mb-4 text-ellipsis">{{ post?.body }}</p>
             <button
               @click="toggleLike"
-              :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-              class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1 mb-4"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 mb-4',
+                post?.likes?.some(l => l.userId === user?.value?.id)
+                  ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary',
+                !user ? 'opacity-50 cursor-not-allowed' : ''
+              ]"
               :disabled="!user"
             >
-              <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
+              <i
+                :class="[
+                  'fas fa-heart',
+                  post?.likes?.some(l => l.userId === user?.value?.id) ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
+                ]"
+              ></i>
+              {{ post?.likes?.length ?? 0 }} Me gusta
             </button>
             <hr class="border-t border-gray-300 dark:border-gray-700 md:border-gray-400 mb-4" />
             <CommentList :post="post" />
@@ -94,7 +134,7 @@
           </div>
           <button
             @click="closeMediaModal"
-            class="absolute top-2 right-2 text-gray-300 md:text-gray-600 hover:text-white md:hover:text-gray-800  dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+            class="absolute top-2 right-2 text-gray-300 md:text-gray-600 hover:text-white md:hover:text-gray-800 dark:hover:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
             aria-label="Cerrar modal"
           >
             <i class="fa-solid fa-times text-xl md:text-2xl"></i>
@@ -123,13 +163,13 @@ const { comments } = useComments(props.post.idDoc);
 const showMediaModal = ref(false);
 
 // Inicializamos propiedades faltantes
-props.post.likes = props.post.likes || [];
-props.post.showMenu = props.post.showMenu || false;
-props.post.showComments = props.post.showComments || false;
+// props.post.likes = props.post.likes || [];
+// props.post.showMenu = props.post.showMenu || false;
+// props.post.showComments = props.post.showComments || false;
 
 async function toggleLike() {
   if (!user.value) {
-    console.log('Usuario no autenticado, no puede dar Like');
+    // console.log('Usuario no autenticado, no puede dar Like');
     return;
   }
   await postsStore.toggleLike(props.post.idDoc, {
@@ -139,18 +179,18 @@ async function toggleLike() {
 }
 
 function deletePost() {
-  console.log('Eliminar post:', props.post);
+  // console.log('Eliminar post:', props.post);
   postsStore.deletePost(props.post.idDoc);
   props.post.showMenu = false;
 }
 
 function sharePost() {
-  console.log('Compartir post:', props.post.id);
+  // console.log('Compartir post:', props.post.id);
   props.post.showMenu = false;
 }
 
 function reportPost() {
-  console.log('Reportar post:', props.post.id);
+  // console.log('Reportar post:', props.post.id);
   props.post.showMenu = false;
 }
 
@@ -192,6 +232,7 @@ h3.text-ellipsis,
 p.text-ellipsis {
   max-width: 100%;
 }
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
   .media-container {

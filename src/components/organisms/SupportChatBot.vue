@@ -112,19 +112,39 @@ onUnmounted(() => {
 })
 
 // Intancio el bot de RiveScript
-const bot = new RiveScript()
+// const bot = new RiveScript()
+const bot = new RiveScript({
+  utf8: true,
+  forceCase: true,
+  debug: false,
+  errors: {
+    replyNotMatched: "Ups, no tengo información sobre eso aún.",
+    replyNotFound: "No estoy segur@ de cómo responderte.",
+    objectNotFound: "[Error interno]",
+    deepRecursion: "Parece que entramos en un bucle, ¿podés intentar reformular?"
+  }
+})
+bot.unicodePunctuation = new RegExp(/[.,!?;:¿¡]/g)
 
 function sendMessage() {
-  const text = userInput.value.trim()
-  if (!text) return
+  const rawText = userInput.value.trim()
+  const cleaned = cleanInput(rawText)
+  if (!cleaned) return
 
-  messages.value.push({ sender: 'user', text })
+  messages.value.push({ sender: 'user', text: rawText })
 
-  bot.reply("localuser", text).then(reply => {
+  bot.reply("localuser", cleaned).then(reply => {
     messages.value.push({ sender: 'bot', text: reply })
   })
 
   userInput.value = ''
+}
+
+function cleanInput(text) {
+  return text
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // sin tildes
+    .replace(/[.,!?;:¿¡]/g, '') // sin puntuación
 }
 </script>
 

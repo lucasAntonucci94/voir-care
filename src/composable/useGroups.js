@@ -14,9 +14,10 @@ import {
   getDoc,
   arrayUnion,
   arrayRemove, 
+  limit,
 } from 'firebase/firestore'
 import { useAuth } from '../api/auth/useAuth';
-import { useStorage } from './useStorage'; // Importamos el composable de storage
+import { useStorage } from './useStorage';
 import { newGuid } from '../utils/newGuid';
 
 const db = getFirestore();
@@ -177,15 +178,17 @@ export function useGroups() {
         photoURLFile: user.value?.photoURLFile,
         photoPath: user.value?.photoPathFile
       }
-      
-      if (postData.media.imageBase64) {
+      if (postData.media && postData.media.imageBase64) {
         const extension = postData.media.type === 'image' ? 'jpg' : 'mp4';
         const filePath = `groups/${idGroup}/posts/${user.value.email}/${postData.id}.${extension}`;
         await uploadFile(filePath, postData.media.imageBase64);
-        postData.media.path = filePath;
-        postData.media.url = await getFileUrl(filePath);
+        postData.media = {
+          path: filePath,
+          url: await getFileUrl(filePath),
+          type: postData.media.type,
+        } 
       }
-
+     
       const postsRef = collection(db, 'groups', idGroup, 'posts')
       await addDoc(postsRef, {
         ...postData,
@@ -221,6 +224,32 @@ export function useGroups() {
     }
   }
 
+  /**
+   * Se suscribe a los últimos 3 grupos con categoría "adopcion".
+   * @param {function} callback - Función que recibe un array de grupos.
+   * @returns {function} - Función para cancelar la suscripción.
+   */
+  function subscribeToAdoptionGroups(callback) {
+    try {
+      const q = query(
+        groupsRef,
+        where('categories', 'array-contains', { id: 'adopcion', name: 'Adopción' }),
+        orderBy('createdAt', 'desc'),
+        limit(3)
+      )
+      return onSnapshot(q, (snapshot) => {
+        const groups = snapshot.docs.map((docSnap) => ({
+          idDoc: docSnap.id,
+          ...docSnap.data(),
+        }))
+        callback(groups)
+      })
+    } catch (error) {
+      console.error('Error al suscribirse a grupos de adopción:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createGroup,
@@ -233,5 +262,6 @@ export function useGroups() {
     leaveGroup,
     createPostGroup,
     suscribePostsByGroupId,
+    subscribeToAdoptionGroups,
   }
 }

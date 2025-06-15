@@ -61,7 +61,7 @@
   </template>
   
   <script setup>
-  import { defineProps, defineEmits } from 'vue'
+  import { defineEmits } from 'vue'
   import defaultAvatar from '../../assets/avatar1.jpg'
   
   const props = defineProps({

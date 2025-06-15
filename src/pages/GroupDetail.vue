@@ -1,4 +1,3 @@
-<!-- pages/GroupDetail.vue -->
 <template>
   <div v-if="loading" class="flex items-center justify-center h-screen">
     <p class="text-lg text-gray-500 dark:text-gray-300">Cargando grupo...</p>
@@ -8,7 +7,7 @@
   </div>
   <div v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
     <!-- Banner -->
-    <div class="relative w-full h-64 md:h-96 overflow-hidden">
+    <div  @click="openMediaModal(group.media)" class="relative w-full h-64 md:h-96 overflow-hidden">
       <template v-if="group.media?.type === 'image' && group.media?.url">
         <img
           :src="group.media.url"
@@ -19,7 +18,9 @@
       <template v-else-if="group.media?.type === 'video' && group.media?.url">
         <video
           :src="group.media.url"
-          controls
+          autoplay
+          loop
+          muted
           class="w-full h-full object-cover"
         ></video>
       </template>
@@ -43,8 +44,8 @@
 
     <!-- Navegación de Tabs -->
     <div class="container mx-auto px-4 md:px-8 py-6">
-      <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-        <nav class="flex overflow-x-auto" role="tablist">
+      <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 mb-6">
+        <nav class="flex overflow-x-auto space-x-4" role="tablist">
           <button
             v-for="tab in tabs"
             :key="tab.id"
@@ -61,6 +62,132 @@
             {{ tab.label }}
           </button>
         </nav>
+        <!-- Settings Dropdown Button -->
+        <div ref="dropdownRef" class="relative">
+          <button
+            @click="showSettingsMenu = !showSettingsMenu"
+            class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md"
+          >
+            <i class="fas fa-cog"></i>
+            <span class="ml-2 text-sm  hidden md:inline">Configuración</span>
+          </button>
+          <div
+            v-if="showSettingsMenu"
+            class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
+          >
+            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+              <!-- Edit Group -->
+              <li v-if="isAdmin || group?.ownerId === user?.uid">
+                <button
+                  @click="openEditModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-pen mr-2"></i> Editar
+                </button>
+              </li>
+              <!-- Delete Group -->
+              <li v-if="isAdmin || group?.ownerId === user?.uid">
+                <button
+                  @click="openDeleteModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-trash-can mr-2"></i> Eliminar
+                </button>
+              </li>
+              <!-- Report Group -->
+              <li v-if="group?.ownerId !== user?.uid && !isAdmin">
+                <button
+                  @click="showReportGroupModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-flag mr-2"></i> Reportar
+                </button>
+              </li>
+              <!-- Hide Group -->
+              <!-- <li v-if="group?.ownerId !== user?.uid && !isAdmin">
+                <button
+                  @click="showHideGroupModal"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-eye-slash mr-2"></i> Ocultar Grupo
+                </button>
+              </li> -->
+              <!-- Hide Group -->
+              <li v-if="group?.ownerId !== user?.uid && !isAdmin && isMember">
+                <button
+                  @click="toggleMembership"
+                  class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-close mr-2"></i> Salir
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- MODALES -->
+
+        <!-- Modal de confirmación para reportar un post -->
+        <div v-if="showReportModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl transform transition-all duration-300">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300 mb-4">¿Desea reportar esta publicación?</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">¿Estás seguro de que quieres reportar esta publicación?</p>
+            <label class="block mb-2 text-gray-700 dark:text-gray-300">Motivo del reporte:</label>
+            <select v-model="selectedReportReason" class="w-full mb-4 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 focus:border-primary dark:focus:border-secondary rounded-lg px-3 py-2">
+              <option value="" disabled selected>Seleccione un motivo</option>
+              <option value="Contenido inapropiado">Contenido inapropiado</option>
+              <option value="Spam">Spam</option>
+              <option value="Información errónea">Información errónea</option>
+              <option value="Otro">Otro</option>
+            </select>
+            <label class="block mb-2 text-gray-700 dark:text-gray-300">Descripción (opcional):</label>
+            <textarea v-model="reportDescription" rows="3" class="w-full mb-4 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 rounded-lg px-3 py-2" placeholder="Agrega una descripción adicional..."></textarea>
+            <div class="flex justify-end gap-3">
+              <button 
+                @click="closeReportModal" 
+                class="px-4 py-2 text-gray-500 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-gray-200 font-medium rounded-lg hover:text-gray-700 hover:bg-gray-100 transition-all duration-200"
+              >
+                Cancelar
+              </button>
+              <button
+                :disabled="loading || !selectedReportReason"
+                type="submit"
+                @click="handleReport" 
+                class="relative px-5 py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg disabled:bg-primary-md dark:disabled:bg-secondary-md disabled:cursor-not-allowed"
+              >
+                <span v-if="!loading">Reportar</span>
+                <span v-else class="flex items-center gap-2">
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Reportando...
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Modal de confirmación de eliminación -->
+        <GenericConfirmModal
+          v-if="showDeleteModal"
+          :visible="showDeleteModal"
+          title="¿Eliminar Grupo?"
+          message="Esta acción no se puede deshacer. ¿Estás seguro de que quieres continuar?"
+          confirmButtonText="Eliminar"
+          cancelButtonText="Cancelar"
+          @cancel="closeDeleteModal"
+          @confirmed="confirmDelete"
+        />
+        <!-- Modal de edición de grupo -->
+        <EditGroupModal
+          v-if="showEditModal"
+          :visible="showEditModal"
+          :group="selectedGroup"
+          @close="closeEditModal"
+          @groupUpdated="handleGroupUpdated"
+        />
+        <!-- Modal para ver contenido media -->
+        <MediaModalViewer
+          :visible="showMediaModal"
+          :media="selectedMedia"
+          @close="closeMediaModal"
+        />
       </div>
 
       <!-- Contenido de la pestaña seleccionada -->
@@ -83,7 +210,7 @@
                 </li>
                 <li class="flex items-center gap-3">
                   <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Privacidad:</strong> {{ group.privacy || 'Público' }}</span>
+                  <span><strong>Privacidad:</strong> {{ group.privacy.toLowerCase() === 'public' ? 'Público' : 'Privado' }}</span>
                 </li>
                 <li class="flex items-center gap-3">
                   <i class="fas fa-tags text-primary dark:text-secondary text-xl"></i>
@@ -98,32 +225,11 @@
                 </li>
                 <li class="flex items-center gap-3">
                   <i class="fas fa-users text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Miembros:</strong> {{ group.members?.length || 0 }}</span>
+                  <span><strong>Miembros:</strong> {{ (group.members && group.members.length ? group.members.length - 1 : 0) || 0 }}</span>
                 </li>
                 <li v-if="group.rules" class="flex items-center gap-3">
                   <i class="fas fa-book text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Reglas:</strong> {{ group.rules }}</span>
-                </li>
-              </ul>
-            </div>
-            <div
-              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
-            >
-              <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-                Publicaciones Destacadas
-              </h2>
-              <ul class="space-y-4 text-gray-600 dark:text-gray-300">
-                <li class="flex items-center gap-3">
-                  <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Se:</strong></span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Esta:</strong></span>
-                </li>
-                <li class="flex items-center gap-3">
-                  <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
-                  <span><strong>Trabajando:</strong></span>
                 </li>
               </ul>
             </div>
@@ -133,9 +239,10 @@
           <div class="space-y-6">
             <!-- Card de Acciones -->
             <section
+              v-if="!isAdmin && !isMember"
               class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
             >
-              <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">Acciones</h2>
+              <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100 sr-only">Acciones</h2>
               <div class="flex flex-col gap-3">
                 <button
                   v-if="!isAdmin"
@@ -147,24 +254,28 @@
                     :class="isMember ? 'fas fa-check-circle' : 'fas fa-plus-circle'"
                     class="text-white text-sm"
                   ></i>
-                  {{ isMember ? 'Salir del grupo' : 'Unirme al grupo' }}
-                </button>
-                <button
-                  class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
-                  disabled
-                >
-                  Invitar amigos
+                  {{ isMember ? 'Salir' : 'Unirme' }}
                 </button>
               </div>
             </section>
 
             <!-- Card de Creador y Miembros -->
             <section
-              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700"
+              class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700 relative"
             >
+              <!-- Header with Button -->
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
+                <button
+                  class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
+                  @click="openInviteFriendsModal"
+                >
+                 <i class="fas fa-user-plus"></i> <span class="hidden md:block ml-2">Invitar</span>
+                </button>
+              </div>
+
               <!-- Sección de Creador -->
               <div class="mb-4">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
                 <div class="flex items-center gap-3 mt-2">
                   <img
                     :src="ownerDetails.photoURLFile || defaultAvatar"
@@ -191,9 +302,10 @@
                   <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Miembros</h2>
                   <button
                     @click="activeTab = 'members'"
-                    class="text-sm text-primary dark:text-secondary hover:underline"
+                    class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1"
                   >
-                    Ver todos
+                    <i class="fas fa-eye"></i>
+                    <span class="hidden md:block ml-2">Ver todos</span>
                   </button>
                 </div>
                 <div v-if="membersLoading" class="text-center text-gray-500 dark:text-gray-400 text-sm">
@@ -218,135 +330,286 @@
                 </p>
               </div>
             </section>
-
+            <InviteFriendsModal :visible="showModalInviteFriends" @close="closeInviteFriendsModal" :module="'group'" :entity="{ id: group?.idDoc, title: group?.title }" :members="group?.members ?? []"/>
           </div>
         </div>
 
         <!-- Pestaña "Conversación" -->
-        <div v-else-if="activeTab === 'conversation'" class="text-sm text-gray-600 dark:text-gray-300">
-          <ConversationGroupTab :group-id="group.idDoc" :is-member="isMember" />
-        </div>
-
-        <!-- Pestaña "Destacados" -->
-        <div v-else-if="activeTab === 'highlights'" class="text-sm text-gray-600 dark:text-gray-300">
-          <p>Aquí se mostrarán los posteos destacados (próximamente).</p>
-        </div>
+        <ConversationGroupTab v-else-if="activeTab === 'conversation'" :group="group" :is-member="isMember" />
 
         <!-- Pestaña "Personas" -->
-        <GroupMembersTab v-if="activeTab === 'members'" :members="membersDetails" />
-
-        <!-- Pestaña "Eventos" -->
-        <div v-else-if="activeTab === 'events'" class="text-sm text-gray-600 dark:text-gray-300">
-          <p>Eventos organizados por este grupo (próximamente).</p>
-        </div>
-
-        <!-- Pestaña "Multimedia" -->
-        <div v-else-if="activeTab === 'multimedia'" class="text-sm text-gray-600 dark:text-gray-300">
-          <p>Galería de fotos y videos compartidos en el grupo (próximamente).</p>
-        </div>
+        <GroupMembersTab v-else-if="activeTab === 'members'" :members="membersDetails" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { formatTimestamp } from '../utils/formatTimestamp'
-import { useGroupsStore } from '../stores/groups'
-import { useUsersStore } from '../stores/users'
-import defaultAvatar from '../assets/avatar1.jpg'
-import defaultGroupBanner from '../assets/wallwhite.jpg'
-import { useAuth } from '../api/auth/useAuth'
-import ConversationGroupTab from '../components/organisms/ConversationGroupTab.vue'
-import GroupMembersTab from '../components/organisms/GroupMembersTab.vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { formatTimestamp } from '../utils/formatTimestamp';
+import { useGroupsStore } from '../stores/groups';
+import { useUsersStore } from '../stores/users';
+import defaultAvatar from '../assets/avatar1.jpg';
+import defaultGroupBanner from '../assets/wallwhite.jpg';
+import { useAuth } from '../api/auth/useAuth';
+import ConversationGroupTab from '../components/organisms/ConversationGroupTab.vue';
+import GroupMembersTab from '../components/organisms/GroupMembersTab.vue';
+import InviteFriendsModal from '../components/molecules/InviteFriendsModal.vue';
+import { useReports } from '../composable/useReports';
+import { useSnackbarStore } from '../stores/snackbar';
+import GenericConfirmModal from '../components/molecules/GenericConfirmModal.vue';
+import EditGroupModal from '../components/organisms/EditGroupModal.vue';
+import MediaModalViewer from '../components/molecules/MediaViewerModal.vue';
 
-const route = useRoute()
-const groupsStore = useGroupsStore()
-const usersStore = useUsersStore()
-const { user } = useAuth()
+const route = useRoute();
+const router = useRouter();
+const groupsStore = useGroupsStore();
+const usersStore = useUsersStore();
+const { user } = useAuth();
+const { saveReport } = useReports();
+const snackbarStore = useSnackbarStore();
 
-const group = ref(null)
-const loading = ref(true)
-const membersDetails = ref([])
-const ownerDetails = ref({})
-const isMember = ref(false)
-const isAdmin = ref(false)
+const group = ref(null);
+const loading = ref(true);
+const membersDetails = ref([]);
+const ownerDetails = ref({});
+const isMember = ref(false);
+const isAdmin = ref(false);
+const showModalInviteFriends = ref(false);
+const showSettingsMenu = ref(false);
+const dropdownRef = ref(null);
+const selectedReportReason = ref('');
+const reportDescription = ref('');
+const showReportModal = ref(false);
+const showDeleteModal = ref(false);
+const showEditModal = ref(false);
+const selectedGroup = ref(null);
+const showMediaModal = ref(false);
+const membersLoading = ref(false);
+const selectedMedia = ref({ src: '', type: 'image' });
 
 // Definir las pestañas
 const tabs = [
   { id: 'info', label: 'Información' },
   { id: 'conversation', label: 'Conversación' },
-  { id: 'highlights', label: 'Destacados' },
   { id: 'members', label: 'Miembros' },
-  { id: 'events', label: 'Eventos' },
-  { id: 'multimedia', label: 'Multimedia' },
-]
-const activeTab = ref('info')
+];
+const activeTab = ref('info');
 
-onMounted(async () => {
-  const id = route.params.idGroup
-  if (id) {
-    try {
-      group.value = await groupsStore.findGroupById(id)
-      isMember.value = group.value?.members?.includes(user.value?.uid) || false
-      isAdmin.value = group.value?.ownerId === user.value?.uid || false
-
-      // Cargar detalles del propietario
-      if (group.value?.ownerId) {
-        ownerDetails.value = await usersStore.getUser(group.value.ownerId)
-      }
-      // Cargar detalles de los miembros
-      if (group.value?.members?.length) {
-        const userPromises = group.value.members.map(async (userId) => {
-          try {
-            // if(group.value.ownerId === userId) {
-            //   return null // No incluir al propietario en la lista de miembros
-            // }
-            return await usersStore.getUser(userId)
-          } catch (error) {
-            console.warn(`No se pudo obtener el usuario con ID ${userId}:`, error)
-            return null
-          }
-        })
-        membersDetails.value = (await Promise.all(userPromises)).filter(user => user !== null)
-      }
-    } catch (error) {
-      console.error('Error al cargar grupo:', error)
-    }
+// Función para cargar los datos del grupo
+async function loadGroupData(id) {
+  if (!id) {
+    loading.value = false;
+    return;
   }
-  loading.value = false
-})
+  try {
+    group.value = await groupsStore.findGroupById(id);
+    isMember.value = group.value?.members?.includes(user.value?.uid) || false;
+    isAdmin.value = group.value?.ownerId === user.value?.uid || false;
 
-// Corregir watch para isMember
+    // Cargar detalles del propietario
+    if (group.value?.ownerId) {
+      ownerDetails.value = await usersStore.getUser(group.value.ownerId);
+    }
+
+    // Cargar detalles de los miembros
+    if (group.value?.members?.length) {
+      membersLoading.value = true;
+      const userPromises = group.value.members.map(async (userId) => {
+        if (userId === group.value?.ownerId) {
+          return null;  // Omito el usuario propietario.
+        }
+        try {
+          return await usersStore.getUser(userId);
+        } catch (error) {
+          console.warn(`No se pudo obtener el usuario con ID ${userId}:`, error);
+          return null;
+        }
+      });
+      membersDetails.value = (await Promise.all(userPromises)).filter(user => user !== null);
+      membersLoading.value = false;
+    }
+  } catch (error) {
+    console.error('Error al cargar grupo:', error);
+    membersLoading.value = false;
+    group.value = null; // Asegura que se muestre "Grupo no encontrado" si falla
+  }
+  loading.value = false;
+}
+
+// Watch para cambios por ID del grupo
+watch(
+  () => route.params.idGroup,
+  async (newId) => {
+    if (newId) {
+      // Reiniciar todos los estados
+      loading.value = true;
+      group.value = null;
+      membersDetails.value = [];
+      ownerDetails.value = {};
+      isMember.value = false;
+      isAdmin.value = false;
+      showSettingsMenu.value = false;
+      showModalInviteFriends.value = false;
+      showReportModal.value = false;
+      showDeleteModal.value = false;
+      showEditModal.value = false;
+      selectedGroup.value = null;
+      selectedMedia.value = { src: '', type: 'image' };
+
+      // Cargar datos del nuevo grupo
+      await loadGroupData(newId);
+    }
+  },
+  { immediate: true } // Ejecutar inmediatamente al montar si hay un idGroup
+);
+
+// onMounted para inicializar eventos
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
+// Handle click outside to close dropdown
+const handleClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    showSettingsMenu.value = false;
+  }
+};
+
+// Corregir watch para isMember (ya está correcto, pero lo mantenemos)
 watch(
   () => group.value?.members,
   (members) => {
-    isMember.value = members?.includes(user.value?.uid) || false
+    isMember.value = members?.includes(user.value?.uid) || false;
   },
   { immediate: true }
-)
+);
 
 async function toggleMembership() {
-  const groupId = group.value?.idDoc
-  const userId = user.value?.uid
+  const groupId = group.value?.idDoc;
+  const userId = user.value?.uid;
   try {
     if (isMember.value) {
-      await groupsStore.leaveGroup(groupId, userId)
-      group.value.members = group.value.members.filter(id => id !== userId)
-      membersDetails.value = membersDetails.value.filter(member => member.id !== userId)
-      isMember.value = false
+      await groupsStore.leaveGroup(groupId, userId);
+      group.value.members = group.value.members.filter(id => id !== userId);
+      membersDetails.value = membersDetails.value.filter(member => member.id !== userId);
+      isMember.value = false;
     } else {
-      await groupsStore.joinGroup(groupId, userId)
-      group.value.members.push(userId)
-      const newMember = await usersStore.getUser(userId)
-      membersDetails.value.push(newMember)
-      isMember.value = true
+      await groupsStore.joinGroup(groupId, userId);
+      group.value.members.push(userId);
+      const newMember = await usersStore.getUser(userId);
+      membersDetails.value.push(newMember);
+      isMember.value = true;
     }
   } catch (err) {
-    console.error('Error al cambiar la membresía del grupo:', err)
+    console.error('Error al cambiar la membresía del grupo:', err);
   }
 }
+
+function openInviteFriendsModal() {
+  showModalInviteFriends.value = true;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInviteFriendsModal() {
+  showModalInviteFriends.value = false;
+  document.body.style.overflow = '';
+}
+
+async function showReportGroupModal() {
+  showSettingsMenu.value = false;
+  showReportModal.value = true;
+}
+
+async function handleReport() {
+  if (!selectedReportReason.value) return;
+
+  loading.value = true;
+  const response = await saveReport({
+    entityType: 'group',
+    entityId: group.value?.idDoc,
+    userId: user.value?.uid,
+    reason: selectedReportReason.value,
+    description: reportDescription.value,
+    metadata: { title: group.value?.title },
+  });
+
+  if (response) {
+    loading.value = false;
+    showReportModal.value = false;
+    document.body.style.overflow = '';
+    snackbarStore.show('Gracias por tu cooperación.', 'success');
+  } else {
+    snackbarStore.show('Error al reportar una publicación', 'error');
+  }
+}
+
+function closeReportModal() {
+  showReportModal.value = false;
+  document.body.style.overflow = '';
+}
+
+function openDeleteModal() {
+  showSettingsMenu.value = false;
+  showDeleteModal.value = true;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false;
+  document.body.style.overflow = '';
+}
+
+async function confirmDelete() {
+  try {
+    await groupsStore.deleteGroup(group.value.idDoc);
+    closeDeleteModal();
+    // console.log('Grupo eliminado');
+    router.push({ name: 'groups' });
+    snackbarStore.show('Grupo eliminado', 'success');
+  } catch (error) {
+    console.error('Error al eliminar grupo:', error);
+    snackbarStore.show('Error al eliminar grupo', 'error');
+  }
+}
+
+function openEditModal() {
+  selectedGroup.value = group.value;
+  showEditModal.value = true;
+  showSettingsMenu.value = false;
+}
+
+function closeEditModal() {
+  showEditModal.value = false;
+  selectedGroup.value = null;
+}
+
+function handleGroupUpdated(updatedGroup) {
+  group.value = updatedGroup;
+  closeEditModal();
+}
+
+function showHideGroupModal() {
+  showSettingsMenu.value = false;
+  // console.log('Abrir modal para ocultar grupo');
+}
+
+const openMediaModal = (media) => {
+  selectedMedia.value = { src: media.url, type: media.type };
+  showMediaModal.value = true;
+  document.body.style.overflow = 'hidden';
+};
+
+const closeMediaModal = () => {
+  selectedMedia.value = { src: '', type: 'image' };
+  showMediaModal.value = false;
+  document.body.style.overflow = '';
+};
 </script>
 
 <style scoped>

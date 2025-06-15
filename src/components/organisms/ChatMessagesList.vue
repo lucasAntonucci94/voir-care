@@ -10,16 +10,24 @@
       >
         <i class="fa-solid fa-arrow-left text-lg"></i>
       </button>
-      <img
-        :src="getUserPhoto() || AvatarImage"
-        alt="User avatar"
-        class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
-      />
-      <div class="flex-1">
-        <div class="flex justify-between items-center">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">{{ getUserName(getOtherUserEmail()) || 'Usuario desconocido' }}</h2>
+      <router-link class="flex items-center gap-3" :to="`/profile/${privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)}`" v-if="privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)" @click.native.stop="goBack" aria-current="page" :aria-label="'Perfil de ' + getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId))"
+      >
+      
+
+        <img
+          :src="privateChatsStore.getUserPhoto(privateChatsStore.selectedChatId)"
+          alt="User avatar"
+          class="w-10 h-10 rounded-full mr-3 object-cover transition-transform duration-200 hover:scale-105"
+        />
+        <div class="flex-1">
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
+              {{ getUserName(privateChatsStore.getOtherUserEmail(privateChatsStore.selectedChatId)) || 'Usuario desconocido' }}
+            </h2>
+          </div>
         </div>
-      </div>
+      </router-link>
+
     </div>
 
     <!-- Contenedor de mensajes -->
@@ -79,28 +87,16 @@
       <ChatMessageInput :selectedChatId="privateChatsStore?.selectedChatId" />
     </div>
 
-    <!-- Modal de confirmación integrado -->
-    <div v-if="showDeleteModal" class="fixed inset-0 z-101 flex items-center justify-center">
-      <div class="fixed inset-0 bg-black opacity-50"></div>
-      <div class="relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-300 mb-4">Confirmar eliminación</h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">¿Estás seguro de que deseas eliminar este mensaje?</p>
-        <div class="flex justify-end space-x-4">
-          <button
-            @click="closeDeleteModal"
-            class="px-4 py-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-xl transition-colors duration-200"
-          >
-            Cancelar
-          </button>
-          <button
-            @click="deleteMessage(messageToDelete)"
-            class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-xl hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200"
-          >
-            Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Modal de confirmacion al eliminar un mensaje -->
+    <GenericConfirmModal
+      :visible="showDeleteModal"
+      title="Confirmar eliminación"
+      message="¿Estás seguro de que deseas eliminar este mensaje?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteModal"
+      @confirmed="deleteMessage(messageToDelete)"
+    />
   </div>
   <div v-else class="flex-1 bg-white dark:bg-gray-800 dark:text-gray-300 rounded-xl shadow-xl p-5 text-center text-gray-700 border border-gray-200 dark:border-gray-700">
     Selecciona un chat para ver los mensajes.
@@ -113,8 +109,8 @@ import { usePrivateChats } from '../../composable/usePrivateChats';
 import { usePrivateChatsStore } from '../../stores/privateChats';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import ChatMessageInput from '../atoms/ChatMessageInput.vue';
+import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 import { useAuth } from '../../api/auth/useAuth';
-import AvatarImage from '../../assets/avatar1.jpg';
 import { useSnackbarStore } from '../../stores/snackbar';
 
 // Estado reactivo
@@ -131,54 +127,21 @@ const snackbarStore = useSnackbarStore();
 
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
-  isDesktop.value = window.innerWidth >= 768; // 768px es el breakpoint para md en Tailwind
+  isDesktop.value = window.innerWidth >= 768;
 };
 
 onMounted(() => {
   checkIfDesktop();
   window.addEventListener('resize', checkIfDesktop);
 
-  console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
+  // console.log('ChatMessagesList montado, selectedChatId:', privateChatsStore?.selectedChatId);
   if (privateChatsStore?.selectedChatId) {
     usePrivateChats().markMessagesAsRead(privateChatsStore?.selectedChatId, user.value.email);
   }
-  watch(
-    () => privateChatsStore?.selectedChatId,
-    (newChatId) => {
-      if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
-        unsubscribeMessages.value();
-        unsubscribeMessages.value = null;
-      }
-      if (newChatId) {
-        loadingMessages.value = true;
-        const otherUser = getOtherUserEmail();
-        if (!user?.value || !otherUser) return;
-        unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
-          user.value.email,
-          otherUser,
-          (msgs) => {
-            console.log('Mensajes recibidos:', msgs);
-            messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
-            loadingMessages.value = false;
-            scrollToBottom();
-          }
-        );
-        usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
-      } else {
-        messages.value = [];
-      }
-    },
-    { immediate: true }
-  );
-
-  // Auto-scroll al final de los mensajes
-  watch(messages, () => {
-    scrollToBottom();
-  });
 });
 
 onUnmounted(() => {
-  console.log('ChatMessagesList desmontado');
+  // console.log('ChatMessagesList desmontado');
   if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
     unsubscribeMessages.value();
     unsubscribeMessages.value = null;
@@ -187,50 +150,71 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkIfDesktop);
 });
 
-const deleteMessage = async (messageId) => {
-  console.log('Confirmando eliminación de mensaje ID:', messageId);
-  privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
-  closeDeleteModal();
-  snackbarStore.show('Mensaje eliminado', 'success')
-};
+// Cargar mensajes y precargar foto cuando cambia el chat seleccionado
+watch(
+  () => privateChatsStore?.selectedChatId,
+  async (newChatId) => {
+    if (unsubscribeMessages.value && typeof unsubscribeMessages.value === 'function') {
+      unsubscribeMessages.value();
+      unsubscribeMessages.value = null;
+    }
+    if (newChatId) {
+      loadingMessages.value = true;
+      const otherUserEmail = privateChatsStore.getOtherUserEmail(newChatId);
+      if (!user?.value || !otherUserEmail) {
+        loadingMessages.value = false;
+        return;
+      }
+      // Precargar la foto del usuario
+      await privateChatsStore.fetchUserPhoto(otherUserEmail);
+      unsubscribeMessages.value = usePrivateChats().subscribeToIncomingPrivateMessages(
+        user.value.email,
+        otherUserEmail,
+        (msgs) => {
+          // console.log('Mensajes recibidos:', msgs);
+          messages.value = msgs.map((msg, index) => ({ id: index, ...msg }));
+          loadingMessages.value = false;
+          scrollToBottom();
+        }
+      );
+      usePrivateChats().markMessagesAsRead(newChatId, user.value.email);
+    } else {
+      messages.value = [];
+      loadingMessages.value = false;
+    }
+  },
+  { immediate: true }
+);
+
+// Auto-scroll al final de los mensajes
+watch(messages, () => {
+  scrollToBottom();
+});
 
 // Métodos
+const deleteMessage = async (messageId) => {
+  // console.log('Confirmando eliminación de mensaje ID:', messageId);
+  privateChatsStore.deleteMessage(privateChatsStore?.selectedChatId, messageId);
+  closeDeleteModal();
+  snackbarStore.show('Mensaje eliminado', 'success');
+};
+
 const formatDate = (timestamp) => {
   return formatTimestamp(timestamp);
 };
 
 const getUserName = (email) => {
-  return email?.split('@')[0].replace('.', ' ');
-};
-
-const getOtherUserEmail = () => {
-  const chatId = privateChatsStore?.selectedChatId;
-  const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === chatId);
-
-  return selectedChat
-    ? selectedChat.users.find(email => email !== user?.value.email)
-    : privateChatsStore?.to || null;
-};
-
-const getUserPhoto = () => {
-  const chatId = privateChatsStore?.selectedChatId;
-  const selectedChat = privateChatsStore.chats?.value?.find(chat => chat.idDoc === chatId);
-
-  if (!selectedChat) return null;
-  const selectedEmail = selectedChat.users.find(email => email !== user?.value.email);
-  return selectedEmail
-    ? `https://firebasestorage.googleapis.com/v0/b/parcialcwantonucci.appspot.com/o/profile%2F${selectedEmail}.jpg?alt=media&token=a8d69477-990e-4e3d-bba3-8a19a83fccd4`
-    : AvatarImage;
+  return email?.split('@')[0].replace('.', ' ') || '';
 };
 
 const openDeleteModal = (messageId) => {
-  console.log('Abriendo modal para mensaje ID:', messageId);
+  // console.log('Abriendo modal para mensaje ID:', messageId);
   messageToDelete.value = messageId;
   showDeleteModal.value = true;
 };
 
 const closeDeleteModal = () => {
-  console.log('Cerrando modal');
+  // console.log('Cerrando modal');
   showDeleteModal.value = false;
   messageToDelete.value = null;
 };

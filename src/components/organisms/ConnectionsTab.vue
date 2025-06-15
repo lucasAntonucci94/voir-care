@@ -28,6 +28,7 @@
           </button>
           <router-link
             :to="`/profile/${connection.email}`"
+            @click="emitActiveTab"
             class="p-2 text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md rounded-lg"
             title="Ver perfil"
           >
@@ -40,6 +41,7 @@
 
     <!-- Modal para mostrar información del usuario -->
     <UserInfoModal
+      v-if="showModal && selectedUser"
       :visible="showModal"
       :user="selectedUser"
       @close="closeModal"
@@ -56,6 +58,9 @@ const props = defineProps({
   connections: { type: Array, required: true },
 })
 
+// Define emits
+const emit = defineEmits(['active-tab']);
+
 const showModal = ref(false)
 const selectedUser = ref(null)
 
@@ -70,6 +75,10 @@ const closeModal = () => {
   selectedUser.value = null
   document.body.style.overflow = ''
 }
+
+const emitActiveTab = () => {
+  emit('active-tab', 'publicaciones');
+};
 </script>
 
 <style scoped>

@@ -47,7 +47,7 @@
   
   const emit = defineEmits(['close'])
   watch(() => props.visible, (newValue) => {
-    console.log('Visible cambió a:', newValue);
+    // console.log('Visible cambió a:', newValue);
     });
   </script>
   

@@ -36,11 +36,11 @@ export function useMediaUpload() {
         // Si no hay archivo previo (URL o path), usar el path dinámico con extensión
         if (!currentUrl || !currentPath) {
           filepath = `${dynamicPath}.${extension}`;
-          console.log('Creando nuevo archivo en:', filepath);
+          // console.log('Creando nuevo archivo en:', filepath);
         } else {
           // Si ya existe un archivo, sobrescribir en el path actual
           filepath = currentPath;
-          console.log('Actualizando archivo existente en:', filepath);
+          // console.log('Actualizando archivo existente en:', filepath);
         }
 
         // Subir el archivo a Firebase Storage

@@ -15,7 +15,6 @@ export function usePosts() {
    */
   async function savePost({ title, body, categories, media, user }) {
     try {
-      debugger
       user.isAdmin = false;
       const data = {
         id: newGuid(),
@@ -24,17 +23,20 @@ export function usePosts() {
         body,
         categories: categories || [],
         created_at: serverTimestamp(),
-        media: media || null,
+        media: null,
         likes: [],
         connections: [],
       };
 
-      if (data.media && data.media?.imageBase64) {
-        const extension = data.media.type === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
+      if (media && media?.imageBase64) {
+        const extension = media.type === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
         const filePath = `post/${data.user.email}/${data.id}.${extension}`;
-        await uploadFile(filePath, data.media.imageBase64);
-        data.media.path = filePath;
-        data.media.url = await getFileUrl(filePath);
+        await uploadFile(filePath, media.imageBase64);
+        data.media ={
+          path: filePath,
+          url: await getFileUrl(filePath),
+          type: media.type,
+        }
       }
 
       await addDoc(postRef, data);
@@ -50,7 +52,6 @@ export function usePosts() {
    * @returns {Promise<void>}
    */
   async function updatePost(postId, { title, body, categories, media, user }) {
-    debugger
     try {
       const postDocRef = doc(db, 'posts', postId);
       const updatedData = {
@@ -148,13 +149,15 @@ export function usePosts() {
       const post = postSnap.data()
   
       return {
-        id,
+        idDoc: id,
+        id: post.id,
         title: post.title,
         body: post.body,
         user: post.user,
+        categories: post.categories,
         created_at: post.created_at,
-        imagePathFile: post.imagePathFile ?? null,
-        imageUrlFile: post.imageUrlFile ?? null,
+        likes: post.likes || [],
+        media: post.media ?? null,
       }
     } catch (err) {
       console.error('Error al obtener post por ID:', err)
@@ -201,7 +204,7 @@ export function usePosts() {
           toUid: post.user?.id,
           fromUid: userData.id,
           type: 'like',
-          message: `${userData.email} le dio like a tu publicación.`,
+          message: `${userData.email} le dio me gusta a tu publicación.`,
           entityId: postIdDoc,
           entityType: 'post',
         })
@@ -212,14 +215,12 @@ export function usePosts() {
     }
   }
 
-  // Nuevo método para quitar un Like
   async function removeLike(postIdDoc, userData) {
     try {
       const docRef = doc(db, 'posts', postIdDoc);
       const likeData = {
         userId: userData.id,
         email: userData.email,
-        // No necesitamos email ni timestamp aquí, Firestore compara por igualdad estricta
       };
       await updateDoc(docRef, {
         likes: arrayRemove(likeData), // Quita el like si existe
@@ -320,6 +321,63 @@ export function usePosts() {
       return false
     }
   }
+  async function deleteHiddenPost(userId, postId) {
+    try {
+      const hiddenPostsRef = collection(db, 'users', userId, 'hiddenPosts');
+      const q = query(hiddenPostsRef, where('postId', '==', postId));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        const docRef = querySnapshot.docs[0].ref;
+        await deleteDoc(docRef);
+        return true;
+      }
+      return false; // No se encontró el hiddenPost
+    } catch (err) {
+      console.error('Error al eliminar el hiddenPost:', err);
+      return false;
+    }
+  }
+
+  /**
+   * Escucha los últimos 5 posts con categoría "Adopción" en tiempo real.
+   * @param {function} callback - Función que recibe un array de posts
+   * @returns {function} - Función para cancelar la suscripción
+   */
+  function subscribeToAdoptionPosts(callback) {
+    try {
+      const q = query(
+        postRef,
+        where('categories', 'array-contains', { id: '01fef174-f5e6-432b-bb44-6a156927f0af', name: 'Adopción' }),
+        orderBy('created_at', 'desc'),
+        limit(5)
+      );
+      return onSnapshot(q, (snapshot) => {
+        const posts = snapshot.docs.map((doc) => {
+          const post = doc.data();
+          return {
+            idDoc: doc.id,
+            id: post.id,
+            title: post.title,
+            body: post.body,
+            user: post.user,
+            categories: post.categories,
+            created_at: post.created_at,
+            likes: post.likes || [],
+            media: post.media ?? null,
+            userAvatar: post.user.photoURLFile || null, 
+            userName: post.user.displayName || post.user.email,
+            date: post.created_at ? post.created_at : null,
+            image: post.media?.url || null,
+          };
+        });
+        callback(posts);
+      });
+    } catch (err) {
+      console.error('Error al suscribirse a posts de adopción:', err);
+      throw err;
+    }
+  }
 
   return {
     savePost,
@@ -334,5 +392,7 @@ export function usePosts() {
     addLike,
     removeLike,
     hidePost,
+    deleteHiddenPost,
+    subscribeToAdoptionPosts,
   };
 }
