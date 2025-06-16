@@ -38,37 +38,26 @@
           class="w-full sm:w-1/3 p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
           aria-label="Buscar blogs"
         />
-        <div class="relative">
-          <button
-            @click="showCategoryFilter = !showCategoryFilter"
-            class="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full text-left"
-            aria-label="Filtrar por categorías"
-          >
-            {{ selectedCategories.length ? `Categorías: ${selectedCategories.join(', ')}` : 'Filtrar por categorías' }}
-          </button>
-          <div
-            v-if="showCategoryFilter"
-            class="absolute z-10 mt-2 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-lg p-4"
-          >
-            <label v-for="category in uniqueCategories" :key="category" class="flex items-center">
-              <input
-                type="checkbox"
-                v-model="selectedCategories"
-                :value="category"
-                class="mr-2"
-                @change="showCategoryFilter = false"
-              />
-              {{ category }}
-            </label>
-          </div>
-        </div>
+        <multiselect
+          v-model="selectedCategories"
+          :options="categories"
+          :multiple="true"
+          :class="{ 'dark': isDark }"
+          placeholder="Seleccionar categorías"
+          aria-label="Filtrar por categorías"
+          label="name"
+          track-by="idDoc"
+          :disabled="isLoading"
+        ></multiselect>
         <select
           v-model="filterType"
           class="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           aria-label="Filtrar por tipo"
         >
-          <option value="">Filtrar por tipo</option>
-          <option v-for="type in uniqueTypes" :key="type" :value="type">{{ type }}</option>
+          <option value="">Todos los tipos</option>
+          <option v-for="option in blogTypeOptions" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </option>
         </select>
       </div>
 
@@ -77,7 +66,7 @@
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
             <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
-              <th class="py-3 px-6 text-left">Id</th>
+              <th class="py-3 px-6 text-left">ID</th>
               <th class="py-3 px-6 text-left">Título</th>
               <th class="py-3 px-6 text-left">Fecha</th>
               <th class="py-3 px-6 text-left">Categorías</th>
@@ -102,9 +91,11 @@
                   <span>{{ blog.title || 'Sin título' }}</span>
                 </div>
               </td>
-              <td class="py-3 px-6 text-left">{{ blog.date || 'N/A' }}</td>
-              <td class="py-3 px-6 text-left">{{ blog.categories?.join(', ') || 'N/A' }}</td>
-              <td class="py-3 px-6 text-center">{{ blog.type || 'N/A' }}</td>
+              <td class="py-3 px-6 text-left">{{ formatTimestamp(blog.date) || 'N/A' }}</td>
+              <td class="py-3 px-6 text-left">
+                {{ blog.categories?.length ? blog.categories.map(cat => cat.name).join(', ') : 'N/A' }}
+              </td>              
+              <td class="py-3 px-6 text-center">{{ getTypeLabel(blog.type) }}</td>
               <td class="py-3 px-6 text-center">
                 <div class="flex item-center justify-center gap-2">
                   <button
@@ -146,7 +137,7 @@
       :visible="showModal"
       :is-editing="isEditing"
       :blog-data="newBlog"
-      :categories-input="categoriesInput"
+      :categories="categories"
       @save="handleSaveBlog"
       @close="closeModal"
     />
@@ -166,27 +157,55 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { defineAsyncComponent } from 'vue';
 import { useEducationBlogsStore } from '../../stores/educationBlogs';
 import { useSnackbarStore } from '../../stores/snackbar';
+import { useCategories } from '../../composable/useCategories';
 import Img from '../../assets/3.png';
 import EducationBlogFormModal from '../../components/organisms/EducationBlogFormModal.vue';
 import EducationBlogPreviewModal from '../../components/molecules/EducationBlogPreviewModal.vue';
 import EducationBlogMigrationModal from '../../components/organisms/EducationBlogMigrationModal.vue';
+import { formatTimestamp } from '../../utils/formatTimestamp';
+import 'vue-multiselect/dist/vue-multiselect.css';
+import { useThemeStore } from '../../stores/theme'; // Adjust path as needed
+
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDarkMode); // Sync with store
+const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
 
 const blogsStore = useEducationBlogsStore();
 const snackbarStore = useSnackbarStore();
+const { fetchBlogCategories } = useCategories();
 
 const searchQuery = ref('');
 const selectedCategories = ref([]);
 const filterType = ref('');
-const showCategoryFilter = ref(false);
 const showModal = ref(false);
 const isEditing = ref(false);
 const categoriesInput = ref('');
 const showPreviewModal = ref(false);
 const previewBlog = ref({});
 const showMigrationModal = ref(false);
+const categories = ref([]);
+const categoriesName = ref([]);
 
+// Blog Type Enum
+const blogType = Object.freeze({
+  FREE: 0,
+  PREMIUM: 1,
+});
+
+const blogTypeOptions = [
+  { value: blogType.FREE, label: 'Free' },
+  { value: blogType.PREMIUM, label: 'Premium' },
+];
+
+// Helper to get type label
+const getTypeLabel = (type) => {
+  const option = blogTypeOptions.find(opt => opt.value.toString() === type?.toString());
+  return option ? option.label : 'N/A';
+};
+// Blog data
 const newBlog = ref({
   id: null,
   title: '',
@@ -200,7 +219,7 @@ const newBlog = ref({
   }),
   intro: '',
   categories: [],
-  type: '',
+  type: 0, // Default to FREE
   summary: '',
   sections: [],
 });
@@ -219,28 +238,30 @@ const filteredBlogs = computed(() => {
 
   if (selectedCategories.value.length) {
     filtered = filtered.filter((blog) =>
-      selectedCategories.value.every((cat) => blog.categories?.includes(cat))
+      selectedCategories.value.every((selectedCat) =>
+        blog.categories?.some((blogCat) => blogCat.idDoc === selectedCat.idDoc)
+      )
     );
   }
 
-  if (filterType.value) {
-    filtered = filtered.filter((blog) => blog.type === filterType.value);
+  if (filterType.value !== '') {
+    filtered = filtered.filter((blog) => blog.type?.toString() === filterType.value.toString());
   }
 
   return filtered;
 });
 
-const uniqueCategories = computed(() => {
-  const categories = new Set();
-  blogsStore.blogs.value.forEach((blog) => {
-    blog.categories?.forEach((cat) => categories.add(cat));
-  });
-  return [...categories].sort();
-});
-
-const uniqueTypes = computed(() => {
-  const types = new Set(blogsStore.blogs.value.map((blog) => blog.type).filter(Boolean));
-  return [...types].sort();
+// Fetch categories on mount
+onMounted(async () => {
+  blogsStore.subscribeToBlogs();
+  try {
+    const blogCategories = await fetchBlogCategories();
+    categories.value = blogCategories.sort((a, b) => a.name.localeCompare(b.name)); // ordeno x name  
+    categoriesName.value = blogCategories.map(cat => cat.name);
+  } catch (error) {
+    console.error('Error al cargar categorías:', error);
+    snackbarStore.show('Error al cargar categorías: ' + error.message, 'error');
+  }
 });
 
 // Modal handling
@@ -262,7 +283,7 @@ const openEditModal = async (blog) => {
       date: blogData.date || '',
       intro: blogData.intro || '',
       categories: blogData.categories || [],
-      type: blogData.type || '',
+      type: blogData.type || 0,
       summary: blogData.summary || '',
       sections: blogData.sections.map((section) => ({
         ...section,
@@ -285,7 +306,6 @@ const closeModal = () => {
 };
 
 const openPreviewModal = async (blog) => {
-  debugger
   try {
     const blogData = await blogsStore.getBlogById(blog.id);
     previewBlog.value = {
@@ -329,7 +349,7 @@ const resetForm = () => {
     }),
     intro: '',
     categories: [],
-    type: '',
+    type: 0, // Default to FREE
     summary: '',
     sections: [],
   };
@@ -359,10 +379,6 @@ const deleteBlog = async (id) => {
 };
 
 // Lifecycle hooks
-onMounted(() => {
-  blogsStore.subscribeToBlogs();
-});
-
 onUnmounted(() => {
   blogsStore.unsubscribeFromBlogs();
 });
@@ -447,5 +463,99 @@ button i {
 
 .bg-secondary:hover {
   background-color: #3b82f6;
+}
+
+::v-deep(.multiselect) {
+  min-height: 38px;
+  width: 100%;
+  max-width: auto; /*  33.33% Match sm:w-1/3 */
+  border: 1px solid;
+  border-color:  var(--color-primary-md); /* Default border (light mode) */
+  border-radius: 0.375rem;
+  background-color: #ffffff; /* Light mode background */
+  color: #111827; /* Default text color (light mode) */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+::v-deep(.multiselect.dark) {
+  border-color: var(--color-secondary-md); /* #D8690E */
+  background-color: #1F2937 !important; /* Dark mode background for the root */
+  color: #f9fafb; /* Light text for dark mode */
+}
+
+/* Style the tags container */
+::v-deep(.multiselect .multiselect__tags) {
+  border: 1px solid !important; /* Dark mode background for tags */
+  border-color: var(--color-primary) !important;
+}
+
+/* Style the tags container */
+::v-deep(.multiselect.dark .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-secondary) !important;
+}
+
+/* Style the tags container */
+::v-deep(.multiselect .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* Style the tags container */
+::v-deep(.multiselect.dark .multiselect__tags) {
+  background-color: #1F2937 !important; /* Dark mode background for tags */
+  color: #f9fafb; /* Light text */
+  padding: 4px 8px;
+}
+/* Style the tags container */
+::v-deep(.multiselect.dark .multiselect__tags input) {
+  background-color: #1F2937 !important; /* Dark mode background for tags */
+  color: #f9fafb; /* Light text */
+}
+
+/* Style the input */
+::v-deep(.multiselect.dark .multiselect__input) {
+  color: #f9fafb !important; /* Light text for input in dark mode */
+}
+
+/* Style the content wrapper (dropdown) */
+::v-deep(.multiselect.dark .multiselect__content-wrapper) {
+  background-color: #1F2937 !important; /* Dark mode background for dropdown */
+  color: #f9fafb; /* Light text */
+}
+
+/* Style the options */
+::v-deep(.multiselect .multiselect__option) {
+  background-color: #ffffff; /* Light mode option background */
+  color: #111827; /* Light mode option text */
+}
+
+::v-deep(.multiselect.dark .multiselect__option) {
+  background-color: #1F2937 !important; /* Dark mode option background */
+  color: #f9fafb; /* Light text */
+}
+
+/* Style the highlighted option */
+::v-deep(.multiselect .multiselect__option--highlight) {
+  background-color: var(--color-primary); /* #02bcae */
+  color: #ffffff;
+}
+
+::v-deep(.multiselect.dark .multiselect__option--highlight) {
+  background-color: var(--color-secondary); /* #F28C38 */
+}
+
+/* Style the select arrow */
+::v-deep(.multiselect__select) {
+  background: transparent;
+}
+
+/* Style the disabled state */
+::v-deep(.multiselect--disabled) {
+  background-color: #e5e7eb; /* Light mode disabled */
+}
+
+::v-deep(.multiselect.dark .multiselect--disabled) {
+  background-color: #1F2937; /* Dark mode disabled */
 }
 </style>

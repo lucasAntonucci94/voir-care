@@ -202,4 +202,71 @@
   .dp__overlay_container.dark {
     background-color: #1f2937; /* Tailwind gray-800 */
   }
+
+
+  /* clases de multiSelect */
+  /* Base styles for vue-multiselect */
+.multiselect {
+  min-height: 38px;
+  width: 100%;
+  max-width: 33.33%; /* Match sm:w-1/3 */
+  border: 1px solid;
+  border-color: #d1d5db; /* Default border (light mode) */
+  border-radius: 0.5rem; /* Tailwind rounded-lg */
+  background-color: #ffffff; /* Default background (light mode) */
+  color: #111827; /* Default text color (light mode) */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  padding: 4px 8px;
+}
+
+/* Dark mode styles using global .dark class */
+.dark .multiselect {
+  border-color: var(--color-secondary-md); /* Using your theme variable */
+  background-color: var(--df-messenger-chat-background-color); /* #1f2937 from dark mode */
+  color: var(--df-messenger-font-color); /* #f9fafb from dark mode */
+}
+
+/* Tags and input */
+.multiselect__tags {
+  padding: 4px 8px;
+}
+
+.multiselect__input {
+  color: inherit;
+}
+
+/* Options */
+.multiselect__option {
+  background-color: #ffffff; /* Light mode option background */
+  color: #111827; /* Light mode option text */
+}
+
+.dark .multiselect__option {
+  background-color: var(--df-messenger-chat-background-color); /* #1f2937 */
+  color: var(--df-messenger-font-color); /* #f9fafb */
+}
+
+/* Highlighted option */
+.multiselect__option--highlight {
+  background-color: var(--color-primary); /* #02bcae from your theme */
+  color: #ffffff;
+}
+
+.dark .multiselect__option--highlight {
+  background-color: var(--color-secondary); /* #F28C38 from your theme */
+}
+
+/* Select arrow */
+.multiselect__select {
+  background: transparent;
+}
+
+/* Disabled state */
+.multiselect--disabled {
+  background-color: #e5e7eb; /* Light mode disabled */
+}
+
+.dark .multiselect--disabled {
+  background-color: #374151; /* Dark mode disabled */
+}
 }

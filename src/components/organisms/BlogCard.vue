@@ -28,7 +28,7 @@
             :key="category"
             class="text-xs px-2 py-1 rounded-full bg-teal-200 text-teal-900 dark:bg-teal-600 dark:text-white"
           >
-            {{ category }}
+            {{ category.name }}
           </span>
         </div>
       </div>

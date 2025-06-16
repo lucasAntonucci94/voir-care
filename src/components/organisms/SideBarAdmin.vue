@@ -58,7 +58,8 @@ const navItems = [
     label: 'Categorias',
     icon: 'fas fa-tags',
     subItems: [
-      { label: 'Posts', route: '/admin/categories', icon: 'fas fa-square-share-nodes' },
+      { label: 'Posts', route: '/admin/categories/posts', icon: 'fas fa-square-share-nodes' },
+      { label: 'Blogs', route: '/admin/categories/blogs', icon: 'fas fa-users-cog' },
       { label: 'Grupos', route: '/admin/categories/groups', icon: 'fas fa-users-cog' },
       { label: 'Eventos', route: '/admin/categories/events', icon: 'fas fa-calendar-alt' },
     ],

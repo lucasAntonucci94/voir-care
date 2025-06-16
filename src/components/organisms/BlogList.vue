@@ -16,16 +16,16 @@
       <div class="flex flex-wrap gap-2">
         <button
           v-for="category in uniqueCategories"
-          :key="category"
+          :key="category.idDoc"
           :class="[
             'px-3 py-1 rounded-full text-sm font-semibold transition',
-            selectedFilter === category
+            selectedFilter === category.idDoc
               ? 'bg-primary text-white'
               : 'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
           ]"
-          @click="selectedFilter = category"
+          @click="selectedFilter = category.idDoc"
         >
-          {{ category }}
+          {{ category.name }}
         </button>
         <button
           v-if="selectedFilter"
@@ -38,13 +38,13 @@
     </div>
 
     <!-- Estado de carga -->
-    <div v-if="blogsStore.isLoading" class="text-center py-8">
-      <p class="text-gray-600 dark:text-gray-300">Cargando blogs...</p>
+    <div v-if="blogsStore.isLoading || isLoadingCategories" class="text-center py-8">
+      <p class="text-gray-600 dark:text-gray-300">Cargando blogs o categorías...</p>
     </div>
 
     <!-- Estado de error -->
-    <div v-else-if="blogsStore.error" class="text-center py-8 text-red-600">
-      {{ blogsStore.error }}
+    <div v-else-if="blogsStore.error || errorCategories" class="text-center py-8 text-red-600">
+      {{ blogsStore.error || errorCategories }}
     </div>
 
     <!-- Lista de blogs -->
@@ -61,33 +61,49 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useEducationBlogsStore } from '../../stores/educationBlogs';
+import { useCategories } from '../../composable/useCategories';
 import BlogPostCard from './BlogCard.vue';
 
+// Store y composable
 const blogsStore = useEducationBlogsStore();
+const { fetchBlogCategories } = useCategories();
+
+// Estados
 const searchQuery = ref('');
 const selectedFilter = ref('');
+const categories = ref([]);
+const isLoadingCategories = ref(false);
+const errorCategories = ref(null);
+
+// Obtener categorías
+const loadCategories = async () => {
+  try {
+    isLoadingCategories.value = true;
+    const blogCategories = await fetchBlogCategories();
+    categories.value = blogCategories.sort((a, b) => a.name.localeCompare(b.name));
+  } catch (error) {
+    errorCategories.value = 'Error al cargar las categorías';
+  } finally {
+    isLoadingCategories.value = false;
+  }
+};
 
 // Computed properties
 const uniqueCategories = computed(() => {
-  const categories = new Set();
-  debugger
-  blogsStore?.blogs?.value?.forEach((blog) => {
-    blog.categories?.forEach((cat) => categories.add(cat));
-  });
-  return ['Todos', ...categories].sort();
+  return [{ idDoc: '', name: 'Todos' }, ...categories.value];
 });
 
 const filteredBlogs = computed(() => {
   let filtered = blogsStore.blogs.value || [];
 
-  // Apply category filter
-  if (selectedFilter.value && selectedFilter.value !== 'Todos') {
+  // Aplicar filtro por categoría (comparando idDoc)
+  if (selectedFilter.value && selectedFilter.value !== '') {
     filtered = filtered.filter((blog) =>
-      blog.categories?.includes(selectedFilter.value)
+      blog.categories?.some((cat) => cat.idDoc === selectedFilter.value)
     );
   }
 
-  // Apply search query
+  // Aplicar filtro por búsqueda
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
@@ -102,8 +118,9 @@ const filteredBlogs = computed(() => {
 });
 
 // Lifecycle hooks
-onMounted(() => {
+onMounted(async () => {
   blogsStore.subscribeToBlogs();
+  await loadCategories();
 });
 
 onUnmounted(() => {

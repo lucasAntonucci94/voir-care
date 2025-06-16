@@ -81,7 +81,7 @@ const permitedAdminRoutes = computed(() => {
 })
 
 const shouldShowChatBox = computed(() => {
-  return isAuthenticated.value && $route.path !== '/faqs'  && $route.path !== '/chats' 
+  return isAuthenticated.value && $route.path !== '/faqs'  && $route.path !== '/chats'   && !$route.path.includes('/admin')  
 })
 </script>
 

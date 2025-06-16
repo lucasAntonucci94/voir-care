@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="visible"
-    class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4"
+    class="fixed inset-0 bg-black/60 z-[101] flex items-center justify-center p-4"
   >
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto scrollbar-none">
       <!-- Modal Header -->
@@ -69,21 +69,6 @@
               <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
             <div class="mt-4">
-              <label for="blogDate" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Fecha
-              </label>
-              <input
-                v-model="localBlogData.date"
-                id="blogDate"
-                type="text"
-                placeholder="Ej: 12 de Marzo de 2025"
-                class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
-                :disabled="isLoading"
-                required
-              />
-              <p v-if="formErrors.date" class="text-sm text-red-500 mt-1">{{ formErrors.date }}</p>
-            </div>
-            <div class="mt-4">
               <label for="blogIntro" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Introducción
               </label>
@@ -99,31 +84,37 @@
             </div>
             <div class="mt-4">
               <label for="blogCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Categorías (separadas por comas)
+                Categorías
               </label>
-              <input
-                v-model="localCategoriesInput"
-                id="blogCategories"
-                type="text"
-                placeholder="Ej: Salud, Perros"
-                class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
+              <multiselect
+                v-model="localBlogData.categories"
+                :options="props.categories"
+                :multiple="true"
+                :class="{ 'dark': isDark }"
+                placeholder="Seleccionar categorías"
+                label="name"
+                track-by="idDoc"
+                aria-label="Seleccionar categorías"
                 :disabled="isLoading"
-              />
+              ></multiselect>
               <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
             <div class="mt-4">
               <label for="blogType" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Tipo
               </label>
-              <input
+              <select
                 v-model="localBlogData.type"
                 id="blogType"
-                type="text"
-                placeholder="Ej: Consejos"
                 class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                 :disabled="isLoading"
                 required
-              />
+              >
+                <option value="" disabled>Selecciona un tipo</option>
+                <option v-for="option in blogTypeOptions" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
               <p v-if="formErrors.type" class="text-sm text-red-500 mt-1">{{ formErrors.type }}</p>
             </div>
             <div class="mt-4">
@@ -301,10 +292,18 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
+import { defineAsyncComponent } from 'vue';
 import { useEducationBlogsStore } from '../../stores/educationBlogs';
 import { useSnackbarStore } from '../../stores/snackbar';
+import 'vue-multiselect/dist/vue-multiselect.css';
+import { useThemeStore } from '../../stores/theme';
 
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDarkMode);
+const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
+
+// Import stores
 const blogsStore = useEducationBlogsStore();
 const snackbarStore = useSnackbarStore();
 
@@ -321,17 +320,45 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  categoriesInput: {
-    type: String,
-    default: '',
+  categories: {
+    type: Array,
+    default: () => [],
   },
 });
 
 const emit = defineEmits(['save', 'close']);
 
+// Blog Type Enum
+const blogType = Object.freeze({
+  FREE: 0,
+  PREMIUM: 1,
+});
+
+const blogTypeOptions = [
+  { value: blogType.FREE, label: 'Free' },
+  { value: blogType.PREMIUM, label: 'Premium' },
+];
+
 // Local state
-const localBlogData = ref({ ...props.blogData });
-const localCategoriesInput = ref(props.categoriesInput);
+const localBlogData = ref({
+  id: props.blogData.id || null,
+  title: props.blogData.title || '',
+  image: props.blogData.image || '',
+  imageFile: null,
+  imagePreview: null,
+  intro: props.blogData.intro || '',
+  categories: props.blogData.categories || [], // Now an array of category objects
+  type: props.blogData.type || 0,
+  summary: props.blogData.summary || '',
+  sections: props.blogData.sections ? props.blogData.sections.map(section => ({
+    title: section.title || '',
+    text: section.text || '',
+    image: section.image || '',
+    imageFile: null,
+    imagePreview: null,
+  })) : [],
+});
+
 const currentStep = ref(1);
 const formErrors = ref({});
 const isLoading = ref(false);
@@ -341,22 +368,43 @@ const steps = ref([
   { label: 'Imágenes' },
 ]);
 
-// Sync local state with props
-watch(
-  () => props.blogData,
-  (newBlogData) => {
-    localBlogData.value = { ...newBlogData };
-    currentStep.value = 1; // Reset step when blog data changes
+// Computed to check if blogData has changed
+const blogDataKey = computed(() => JSON.stringify({
+  id: props.blogData.id,
+  title: props.blogData.title,
+  image: props.blogData.image,
+  intro: props.blogData.intro,
+  categories: props.blogData.categories,
+  type: props.blogData.type,
+  summary: props.blogData.summary,
+  sections: props.blogData.sections,
+}));
+
+// Reset form when blogData changes
+watchEffect(() => {
+  if (props.visible) {
+    localBlogData.value = {
+      id: props.blogData.id || null,
+      title: props.blogData.title || '',
+      image: props.blogData.image || '',
+      imageFile: null,
+      imagePreview: null,
+      intro: props.blogData.intro || '',
+      categories: props.blogData.categories || [], // Initialize with category objects
+      type: props.blogData.type || 0,
+      summary: props.blogData.summary || '',
+      sections: props.blogData.sections ? props.blogData.sections.map(section => ({
+        title: section.title || '',
+        text: section.text || '',
+        image: section.image || '',
+        imageFile: null,
+        imagePreview: null,
+      })) : [],
+    };
+    currentStep.value = 1;
     formErrors.value = {};
-  },
-  { deep: true }
-);
-watch(
-  () => props.categoriesInput,
-  (newCategoriesInput) => {
-    localCategoriesInput.value = newCategoriesInput;
   }
-);
+});
 
 // Form validation
 const validateStep = (step) => {
@@ -364,33 +412,33 @@ const validateStep = (step) => {
   const errors = {};
 
   if (step === 1) {
-    if (!localBlogData.value.title || localBlogData.value.title.trim() === '') {
+    if (!localBlogData.value.title?.trim()) {
       errors.title = 'El título es obligatorio';
       isValid = false;
     }
-    if (!localBlogData.value.date || localBlogData.value.date.trim() === '') {
-      errors.date = 'La fecha es obligatoria';
-      isValid = false;
-    }
-    if (!localBlogData.value.intro || localBlogData.value.intro.trim() === '') {
+    if (!localBlogData.value.intro?.trim()) {
       errors.intro = 'La introducción es obligatoria';
       isValid = false;
     }
-    if (!localBlogData.value.type || localBlogData.value.type.trim() === '') {
-      errors.type = 'El tipo es obligatorio';
+    if (![blogType.FREE.toString(), blogType.PREMIUM.toString()].includes(localBlogData.value.type?.toString())) {
+      errors.type = 'Debes seleccionar un tipo válido (Free o Premium)';
       isValid = false;
     }
-    if (!localBlogData.value.summary || localBlogData.value.summary.trim() === '') {
+    if (!localBlogData.value.summary?.trim()) {
       errors.summary = 'El resumen es obligatorio';
+      isValid = false;
+    }
+    if (!localBlogData.value.categories?.length) {
+      errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
     }
   } else if (step === 2) {
     localBlogData.value.sections.forEach((section, index) => {
-      if (!section.title || section.title.trim() === '') {
+      if (!section.title?.trim()) {
         errors[`section${index}Title`] = 'El título de la sección es obligatorio';
         isValid = false;
       }
-      if (!section.text || section.text.trim() === '') {
+      if (!section.text?.trim()) {
         errors[`section${index}Text`] = 'El texto de la sección es obligatorio';
         isValid = false;
       }
@@ -400,6 +448,12 @@ const validateStep = (step) => {
       errors.image = 'La imagen principal es obligatoria';
       isValid = false;
     }
+    localBlogData.value.sections.forEach((section, index) => {
+      if (section.imageFile && section.imageFile.size > 5 * 1024 * 1024) {
+        errors[`section${index}Image`] = 'La imagen no debe superar los 5MB';
+        isValid = false;
+      }
+    });
   }
 
   formErrors.value = errors;
@@ -434,13 +488,17 @@ const handleImageUpload = (event) => {
     event.target.value = null;
     return;
   }
+  if (file.size > 5 * 1024 * 1024) {
+    formErrors.value.image = 'La imagen no debe superar los 5MB';
+    event.target.value = null;
+    return;
+  }
   const reader = new FileReader();
   reader.onloadend = () => {
     localBlogData.value.imageFile = file;
     localBlogData.value.imagePreview = URL.createObjectURL(file);
   };
-  reader.onerror = (error) => {
-    console.error('Error al leer la imagen:', error);
+  reader.onerror = () => {
     formErrors.value.image = 'Error al leer la imagen';
     event.target.value = null;
   };
@@ -456,13 +514,17 @@ const handleSectionImageUpload = (index, event) => {
     event.target.value = null;
     return;
   }
+  if (file.size > 5 * 1024 * 1024) {
+    formErrors.value[`section${index}Image`] = 'La imagen no debe superar los 5MB';
+    event.target.value = null;
+    return;
+  }
   const reader = new FileReader();
   reader.onloadend = () => {
     localBlogData.value.sections[index].imageFile = file;
     localBlogData.value.sections[index].imagePreview = URL.createObjectURL(file);
   };
-  reader.onerror = (error) => {
-    console.error('Error al leer la imagen:', error);
+  reader.onerror = () => {
     formErrors.value[`section${index}Image`] = 'Error al leer la imagen';
     event.target.value = null;
   };
@@ -478,26 +540,21 @@ const handleSaveBlog = async () => {
       return;
     }
   }
-
   const blogData = {
     ...localBlogData.value,
-    categories: localCategoriesInput.value
-      .split(',')
-      .map((cat) => cat.trim())
-      .filter(Boolean),
+    categories: localBlogData.value.categories,
   };
 
   try {
     let savedBlog;
     if (props.isEditing) {
       savedBlog = await blogsStore.updateBlog(blogData.id, blogData);
-      snackbarStore.show('Blog actualizado exitosamente', 'success');
     } else {
       savedBlog = await blogsStore.addBlog(blogData);
-      snackbarStore.show('Blog creado exitosamente', 'success');
     }
+    snackbarStore.show(`Blog ${props.isEditing ? 'actualizado' : 'creado'} exitosamente`, 'success');
     emit('save', { blog: savedBlog, error: null });
-    resetForm();
+    closeModal();
   } catch (error) {
     console.error('Error al guardar blog:', error);
     snackbarStore.show('Error al guardar blog: ' + error.message, 'error');
@@ -516,21 +573,15 @@ const resetForm = () => {
   localBlogData.value = {
     id: null,
     title: '',
-    image: props.blogData.image, // Retain default image
+    image: '',
     imageFile: null,
     imagePreview: null,
-    date: new Date().toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }),
     intro: '',
     categories: [],
     type: '',
     summary: '',
     sections: [],
   };
-  localCategoriesInput.value = '';
   currentStep.value = 1;
   formErrors.value = {};
 };
@@ -596,5 +647,102 @@ const resetForm = () => {
 
 .bg-secondary:hover {
   background-color: #3b82f6;
+}
+
+
+/* ESTILOS DEL SELECTMULTIPLE */
+
+::v-deep(.multiselect) {
+  min-height: 38px;
+  width: 100%;
+  max-width: auto; /*  33.33% Match sm:w-1/3 */
+  border: 1px solid;
+  border-color:  var(--color-primary-md); /* Default border (light mode) */
+  border-radius: 0.375rem;
+  background-color: #ffffff; /* Light mode background */
+  color: #111827; /* Default text color (light mode) */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+::v-deep(.multiselect.dark) {
+  border-color: var(--color-secondary-md); /* #D8690E */
+  background-color: #1F2937 !important; /* Dark mode background for the root */
+  color: #f9fafb; /* Light text for dark mode */
+}
+
+/* Style the tags container */
+::v-deep(.multiselect .multiselect__tags) {
+  border: 1px solid !important; /* Dark mode background for tags */
+  border-color: var(--color-primary) !important;
+}
+
+/* Style the tags container */
+::v-deep(.multiselect.dark .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-secondary) !important;
+}
+
+/* Style the tags container */
+::v-deep(.multiselect .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* Style the tags container */
+::v-deep(.multiselect.dark .multiselect__tags) {
+  background-color: #1F2937 !important; /* Dark mode background for tags */
+  color: #f9fafb; /* Light text */
+  padding: 4px 8px;
+}
+/* Style the tags container */
+::v-deep(.multiselect.dark .multiselect__tags input) {
+  background-color: #1F2937 !important; /* Dark mode background for tags */
+  color: #f9fafb; /* Light text */
+}
+
+/* Style the input */
+::v-deep(.multiselect.dark .multiselect__input) {
+  color: #f9fafb !important; /* Light text for input in dark mode */
+}
+
+/* Style the content wrapper (dropdown) */
+::v-deep(.multiselect.dark .multiselect__content-wrapper) {
+  background-color: #1F2937 !important; /* Dark mode background for dropdown */
+  color: #f9fafb; /* Light text */
+}
+
+/* Style the options */
+::v-deep(.multiselect .multiselect__option) {
+  background-color: #ffffff; /* Light mode option background */
+  color: #111827; /* Light mode option text */
+}
+
+::v-deep(.multiselect.dark .multiselect__option) {
+  background-color: #1F2937 !important; /* Dark mode option background */
+  color: #f9fafb; /* Light text */
+}
+
+/* Style the highlighted option */
+::v-deep(.multiselect .multiselect__option--highlight) {
+  background-color: var(--color-primary); /* #02bcae */
+  color: #ffffff;
+}
+
+::v-deep(.multiselect.dark .multiselect__option--highlight) {
+  background-color: var(--color-secondary); /* #F28C38 */
+}
+
+/* Style the select arrow */
+::v-deep(.multiselect__select) {
+  background: transparent;
+}
+
+/* Style the disabled state */
+::v-deep(.multiselect--disabled) {
+  background-color: #e5e7eb; /* Light mode disabled */
+}
+
+::v-deep(.multiselect.dark .multiselect--disabled) {
+  background-color: #1F2937; /* Dark mode disabled */
 }
 </style>

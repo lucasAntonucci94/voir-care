@@ -48,7 +48,6 @@ export const useEducationBlogsStore = defineStore('educationBlogs', {
      * @param {Array} jsonBlogs - Array of blog objects to migrate
      */
     async migrateBlogs(jsonBlogs) {
-      debugger
       const snackbarStore = useSnackbarStore();
       const { migrateBlogs } = useEducationBlogs();
       try {

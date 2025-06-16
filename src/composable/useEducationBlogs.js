@@ -10,6 +10,7 @@ import {
   onSnapshot,
   query,
   orderBy,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
@@ -36,7 +37,7 @@ async function migrateBlogs(jsonBlogs) {
     isPending.value = true;
     for (const blog of jsonBlogs) {
       // Validate blog structure
-      if (!blog.id || !blog.title || !blog.date || !blog.intro || !blog.categories || !blog.type || !blog.summary || !blog.sections) {
+      if (!blog.id || !blog.title || !blog.intro || !blog.categories || !blog.type || !blog.summary || !blog.sections) {
         console.warn(`Blog inválido, falta información requerida (ID: ${blog.id || 'sin ID'})`, blog);
         continue;
       }
@@ -49,6 +50,7 @@ async function migrateBlogs(jsonBlogs) {
         // Remove imageFile and imagePreview if present (not needed for migration)
         const cleanedBlog = {
           ...blog,
+          date: serverTimestamp(),
           image: blog.image || null,
           sections: blog.sections.map((section) => ({
             title: section.title,
@@ -165,10 +167,11 @@ async function saveBlog(blogData) {
         delete blogData.sections[i].imageFile;
       }
     }
-
     await setDoc(doc(db, 'educationBlogs', newId.toString()), {
       ...blogData,
       id: newId,
+      categories: blogData.categories,
+      date: serverTimestamp(),
     });
     error.value = null;
   } catch (err) {
