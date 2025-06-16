@@ -109,9 +109,12 @@ const groupsStore = useGroupsStore();
 
 // Filtrado de blogs por categoría "Adopción"
 const filteredBlogs = computed(() => {
-  return blogsStore.blogs.value.filter(blog =>
-    blog.categories?.includes('Adopción') || blog.categories?.includes('Adopcion')
-  );
+  return blogsStore.blogs.value.filter(blog => {
+    return blog.categories?.some(
+      category =>
+        category.name === 'Adopción' || category.name === 'Adopcion'
+    );
+  });
 });
 
 // Limitar a los primeros 5 blogs
