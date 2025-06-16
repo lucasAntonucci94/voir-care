@@ -1,4 +1,3 @@
-// composable/useEducationBlogs.js
 import { ref } from 'vue';
 import {
   getFirestore,
@@ -13,7 +12,6 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { jsonBlogs } from '../data/blogs'; // Import existing JSON for migration
 
 const db = getFirestore();
 const storage = getStorage();
@@ -22,21 +20,46 @@ const blogsRef = collection(db, 'educationBlogs');
 // Reactive state
 const blogs = ref([]);
 const error = ref(null);
+const isPending = ref(false);
 
 /**
  * Migrates blogs from JSON to Firestore
+ * @param {Array} jsonBlogs - Array of blog objects to migrate
  * @returns {Promise<void>}
  */
-async function migrateBlogs() {
+async function migrateBlogs(jsonBlogs) {
+  if (!Array.isArray(jsonBlogs)) {
+    throw new Error('El archivo JSON debe contener un array de blogs.');
+  }
+
   try {
-    debugger
-    for (const blog of jsonBlogs.value) {
+    isPending.value = true;
+    for (const blog of jsonBlogs) {
+      // Validate blog structure
+      if (!blog.id || !blog.title || !blog.date || !blog.intro || !blog.categories || !blog.type || !blog.summary || !blog.sections) {
+        console.warn(`Blog inválido, falta información requerida (ID: ${blog.id || 'sin ID'})`, blog);
+        continue;
+      }
+      // Ensure ID is a string for Firestore
+      const blogId = blog.id.toString();
       // Check if blog already exists to avoid duplicates
-      const blogDoc = doc(db, 'educationBlogs', blog.id.toString());
+      const blogDoc = doc(db, 'educationBlogs', blogId);
       const docSnap = await getDoc(blogDoc);
       if (!docSnap.exists()) {
-        await setDoc(blogDoc, blog);
-        console.log(`Blog ${blog.id} migrated successfully`);
+        // Remove imageFile and imagePreview if present (not needed for migration)
+        const cleanedBlog = {
+          ...blog,
+          image: blog.image || null,
+          sections: blog.sections.map((section) => ({
+            title: section.title,
+            text: section.text || '',
+            image: section.image || null,
+          })),
+        };
+        await setDoc(blogDoc, cleanedBlog);
+        console.log(`Blog ${blogId} migrated successfully`);
+      } else {
+        console.log(`Blog ${blogId} ya existe, omitiendo`);
       }
     }
     console.log('Migration completed');
@@ -44,6 +67,8 @@ async function migrateBlogs() {
     console.error('Error migrating blogs:', err);
     error.value = 'Error migrating blogs: ' + err.message;
     throw err;
+  } finally {
+    isPending.value = false;
   }
 }
 
@@ -247,8 +272,9 @@ async function deleteImage(url) {
 
 export function useEducationBlogs() {
   return {
-    blogs, // Reactive blogs array
-    error, // Reactive error state
+    blogs,
+    error,
+    isPending,
     migrateBlogs,
     loadBlogs,
     subscribeToBlogs,

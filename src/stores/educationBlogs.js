@@ -45,16 +45,19 @@ export const useEducationBlogsStore = defineStore('educationBlogs', {
 
     /**
      * Migrates JSON blogs to Firestore
+     * @param {Array} jsonBlogs - Array of blog objects to migrate
      */
-    async migrateBlogs() {
+    async migrateBlogs(jsonBlogs) {
+      debugger
       const snackbarStore = useSnackbarStore();
       const { migrateBlogs } = useEducationBlogs();
       try {
-        await migrateBlogs();
+        await migrateBlogs(jsonBlogs);
         snackbarStore.show('Blogs migrados exitosamente', 'success');
       } catch (error) {
         console.error('Error al migrar blogs:', error);
         snackbarStore.show('Error al migrar blogs: ' + error.message, 'error');
+        throw error;
       }
     },
 
