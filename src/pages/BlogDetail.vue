@@ -37,23 +37,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { jsonBlogs } from '../data/blogs.js'
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useEducationBlogsStore } from '../stores/educationBlogs';
 
-const route = useRoute()
-const router = useRouter()
-const blog = ref(null)
+const route = useRoute();
+const router = useRouter();
+const blog = ref(null);
+const educationBlogsStore = useEducationBlogsStore();
 
-onMounted(() => {
-  const blogId = parseInt(route.params.idBlog)
-  const found = jsonBlogs.value.find(b => b.id === blogId)
-  if (!found) {
-    router.push('/blog') // fallback si no se encuentra
-  } else {
-    blog.value = found
+onMounted(async () => {
+  const blogId = route.params.idBlog;
+  try {
+    const foundBlog = await educationBlogsStore.getBlogById(blogId);
+    if (!foundBlog) {
+      router.push('/blog'); // Fallback
+    } else {
+      blog.value = foundBlog;
+    }
+  } catch (error) {
+    console.error('Error al cargar el blog:', error);
+    router.push('/blog'); // Fallback
   }
-})
+});
 </script>
 
 <style scoped>
