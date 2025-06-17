@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 overflow-y-auto h-full">
     <!-- Campo de búsqueda y botón de acciones -->
@@ -279,4 +278,3 @@ onUnmounted(() => {
   background: #555;
 }
 </style>
-```
