@@ -1,6 +1,6 @@
 <template>
   <div v-if="visible" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh]">
       <!-- Encabezado del modal -->
       <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear evento</h3>
@@ -169,25 +169,23 @@
           <!-- Paso 4: Configuración adicional -->
           <div v-if="currentStep === 4">
             <!-- Categorías -->
-            <div v-if="categories?.length" class="flex flex-wrap gap-3">
-              <label
-                v-for="category in categories"
-                :key="category.id"
-                class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer dark:text-gray-100"
-              >
-                <input
-                  :id="'filter_' + category.id"
-                  type="checkbox"
-                  v-model="newEvent.categories"
-                  :value="category"
-                  :disabled="isLoading"
-                  class="custom-checkbox"
-                />
-                <span class="font-medium">{{ category.name }}</span>
+            <div>
+              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+                Categorías
               </label>
+              <multiselect
+                v-model="newEvent.categories"
+                :options="categories"
+                :multiple="true"
+                :class="{ 'dark': isDark }"
+                placeholder="Seleccionar categorías"
+                label="name"
+                track-by="id"
+                aria-label="Seleccionar categorías"
+                :disabled="isLoading"
+              ></multiselect>
               <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
-
             <!-- Privacidad -->
             <div class="flex gap-4 items-center mt-4">
               <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
@@ -292,7 +290,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import { newGuid } from '../../utils/newGuid';
 import { useEventsStore } from '../../stores/events';
@@ -300,7 +298,17 @@ import { useAuth } from '../../api/auth/useAuth';
 import GeolocationInput from '../atoms/GeolocationInput.vue';
 import SelectDate from '../atoms/SelectDate.vue';
 import { useSnackbarStore } from '../../stores/snackbar';
+import { useThemeStore } from '../../stores/theme';
+import { defineAsyncComponent } from 'vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
 
+// Import vue-multiselect
+const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
+
+// Theme store for dark mode
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDarkMode);
+// Define emits and props
 const emits = defineEmits(['close', 'eventCreated']);
 const props = defineProps({
   visible: {
@@ -574,5 +582,82 @@ function handleMediaUpload(event) {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
+}
+
+
+/* Estilos para vue-multiselect */
+::v-deep(.multiselect) {
+  min-height: 38px;
+  width: 100%;
+  border: 1px solid;
+  border-color: var(--color-primary-md);
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  color: #111827;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+::v-deep(.multiselect.dark) {
+  border-color: var(--color-secondary-md);
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-primary) !important;
+}
+
+::v-deep(.multiselect.dark .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-secondary) !important;
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+  padding: 4px 8px;
+}
+
+::v-deep(.multiselect.dark .multiselect__tags input) {
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect.dark .multiselect__input) {
+  color: #f9fafb !important;
+}
+
+::v-deep(.multiselect.dark .multiselect__content-wrapper) {
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect .multiselect__option) {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+::v-deep(.multiselect.dark .multiselect__option) {
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect .multiselect__option--highlight) {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+::v-deep(.multiselect.dark .multiselect__option--highlight) {
+  background-color: var(--color-secondary);
+}
+
+::v-deep(.multiselect__select) {
+  background: transparent;
+}
+
+::v-deep(.multiselect--disabled) {
+  background-color: #e5e7eb;
+}
+
+::v-deep(.multiselect.dark .multiselect--disabled) {
+  background-color: #1F2937;
 }
 </style>

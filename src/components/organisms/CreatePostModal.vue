@@ -75,7 +75,7 @@
           ></video>
         </div>
         <!-- Categorías -->
-        <fieldset class="flex flex-wrap gap-3" :aria-describedby="formErrors.categories ? 'categories-error' : null">
+        <!-- <fieldset class="flex flex-wrap gap-3" :aria-describedby="formErrors.categories ? 'categories-error' : null">
           <legend class="sr-only">Categorías</legend>
           <label
             v-for="category in categories"
@@ -95,9 +95,28 @@
             <span class="font-medium">{{ category.name }}</span>
           </label>
         </fieldset>
-        <p v-if="formErrors.categories" id="categories-error" class="text-red-500 text-sm mt-2">
+         <p v-if="formErrors.categories" id="categories-error" class="text-red-500 text-sm mt-2">
           {{ formErrors.categories }}
         </p>
+         -->
+        <!-- Categorías -->
+        <div>
+          <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+            Categorías
+          </label>
+          <multiselect
+            v-model="newPost.categories"
+            :options="categories"
+            :multiple="true"
+            :class="{ 'dark': isDark }"
+            placeholder="Seleccionar categorías"
+            label="name"
+            track-by="id"
+            aria-label="Seleccionar categorías"
+            :disabled="isLoading"
+          ></multiselect>
+          <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
+        </div>
         <!-- Botones -->
         <div class="flex justify-end gap-3">
           <button 
@@ -125,16 +144,26 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { usePostsStore } from '../../stores/posts';
 import { useCategories } from '../../composable/useCategories';
-import { useSnackbarStore } from '../../stores/snackbar'
+import { useSnackbarStore } from '../../stores/snackbar';
+import { useThemeStore } from '../../stores/theme';
+import { defineAsyncComponent } from 'vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
+
+// Import vue-multiselect
+const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
+
+// Theme store for dark mode
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDarkMode);
 
 const { categories } = useCategories();
 const { user } = useAuth();
 const postsStore = usePostsStore();
-const snackbarStore = useSnackbarStore()
+const snackbarStore = useSnackbarStore();
 const showModal = ref(false);
 const isLoading = ref(false);
 const errorFileMessage = ref('');
@@ -164,26 +193,22 @@ watch(showModal, (newValue) => {
 
 function handleMediaUpload(event) {
   const file = event.target.files[0];
-
   if (!file) return;
-
-  if (!file) return
-      if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-        errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
-        event.target.value = ''; // Limpiar el input
-        return;
-      }
-  if (file) {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      newPost.value.media.imageBase64 = reader.result;
-      newPost.value.media.type = file.type.startsWith('image') ? 'image' : 'video';
-    };
-    reader.onerror = (error) => {
-      console.error('Error al leer el archivo:', error);
-    };
-    reader.readAsDataURL(file);
+  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+    errorFileMessage.value = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
+    event.target.value = ''; // Limpiar el input
+    return;
   }
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    newPost.value.media.imageBase64 = reader.result;
+    newPost.value.media.type = file.type.startsWith('image') ? 'image' : 'video';
+  };
+  reader.onerror = (error) => {
+    console.error('Error al leer el archivo:', error);
+    errorFileMessage.value = 'Error al leer el archivo';
+  };
+  reader.readAsDataURL(file);
 }
 
 async function createPost() {
@@ -192,17 +217,6 @@ async function createPost() {
     return;
   }
   isLoading.value = true;
-  if (!newPost.value.title || !newPost.value.description) {
-    console.error('Título y descripción son obligatorios');
-    isLoading.value = false;
-    return;
-  }
-
-  if (!user.value) {
-    console.error('Usuario no autenticado');
-    isLoading.value = false;
-    return;
-  }
 
   const postData = {
     user: {
@@ -226,22 +240,10 @@ async function createPost() {
 
   try {
     await postsStore.addPost(postData);
-    newPost.value = {
-      user: null,
-      title: '',
-      description: '',
-      media:  {
-        imageBase64: null,
-        url: '',
-        type: '',
-        path: '',
-      },
-      categories: [],
-    };
-    showModal.value = false;
-    snackbarStore.show("Publicación creada exitosamente.","success")
+    snackbarStore.show("Publicación creada exitosamente.", "success");
+    handleCloseModal();
   } catch (error) {
-    snackbarStore.show(`Error al crear la publicación.Error: ${error}`,"error")
+    snackbarStore.show(`Error al crear la publicación. Error: ${error}`, "error");
   } finally {
     isLoading.value = false;
   }
@@ -250,31 +252,18 @@ async function createPost() {
 function validatePostForm() {
   const errors = {};
 
-  // Título requerido
   if (!newPost.value.title || newPost.value.title.trim() === '') {
     errors.title = 'El título es obligatorio';
   }
-  
-  // Título requerido
   if (newPost.value.title.length > 50) {
     errors.title = 'El título no debe superar los 50 caracteres';
   }
-
-  // Descripción requerida
   if (!newPost.value.description || newPost.value.description.trim() === '') {
     errors.description = 'La descripción es obligatoria';
   }
-
-  // Título requerido
   if (newPost.value.description.length > 250) {
-    errors.description = 'El título no debe superar los 250 caracteres';
+    errors.description = 'La descripción no debe superar los 250 caracteres';
   }
-  // Media opcional
-  // if (!newPost.value.media) {
-  //   errors.media = 'Debes subir una imagen o video';
-  // }
-
-  // Al menos una categoría
   if (!newPost.value.categories || newPost.value.categories.length === 0) {
     errors.categories = 'Selecciona al menos una categoría';
   }
@@ -289,7 +278,7 @@ function handleCloseModal() {
     user: null,
     title: '',
     description: '',
-    media:  {
+    media: {
       imageBase64: null,
       url: '',
       type: '',
@@ -302,40 +291,36 @@ function handleCloseModal() {
 }
 </script>
 
-<style>
-/* Estilo del checkbox personalizado */
+<style scoped>
+/* Estilos existentes */
 .custom-checkbox {
-  appearance: none; /* Elimina el estilo nativo del navegador */
+  appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 16px; /* Tamaño del checkbox */
+  width: 16px;
   height: 16px;
-  border: 2px solid #d1d5db; /* Borde gris (border-gray-300) */
-  border-radius: 4px; /* Esquinas redondeadas */
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
   position: relative;
   cursor: pointer;
   outline: none;
 }
 
-/* Estilo cuando está deshabilitado */
 .custom-checkbox:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Fondo y tilde cuando está seleccionado */
 .custom-checkbox:checked {
-  background-color: #02bcae; /* Usa tu color bg-primary */
-  border-color: #02bcae; /* Borde del mismo color */
+  background-color: #02bcae;
+  border-color: #02bcae;
 }
 
-/* Fondo y tilde cuando está seleccionado */
 .custom-checkbox:checked:hover {
-  background-color: #019a8e; /* Usa tu color bg-primary */
-  border-color: #019a8e; /* Borde del mismo color */
+  background-color: #019a8e;
+  border-color: #019a8e;
 }
 
-/* Crear el tilde personalizado con ::after */
 .custom-checkbox:checked::after {
   content: '';
   position: absolute;
@@ -343,13 +328,88 @@ function handleCloseModal() {
   top: 1px;
   width: 4px;
   height: 8px;
-  border: solid white; /* Tilde blanco */
+  border: solid white;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
-/* Efecto de foco */
 .custom-checkbox:focus {
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5); /* focus:ring-primary con opacity-50 */
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
+}
+
+/* Estilos para vue-multiselect */
+::v-deep(.multiselect) {
+  min-height: 38px;
+  width: 100%;
+  border: 1px solid;
+  border-color: var(--color-primary-md);
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  color: #111827;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+::v-deep(.multiselect.dark) {
+  border-color: var(--color-secondary-md);
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-primary) !important;
+}
+
+::v-deep(.multiselect.dark .multiselect__tags) {
+  border: 1px solid !important;
+  border-color: var(--color-secondary) !important;
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+  padding: 4px 8px;
+}
+
+::v-deep(.multiselect.dark .multiselect__tags input) {
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect.dark .multiselect__input) {
+  color: #f9fafb !important;
+}
+
+::v-deep(.multiselect.dark .multiselect__content-wrapper) {
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect .multiselect__option) {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+::v-deep(.multiselect.dark .multiselect__option) {
+  background-color: #1F2937 !important;
+  color: #f9fafb;
+}
+
+::v-deep(.multiselect .multiselect__option--highlight) {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+::v-deep(.multiselect.dark .multiselect__option--highlight) {
+  background-color: var(--color-secondary);
+}
+
+::v-deep(.multiselect__select) {
+  background: transparent;
+}
+
+::v-deep(.multiselect--disabled) {
+  background-color: #e5e7eb;
+}
+
+::v-deep(.multiselect.dark .multiselect--disabled) {
+  background-color: #1F2937;
 }
 </style>
