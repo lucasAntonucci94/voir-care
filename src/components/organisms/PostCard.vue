@@ -100,7 +100,6 @@ import { useComments } from '../../composable/useComments';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
-debugger
 const postsStore = usePostsStore();
 const { comments } = useComments(props.post.idDoc);
 

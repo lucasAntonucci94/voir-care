@@ -39,7 +39,7 @@
             @click="handleToggleLike"
             :class="[
               'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 mb-4',
-              post?.likes?.some(l => l.userId === user?.id)
+              post?.likes?.some(l => l.userId === user?.uid)
                 ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
                 : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary',
               !user ? 'opacity-50 cursor-not-allowed' : ''
@@ -49,7 +49,7 @@
             <i
               :class="[
                 'fas fa-heart',
-                post?.likes?.some(l => l.userId === user?.id)
+                post?.likes?.some(l => l.userId === user?.uid)
                   ? 'text-primary dark:text-secondary'
                   : 'text-gray-600 dark:text-gray-400'
               ]"

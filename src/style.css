@@ -294,7 +294,7 @@
 
 /* Select arrow */
 .multiselect__select {
-  background: transparent;
+  background: transparent !important;
 }
 
 /* Disabled state */

@@ -87,7 +87,6 @@ async function confirmDelete() {
   }
 }
 </script>
-
 <style scoped>
 .comments-list {
   max-height: 300px; /* Limita la altura para scroll */
@@ -98,11 +97,21 @@ async function confirmDelete() {
 .comments-list::-webkit-scrollbar {
   width: 6px;
 }
+
 .comments-list::-webkit-scrollbar-thumb {
-  background-color: #02bcae; /* Color teal consistente */
+  background-color:var(--color-primary-md);  /* Color teal for light mode */
   border-radius: 3px;
 }
+
+.dark .comments-list::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-md); /* #D8690E for dark mode */
+}
+
 .comments-list::-webkit-scrollbar-track {
-  background: #f1f5f9; /* Fondo gris claro */
+  background: #f1f5f9; /* Fondo gris claro for light mode */
+}
+
+.dark .comments-list::-webkit-scrollbar-track {
+  background: #1F2937; /* Fondo gris oscuro for dark mode */
 }
 </style>

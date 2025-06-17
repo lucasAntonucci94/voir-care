@@ -36,7 +36,7 @@
         @click="toggleLike"
         :class="[
           'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
-          post?.likes?.some(l => l.userId === user?.value?.id)
+          post?.likes?.some(l => l.userId === user?.uid)
             ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
             : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary',
           !user ? 'opacity-50 cursor-not-allowed' : ''
@@ -46,7 +46,7 @@
         <i
           :class="[
             'fas fa-heart',
-            post?.likes?.some(l => l.userId === user?.value?.id) ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
+            post?.likes?.some(l => l.userId === user?.uid) ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
           ]"
         ></i>
         {{ post?.likes?.length ?? 0 }} Me gusta
@@ -111,13 +111,23 @@
             <p class="text-sm md:text-base mb-4 text-ellipsis">{{ post?.body }}</p>
             <button
               @click="toggleLike"
-              :class="{ 'text-primary': post?.likes?.some(l => l.userId === user?.value?.id) }"
-              class="hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-1 mb-4"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 mb-2 rounded-lg transition-all duration-200',
+                post?.likes?.some(l => l.userId === user?.uid)
+                  ? 'text-primary dark:text-secondary bg-primary/10 dark:bg-secondary/10'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary dark:hover:text-secondary',
+                !user ? 'opacity-50 cursor-not-allowed' : ''
+              ]"
               :disabled="!user"
             >
-              <i class="fas fa-heart"></i> {{ post?.likes?.length ?? 0 }} Me gusta
+              <i
+                :class="[
+                  'fas fa-heart',
+                  post?.likes?.some(l => l.userId === user?.uid) ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400'
+                ]"
+              ></i>
+              {{ post?.likes?.length ?? 0 }} Me gusta
             </button>
-            <hr class="border-t border-gray-300 dark:border-gray-700 md:border-gray-400 mb-4" />
             <div v-if="post?.showComments" class="mt-4 border-t pt-4">
               <EventCommentList :post="post" />
               <EventCommentForm :idPost="post.idDoc" :idEvent="post.event.id" />
@@ -148,6 +158,7 @@ import { useSnackbarStore } from '../../stores/snackbar';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
+debugger
 const eventPostsStore = useEventPostsStore();
 const { comments } = useEventComments(props.post.event.id, props.post.idDoc);
 const snackbarStore = useSnackbarStore();
