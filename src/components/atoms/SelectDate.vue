@@ -1,6 +1,6 @@
 <template>
-    <div class="relative w-full">
-      <label v-if="label" :for="id" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+    <div class="relative w-full mb-4">
+      <label v-if="label" :for="id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
         {{ label }}
       </label>
       <VueDatePicker

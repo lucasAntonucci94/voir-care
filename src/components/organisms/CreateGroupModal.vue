@@ -45,8 +45,8 @@
           <!-- Paso 1: Información básica -->
           <div v-if="currentStep === 1">
             <!-- Título del Grupo -->
-            <div>
-              <label for="groupTitle" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <div class="mb-4">
+              <label for="groupTitle" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Título del Grupo
               </label>
               <input
@@ -62,8 +62,8 @@
             </div>
 
             <!-- Descripción del Grupo -->
-            <div>
-              <label for="groupDescription" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <div class="mb-4">
+              <label for="groupDescription" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Descripción del Grupo
               </label>
               <textarea
@@ -120,7 +120,7 @@
           <div v-if="currentStep === 3">
             <!-- Categorías -->
              <div>
-              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+              <label for="postCategories" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Categorías
               </label>
               <multiselect
@@ -137,27 +137,58 @@
               <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
           
-            <!-- Privacidad (público/privado) -->
-            <div class="flex gap-4 items-center mt-4">
-              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                <input
-                  type="radio"
-                  value="public"
-                  v-model="newGroup.privacy"
-                  :disabled="isLoading"
-                />
-                Público
-              </label>
-              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                <input
-                  type="radio"
-                  value="private"
-                  v-model="newGroup.privacy"
-                  :disabled="isLoading"
-                />
-                Privado
-              </label>
-              <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
+            <!-- Privacidad -->
+            <div class="flex flex-col gap-4 mt-4">
+              <fieldset>
+                <legend class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Privacidad
+                </legend>
+                <div class="flex gap-2 ml-1">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="public"
+                      name="privacy"
+                      value="public"
+                      v-model="newGroup.privacy"
+                      :disabled="isLoading"
+                      class="form-radio text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      for="public"
+                      class="text-sm text-gray-700 dark:text-gray-100"
+                    >
+                      Público
+                    </label>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="private"
+                      name="privacy"
+                      value="private"
+                      v-model="newGroup.privacy"
+                      :disabled="isLoading"
+                      class="form-radio text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      for="private"
+                      class="text-sm text-gray-700 dark:text-gray-100"
+                    >
+                      Privado
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+              <p
+                v-if="formErrors.privacy"
+                id="privacy-error"
+                class="text-sm text-red-500 mt-1"
+                role="alert"
+                aria-live="polite"
+              >
+                {{ formErrors.privacy }}
+              </p>
             </div>
           </div>
 
@@ -206,7 +237,7 @@
               aria-label="Guardar perfil"
             >
               <span v-if="isLoading">
-                <i class="fa-solid fa-spinner animate-spin"></i>
+                <i class="fa-solid fa-circle-notch animate-spin"></i>
               </span>
               <p class="hidden md:block">
                 {{ isLoading ? 'Creando...' : 'Crear' }}

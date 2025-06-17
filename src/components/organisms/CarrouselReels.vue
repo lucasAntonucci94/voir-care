@@ -35,6 +35,7 @@ import { useAuth } from '../../api/auth/useAuth';
 import CreateReelModal from '../organisms/CreateReelModal.vue';
 import ViewReelModal from './ViewReelModal.vue';
 import SliderReels from './SliderReels.vue';
+import ImageFallBack from '../../assets/adopcion/postAdoptar.jpeg';
 
 // Estado del componente
 const { user, isAuthenticated } = useAuth();
@@ -130,9 +131,9 @@ const filteredReels = computed(() => {
           {
             idDoc: 'placeholder',
             title: 'No hay reels disponibles',
-            thumbnailUrl: '/placeholder.jpg',
+            thumbnailUrl: ImageFallBack,
             mediaType: 'image',
-            user: { displayName: 'Voir', photoURL: '/voir-logo.png' },
+            user: { displayName: 'Voir', photoURL: '../../assets/icons/logoGreen.png' },
             default: true,
           },
         ],

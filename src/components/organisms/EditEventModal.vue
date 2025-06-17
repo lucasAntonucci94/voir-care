@@ -46,8 +46,8 @@
           <!-- Paso 1: Información básica -->
           <div v-if="currentStep === 1">
             <!-- Título -->
-            <div>
-              <label for="eventTitle" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <div class="mb-4">
+              <label for="eventTitle" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Título del Evento
               </label>
               <input
@@ -63,8 +63,8 @@
             </div>
 
             <!-- Descripción -->
-            <div>
-              <label for="eventDescription" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <div class="mb-4">
+              <label for="eventDescription" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Descripción del Evento
               </label>
               <textarea
@@ -139,7 +139,7 @@
             <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p>
             <!-- Ubicación -->
             <div>
-              <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label for="eventLocation" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Ubicación
               </label>
               <GeolocationInput
@@ -152,7 +152,7 @@
 
             <!-- Capacidad -->
             <div>
-              <label for="eventCapacity" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label for="eventCapacity" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Capacidad
               </label>
               <input
@@ -171,27 +171,8 @@
           <!-- Paso 4: Configuración adicional -->
           <div v-if="currentStep === 4">
             <!-- Categorías -->
-            <!-- <div v-if="categories?.length" class="flex flex-wrap gap-3">
-              <label
-                v-for="category in categories"
-                :key="category.id"
-                class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer dark:text-gray-100 dark:hover:text-gray-300"
-              >
-                <input
-                  :id="'filter_' + category.id"
-                  type="checkbox"
-                  v-model="editForm.categories"
-                  :value="category"
-                  :disabled="isLoading"
-                  class="custom-checkbox hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800"
-                />
-                <span class="font-medium">{{ category.name }}</span>
-              </label>
-              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
-            </div> -->
-            <!-- Categorías -->
             <div>
-              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Categorías
               </label>
               <multiselect
@@ -207,31 +188,7 @@
               ></multiselect>
               <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
-            <!-- Privacidad -->
-            <div class="flex gap-4 items-center mt-4">
-              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                <input
-                  type="radio"
-                  value="public"
-                  v-model="editForm.privacy"
-                  :disabled="isLoading"
-                  class="form-radio"
-                />
-                Público
-              </label>
-              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                <input
-                  type="radio"
-                  value="private"
-                  v-model="editForm.privacy"
-                  :disabled="isLoading"
-                  class="form-radio"
-                />
-                Privado
-              </label>
-              <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
-            </div>
-
+            
             <!-- Modalidad (Presencial/Virtual) -->
             <div class="mt-4">
               <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -249,7 +206,64 @@
               </select>
               <p v-if="formErrors.modality" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
             </div>
+
+            <!-- Privacidad -->
+            <div class="flex flex-col gap-4 mt-4">
+              <fieldset>
+                <legend class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Privacidad del Evento
+                </legend>
+                <div class="flex gap-2 ml-1">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="public"
+                      name="privacy"
+                      value="public"
+                      v-model="editForm.privacy"
+                      :disabled="isLoading"
+                      class="form-radio text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      for="public"
+                      class="text-sm text-gray-700 dark:text-gray-100"
+                    >
+                      Público
+                    </label>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="private"
+                      name="privacy"
+                      value="private"
+                      v-model="editForm.privacy"
+                      :disabled="isLoading"
+                      class="form-radio text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      for="private"
+                      class="text-sm text-gray-700 dark:text-gray-100"
+                    >
+                      Privado
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+              <p
+                v-if="formErrors.privacy"
+                id="privacy-error"
+                class="text-sm text-red-500 mt-1"
+                role="alert"
+                aria-live="polite"
+              >
+                {{ formErrors.privacy }}
+              </p>
+            </div>
+
           </div>
+          
+          
 
           <!-- Botones de navegación -->
           <div class="flex justify-between gap-3 mt-6">
@@ -294,7 +308,7 @@
               aria-label="Guardar perfil"
             >
               <span v-if="isLoading">
-                <i class="fa-solid fa-spinner animate-spin"></i>
+                <i class="fa-solid fa-circle-notch animate-spin"></i>
               </span>
               <p class="hidden md:block">
                 {{ isLoading ? 'Guardando...' : 'Guardar' }}

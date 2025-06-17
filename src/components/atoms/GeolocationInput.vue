@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full">
+  <div class="relative w-full mb-4">
     <input
       ref="inputRef"
       type="text"

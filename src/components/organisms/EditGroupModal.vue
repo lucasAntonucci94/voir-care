@@ -7,12 +7,12 @@
         @click.self="closeModal"
       >
         <div
-          class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh]"
           @click.stop
         >
           <!-- Header -->
           <div
-            class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between"
+            class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b rounded-t-xl flex items-center justify-between"
           >
             <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar grupo</h3>
             <button
@@ -57,54 +57,45 @@
             <form @submit.prevent="handleUpdateGroup" class="space-y-6">
               <!-- Paso 1: Información básica -->
               <div v-if="currentStep === 1">
-                <!-- Título -->
-                <div>
-                  <label
-                    for="groupTitle"
-                    class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
+                <!-- Título del Grupo -->
+                <div class="mb-4">
+                  <label for="groupTitle" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Título del Grupo
                   </label>
                   <input
                     v-model="editableGroup.title"
                     id="groupTitle"
                     type="text"
-                    class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 dark:hover:bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+                    placeholder="Ej: Cuidado Animal"
+                    class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                     :disabled="isLoading"
                     required
                   />
                   <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
                 </div>
 
-                <!-- Descripción -->
-                <div>
-                  <label
-                    for="groupDescription"
-                    class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
+                <!-- Descripción del Grupo -->
+                <div class="mb-4">
+                  <label for="groupDescription" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Descripción del Grupo
                   </label>
                   <textarea
                     v-model="editableGroup.description"
                     id="groupDescription"
-                    class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 dark:hover:bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 min-h-[100px]"
+                    placeholder="Describe brevemente el objetivo o tema principal del grupo"
+                    class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                     :disabled="isLoading"
                     required
                   ></textarea>
-                  <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">
-                    {{ formErrors.description }}
-                  </p>
+                  <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
                 </div>
               </div>
 
               <!-- Paso 2: Multimedia -->
               <div v-if="currentStep === 2">
-                <!-- Media -->
+                <!-- Imagen o Video (opcional) -->
                 <div class="relative">
-                  <label
-                    for="groupMedia"
-                    class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
+                  <label for="groupMedia" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Imagen o Video
                   </label>
                   <input
@@ -113,15 +104,20 @@
                     accept="image/*,video/*"
                     @change="handleMediaUpload"
                     :disabled="isLoading"
-                    class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark:hover:file:bg-secondary-md transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                    :class="[
+                      'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+                      formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
+                    ]"
                   />
+                  <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
                 </div>
 
-                <!-- Previsualización -->
+                <!-- Previsualización de Media -->
                 <div v-if="editableGroup.media.url" class="mt-2">
                   <img
                     v-if="editableGroup.media.type === 'image'"
                     :src="editableGroup.media.url"
+                    alt="Preview"
                     class="w-full h-48 object-cover rounded-lg shadow-sm"
                   />
                   <video
@@ -137,7 +133,7 @@
               <div v-if="currentStep === 3">
                 <!-- Categorías -->
                 <div>
-                  <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+                  <label for="postCategories" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Categorías
                   </label>
                   <multiselect
@@ -153,28 +149,57 @@
                   ></multiselect>
                   <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
                 </div>
-
+              
                 <!-- Privacidad -->
-                <div class="flex gap-4 items-center mt-4">
-                  <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                    <input
-                      type="radio"
-                      value="public"
-                      v-model="editableGroup.privacy"
-                      :disabled="isLoading"
-                    />
-                    Público
-                  </label>
-                  <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                    <input
-                      type="radio"
-                      value="private"
-                      v-model="editableGroup.privacy"
-                      :disabled="isLoading"
-                    />
-                    Privado
-                  </label>
-                  <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">
+                <div class="flex flex-col gap-4 mt-4">
+                  <fieldset>
+                    <legend class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Privacidad
+                    </legend>
+                    <div class="flex gap-2 ml-1">
+                      <div class="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="public"
+                          name="privacy"
+                          value="public"
+                          v-model="editableGroup.privacy"
+                          :disabled="isLoading"
+                          class="form-radio text-blue-600 focus:ring-blue-500"
+                        />
+                        <label
+                          for="public"
+                          class="text-sm text-gray-700 dark:text-gray-100"
+                        >
+                          Público
+                        </label>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          id="private"
+                          name="privacy"
+                          value="private"
+                          v-model="editableGroup.privacy"
+                          :disabled="isLoading"
+                          class="form-radio text-blue-600 focus:ring-blue-500"
+                        />
+                        <label
+                          for="private"
+                          class="text-sm text-gray-700 dark:text-gray-100"
+                        >
+                          Privado
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
+                  <p
+                    v-if="formErrors.privacy"
+                    id="privacy-error"
+                    class="text-sm text-red-500 mt-1"
+                    role="alert"
+                    aria-live="polite"
+                  >
                     {{ formErrors.privacy }}
                   </p>
                 </div>
@@ -205,7 +230,7 @@
                   <i class="fa-solid fa-times"></i>
                   <p class="hidden md:block">Cancelar</p>
                 </button>
-
+                
                 <button
                   v-if="currentStep < steps.length"
                   type="button"
@@ -217,7 +242,6 @@
                   <p class="hidden md:block">Siguiente</p>
                   <i class="fa-solid fa-arrow-right"></i>
                 </button>
-
                 <button
                   v-if="currentStep === steps.length"
                   type="submit"
@@ -226,7 +250,7 @@
                   aria-label="Guardar perfil"
                 >
                   <span v-if="isLoading">
-                    <i class="fa-solid fa-spinner animate-spin"></i>
+                    <i class="fa-solid fa-circle-notch animate-spin"></i>
                   </span>
                   <p class="hidden md:block">
                     {{ isLoading ? 'Guardando...' : 'Guardar' }}

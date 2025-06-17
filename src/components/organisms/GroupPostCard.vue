@@ -158,8 +158,6 @@ import { useSnackbarStore } from '../../stores/snackbar';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
-debugger
-
 const groupPostsStore = useGroupPostsStore();
 const { comments } = useGroupComments(props.post.group.id, props.post.idDoc);
 const snackbarStore = useSnackbarStore();

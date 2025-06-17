@@ -170,9 +170,7 @@
             class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             aria-label="Crear publicación"
           >
-            <span v-if="isLoading">
-              <i class="fa-solid fa-spinner animate-spin"></i>
-            </span>
+            <i v-if="isLoading" class="fa-solid fa-circle-notch animate-spin"></i>
             <p class="hidden md:block">
               {{ isLoading ? 'Guardando...' : 'Guardar' }}
             </p>

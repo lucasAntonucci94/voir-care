@@ -95,7 +95,7 @@
           >
             <span v-if="!isLoading">Publicar</span>
             <span v-else class="flex items-center gap-2">
-              <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <i class="fa-solid fa-circle-notch animate-spin"></i>
               Publicando...
             </span>
           </button>

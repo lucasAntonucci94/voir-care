@@ -52,7 +52,7 @@
       <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
     </div>
     <div v-else-if="filteredChats.length === 0" class="text-center text-gray-500 italic py-4 min-h-[200px] flex items-center justify-center">
-      No tienes chats con mensajes.
+      No tienes ningun chat.
     </div>
     <div v-else class="space-y-3">
       <div
@@ -118,13 +118,13 @@ import { useSnackbarStore } from '../../stores/snackbar';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import NewChatModal from '../molecules/NewChatModal.vue';
 import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
-import { useUserStatusStore } from '../../stores/userStatus'; // Nuevo store
+import { useUserStatusStore } from '../../stores/userStatus';
 import { useStorage } from '../../composable/useStorage';
 import AvatarFallback from '../../assets/avatar1.jpg';
 
 const privateChatsStore = usePrivateChatsStore();
 const snackbarStore = useSnackbarStore();
-const userStatusStore = useUserStatusStore(); // Instanciar el store
+const userStatusStore = useUserStatusStore();
 const { getFileUrl } = useStorage();
 const searchQuery = ref('');
 const showActionsMenu = ref(false);
@@ -215,7 +215,7 @@ const filteredChats = computed(() => {
     const email = getOtherUserEmail(chat.idDoc);
     return {
       ...chat,
-      isOnline: userStatusStore.getUserStatus(email), // Usar el store
+      isOnline: userStatusStore.getUserStatus(email),
     };
   });
 });

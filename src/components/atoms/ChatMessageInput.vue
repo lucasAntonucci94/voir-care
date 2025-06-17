@@ -11,9 +11,12 @@
       <button
         type="submit"
         :disabled="loading || cleanedMessage.length === 0"
-        class="px-5 py-2.5 bg-primary dark:bg-secondary text-white rounded-2xl shadow-md hover:bg-primary-md hover:bg-secondary-md hover:shadow-lg transition-colors duration-200 transition-shadow duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        class="px-5 py-2.5 bg-primary dark:bg-secondary text-white rounded-2xl shadow-md hover:bg-primary-md hover:bg-priamry-md dark:hover:bg-secondary-md hover:shadow-lg transition-colors duration-200 transition-shadow duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
-        <span v-if="!loading">Enviar</span>
+        <i class="fas fa-paper-plane"></i>
+        <span class="hidden sm:inline ml-2" v-if="!loading">
+           Enviar
+        </span>
         <div v-else class="animate-spin h-5 w-5 border-4 border-t-4 border-b-4 border-white rounded-full"></div>
       </button>
     </form>

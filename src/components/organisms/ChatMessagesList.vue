@@ -116,8 +116,17 @@
       @confirmed="deleteMessage(messageToDelete)"
     />
   </div>
-  <div v-else class="flex-1 bg-white dark:bg-gray-800 dark:text-gray-300 rounded-xl shadow-xl p-5 text-center text-gray-700 border border-gray-200 dark:border-gray-700">
-    Selecciona un chat para ver los mensajes.
+  <div v-else class="flex-1 flex flex-col items-center justify-center  bg-white dark:bg-gray-800 dark:text-gray-300 rounded-xl shadow-xl p-5 text-center text-gray-700 border border-gray-200 dark:border-gray-700">
+    <img
+      src="../../assets/icons/locations/people.png"
+      alt="No chat selected"
+      class="w-24 h-24 mx-auto mb-4"
+    />
+    <span class="text-xl font-bold mb-2">VOIR</span>
+    <h2 class="text-xl font-semibold mb-2">No hay chat seleccionado</h2>
+    <p class="text-gray-600 dark:text-gray-400 mb-4">
+      Selecciona un chat de la lista para ver los mensajes.
+    </p>
   </div>
 </template>
 
@@ -131,6 +140,7 @@ import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
 import { useUserStatusStore } from '../../stores/userStatus';
+
 
 // Estado reactivo
 const { user } = useAuth();

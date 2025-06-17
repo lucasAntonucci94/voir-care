@@ -2,7 +2,7 @@
   <div v-if="visible" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh]">
       <!-- Encabezado del modal -->
-      <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
+      <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b rounded-t-xl flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear evento</h3>
         <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
           <i class="fa-solid fa-xmark w-6 h-6"></i>
@@ -45,8 +45,8 @@
           <!-- Paso 1: Información básica -->
           <div v-if="currentStep === 1">
             <!-- Título -->
-            <div>
-              <label for="eventTitle" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <div class="mb-4">
+              <label for="eventTitle" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Título del Evento
               </label>
               <input
@@ -62,8 +62,8 @@
             </div>
 
             <!-- Descripción -->
-            <div>
-              <label for="eventDescription" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <div class="mb-4">
+              <label for="eventDescription" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Descripción del Evento
               </label>
               <textarea
@@ -95,7 +95,6 @@
                   formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
                 :disabled="isLoading"
-                required
               />
               <!-- Mensaje de error -->
               <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
@@ -129,7 +128,7 @@
               required
             />
             <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p>
-            <!-- Fecha y Hora de Fin (opcional) -->
+            <!-- Fecha y Hora de Fin -->
             <SelectDate
               v-model="newEvent.endTime"
               label="Fecha y Hora de Fin"
@@ -139,25 +138,27 @@
             <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p>
             <!-- Ubicación -->
             <div>
-              <label for="eventLocation" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label for="eventLocation" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Ubicación
               </label>
               <GeolocationInput
                 v-model="newEvent.location"
                 placeholder="Ingresá una dirección"
+                :disabled="isLoading"
               />
               <p v-if="formErrors.address" class="text-sm text-red-500 mt-1">{{ formErrors.address }}</p>
             </div>
 
             <!-- Capacidad -->
             <div>
-              <label for="eventCapacity" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label for="eventCapacity" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Capacidad
               </label>
               <input
                 v-model.number="newEvent.capacity"
                 id="eventCapacity"
                 type="number"
+                min="1"
                 placeholder="Número máximo de asistentes"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :disabled="isLoading"
@@ -170,7 +171,7 @@
           <div v-if="currentStep === 4">
             <!-- Categorías -->
             <div>
-              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Categorías
               </label>
               <multiselect
@@ -186,29 +187,7 @@
               ></multiselect>
               <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
-            <!-- Privacidad -->
-            <div class="flex gap-4 items-center mt-4">
-              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                <input
-                  type="radio"
-                  value="public"
-                  v-model="newEvent.privacy"
-                  :disabled="isLoading"
-                />
-                Público
-              </label>
-              <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-100">
-                <input
-                  type="radio"
-                  value="private"
-                  v-model="newEvent.privacy"
-                  :disabled="isLoading"
-                />
-                Privado
-              </label>
-              <p v-if="formErrors.privacy" class="text-sm text-red-500 mt-1">{{ formErrors.privacy }}</p>
-            </div>
-
+            
             <!-- Modalidad (Presencial/Virtual) -->
             <div class="mt-4">
               <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -226,7 +205,64 @@
               </select>
               <p v-if="formErrors.modality" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
             </div>
+
+            <!-- Privacidad -->
+            <div class="flex flex-col gap-4 mt-4">
+              <fieldset>
+                <legend class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Privacidad
+                </legend>
+                <div class="flex gap-2 ml-1">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="public"
+                      name="privacy"
+                      value="public"
+                      v-model="newEvent.privacy"
+                      :disabled="isLoading"
+                      class="form-radio text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      for="public"
+                      class="text-sm text-gray-700 dark:text-gray-100"
+                    >
+                      Público
+                    </label>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="private"
+                      name="privacy"
+                      value="private"
+                      v-model="newEvent.privacy"
+                      :disabled="isLoading"
+                      class="form-radio text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      for="private"
+                      class="text-sm text-gray-700 dark:text-gray-100"
+                    >
+                      Privado
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+              <p
+                v-if="formErrors.privacy"
+                id="privacy-error"
+                class="text-sm text-red-500 mt-1"
+                role="alert"
+                aria-live="polite"
+              >
+                {{ formErrors.privacy }}
+              </p>
+            </div>
+
           </div>
+          
+          
 
           <!-- Botones de navegación -->
           <div class="flex justify-between gap-3 mt-6">
@@ -253,35 +289,31 @@
               <i class="fa-solid fa-times"></i>
               <p class="hidden md:block">Cancelar</p>
             </button>
-
             <button
               v-if="currentStep < steps.length"
               type="button"
               @click="nextStep"
-              :disabled="isLoading"
               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               aria-label="Avanzar al siguiente paso"
             >
               <p class="hidden md:block">Siguiente</p>
               <i class="fa-solid fa-arrow-right"></i>
             </button>
-
             <button
               v-if="currentStep === steps.length"
               type="submit"
-               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-
               :disabled="isLoading"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              aria-label="Guardar perfil"
             >
-               <span v-if="isLoading">
-                <i class="fa-solid fa-spinner animate-spin"></i>
+              <span v-if="isLoading">
+                <i class="fa-solid fa-circle-notch animate-spin"></i>
               </span>
               <p class="hidden md:block">
                 {{ isLoading ? 'Creando...' : 'Crear' }}
               </p>
               <i v-if="!isLoading" class="fa-solid fa-save"></i>
             </button>
-
           </div>
         </form>
       </div>

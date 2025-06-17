@@ -194,7 +194,7 @@
               aria-label="Guardar perfil"
             >
               <span v-if="isSubmitting">
-                <i class="fa-solid fa-spinner animate-spin"></i>
+                <i class="fa-solid fa-circle-notch animate-spin"></i>
               </span>
               <p class="hidden md:block">
                 {{ isSubmitting ? 'Creando...' : 'Crear' }}

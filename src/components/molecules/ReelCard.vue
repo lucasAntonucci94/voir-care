@@ -33,17 +33,17 @@
           loading="lazy"
         />
         <div v-else>
-              <img
-                src="../../assets/icons/logoGreen.png"
-                alt="User avatar"
-                class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-500 dark:hidden"
-              />
-              <img
-                src="../../assets/icons/logoOrange.png" 
-                alt="User avatar"
-                class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-500 hidden dark:inline"
-              />
-            </div>
+          <img
+            src="../../assets/icons/logoGreen.png"
+            alt="User avatar"
+            class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-500 dark:hidden"
+          />
+          <img
+            src="../../assets/icons/logoOrange.png" 
+            alt="User avatar"
+            class="w-6 h-6 rounded-full object-cover border border-gray-300 dark:border-gray-500 hidden dark:inline"
+          />
+        </div>
         <p class="text-xs text-gray-800 dark:text-gray-200 font-medium truncate">
           {{ group.reels[0].user.displayName }}
         </p>

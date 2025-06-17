@@ -158,7 +158,6 @@ import { useSnackbarStore } from '../../stores/snackbar';
 
 const { user } = useAuth();
 const props = defineProps(['post']);
-debugger
 const eventPostsStore = useEventPostsStore();
 const { comments } = useEventComments(props.post.event.id, props.post.idDoc);
 const snackbarStore = useSnackbarStore();

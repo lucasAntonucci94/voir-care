@@ -8,7 +8,7 @@
       @input="updateValue"
       :placeholder="placeholder ?? `Ingrese ${label}`"
       :class="[
-        'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-full text-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:bg-gray-100 dark:focus:bg-gray-600 dark:hover:bg-gray-600 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
+        'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border rounded-full text-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:bg-gray-100 dark:focus:bg-gray-600 dark:hover:bg-gray-600 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
         modelValue.hasError ? 'border-red-500' : 'border-gray-300 dark:border-gray-800',
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       ]"
