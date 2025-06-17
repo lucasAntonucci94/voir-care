@@ -22,16 +22,16 @@
         @click="openMediaModal"
       ></video>
     </div>
-    <div class="flex gap-2 mt-2 flex-wrap">
+    <div class="flex text-center gap-2 mt-2">
       <span
         v-for="category in post?.categories"
         :key="category.id"
-        class="text-xs text-primary bg-teal-100 dark:text-white dark:bg-secondary px-2 py-1 rounded-full"
+        class="text-xs text-primary bg-primary/10 dark:text-secondary-md dark:bg-secondary/10 px-2 py-1 rounded-full"
       >
         {{ category.name }}
       </span>
     </div>
-    <div class="flex justify-between mt-3 text-sm text-gray-600 dark:text-white gap-4">
+    <div class="flex flex-actions justify-between mt-3 text-sm text-gray-600 dark:text-white gap-4">
       <button
         @click="toggleLike"
         :class="[
@@ -228,13 +228,14 @@ p.text-ellipsis {
   max-width: 100%;
 }
 /* Estilos responsivos */
-@media (max-width: 768px) {
+@media (max-width: 390px) {
   .media-container {
     height: calc(100vh - 10rem); /* Deja espacio para el panel inferior */
   }
 
-  .flex {
+  .flex-actions {
     flex-direction: column;
+    align-items: center;
   }
 
   .w-80 {

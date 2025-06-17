@@ -82,22 +82,22 @@
         </div>
 
         <!-- Categorías -->
-        <div class="flex flex-wrap gap-3">
-          <label
-            v-for="category in categories"
-            :key="category.id"
-            class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
-          >
-            <input
-              :id="'filter_' + category.id"
-              type="checkbox"
-              v-model="editForm.categories"
-              :value="category"
-              :disabled="isLoading"
-              class="custom-checkbox hover:bg-gray-100 dark:hover:bg-gray-700"
-            />
-            <span class="font-medium">{{ category.name }}</span>
+        <div>
+          <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+            Categorías
           </label>
+          <multiselect
+            v-model="editForm.categories"
+            :options="categories"
+            :multiple="true"
+            :class="{ 'dark': isDark }"
+            placeholder="Seleccionar categorías"
+            label="name"
+            track-by="id"
+            aria-label="Seleccionar categorías"
+            :disabled="isLoading"
+          ></multiselect>
+          <!-- <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p> -->
         </div>
 
         <!-- Botones -->
@@ -128,11 +128,21 @@
   </template>
 
 <script setup>
-import { ref, defineEmits, onMounted } from 'vue';
+import { ref, computed, defineEmits, onMounted } from 'vue';
 import { useEventPostsStore } from '../../stores/eventPosts';
 import { useCategories } from '../../composable/useCategories';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import { boolean } from 'yup';
+import { useThemeStore } from '../../stores/theme';
+import { defineAsyncComponent } from 'vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
+
+// Import vue-multiselect
+const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
+
+// Theme store for dark mode
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDarkMode);
 
 const props = defineProps({
   post: { type: Object, required: true },

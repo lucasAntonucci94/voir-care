@@ -62,25 +62,23 @@
           ></video>
         </div>
         <!-- Categorías -->
-        <fieldset class="flex flex-wrap gap-3" :aria-describedby="formErrors.categories ? 'categories-error' : null">
-          <legend class="sr-only">Categorías</legend>
-          <label
-            v-for="category in categories"
-            :key="category.id"
-            class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer dark:text-gray-100 dark:hover:text-gray-300"
-          >
-            <input
-              :id="'filter_' + category.id"
-              type="checkbox"
-              v-model="newPost.categories"
-              :value="category"
-              :disabled="isLoading"
-              class="custom-checkbox hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800"
-              :aria-invalid="!!formErrors.categories"
-            />
-            <span class="font-medium">{{ category.name }}</span>
+        <div>
+          <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
+            Categorías
           </label>
-        </fieldset>
+          <multiselect
+            v-model="newPost.categories"
+            :options="categories"
+            :multiple="true"
+            :class="{ 'dark': isDark }"
+            placeholder="Seleccionar categorías"
+            label="name"
+            track-by="id"
+            aria-label="Seleccionar categorías"
+            :disabled="isLoading"
+          ></multiselect>
+          <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
+        </div>
         <p v-if="formErrors.categories" id="categories-error" class="text-red-500 text-sm mt-2">
           {{ formErrors.categories }}
         </p>
@@ -111,11 +109,21 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useCategories } from '../../composable/useCategories';
 import { useEventPostsStore } from '../../stores/eventPosts';
 import { useSnackbarStore } from '../../stores/snackbar';
+import { useThemeStore } from '../../stores/theme';
+import { defineAsyncComponent } from 'vue';
+import 'vue-multiselect/dist/vue-multiselect.css';
+
+// Import vue-multiselect
+const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
+
+// Theme store for dark mode
+const themeStore = useThemeStore();
+const isDark = computed(() => themeStore.isDarkMode);
 
 const props = defineProps({ eventId: String });
 const emit = defineEmits(['close']);

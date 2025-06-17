@@ -12,7 +12,7 @@
     <div class="max-w-3xl mx-auto px-4 py-10">
       <div class="mb-6 text-sm text-gray-600 dark:text-gray-300 flex flex-wrap gap-2">
         <span v-for="category in blog?.categories" :key="category" class="bg-teal-100 dark:bg-teal-700 text-teal-900 dark:text-white px-3 py-1 rounded-full text-xs font-semibold">
-          {{ category }}
+          {{ category.name }}
         </span>
       </div>
 
@@ -30,7 +30,7 @@
           />
         </div>
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">Publicado el {{ blog?.date }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Publicado el {{ formatTimestamp(blog?.date) }}</p>
       </div>
     </div>
   </div>
@@ -40,6 +40,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useEducationBlogsStore } from '../stores/educationBlogs';
+import { formatTimestamp } from '../utils/formatTimestamp';
 
 const route = useRoute();
 const router = useRouter();

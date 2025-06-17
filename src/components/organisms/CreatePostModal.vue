@@ -10,7 +10,7 @@
   </section>
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 transition-opacity duration-300">
     <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh] overflow-y-auto">
-      <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Crear Nueva Publicación</h2>
+      <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 tracking-tight">Nueva Publicación</h2>
       <form @submit.prevent="createPost" class="space-y-6">
         <!-- Título -->
         <div>
@@ -75,31 +75,6 @@
           ></video>
         </div>
         <!-- Categorías -->
-        <!-- <fieldset class="flex flex-wrap gap-3" :aria-describedby="formErrors.categories ? 'categories-error' : null">
-          <legend class="sr-only">Categorías</legend>
-          <label
-            v-for="category in categories"
-            :key="category.id"
-            class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer dark:text-gray-100 dark:hover:text-gray-300"
-          >
-            <input
-              :id="'filter_' + category.id"
-              name="'categories"
-              type="checkbox"
-              v-model="newPost.categories"
-              :value="category"
-              :disabled="isLoading"
-              class="custom-checkbox hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800"
-              :aria-invalid="!!formErrors.categories"
-            />
-            <span class="font-medium">{{ category.name }}</span>
-          </label>
-        </fieldset>
-         <p v-if="formErrors.categories" id="categories-error" class="text-red-500 text-sm mt-2">
-          {{ formErrors.categories }}
-        </p>
-         -->
-        <!-- Categorías -->
         <div>
           <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200 sr-only">
             Categorías
@@ -115,7 +90,7 @@
             aria-label="Seleccionar categorías"
             :disabled="isLoading"
           ></multiselect>
-          <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
+          <!-- <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p> -->
         </div>
         <!-- Botones -->
         <div class="flex justify-end gap-3">
@@ -292,124 +267,4 @@ function handleCloseModal() {
 </script>
 
 <style scoped>
-/* Estilos existentes */
-.custom-checkbox {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #d1d5db;
-  border-radius: 4px;
-  position: relative;
-  cursor: pointer;
-  outline: none;
-}
-
-.custom-checkbox:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.custom-checkbox:checked {
-  background-color: #02bcae;
-  border-color: #02bcae;
-}
-
-.custom-checkbox:checked:hover {
-  background-color: #019a8e;
-  border-color: #019a8e;
-}
-
-.custom-checkbox:checked::after {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 1px;
-  width: 4px;
-  height: 8px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-.custom-checkbox:focus {
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.5);
-}
-
-/* Estilos para vue-multiselect */
-::v-deep(.multiselect) {
-  min-height: 38px;
-  width: 100%;
-  border: 1px solid;
-  border-color: var(--color-primary-md);
-  border-radius: 0.375rem;
-  background-color: #ffffff;
-  color: #111827;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-}
-
-::v-deep(.multiselect.dark) {
-  border-color: var(--color-secondary-md);
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect .multiselect__tags) {
-  border: 1px solid !important;
-  border-color: var(--color-primary) !important;
-}
-
-::v-deep(.multiselect.dark .multiselect__tags) {
-  border: 1px solid !important;
-  border-color: var(--color-secondary) !important;
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-  padding: 4px 8px;
-}
-
-::v-deep(.multiselect.dark .multiselect__tags input) {
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect.dark .multiselect__input) {
-  color: #f9fafb !important;
-}
-
-::v-deep(.multiselect.dark .multiselect__content-wrapper) {
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect .multiselect__option) {
-  background-color: #ffffff;
-  color: #111827;
-}
-
-::v-deep(.multiselect.dark .multiselect__option) {
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect .multiselect__option--highlight) {
-  background-color: var(--color-primary);
-  color: #ffffff;
-}
-
-::v-deep(.multiselect.dark .multiselect__option--highlight) {
-  background-color: var(--color-secondary);
-}
-
-::v-deep(.multiselect__select) {
-  background: transparent;
-}
-
-::v-deep(.multiselect--disabled) {
-  background-color: #e5e7eb;
-}
-
-::v-deep(.multiselect.dark .multiselect--disabled) {
-  background-color: #1F2937;
-}
 </style>
