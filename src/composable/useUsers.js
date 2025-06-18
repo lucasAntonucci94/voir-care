@@ -3,6 +3,7 @@ import { getFirestore, doc, setDoc, getDoc, getDocs, updateDoc, collection, quer
 import { useStorage } from './useStorage';
 import { usePosts } from '../composable/usePosts';
 import { useAuth } from '../api/auth/useAuth'
+import { AppError } from '../api/Exceptions/AppError';
 
 const db = getFirestore();
 const usersRef = collection(db, 'users');
@@ -27,6 +28,7 @@ export function useUsers() {
           uid: doc.id,
           email: user.email,
           displayName: user.displayName,
+          displayNameNormalized: user.displayNameNormalized || user.displayName.toLowerCase().trim(),
           firstName: user.firstName || null,
           lastName: user.lastName || null,
           phoneNumber: user.phoneNumber || null,
@@ -95,6 +97,7 @@ export function useUsers() {
         uid: userDoc.id,
         email: user.email,
         displayName: user.displayName,
+        displayNameNormalized: user.displayNameNormalized || user.displayName.toLowerCase().trim(),
         firstName: user.firstName || null,
         lastName: user.lastName || null,
         phoneNumber: user.phoneNumber || null,
@@ -118,6 +121,32 @@ export function useUsers() {
       throw error;
     }
   }
+  
+  /**
+   * Obtiene el displayName de un usuario por su email
+   * @param {string} email - Email del usuario
+   * @returns {Promise<string>} - DisplayName del usuario
+   */
+  async function getEmailByDisplayName(displayName) {
+    try {
+      if (!displayName) {
+        throw new AppError('Este campo es obligatorio', { code: 'MISSING_DISPLAY_NAME' });
+      }
+      const queryUser = query(usersRef, where('displayName', '==', displayName), limit(1));
+      const snapshot = await getDocs(queryUser);
+
+      if (snapshot.empty) {
+        throw new AppError('Usuario no encontrado por nombre de usuario: ' + displayName, { code: 'USER_NOT_FOUND' });
+      }
+
+      const userDoc = snapshot.docs[0];
+      const user = userDoc.data();
+      return user.email;
+    } catch (error) {
+      console.error('Error al obtener el displayName por email:', error);
+      throw error instanceof AppError ? error : new AppError(error.message, { code: 'UNKNOWN_ERROR' });
+    }
+  }
 
   /**
    * Crea un nuevo usuario en Firestore
@@ -131,6 +160,7 @@ export function useUsers() {
       await setDoc(docRef, {
         email: data.email,
         displayName: data.displayName,
+        displayNameNormalized: data.displayName.toLowerCase().trim(),
         firstName: data.firstName || null,
         lastName: data.lastName || null,
         phoneNumber: data.phoneNumber || null,
@@ -166,6 +196,7 @@ export function useUsers() {
       const docRef = doc(db, 'users', id);
       const userData = {
         displayName: data.displayName,
+        displayNameNormalized: data.displayName.toLowerCase().trim(),
         firstName: data.firstName ?? '',
         lastName: data.lastName ?? '',
         email: data.email ?? '',
@@ -182,7 +213,7 @@ export function useUsers() {
         isSuscribed: data.isSuscribed || false,
         configs: data.configs || {},
         configs: data.configs || {},
-        socialNetwork: data.socialNetwork || {},
+        socialNetwork: data.socialNetwork || [],
       };
       await updateDoc(docRef, userData);
       await updateUserFromPost(id, userData);
@@ -422,7 +453,7 @@ export function useUsers() {
   }
   
   /**
-   * Bloquea a un usuario de forma global (sera ejecutado por el admin)
+   * Bloquea a un usuario de forma global
    * @param {string} id - ID del usuario
    * @param {boolean} isBlocked - true para bloquear, false para desbloquear
    * @returns {Promise<void>}
@@ -605,5 +636,6 @@ export function useUsers() {
     suscribeUser,
     updateUserTheme,
     getUidsByEmails,
+    getEmailByDisplayName,
   };
 }

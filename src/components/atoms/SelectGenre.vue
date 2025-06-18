@@ -26,12 +26,12 @@
   
   // Props
   defineProps({
-    modelValue: { type: String, default: '' }, // Para v-model
+    modelValue: { type: String, default: '' },
     label: { type: String, default: 'Género' },
     id: { type: String, default: 'genre-select' },
     hasError: { type: Boolean, default: false },
     errorMessage: { type: String, default: 'Por favor, selecciona un género.' },
-    disabled: { type: Boolean, default: false }, // Para deshabilitar como en ProfileForm
+    disabled: { type: Boolean, default: false },
   });
   
   // Emits

@@ -10,7 +10,7 @@
 
     <!-- Formulario de login -->
     <form v-if="!showResetForm" @submit.prevent="handleSubmit">
-      <InputText v-model="email.field.value" label="Correo Electrónico" type="email" id="email" placeholder="Ingresa tu correo electrónico"/>
+      <InputText v-model="email.field.value" label="Usuario" type="login" id="email" placeholder="Ingresa tu usuario o email"/>
       <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
       <div class="text-right mb-8">
         <button type="button" @click="showResetForm = true" class="inline-block text-sm font-semibold text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md">
@@ -65,9 +65,24 @@ const showResetForm = ref(false);
 // Stores
 const snackbarStore = useSnackbarStore();
 
+// Regex
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const displayNameRegex = /^[a-zA-Z0-9_.-]{3,30}$/;
+const invalidCharsRegex = /[\/\\|<>]/;
+
 // Schema para login
 const loginSchema = yup.object({
-  email: yup.string().required('El correo es obligatorio').email('El correo no es válido'),
+  email: yup
+    .string()
+    .required('El usuario o correo es obligatorio')
+    .test(
+      'is-login-valid',
+      'Debe ser un nombre de usuario o correo electrónico válido.',
+      (value) => {
+        if (!value) return false;
+        return emailRegex.test(value) || (displayNameRegex.test(value) && !invalidCharsRegex.test(value));
+      }
+    ),
   password: yup.string().required('La contraseña es obligatoria'),
 });
 
@@ -84,7 +99,6 @@ const resetEmail = useFormField('', resetSchema.fields.resetEmail);
 // Manejo del login
 const handleSubmit = async () => {
   isLoading.value = true;
-
   const emailValid = email.validate();
   const passwordValid = password.validate();
 
@@ -93,7 +107,7 @@ const handleSubmit = async () => {
     return;
   }
 
-  const result = await login(email.field.value.value, password.field.value.value);
+  const result = await login(email.field.value.value, password.field.value.value, emailRegex.test(email.field.value.value));
   if (result !== true && error.value?.code) {
     setErrorFromFirebase(error.value.code, error.value.message);
   } else {
@@ -149,6 +163,15 @@ const setErrorFromFirebase = (code, message) => {
     case 'auth/admin-restricted-operation':
       email.setError('Error interno, revisa tus datos');
       password.setError('Error interno, revisa tus datos');
+      break;
+    case 'auth/unknown-error':
+    case 'UNKNOWN_ERROR':
+      email.setError(message);
+      password.setError(message);
+      break;
+    case 'USER_NOT_FOUND':
+    case 'MISSING_DISPLAY_NAME':
+      email.setError(message);
       break;
     default:
       email.setError('Error desconocido, contacte con soporte.');

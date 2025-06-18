@@ -191,9 +191,9 @@ const uploading = ref(false);
 const bannerUrl = ref(BannerDefault);
 const errorBannerFileMessage = ref('');
 
-  // Modal state
-  const showModalMedia = ref(false);
-  const selectedMedia = ref({ src: '', type: 'image' });
+// Modal state
+const showModalMedia = ref(false);
+const selectedMedia = ref({ src: '', type: 'image' });
   
 // Computados
 const isFollowing = computed(() => {

@@ -3,12 +3,12 @@
     <label :for="id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</label>
     <input
       :id="id"
-      :type="type"
+      :type="inputType"
       :value="modelValue.value"
       @input="updateValue"
       :placeholder="placeholder ?? `Ingrese ${label}`"
       :class="[
-        'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border rounded-full text-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:bg-gray-100 dark:focus:bg-gray-600 dark:hover:bg-gray-600 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
+        'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:bg-gray-100 dark:focus:bg-gray-600 dark:hover:bg-gray-600 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
         modelValue.hasError ? 'border-red-500' : 'border-gray-300 dark:border-gray-800',
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       ]"
@@ -23,6 +23,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
   label: { type: String, required: true },
   placeholder: { type: String, default: null },
@@ -36,9 +38,42 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue']);
 
-const updateValue = (event) => {
-  emit('update:modelValue', { ...props.modelValue, value: event.target.value });
+const id = `input-${Math.random().toString(36).substring(7)}`;
+
+// Compute the input type (force 'text' for 'login' type)
+const inputType = computed(() => {
+  return props.type === 'login' ? 'text' : props.type;
+});
+
+// Email regex for validation
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Validation function for login type
+const validateLoginInput = (value) => {
+  if (!value) {
+    return { hasError: true, errorMessage: 'Este campo es obligatorio.' };
+  }
+  if (props.type === 'login') {
+    const isDisplayNameValid = value.length >= 3 && value.length <= 30 && /^[a-zA-Z0-9_.-]+$/.test(value) && !/[\/\\|<>]/.test(value);
+    const isEmailValid = emailRegex.test(value);
+    if (!isDisplayNameValid && !isEmailValid) {
+      return {
+        hasError: true,
+        errorMessage: 'Debe ser un nombre de usuario o correo electrónico válido.',
+      };
+    }
+  }
+  return { hasError: false, errorMessage: '' };
 };
 
-const id = `input-${Math.random().toString(36).substring(7)}`;
+const updateValue = (event) => {
+  const value = event.target.value;
+  const validation = props.type === 'login' ? validateLoginInput(value) : { hasError: false, errorMessage: '' };
+  emit('update:modelValue', {
+    ...props.modelValue,
+    value,
+    hasError: validation.hasError,
+    errorMessage: validation.errorMessage,
+  });
+};
 </script>

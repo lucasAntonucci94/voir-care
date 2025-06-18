@@ -154,7 +154,7 @@
           />
           <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vista previa del perfil</label>
-          <div class="mt-2 flex flex-col md:flex-row items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm">
+          <div class="mt-2 flex flex-col md:flex-row items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm">
             <div class="relative">
               <img
                 v-if="editForm.newMediaBase64 || editForm.photoURLFile"
@@ -170,10 +170,10 @@
               </div>
             </div>
             <div class="text-center md:text-left">
-              <h1 class="text-gray-700 md:text-gray-300 dark:text-gray-300 text-xl md:text-2xl font-bold">
+              <h1 class="text-gray-700 dark:text-gray-300 text-xl md:text-2xl font-bold">
                 {{ editForm.displayName || editForm.email || 'Usuario' }}
               </h1>
-              <p class="text-gray-700 md:text-gray-300 dark:text-gray-300 text-sm">
+              <p class="text-gray-700 dark:text-gray-300 text-sm">
                 0 conexiones
               </p>
             </div>
@@ -336,6 +336,7 @@ const hasStepErrors = computed(() => {
 
 // Validar si hay errores globales
 const hasGlobalErrors = computed(() => {
+  debugger
   return Object.keys(errors.value).length > 0;
 });
 
@@ -393,6 +394,7 @@ watch(
 watch(
   () => editForm.value.socialNetwork,
   (newSocialNetwork) => {
+    debugger
     if (currentStep.value === 4) {
       stepErrors.value = {};
       validateStep(currentStep.value);
@@ -417,7 +419,6 @@ function editProfile() {
       phone = '';
     }
   }
-
   editForm.value = {
     id: props.activeUser?.uid || props.activeUser?.id || null,
     displayName: props.activeUser?.displayName || '',
@@ -517,7 +518,7 @@ function validateStep(stepIndex) {
   }
 
   if (stepFields.includes('socialNetwork')) {
-    editForm.value.socialNetwork.forEach((network, index) => {
+    editForm.value?.socialNetwork?.forEach((network, index) => {
       if (!network.name || network.name.trim() === '') {
         stepErrors.value[`socialNetwork[${index}].name`] = 'El nombre de la red social es obligatorio';
       }
@@ -530,7 +531,8 @@ function validateStep(stepIndex) {
   }
 
   // Actualizar errores globales
-  errors.value = { ...errors.value, ...stepErrors.value };
+  errors.value = stepErrors.value;
+  // errors.value = { ...errors.value, ...stepErrors.value };
   return Object.keys(stepErrors.value).length === 0;
 }
 
@@ -641,7 +643,7 @@ function validateForm() {
     validationErrors.country = 'El país es obligatorio';
   }
 
-  editForm.value.socialNetwork.forEach((network, index) => {
+  editForm.value?.socialNetwork?.forEach((network, index) => {
     if (!network.name || network.name.trim() === '') {
       validationErrors[`socialNetwork[${index}].name`] = 'El nombre de la red social es obligatorio';
     }
@@ -657,11 +659,11 @@ function validateForm() {
 
 // Métodos para redes sociales
 function addNetwork() {
-  editForm.value.socialNetwork.push({ name: 'Website', value: '' });
+  editForm.value?.socialNetwork?.push({ name: 'Website', value: '' });
 }
 
 function removeNetwork(index) {
-  editForm.value.socialNetwork.splice(index, 1);
+  editForm.value?.socialNetwork?.splice(index, 1);
 }
 
 function isValidUrl(string) {
