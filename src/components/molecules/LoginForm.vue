@@ -10,15 +10,14 @@
 
     <!-- Formulario de login -->
     <form v-if="!showResetForm" @submit.prevent="handleSubmit">
-      <InputText v-model="email.field.value" label="Usuario" type="login" id="email" placeholder="Ingresa tu usuario o email"/>
+      <InputText v-model="email.field.value" label="Usuario" type="login" id="email" maxLength="254" placeholder="Ingresa tu usuario o email"/>
       <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
       <div class="text-right mb-8">
         <button type="button" @click="showResetForm = true" class="inline-block text-sm font-semibold text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md">
           ¿Olvidaste tu contraseña?
         </button>
       </div>
-      <button type="submit" :disabled="isLoading" class="group relative flex items-center justify-center px-5 h-12 w-full font-bold text-white bg-gradient-to-br bg-primary to-cyan-800 dark:bg-gradient-to-br dark:bg-secondary dark:to-orange-800 rounded-lg transition-all duration-300 border dark:border-gray-800 hover:text-gray-200 hover:border-primary-lighter hover:border-secondary-lighter">
-        <div v-if="isLoading" class="absolute top-0 left-0 w-full h-full rounded-lg bg-cyanGreen-900 opacity-50 animate-pulse"></div>
+      <button type="submit" :disabled="isLoading" class="relative flex items-center justify-center px-5 h-12 w-full font-bold text-gray-100 hover:text-white bg-primary-md dark:bg-secondary-md hover:bg-primary hover:dark:bg-secondary rounded-lg transition-all duration-300 border dark:border-gray-800">
         <span v-if="isLoading">Cargando...</span>
         <span v-else>Iniciar Sesión</span>
       </button>
@@ -26,7 +25,7 @@
 
     <!-- Formulario de reseteo de contraseña -->
     <form v-else @submit.prevent="handleResetPassword">
-      <InputText v-model="resetEmail.field.value" label="Correo Electrónico" type="email" id="reset-email" placeholder="Ingresa tu correo"/>
+      <InputText v-model="resetEmail.field.value" label="Correo Electrónico" type="email" maxLength="254" id="reset-email" placeholder="Ingresa tu correo"/>
       <div class="flex gap-2 mt-4">
         <button type="button" @click="showResetForm = false" class="flex-1 px-5 h-12 font-bold text-gray-700 bg-gray-200 hover:bg-gray-400 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg">
           Volver

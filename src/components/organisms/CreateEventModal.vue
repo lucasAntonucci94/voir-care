@@ -55,6 +55,12 @@
                 type="text"
                 placeholder="Ej: Exposición de Animales"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :class="formErrors.title ? 'border-red-500' : ''"
+                aria-describedby="groupTitleError"
+                :aria-invalid="formErrors.title ? 'true' : 'false'"
+                aria-required="true"
+                minlength="1"
+                maxlength="50"
                 :disabled="isLoading"
                 required
               />
@@ -71,6 +77,12 @@
                 id="eventDescription"
                 placeholder="Describe brevemente el objetivo o tema del evento"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :class="formErrors.description ? 'border-red-500' : ''"
+                aria-describedby="groupDescriptionError"
+                :aria-invalid="formErrors.description ? 'true' : 'false'"
+                aria-required="true"
+                :minlength="10"
+                :maxlength="500"
                 :disabled="isLoading"
                 required
               ></textarea>
@@ -95,6 +107,10 @@
                   formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
                 :disabled="isLoading"
+                aria-describedby="eventMediaError"
+                :aria-invalid="formErrors.media ? 'true' : 'false'"
+                aria-required="false"
+                required
               />
               <!-- Mensaje de error -->
               <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
@@ -107,12 +123,55 @@
                 :src="newEvent.media"
                 alt="Preview"
                 class="w-full h-48 object-cover rounded-lg shadow-sm"
+                :aria-label="`Previsualización de ${newEvent.mediaType}`"
+                :class="formErrors.media ? 'border-red-500' : ''"
+                aria-describedby="groupMediaError"
+                :aria-invalid="formErrors.media ? 'true' : 'false'"
+                aria-required="false"
+                aria-label="Previsualización de imagen"
+                @contextmenu.prevent
+                @dragover.prevent
+                @drop.prevent
+                @dragenter.prevent
+                @dragleave.prevent
+                @dragstart.prevent
+                @dragend.prevent
+                @drag="event => event.preventDefault()"
+                @dragenter="event => event.preventDefault()"
+                @dragleave="event => event.preventDefault()"
+                @dragover="event => event.preventDefault()"
+                @dragend="event => event.preventDefault()"
+                @dragstart="event => event.preventDefault()"
               />
               <video
                 v-else-if="newEvent.mediaType === 'video'"
                 :src="newEvent.media"
-                controls
                 class="w-full h-48 rounded-lg shadow-sm"
+                autoplay
+                loop
+                muted
+                :aria-label="`Previsualización de ${newEvent.mediaType}`"
+                :poster="newEvent.media"
+                @error="formErrors.media = 'Error al cargar el video. Asegúrate de que sea un formato compatible.'"
+                aria-describedby="groupMediaError"
+                :aria-invalid="formErrors.media ? 'true' : 'false'"
+                aria-required="false"
+                :class="formErrors.media ? 'border-red-500' : ''"
+                style="object-fit: cover;"
+                aria-label="Previsualización de video"
+                @contextmenu.prevent
+                @dragover.prevent
+                @drop.prevent
+                @dragenter.prevent
+                @dragleave.prevent
+                @dragstart.prevent
+                @dragend.prevent
+                @drag="event => event.preventDefault()"
+                @dragenter="event => event.preventDefault()"
+                @dragleave="event => event.preventDefault()"
+                @dragover="event => event.preventDefault()"
+                @dragend="event => event.preventDefault()"
+                @dragstart="event => event.preventDefault()"        
               ></video>
             </div>
           </div>
@@ -161,8 +220,22 @@
                 min="1"
                 placeholder="Número máximo de asistentes"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :class="formErrors.capacity ? 'border-red-500' : ''"
                 :disabled="isLoading"
-              />
+                aria-describedby="eventCapacityError"
+                :aria-invalid="formErrors.capacity ? 'true' : 'false'"
+                aria-required="false"
+                required
+                minlength="1"
+                maxlength="5"
+                pattern="^[1-9][0-9]{0,4}$"
+                @input="newEvent.capacity = newEvent.capacity ? Math.max(1, newEvent.capacity) : null"
+                />
+                <!-- @keypress="if (!/[0-9]/.test($event.key)) $event.preventDefault()"
+                @paste="if (!/^[0-9]*$/.test($event.clipboardData.getData('text'))) $event.preventDefault()"
+                @keyup="if (newEvent.capacity && newEvent.capacity < 1) newEvent.capacity = 1"
+                @blur="if (newEvent.capacity && newEvent.capacity < 1) newEvent.capacity = 1"
+                @change="if (newEvent.capacity && newEvent.capacity < 1) newEvent.capacity = 1" -->
               <p v-if="formErrors.capacity" class="text-sm text-red-500 mt-1">{{ formErrors.capacity }}</p>
             </div>
           </div>
@@ -184,6 +257,17 @@
                 track-by="id"
                 aria-label="Seleccionar categorías"
                 :disabled="isLoading"
+                :aria-invalid="formErrors.categories ? 'true' : 'false'"
+                :aria-describedby="formErrors.categories ? 'categories-error' : null"
+                :aria-required="true"
+                :aria-label="`Selecciona al menos una categoría`"
+                :show-labels="false"
+                :close-on-select="true"
+                :allow-empty="false"
+                :max-height="200"
+                :show-no-results="false"
+                :searchable="true"
+                :loading="isLoading"
               ></multiselect>
               <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
@@ -198,6 +282,10 @@
                 id="eventModality"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :disabled="isLoading"
+                aria-describedby="modalityError"
+                :aria-invalid="formErrors.modality ? 'true' : 'false'"
+                aria-required="true"
+                aria-label="Seleccionar modalidad del evento"
                 required
               >
                 <option :value="0">Presencial</option>
@@ -215,13 +303,17 @@
                 <div class="flex gap-2 ml-1">
                   <div class="flex items-center gap-2">
                     <input
+                      v-model="newEvent.privacy"
                       type="radio"
                       id="public"
                       name="privacy"
                       value="public"
-                      v-model="newEvent.privacy"
                       :disabled="isLoading"
                       class="form-radio text-blue-600 focus:ring-blue-500"
+                      aria-describedby="privacy-error"
+                      :aria-invalid="formErrors.privacy ? 'true' : 'false'"
+                      aria-required="true"
+                      aria-label="Seleccionar privacidad pública del evento" 
                     />
                     <label
                       for="public"
@@ -232,11 +324,11 @@
                   </div>
                   <div class="flex items-center gap-2">
                     <input
+                      v-model="newEvent.privacy"
                       type="radio"
                       id="private"
                       name="privacy"
                       value="private"
-                      v-model="newEvent.privacy"
                       :disabled="isLoading"
                       class="form-radio text-blue-600 focus:ring-blue-500"
                     />
@@ -440,11 +532,15 @@ function validateStep(step) {
       errors.startTime = 'La fecha y hora de inicio son obligatorias';
       isValid = false;
     }
+    if (newEvent.value.startTime && new Date(newEvent.value.startTime) <= new Date()) {
+      errors.startTime = 'La fecha y hora de inicio debe ser un fecha futura.';
+      isValid = false;
+    }
     if (newEvent.value.endTime && new Date(newEvent.value.startTime) >= new Date(newEvent.value.endTime)) {
       errors.endTime = 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio';
       isValid = false;
     }
-    if (newEvent.value.capacity && newEvent.value.capacity < 0) {
+    if (!newEvent.value.capacity || newEvent.value.capacity <= 0) {
       errors.capacity = 'La capacidad debe ser un número positivo';
       isValid = false;
     }

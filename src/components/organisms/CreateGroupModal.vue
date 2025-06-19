@@ -47,7 +47,7 @@
             <!-- Título del Grupo -->
             <div class="mb-4">
               <label for="groupTitle" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Título del Grupo
+                Título
               </label>
               <input
                 v-model="newGroup.title"
@@ -56,6 +56,12 @@
                 placeholder="Ej: Cuidado Animal"
                 class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                 :disabled="isLoading"
+                :class="formErrors.title ? 'border-red-500' : ''"
+                aria-describedby="groupTitleError"
+                :aria-invalid="formErrors.title ? 'true' : 'false'"
+                aria-required="true"
+                :minlength="1"
+                :maxlength="50"
                 required
               />
               <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
@@ -64,7 +70,7 @@
             <!-- Descripción del Grupo -->
             <div class="mb-4">
               <label for="groupDescription" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Descripción del Grupo
+                Descripción
               </label>
               <textarea
                 v-model="newGroup.description"
@@ -73,6 +79,12 @@
                 class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                 :disabled="isLoading"
                 required
+                :class="formErrors.description ? 'border-red-500' : ''"
+                aria-describedby="groupDescriptionError"
+                :aria-invalid="formErrors.description ? 'true' : 'false'"
+                aria-required="true"
+                :minlength="10"
+                :maxlength="500"
               ></textarea>
               <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
             </div>
@@ -80,7 +92,7 @@
 
           <!-- Paso 2: Multimedia -->
           <div v-if="currentStep === 2">
-            <!-- Imagen o Video (opcional) -->
+            <!-- Imagen o Video -->
             <div class="relative">
               <label for="groupMedia" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Imagen o Video
@@ -95,6 +107,10 @@
                   'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
                   formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
+                aria-describedby="groupMediaError"
+                :aria-invalid="formErrors.media ? 'true' : 'false'"
+                aria-required="false"
+                required
               />
               <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
             </div>
@@ -106,12 +122,55 @@
                 :src="newGroup.media.url"
                 alt="Preview"
                 class="w-full h-48 object-cover rounded-lg shadow-sm"
+                :aria-label="`Previsualización de ${newGroup.media.type}`"
+                :class="formErrors.media ? 'border-red-500' : ''"
+                aria-describedby="groupMediaError"
+                :aria-invalid="formErrors.media ? 'true' : 'false'"
+                aria-required="false"
+                aria-label="Previsualización de imagen"
+                @contextmenu.prevent
+                @dragover.prevent
+                @drop.prevent
+                @dragenter.prevent
+                @dragleave.prevent
+                @dragstart.prevent
+                @dragend.prevent
+                @drag="event => event.preventDefault()"
+                @dragenter="event => event.preventDefault()"
+                @dragleave="event => event.preventDefault()"
+                @dragover="event => event.preventDefault()"
+                @dragend="event => event.preventDefault()"
+                @dragstart="event => event.preventDefault()"
               />
               <video
                 v-else-if="newGroup.media.type === 'video'"
                 :src="newGroup.media.url"
-                controls
                 class="w-full h-48 rounded-lg shadow-sm"
+                autoplay
+                loop
+                muted
+                :aria-label="`Previsualización de ${newGroup.media.type}`"
+                :poster="newGroup.media.url"
+                @error="formErrors.media = 'Error al cargar el video. Asegúrate de que sea un formato compatible.'"
+                aria-describedby="groupMediaError"
+                :aria-invalid="formErrors.media ? 'true' : 'false'"
+                aria-required="false"
+                :class="formErrors.media ? 'border-red-500' : ''"
+                style="object-fit: cover;"
+                aria-label="Previsualización de video"
+                @contextmenu.prevent
+                @dragover.prevent
+                @drop.prevent
+                @dragenter.prevent
+                @dragleave.prevent
+                @dragstart.prevent
+                @dragend.prevent
+                @drag="event => event.preventDefault()"
+                @dragenter="event => event.preventDefault()"
+                @dragleave="event => event.preventDefault()"
+                @dragover="event => event.preventDefault()"
+                @dragend="event => event.preventDefault()"
+                @dragstart="event => event.preventDefault()"                
               ></video>
             </div>
           </div>
@@ -133,6 +192,17 @@
                 track-by="id"
                 aria-label="Seleccionar categorías"
                 :disabled="isLoading"
+                :aria-invalid="formErrors.categories ? 'true' : 'false'"
+                :aria-describedby="formErrors.categories ? 'categories-error' : null"
+                :aria-required="true"
+                :aria-label="`Selecciona al menos una categoría`"
+                :show-labels="false"
+                :close-on-select="true"
+                :allow-empty="false"
+                :max-height="200"
+                :show-no-results="false"
+                :searchable="true"
+                :loading="isLoading"
               ></multiselect>
               <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
@@ -510,82 +580,5 @@ function handleMediaUpload(event) {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
-}
-
-
-/* Estilos para vue-multiselect */
-::v-deep(.multiselect) {
-  min-height: 38px;
-  width: 100%;
-  border: 1px solid;
-  border-color: var(--color-primary-md);
-  border-radius: 0.375rem;
-  background-color: #ffffff;
-  color: #111827;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-}
-
-::v-deep(.multiselect.dark) {
-  border-color: var(--color-secondary-md);
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect .multiselect__tags) {
-  border: 1px solid !important;
-  border-color: var(--color-primary) !important;
-}
-
-::v-deep(.multiselect.dark .multiselect__tags) {
-  border: 1px solid !important;
-  border-color: var(--color-secondary) !important;
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-  padding: 4px 8px;
-}
-
-::v-deep(.multiselect.dark .multiselect__tags input) {
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect.dark .multiselect__input) {
-  color: #f9fafb !important;
-}
-
-::v-deep(.multiselect.dark .multiselect__content-wrapper) {
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect .multiselect__option) {
-  background-color: #ffffff;
-  color: #111827;
-}
-
-::v-deep(.multiselect.dark .multiselect__option) {
-  background-color: #1F2937 !important;
-  color: #f9fafb;
-}
-
-::v-deep(.multiselect .multiselect__option--highlight) {
-  background-color: var(--color-primary);
-  color: #ffffff;
-}
-
-::v-deep(.multiselect.dark .multiselect__option--highlight) {
-  background-color: var(--color-secondary);
-}
-
-::v-deep(.multiselect__select) {
-  background: transparent;
-}
-
-::v-deep(.multiselect--disabled) {
-  background-color: #e5e7eb;
-}
-
-::v-deep(.multiselect.dark .multiselect--disabled) {
-  background-color: #1F2937;
 }
 </style>

@@ -3,13 +3,20 @@
     <!-- Botón de notificaciones -->
     <button
       @click="toggle"
-      class="relative flex flex-col items-center text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition"
+      class="relative flex flex-col items-center  gap-1 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition"
       title="Notificaciones"
+      aria-haspopup="true"
+      :aria-expanded="props.isOpen.toString()"
+      aria-controls="notificationsDropdown"
+      aria-label="Abrir menú de notificaciones"
     >
-      <i class="fa-solid fa-bell text-xl"></i>
-      <p class="text-xs mt-1 font-bold hidden sm:block">Notificaciones</p>
+      <i class="fa-solid fa-bell text-xl" aria-hidden="true"></i>
+      <p class="text-xs lg:text-sm mt-1 font-bold hidden sm:block">Notificaciones</p>
       <span
-        v-if="unreadCount > 0"
+        v-if="unreadCount > 0"      
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
         class="absolute -top-1 -right-2 bg-red-500 text-white rounded-full h-4 w-4 flex items-center justify-center text-xs font-bold"
       >
         {{ unreadCount > 9 ? '9+' : unreadCount }}
@@ -20,12 +27,20 @@
     <transition name="dropdown-smooth">
       <div
         v-if="props.isOpen"
+        id="notificationsDropdown"
+        ref="dropdownRef"
+        tabindex="-1"
+        role="menu"
+        aria-labelledby="notification-button"
+        @keydown="onDropdownKeydown"
         class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-80 max-h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 shadow-lg sm:rounded-lg z-30 overflow-y-auto flex flex-col pt-12 sm:pt-0"
       >
         <!-- Botón cerrar en mobile -->
         <button
           @click="toggle"
           class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
+          title="Notificaciones"
+          aria-label="Cerrar menú de notificaciones"
         >
           <i class="fa-solid fa-times text-xl"></i>
         </button>
@@ -53,6 +68,7 @@
           <button
             v-if="activeTab === 'unread'"
             @click="markAllAsRead"
+            aria-label="Marcar todas las notificaciones como leídas"
             :class="[
               'text-xs',
               {
@@ -81,15 +97,25 @@
         </div>
 
         <!-- Lista -->
-        <ul v-if="filteredNotifications.length > 0">
+        <ul
+          v-if="filteredNotifications.length > 0"
+          role="listbox"
+          aria-label="Lista de notificaciones"
+        >
           <li
             v-for="notification in filteredNotifications"
             :key="notification.id"
-            class="group px-4 py-3 flex justify-between items-start gap-2 relative cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+            role="option"
+            tabindex="0"
+            @click="handleClick(notification)"
+            @keydown="onKeydown(notification, $event)"
+            :class="[
+              'group px-4 py-3 flex justify-between items-start gap-2 relative cursor-pointer transition-colors',
+              'hover:bg-gray-100 dark:hover:bg-gray-700'
+            ]"
           >
             <!-- Cuerpo de la notificación -->
             <div
-              @click="handleClick(notification)"
               class="flex-1"
               :class="notification.read ? 'text-gray-400 dark:text-gray-500' : 'text-black dark:text-gray-200 font-semibold'"
             >
@@ -141,7 +167,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount, nextTick  } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '../../stores/notifications';
@@ -161,12 +187,22 @@ const router = useRouter();
 
 const activeTab = ref('unread');
 const activeActionsMenuId = ref(null);
+const dropdownRef = ref(null);
 const dropdownPositions = ref({});
 
 watch(() => props.isOpen, (val) => {
-  if (val) notificationsStore.markAllAsViewed(user.value.uid);
+  if (val) {
+    notificationsStore.markAllAsViewed(user.value.uid);
+    nextTick(() => {
+      const firstItem = document.querySelector('[role="listbox"] [role="option"]');
+      if (firstItem) {
+        firstItem.focus();
+      } else {
+        dropdownRef.value?.focus();
+      }
+    });
+  }
 });
-
 function toggle() {
   emit('toggle');
 }
@@ -266,6 +302,30 @@ async function deleteNotification(notification) {
 function closeMenuOnClickOutside(e) {
   if (!e.target.closest('.notification-actions') && !e.target.closest('.fa-ellipsis-v')) {
     activeActionsMenuId.value = null;
+  }
+}
+
+function onKeydown(notification, event) {
+  const current = event.target;
+
+  if (event.key === 'Enter') {
+    handleClick(notification);
+  } else if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    const next = current.nextElementSibling;
+    if (next) next.focus();
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    const prev = current.previousElementSibling;
+    if (prev) prev.focus();
+  } else if (event.key === 'Escape') {
+    toggle(); // Cierra el menú
+  }
+}
+
+function onDropdownKeydown(event) {
+  if (event.key === 'Escape') {
+    toggle(); // cerrar dropdown con Escape si no hay items
   }
 }
 

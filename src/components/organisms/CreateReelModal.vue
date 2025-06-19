@@ -24,6 +24,8 @@
               class="w-full dark:text-white p-2.5 border border-gray-300 dark:border-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:focus:ring-secondary dark:focus:border-secondary transition-colors duration-200"
               placeholder="Escribe un título..."
               :disabled="isLoading"
+              :minLength="3"
+              :maxLength="254"
               required
             />
           </div>

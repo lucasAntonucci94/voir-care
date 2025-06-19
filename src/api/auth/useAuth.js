@@ -94,7 +94,6 @@ async function login(email, password, isEmail = true) {
   error.value = null;
   try {
     if (!isEmail) {
-      debugger
       // Si no es un email, buscar el email asociado al displayName
       email = await getEmailByDisplayName(email);
     }
@@ -102,7 +101,6 @@ async function login(email, password, isEmail = true) {
     await userStatus.updateUserStatus();
     return true;
   } catch (err) {
-    debugger
     error.value = {
       code: err instanceof AppError ? err.code : err.code || 'auth/unknown-error',
       message: err instanceof AppError ? err.message : AUTH_ERRORS_MESSAGES[err.code] || err.message,

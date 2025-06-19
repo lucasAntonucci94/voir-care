@@ -16,6 +16,7 @@
         <p class="text-xs text-gray-500 hover:text-gray-90 mt-1">{{ formatTimestamp(comment.created_at) }}</p>
       </div>
       <button 
+        v-if="comment.user.id === user?.uid"
         @click="showDeleteModal(comment.idDoc)" 
         class=" text-primary dark:text-secondary hover:text-primary-md  dark:hover:text-secondary-md transition-colors duration-200 focus:outline-none"
         title="Eliminar comentario"
@@ -52,6 +53,7 @@
 import { ref } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import { useComments } from '../../composable/useComments';
+import { useAuth } from '../../api/auth/useAuth';
 
 // Definimos las props
 const props = defineProps({
@@ -63,6 +65,9 @@ const props = defineProps({
 
 // Usamos el composable con el idDoc del post
 const { comments, deleteComment } = useComments(props.post.idDoc);
+
+// Obtenemos el usuario autenticado
+const { user } = useAuth();
 
 // Estado para el modal
 const showModal = ref(false);

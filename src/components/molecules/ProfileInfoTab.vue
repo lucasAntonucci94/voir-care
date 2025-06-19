@@ -56,7 +56,7 @@
         class="flex justify-between items-start border-b border-gray-200 pb-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
       >
         <span class="font-medium dark:text-gray-300">Género</span>
-        <span class="text-sm text-right">{{ userInfo.genre || 'No definido' }}</span>
+        <span class="text-sm text-right">{{ (userInfo.genre?.toLowerCase() === 'otro' ? 'No especifica' : userInfo.genre ) || 'No definido' }}</span>
       </div>
 
       <!-- País -->

@@ -234,12 +234,17 @@ const router = createRouter({
   routes,
 });
 
-const { isAuthenticated } = useAuth();
+const { isAuthenticated, user } = useAuth();
 // Verificamos si una ruta requiere de autenticación para poder acceder.
 router.beforeEach((to, from) => {
   if(to.meta.requiresAuth && !isAuthenticated.value) {
       return {
           path: '/login',
+      }
+  }
+  if(to.path.includes('/admin') && !user?.value?.isAdmin) {
+      return {
+          path: '/feed',
       }
   }
   if(to.path === '/' && isAuthenticated.value) {

@@ -3,7 +3,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-lg mx-4 shadow-2xl transform transition-all duration-300 scale-100 relative max-h-[90vh]">
       <!-- Encabezado del modal -->
       <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 border-b flex items-center rounded-t-xl justify-between mb-6">
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 tracking-tight">Nueva Publicación</h2>
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 tracking-tight">Editar  Publicación</h2>
         <button @click="handleCloseModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
           <i class="fa-solid fa-xmark w-6 h-6"></i>
         </button>
@@ -54,6 +54,11 @@
               placeholder="Título de tu publicación" 
               class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
               :disabled="isLoading"
+              :maxlength="50"
+              :minlength="1"
+              :aria-invalid="formErrors.title ? 'true' : 'false'"
+              :aria-describedby="formErrors.title ? 'title-error' : null"
+              :aria-label="`Título de la publicación, máximo 50 caracteres`"
               required 
             />
             <p v-if="formErrors.title" class="text-red-500 text-sm mt-1">{{ formErrors.title }}</p>
@@ -68,6 +73,11 @@
               placeholder="¿Qué quieres compartir?" 
               class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
               :disabled="isLoading"
+              :maxlength="250"
+              :minlength="1"
+              :aria-invalid="formErrors.body ? 'true' : 'false'"
+              :aria-describedby="formErrors.body ? 'body-error' : null"
+              :aria-label="`Descripción de la publicación, máximo 250 caracteres`"
               required 
             ></textarea>
             <p v-if="formErrors.body" class="text-red-500 text-sm mt-1">{{ formErrors.body }}</p>
@@ -87,6 +97,17 @@
             track-by="id"
             aria-label="Seleccionar categorías"
             :disabled="isLoading"
+            :aria-invalid="formErrors.categories ? 'true' : 'false'"
+            :aria-describedby="formErrors.categories ? 'categories-error' : null"
+            :aria-required="true"
+            :aria-label="`Selecciona al menos una categoría`"
+            :show-labels="false"
+            :close-on-select="true"
+            :allow-empty="false"
+            :max-height="200"
+            :show-no-results="false"
+            :searchable="true"
+            :loading="isLoading"
           ></multiselect>
           <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
         </div>
@@ -105,6 +126,13 @@
                 'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
                 errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
               ]"
+              aria-label="Subir imagen o video"
+              aria-describedby="media-error"
+              :aria-invalid="!!errorFileMessage"
+              :aria-required="true"
+              :aria-describedby="errorFileMessage ? 'media-error' : null"
+              :placeholder="`Selecciona una imagen o video`"
+              class="cursor-pointer"
               :disabled="isLoading"
             />
             <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
@@ -116,12 +144,49 @@
               :src="editForm.media.imageBase64 ?? editForm.media.url ?? ''" 
               alt="Preview" 
               class="w-full h-48 object-cover rounded-lg shadow-sm" 
+              :aria-label="`Vista previa de la imagen`"
+              :aria-describedby="editForm.media.imageBase64 ? 'media-preview' : null"
+              :aria-invalid="!editForm.media.imageBase64"
+              :aria-required="true"
+              @contextmenu.prevent
+              @dragover.prevent
+              @drop.prevent
+              @dragenter.prevent
+              @dragleave.prevent
+              @dragstart.prevent
+              @dragend.prevent
+              @drag="event => event.preventDefault()"
+              @dragenter="event => event.preventDefault()"
+              @dragleave="event => event.preventDefault()"
+              @dragover="event => event.preventDefault()"
+              @dragend="event => event.preventDefault()"
+              @dragstart="event => event.preventDefault()"
             />
             <video 
               v-else-if="editForm?.media.type === 'video'" 
               :src="editForm.media.imageBase64 ?? editForm.media.url ?? ''" 
-              controls 
-              class="w-full h-48 rounded-lg shadow-sm"
+              autoplay 
+              loop
+              muted
+              alt="Preview" 
+              class="w-full h-48 object-cover rounded-lg shadow-sm" 
+              :aria-label="`Vista previa de la imagen`"
+              :aria-describedby="editForm.media.imageBase64 ? 'media-preview' : null"
+              :aria-invalid="!editForm.media.imageBase64"
+              :aria-required="true"
+              @contextmenu.prevent
+              @dragover.prevent
+              @drop.prevent
+              @dragenter.prevent
+              @dragleave.prevent
+              @dragstart.prevent
+              @dragend.prevent
+              @drag="event => event.preventDefault()"
+              @dragenter="event => event.preventDefault()"
+              @dragleave="event => event.preventDefault()"
+              @dragover="event => event.preventDefault()"
+              @dragend="event => event.preventDefault()"
+              @dragstart="event => event.preventDefault()"
             ></video>
           </div>
         </div>

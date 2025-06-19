@@ -3,20 +3,21 @@
     <!-- Botón de usuario -->
     <button
       @click="toggle"
-      class="relative flex flex-col items-center gap-1 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300 group"
+      class="relative flex flex-col items-center gap-1 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition"
       title="Menú de usuario"
       aria-label="Abrir menú de usuario"
-      aria-expanded="isOpen"
+      :aria-expanded="isOpen.toString()"
       aria-controls="user-dropdown"
+      aria-haspopup="menu"
     >
-      <i class="fa-solid fa-user text-xl"></i>
-      <span class="text-sm font-medium hidden sm:block truncate max-w-[150px]">{{ user?.displayName ?? (user?.email || 'Cuenta') }}</span>
+      <i class="fa-solid fa-user text-xl" aria-hidden="true"></i>
+      <span class="text-xs lg:text-sm mt-1 font-bold hidden sm:block">{{ user?.displayName ?? (user?.email || 'Cuenta') }}</span>
       <!-- Tooltip (oculto en mobile) -->
-      <span
+      <p
         class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden sm:group-hover:block bg-primary-md dark:bg-secondary-md text-white text-xs font-medium py-1 px-3 rounded-lg shadow-md pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100"
       >
         Menú de usuario
-      </span>
+      </p>
     </button>
 
     <!-- Menú desplegable -->
@@ -24,6 +25,9 @@
       <div
         v-if="isOpen"
         id="user-dropdown"
+        role="menu"
+        aria-label="Menú de usuario"
+        tabindex="-1"
         class="fixed sm:absolute top-0 sm:top-12 left-0 sm:left-auto sm:right-0 w-full sm:w-80 max-h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 shadow-xl sm:rounded-xl z-30 overflow-y-auto flex flex-col sm:pt-0 pt-12"
       >
         <!-- Botón de cerrar (solo en mobile) -->
@@ -60,7 +64,12 @@
 
         <!-- Opciones del menú -->
         <ul class="flex-1 divide-y divide-gray-200 dark:divide-gray-700">
-          <li class="px-5 py-4 flex items-center justify-between">
+          <li
+            role="menuitem"
+            tabindex="0"
+            @keydown="onKeydown($event, 'profile')"
+            class="px-5 py-4 flex items-center justify-between"
+          >
             <span class="text-gray-700 dark:text-gray-300 font-medium">Modo Tema</span>
             <label class="relative inline-flex items-center cursor-pointer">
               <input
@@ -82,29 +91,17 @@
               </div>
             </label>
           </li>
-          <router-link
-            v-if="isAuthenticated && user?.isAdmin"
-            to="/admin/dashboard"
-            @click="toggle"
+          <li
+            role="menuitem"
+            tabindex="0"
+            @keydown="onKeydown($event, 'admin')"
             class="block"
           >
-            <li
-              class="px-5 py-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-3"
-            >
-              <i class="fa-solid fa-shield-halved text-lg"></i>
+            <router-link v-if="isAuthenticated && user?.isAdmin" to="/admin/dashboard" @click="toggle" class="px-5 py-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-3">
+              <i class="fa-solid fa-shield-halved text-lg" aria-hidden="true"></i>
               Panel de Administrador
-            </li>
-          </router-link>
-          <router-link v-if="!isAuthenticated" to="/login" @click="toggle" class="block">
-            <li
-              class="px-5 py-4 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center gap-3"
-            >
-              <i class="fa-solid fa-sign-in-alt text-lg"></i>
-              <!-- <span class="hidden md:block"> -->
-                Iniciar Sesión
-              <!-- </span> -->
-            </li>
-          </router-link>
+            </router-link>
+          </li>
         </ul>
 
         <!-- Botón de cerrar sesión -->
@@ -123,10 +120,10 @@
 </template>
 
 <script setup>
+import { nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { useThemeStore } from '../../stores/theme';
-import { defineEmits } from 'vue';
 import avatarDefault from '../../assets/avatar1.jpg';
 
 // Obtiene datos y métodos del composable de autenticación
@@ -146,6 +143,15 @@ const props = defineProps({
 
 // Define los eventos emitidos por el componente
 const emit = defineEmits(['toggle']);
+
+watch(() => props.isOpen, (val) => {
+  if (val) {
+    nextTick(() => {
+      const firstItem = document.querySelector('#user-dropdown [role="menuitem"]');
+      firstItem?.focus();
+    });
+  }
+});
 
 /**
  * Alterna la visibilidad del menú desplegable
@@ -169,6 +175,35 @@ async function doLogout() {
   await logout();
   router.push('/login');
 }
+
+/**
+ * Controla la navegación del menú con el teclado
+ * @param {KeyboardEvent} event - El evento de teclado
+ */
+function onKeydown(event, action) {
+  const items = Array.from(document.querySelectorAll('#user-dropdown [role="menuitem"]'));
+  const currentIndex = items.indexOf(event.currentTarget);
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      items[(currentIndex + 1) % items.length]?.focus();
+      break;
+    case 'ArrowUp':
+      event.preventDefault();
+      items[(currentIndex - 1 + items.length) % items.length]?.focus();
+      break;
+    case 'Enter':
+    case ' ':
+      event.preventDefault();
+      event.currentTarget.click();
+      break;
+    case 'Escape':
+      toggle();
+      break;
+  }
+}
+
 </script>
 
 <style scoped>

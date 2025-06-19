@@ -16,8 +16,25 @@
         :disabled="disabled"
         :placeholder="computedPlaceholder"
         @update:model-value="handleDateChange"
-      />
-      <p v-if="error" class="text-sm text-red-500 mt-1">{{ error }}</p>
+        :min-date="new Date(1925, 0, 1)"
+        :max-date="new Date(2030, 11, 31)"
+        :aria-invalid="!!error"
+        :aria-label="label"
+        :aria-disabled="disabled"
+        :aria-describedby="`${id}-error`"
+        />
+        <!-- :aria-required="true" -->
+      <!-- TODO: Generar fecha min dinamica 100 años atras desde hoy 1925 -->
+      <!-- TODO: Generar fecha max dinamica 5 años desde hoy 2030 -->
+      
+      <p v-if="error"
+        :id="`${id}-error`"
+        class="text-sm text-red-500 mt-1"
+        role="alert"
+        aria-live="assertive"
+      >
+        {{ error }}
+      </p>
     </div>
   </template>
   
@@ -28,8 +45,9 @@
   import { newGuid } from '../../utils/newGuid.js';
   const props = defineProps({
     modelValue: { type: [String, Date, null], default: null }, // Supports ISO string or Date object
-    label: { type: String, default: '' },
+    label: { type: String, default: 'Fecha' },
     placeholder: { type: String, default: '' },
+    error: { type: String, default: '' },
     disabled: { type: Boolean, default: false },
     timeEnabled: { type: Boolean, default: true }, // Controls whether time selection is enabled
     id: { type: String, default: () => `date-${newGuid()}` }, // Unique ID
@@ -38,7 +56,6 @@
   const emit = defineEmits(['update:modelValue']);
   
   const internalValue = ref(props.modelValue);
-  const error = ref('');
   
   // Compute placeholder based on timeEnabled
   const computedPlaceholder = computed(() => {
@@ -56,11 +73,10 @@
     if (value) {
       internalValue.value = value;
       emit('update:modelValue', value.toISOString());
-      error.value = '';
+      props.error = '';
     } else {
       internalValue.value = null;
       emit('update:modelValue', null);
-      // error.value = 'Fecha inválida';
     }
   }
   </script>

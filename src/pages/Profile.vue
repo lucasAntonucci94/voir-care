@@ -47,11 +47,12 @@
                 'relative py-2 px-2 md:px-5 text-sm font-medium transition-all duration-300 snap-start flex items-center space-x-2',
                 activeTab === tab.name.toLowerCase()
                   ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
-              ]"
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700',
+                  tab.hidden && (activeUser.uid !== authUser.uid) ? 'hidden' : '',
+                ]"
               :aria-selected="activeTab === tab.name.toLowerCase()"
               role="tab"
-            >
+              >
               <i :class="tab.icon" aria-hidden="true"></i>
               <span>{{ tab.name }}</span>
               <span
@@ -60,7 +61,6 @@
               ></span>
             </button>
           </div>
-
           <!-- Botón de flecha derecha -->
           <button
             v-if="showArrows && canScrollRight"
@@ -147,14 +147,14 @@ const profileHeader = ref(null); // Ref to ProfileHeader component
 
 // Tabs
 const allTabs = [
-  { name: 'Publicaciones', icon: 'fa-solid fa-square-share-nodes' },
-  { name: 'Información', icon: 'fa-solid fa-circle-info' },
-  { name: 'Conexiones', icon: 'fa-solid fa-user-group' },
-  { name: 'Galería', icon: 'fa-solid fa-images' },
-  { name: 'Eventos', icon: 'fa-solid fa-calendar-days' },
-  { name: 'Grupos', icon: 'fa-solid fa-users' },
-  { name: 'Guardado', icon: 'fa-solid fa-bookmark' },
-  { name: 'Oculto', icon: 'fa-solid fa-ban' },
+  { name: 'Publicaciones', icon: 'fa-solid fa-square-share-nodes', hidden: false },
+  { name: 'Información', icon: 'fa-solid fa-circle-info', hidden: false },
+  { name: 'Conexiones', icon: 'fa-solid fa-user-group', hidden: false },
+  { name: 'Galería', icon: 'fa-solid fa-images', hidden: false },
+  { name: 'Eventos', icon: 'fa-solid fa-calendar-days', hidden: true },
+  { name: 'Grupos', icon: 'fa-solid fa-users', hidden: true },
+  { name: 'Guardado', icon: 'fa-solid fa-bookmark', hidden: true },
+  { name: 'Oculto', icon: 'fa-solid fa-ban', hidden: true },
 ];
 
 const setActiveTab = (selectedTab) => {

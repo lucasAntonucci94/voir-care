@@ -1,15 +1,20 @@
 <template>
-  <div>
+  <div class="chat-box-container">
     <!-- Botón flotante -->
     <div
       class="fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary dark:bg-secondary rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark dark:hover:bg-secondary-dark cursor-pointer group"
+      role="button"
+      tabindex="0"
       @click="toggleChat"
+      @keydown.enter.space="toggleChat"
       aria-label="Abrir mensajes"
     >
       <i class="fa-solid fa-comment-dots text-white text-xl"></i>
       <!-- Badge de mensajes pendientes -->
       <span
         v-if="totalUnread > 0"
+        aria-live="polite"
+        aria-atomic="true"
         class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 bg-red-500 text-white text-xs font-bold leading-none px-1.5 py-0.5 rounded-full"
       >
         {{ totalUnread }}
@@ -26,15 +31,17 @@
       <div
         v-if="isChatOpen"
         class="fixed bottom-20 right-4 sm:w-[24rem] w-[90vw] max-h-[80vh] bg-white dark:bg-gray-900 rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden"
+        tabindex="-1"
+        @keydown="onChatBoxKeydown"
       >
         <!-- Header -->
         <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50 dark:bg-gray-700">
           <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Mensajes</h2>
           <div class="flex items-center gap-2">
-            <button @click="toggleSearch">
+            <button @click="toggleSearch" aria-label="Buscar mensajes">
               <i class="fas fa-search text-gray-500 dark:text-white"></i>
             </button>
-            <button @click="toggleChat">
+            <button @click="toggleChat" aria-label="Cerrar ventana de chat">
               <i class="fas fa-times text-gray-500 dark:text-white"></i>
             </button>
           </div>
@@ -44,14 +51,16 @@
         <transition name="fade">
           <div v-if="showSearch" class="px-4 pt-2 pb-1 bg-white dark:bg-gray-900 border-b dark:border-gray-700">
             <div class="relative">
+              <label for="chat-search" class="sr-only">Buscar conversaciones</label>
               <input
                 v-model="search"
+                id="chat-search"
                 type="text"
                 placeholder="Buscar por email o nombre"
                 class="w-full px-4 pr-10 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
                 aria-label="Buscar conversaciones"
               />
-              <button @click="toggleSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500">
+              <button @click="toggleSearch"class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500">
                 <i class="fas fa-times"></i>
               </button>
             </div>
@@ -60,11 +69,16 @@
 
         <!-- Lista de chats -->
         <div class="flex-1 overflow-y-auto bg-white dark:bg-gray-800">
-          <ul v-if="chats.length">
+          <ul v-if="chats.length" role="listbox" :aria-activedescendant="'chat-' + focusedIndex">
             <li
-              v-for="chat in filteredChats"
+              v-for="(chat, index) in filteredChats"
               :key="chat.idDoc"
+              :id="'chat-' + index"
+              role="option"
+              aria-selected="false"
+              tabindex="0"
               @click="goToChat(chat)"
+              @keydown="onChatKeydown(index, $event)"
               class="flex items-start px-4 py-3 gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition cursor-pointer border-b border-gray-100 dark:border-gray-700"
             >
               <div class="relative">
@@ -133,7 +147,12 @@
               </div>
             </li>
           </ul>
-          <div v-else class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm">
+          <div
+            v-else
+            class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm"
+            role="status"
+            tabindex="0"
+          >
             No tenés mensajes activos.
           </div>
         </div>
@@ -199,6 +218,18 @@ const filteredChats = computed(() =>
 
 function toggleChat() {
   isChatOpen.value = !isChatOpen.value;
+
+  if (isChatOpen.value) {
+    setTimeout(() => {
+      const firstItem = document.querySelector('[role="option"]');
+      if (firstItem) {
+        firstItem.focus();
+      } else {
+        const container = document.querySelector('.chat-box-container');
+        container?.focus();
+      }
+    }, 50);
+  }
 }
 
 function getOtherUserEmail(users) {
@@ -236,6 +267,33 @@ function getLastMessagePreview(chat) {
 
   const prefix = isOwn ? 'Tú ' : `${otherUserEmail.split('@')[0]} `;
   return `${prefix}`;
+}
+
+function onChatKeydown(index, event) {
+  const items = document.querySelectorAll('[role="option"]');
+  const current = items[index];
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    const next = items[index + 1];
+    next?.focus();
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    const prev = items[index - 1];
+    prev?.focus();
+  } else if (event.key === 'Enter') {
+    event.preventDefault();
+    const chat = filteredChats.value[index];
+    goToChat(chat);
+  } else if (event.key === 'Escape') {
+    isChatOpen.value = false;
+  }
+}
+
+function onChatBoxKeydown(event) {
+  if (event.key === 'Escape') {
+    isChatOpen.value = false;
+  }
 }
 
 onMounted(async () => {

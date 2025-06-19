@@ -11,7 +11,7 @@
 
   <div v-if="showModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-101">
     <div
-      class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative"
+      class="bg-white dark:bg-gray-800 rounded-xl w-full max-w-xl max-h-[90vh] p-6 shadow-2xl relative"
     >
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Crear Nueva Historia</h2>

@@ -35,56 +35,87 @@
       <!-- Paso 1: Información personal -->
       <div v-if="currentStep === 0" class="space-y-4 animate-fade-in">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
           <input
             v-model="editForm.email"
+            id="email"
             type="email"
             class="mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-800 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm"
             placeholder="Correo electrónico"
+            aria-label="Correo electrónico"
+            aria-required="true"
+            aria-disabled="true"
             disabled
+            required
           />
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
+          <label for="displayName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de usuario</label>
           <input
             v-model="editForm.displayName"
+            id="displayName"
             type="text"
             :class="[
               'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
               stepErrors.displayName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             placeholder="Nombre de usuario"
+            aria-describedby="displayNameError"
+            :aria-invalid="!!stepErrors.displayName"
+            aria-label="Nombre de usuario"
+            aria-required="true"
+            :aria-disabled="!isLoading"
             :disabled="isLoading"
+            minlength="3"
+            maxlength="30"
+            pattern="^[a-zA-Z0-9._-]{3,20}$"
+            required
           />
-          <p v-if="stepErrors.displayName" class="text-red-500 text-sm mt-1">{{ stepErrors.displayName }}</p>
+          <p v-if="stepErrors.displayName" id="displayNameError" role="alert" aria-live="assertive" class="text-red-500 text-sm mt-1">{{ stepErrors.displayName }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
+          <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
           <input
             v-model="editForm.firstName"
+            id="firstName"
             type="text"
             :class="[
               'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
               stepErrors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             placeholder="Nombre"
+            aria-describedby="firstNameError"
+            :aria-invalid="!!stepErrors.firstName"
+            aria-label="Nombre del usuario"
+            aria-required="false"
+            :aria-disabled="!isLoading"
             :disabled="isLoading"
+            minlength="3"
+            maxlength="25"
           />
-          <p v-if="stepErrors.firstName" class="text-red-500 text-sm mt-1">{{ stepErrors.firstName }}</p>
+          <p v-if="stepErrors.firstName" id="firstNameError" role="alert" aria-live="assertive" class="text-red-500 text-sm mt-1">{{ stepErrors.firstName }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
+          <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
           <input
             v-model="editForm.lastName"
+            id="lastName"
             type="text"
             :class="[
               'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent placeholder-gray-400 dark:placeholder-gray-400 disabled:opacity-50 shadow-sm',
               stepErrors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
             placeholder="Apellido"
+            aria-describedby="lastNameError"
+            :aria-invalid="!!stepErrors.lastName"
+            aria-label="Apellido del usuario"
+            aria-required="false"
+            :aria-disabled="!isLoading"
             :disabled="isLoading"
+            minlength="3"
+            maxlength="25"
           />
-          <p v-if="stepErrors.lastName" class="text-red-500 text-sm mt-1">{{ stepErrors.lastName }}</p>
+          <p v-if="stepErrors.lastName" id="lastNameError" role="alert" aria-live="assertive" class="text-red-500 text-sm mt-1">{{ stepErrors.lastName }}</p>
         </div>
       </div>
 
@@ -107,9 +138,8 @@
             label="Fecha de nacimiento"
             :disabled="isLoading"
             :timeEnabled="false"
+            :error="stepErrors.birthday"
             />
-            <!-- :error="stepErrors.birthday" -->
-          <p v-if="stepErrors.birthday" class="text-red-500 text-sm mt-1">{{ stepErrors.birthday }}</p> 
         </div>
         <div>
           <SelectGenre
@@ -117,12 +147,12 @@
             label="Género"
             id="genre"
             :disabled="isLoading"
+            :error="stepErrors.genre"
             :class="[
               'mt-1 w-full hover:bg-transparent dark:hover:bg-transparent',
               stepErrors.genre ? 'border-red-500' : ''
             ]"
           />
-          <p v-if="stepErrors.genre" class="text-red-500 text-sm mt-1">{{ stepErrors.genre }}</p>
         </div>
         <div>
           <SelectCountry
@@ -135,14 +165,15 @@
               stepErrors.country ? 'border-red-500' : ''
             ]"
           />
-          <p v-if="stepErrors.country" class="text-red-500 text-sm mt-1">{{ stepErrors.country }}</p>
+          <p v-if="stepErrors.country" id="lastNameError" role="alert" aria-live="assertive" class="text-red-500 text-sm mt-1">{{ stepErrors.country }}</p>
         </div>
       </div>
-
       <!-- Paso 4: Foto de perfil -->
       <div v-if="currentStep === 3" class="space-y-4 animate-fade-in">
         <div>
+          <label for="mediaUpload" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Subí una imagen</label>
           <input
+            id="mediaUpload"
             type="file"
             accept="image/*"
             @change="handlePhotoUpload"
@@ -150,16 +181,22 @@
               'w-full mt-2 md:mt-4 mb-2 md:mb-4 p-2 border dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary/90 dark:hover:file:bg-secondary/90 transition-colors duration-200 shadow-sm',
               errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
             ]"
+            aria-describedby="mediaUploadError mediaUploadHelp"
+            aria-label="Subí una imagen o video de perfil"
+            :aria-invalid="!!errorFileMessage"
             :disabled="isLoading"
           />
-          <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vista previa del perfil</label>
+          <span id="mediaUploadHelp" class="sr-only">
+            Permitido: imágenes JPG, JPEG o PNG.
+          </span>
+          <p v-if="errorFileMessage" id="mediaUploadError" role="alert" aria-live="assertive" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
+          <p class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vista previa del perfil</p>
           <div class="mt-2 flex flex-col md:flex-row items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm">
             <div class="relative">
               <img
                 v-if="editForm.newMediaBase64 || editForm.photoURLFile"
                 :src="editForm.newMediaBase64 || editForm.photoURLFile"
-                alt="Vista previa del perfil"
+                :alt="`Vista previa del archivo seleccionado: ${editForm.displayName || 'usuario'}`"
                 class="w-15 h-15 md:w-25 md:h-25 rounded-full border-4 border-white object-cover shadow-lg cursor-pointer"
               />
               <div
@@ -170,9 +207,9 @@
               </div>
             </div>
             <div class="text-center md:text-left">
-              <h1 class="text-gray-700 dark:text-gray-300 text-xl md:text-2xl font-bold">
+              <span class="text-gray-700 dark:text-gray-300 text-xl md:text-2xl font-bold">
                 {{ editForm.displayName || editForm.email || 'Usuario' }}
-              </h1>
+              </span>
               <p class="text-gray-700 dark:text-gray-300 text-sm">
                 0 conexiones
               </p>
@@ -183,8 +220,8 @@
       <!-- Paso 5: Redes sociales -->
       <div v-if="currentStep === 4" class="space-y-4 animate-fade-in">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Redes sociales</label>
-          <div class="space-y-2">
+          <fieldset class="space-y-2" :aria-describedby="`socialGroupHelp`">
+            <legend class="text-gray-600 dark:text-gray-300">Redes sociales</legend>
             <div v-for="(network, index) in editForm.socialNetwork" :key="index" class="flex items-center gap-2">
               <select
                 v-model="network.name"
@@ -192,6 +229,7 @@
                   'w-1/4 px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
                   stepErrors[`socialNetwork[${index}].name`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
+                :aria-label="`Seleccioná la red social número ${index + 1}`"
                 :disabled="isLoading"
               >
                 <option value="LinkedIn">LinkedIn</option>
@@ -209,15 +247,19 @@
                   'flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
                   stepErrors[`socialNetwork[${index}].value`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
+                :aria-label="`Ingresá la URL de tu ${network.name || 'red social'} número ${index + 1}`"
+                :aria-describedby="`socialError-${index}`"
+                :aria-invalid="!!stepErrors[`socialNetwork[${index}].value`]"
                 :disabled="isLoading"
               />
               <button
                 type="button"
                 @click="removeNetwork(index)"
-                :disabled="isLoading || editForm.socialNetwork.length <= 1"
+                :disabled="isLoading"
                 class="px-2 py-1 text-red-500 hover:text-red-700"
+                aria-label="Eliminar red social número {{ index + 1 }}"
               >
-                <i class="fa-solid fa-trash"></i>
+                <i class="fa-solid fa-trash" aria-hidden="true"></i>
               </button>
             </div>
             <button
@@ -228,8 +270,19 @@
             >
               Agregar más
             </button>
-          </div>
-          <p v-if="stepErrors.socialNetwork" class="text-red-500 text-sm mt-1">{{ stepErrors.socialNetwork }}</p>
+          </fieldset>
+          <span id="socialGroupHelp" class="sr-only">
+            Agregá tus redes sociales. Podés añadir varias.
+          </span>
+          <p
+            v-if="stepErrors[`socialNetwork[${index}].value`]"
+            :id="`socialError-${index}`"
+            class="text-sm text-red-500 mt-1"
+            role="alert"
+            aria-live="assertive"
+          >
+            {{ stepErrors[`socialNetwork[${index}].value`] }}
+          </p>
         </div>
       </div>
     </div>
@@ -244,7 +297,7 @@
         class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         aria-label="Cancelar edición del perfil"
       >
-        <i class="fa-solid fa-times"></i>
+        <i class="fa-solid fa-times" aria-hidden="true"></i>
         <p class="hidden md:block">Cancelar</p>
       </button>
       <button
@@ -255,7 +308,7 @@
         class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         aria-label="Volver al paso anterior"
       >
-        <i class="fa-solid fa-arrow-left"></i>
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
         <p class="hidden md:block">Atrás</p>
       </button>
       <div class="flex items-center gap-2">
@@ -268,7 +321,7 @@
           aria-label="Avanzar al siguiente paso"
         >
           <p class="hidden md:block">Siguiente</p>
-          <i class="fa-solid fa-arrow-right"></i>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
         </button>
         <button
           v-if="currentStep === steps.length - 1"
@@ -278,12 +331,12 @@
           aria-label="Guardar perfil"
         >
           <span v-if="isLoading">
-            <i class="fa-solid fa-spinner animate-spin"></i>
+            <i class="fa-solid fa-spinner animate-spin" aria-hidden="true"></i>
           </span>
           <p class="hidden md:block">
             {{ isLoading ? 'Guardando...' : 'Guardar' }}
           </p>
-          <i v-if="!isLoading" class="fa-solid fa-save"></i>
+          <i v-if="!isLoading" class="fa-solid fa-save" aria-hidden="true"></i>
         </button>
       </div>
     </div>
@@ -336,7 +389,6 @@ const hasStepErrors = computed(() => {
 
 // Validar si hay errores globales
 const hasGlobalErrors = computed(() => {
-  debugger
   return Object.keys(errors.value).length > 0;
 });
 
@@ -394,7 +446,6 @@ watch(
 watch(
   () => editForm.value.socialNetwork,
   (newSocialNetwork) => {
-    debugger
     if (currentStep.value === 4) {
       stepErrors.value = {};
       validateStep(currentStep.value);
@@ -663,6 +714,7 @@ function addNetwork() {
 }
 
 function removeNetwork(index) {
+  debugger
   editForm.value?.socialNetwork?.splice(index, 1);
 }
 

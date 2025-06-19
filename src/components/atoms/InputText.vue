@@ -3,6 +3,8 @@
     <label :for="id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</label>
     <input
       :id="id"
+      :minLength="minLength"
+      :maxLength="maxLength"
       :type="inputType"
       :value="modelValue.value"
       @input="updateValue"
@@ -26,6 +28,9 @@
 import { computed } from 'vue';
 
 const props = defineProps({
+  label: { type: String, required: true },
+  minLength: { type: String, required: false, default: '0' },
+  maxLength: { type: String, required: false, default: '25' },
   label: { type: String, required: true },
   placeholder: { type: String, default: null },
   type: { type: String, default: 'text' },

@@ -132,7 +132,7 @@ export function useUsers() {
       if (!displayName) {
         throw new AppError('Este campo es obligatorio', { code: 'MISSING_DISPLAY_NAME' });
       }
-      const queryUser = query(usersRef, where('displayName', '==', displayName), limit(1));
+      const queryUser = query(usersRef, where('displayNameNormalized', '==', displayName.trim().toLowerCase()), limit(1));
       const snapshot = await getDocs(queryUser);
 
       if (snapshot.empty) {
@@ -160,7 +160,7 @@ export function useUsers() {
       await setDoc(docRef, {
         email: data.email,
         displayName: data.displayName,
-        displayNameNormalized: data.displayName.toLowerCase().trim(),
+        displayNameNormalized: data.displayName?.toLowerCase()?.trim(),
         firstName: data.firstName || null,
         lastName: data.lastName || null,
         phoneNumber: data.phoneNumber || null,
@@ -196,7 +196,7 @@ export function useUsers() {
       const docRef = doc(db, 'users', id);
       const userData = {
         displayName: data.displayName,
-        displayNameNormalized: data.displayName.toLowerCase().trim(),
+        displayNameNormalized: data.displayName?.toLowerCase()?.trim(),
         firstName: data.firstName ?? '',
         lastName: data.lastName ?? '',
         email: data.email ?? '',

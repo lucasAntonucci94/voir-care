@@ -8,6 +8,8 @@
         :value="modelValue.value"
         @input="updateValue"
         :placeholder="placeholder ?? `Ingrese ${label}`"
+        :minLength="minLength"
+        :maxLength="maxLength"
         :class="[
           'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 hover:dark:bg-gray-600 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary dark:focus:bg-gray-600 dark:hover:bg-gray-600 focus:border-transparent placeholder-gray-400',
           modelValue.hasError ? 'border-red-500' : 'border-gray-300 dark:border-gray-800',
@@ -37,6 +39,8 @@ import { ref, computed } from 'vue';
 const props = defineProps({
   label: { type: String, required: true },
   placeholder: { type: String, default: null },
+  minLength: { type: String, default: '0' },
+  maxLength: { type: String, default: '128' },
   modelValue: {
     type: Object,
     required: true,
