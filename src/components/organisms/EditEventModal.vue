@@ -1,10 +1,10 @@
 <template>
-  <div v-if="visible" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
+  <div v-if="visible" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
       <!-- Encabezado del modal -->
       <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Evento</h3>
-        <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+        <h3 id="modal-title" class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Evento</h3>
+        <button @click="closeModal"  aria-label="Cerrar modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
           <i class="fa-solid fa-xmark w-6 h-6"></i>
         </button>
       </div>
@@ -13,7 +13,7 @@
       <div class="p-6">
         <!-- Barra de progreso -->
         <div class="flex justify-center mb-6">
-          <div class="flex items-center space-x-2">
+          <div class="flex items-center space-x-2" role="group" aria-label="Pasos de edición">
             <div v-for="(step, index) in steps" :key="index" class="relative flex items-center">
               <div
                 class="flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all duration-300"
@@ -53,11 +53,12 @@
               <input
                 v-model="editForm.title"
                 id="eventTitle"
+                ref="titleInputRef"
                 type="text"
                 placeholder="Ej: Exposición de Animales"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :class="formErrors.title ? 'border-red-500' : ''"
-                aria-describedby="groupTitleError"
+                aria-describedby="title-error"
                 :aria-invalid="formErrors.title ? 'true' : 'false'"
                 aria-required="true"
                 minlength="1"
@@ -65,7 +66,7 @@
                 :disabled="isLoading"
                 required
               />
-              <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
+              <p v-if="formErrors.title" id="title-error"  role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción -->
@@ -79,7 +80,7 @@
                 placeholder="Describe brevemente el objetivo o tema del evento"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :class="formErrors.description ? 'border-red-500' : ''"
-                aria-describedby="groupDescriptionError"
+                aria-describedby="description-error"
                 :aria-invalid="formErrors.description ? 'true' : 'false'"
                 aria-required="true"
                 :minlength="10"
@@ -87,7 +88,7 @@
                 :disabled="isLoading"
                 required
               ></textarea>
-              <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
+              <p v-if="formErrors.description" id="description-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
             </div>
           </div>
 
@@ -108,13 +109,13 @@
                   formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
                 :disabled="isLoading"
-                aria-describedby="eventMediaError"
+                aria-describedby="media-error"
                 :aria-invalid="formErrors.media ? 'true' : 'false'"
                 aria-required="false"
                 required
               />
               <!-- Mensaje de error -->
-              <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
+              <p v-if="formErrors.media" id="media-error" role="alert" aria-live="polite" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
             </div>
 
             <!-- Previsualización de Media -->
@@ -186,16 +187,18 @@
               :disabled="isLoading"
               time-enabled
               required
+              :error="formErrors.startTime"
             />
-            <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p>
+            <!-- <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p> -->
             <!-- Fecha y Hora de Fin -->
             <SelectDate
               v-model="editForm.endTime"
               label="Fecha y Hora de Fin"
               :disabled="isLoading"
               time-enabled
+              :error="formErrors.endTime"
             />
-            <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p>
+            <!-- <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p> -->
             <!-- Ubicación -->
             <div>
               <label for="eventLocation" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -205,8 +208,8 @@
                 v-model="editForm.location"
                 placeholder="Ingresá una dirección"
                 :disabled="isLoading"
+                :error="formErrors.address"
               />
-              <p v-if="formErrors.address" class="text-sm text-red-500 mt-1">{{ formErrors.address }}</p>
             </div>
 
             <!-- Capacidad -->
@@ -223,7 +226,7 @@
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :class="formErrors.capacity ? 'border-red-500' : ''"
                 :disabled="isLoading"
-                aria-describedby="eventCapacityError"
+                aria-describedby="capacity-error"
                 :aria-invalid="formErrors.capacity ? 'true' : 'false'"
                 aria-required="false"
                 required
@@ -232,7 +235,7 @@
                 pattern="^[1-9][0-9]{0,4}$"
                 @input="newEvent.capacity = newEvent.capacity ? Math.max(1, newEvent.capacity) : null"
               />
-              <p v-if="formErrors.capacity" class="text-sm text-red-500 mt-1">{{ formErrors.capacity }}</p>
+              <p v-if="formErrors.capacity" id="capacity-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.capacity }}</p>
             </div>
           </div>
 
@@ -264,8 +267,11 @@
                 :show-no-results="false"
                 :searchable="true"
                 :loading="isLoading"
+                role="listbox"  
+                aria-multiselectable="true"
+                aria-describedby="categories-error"
               ></multiselect>
-              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
+              <p v-if="formErrors.categories" id="categories-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
             
             <!-- Modalidad (Presencial/Virtual) -->
@@ -278,7 +284,7 @@
                 id="eventModality"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :disabled="isLoading"
-                aria-describedby="modalityError"
+                aria-describedby="modality-error"
                 :aria-invalid="formErrors.modality ? 'true' : 'false'"
                 aria-required="true"
                 aria-label="Seleccionar modalidad del evento"
@@ -287,7 +293,7 @@
                 <option :value="0">Presencial</option>
                 <option :value="1">Virtual</option>
               </select>
-              <p v-if="formErrors.modality" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
+              <p v-if="formErrors.modality" id="modality-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
             </div>
 
             <!-- Privacidad -->
@@ -327,6 +333,10 @@
                       value="private"
                       :disabled="isLoading"
                       class="form-radio text-primary focus:ring-primary-md"
+                      aria-describedby="privacy-error"
+                      :aria-invalid="formErrors.privacy ? 'true' : 'false'"
+                      aria-required="true"
+                      aria-label="Seleccionar privacidad privada del evento" 
                     />
                     <label
                       for="private"
@@ -338,16 +348,10 @@
                 </div>
               </fieldset>
               <p
-                v-if="formErrors.privacy"
-                id="privacy-error"
-                class="text-sm text-red-500 mt-1"
-                role="alert"
-                aria-live="polite"
-              >
+                v-if="formErrors.privacy" id="privacy-error" role="alert" aria-live="polite"class=" text-sm text-red-500 mt-1" >
                 {{ formErrors.privacy }}
               </p>
             </div>
-
           </div>
           
           
@@ -410,7 +414,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, nextTick } from 'vue';
 import GeolocationInput from '../atoms/GeolocationInput.vue';
 import { useEventsStore } from '../../stores/events';
 import { useMediaUpload } from '../../composable/useMediaUpload';
@@ -428,6 +432,7 @@ const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
 // Theme store for dark mode
 const themeStore = useThemeStore();
 const isDark = computed(() => themeStore.isDarkMode);
+const titleInputRef = ref(null);
 
 const props = defineProps({
   visible: {
@@ -495,6 +500,14 @@ const editForm = ref({
   modality: 0, // Default to Presencial (0) or from props.event.modality
 });
 
+watch(() => props.visible, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      titleInputRef.value?.focus();
+    });
+  }
+});
+
 watch(
   () => props.event,
   (newVal) => {
@@ -556,6 +569,10 @@ function validateStep(step) {
     }
     if (!editForm.value.location.address) {
       errors.address = 'La ubicación es obligatoria';
+      isValid = false;
+    }
+    if (editForm.value.location.address.trim() === '') {
+      errors.address = 'La ubicación no puede estar vacía';
       isValid = false;
     }
   } else if (step === 4) {

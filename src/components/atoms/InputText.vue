@@ -18,7 +18,7 @@
       :aria-invalid="modelValue.hasError"
       :aria-describedby="modelValue.hasError ? `${id}-error` : null"
     />
-    <div v-if="modelValue.hasError" :id="`${id}-error`" class="text-red-500 text-sm mt-1">
+    <div v-if="modelValue.hasError" :id="`${id}-error`"  role="alert" class="text-red-500 text-sm mt-1">
       <slot name="error-message">{{ modelValue.errorMessage ?? 'Este campo es obligatorio.' }}</slot>
     </div>
   </div>

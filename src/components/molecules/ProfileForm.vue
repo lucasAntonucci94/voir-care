@@ -118,7 +118,6 @@
           <p v-if="stepErrors.lastName" id="lastNameError" role="alert" aria-live="assertive" class="text-red-500 text-sm mt-1">{{ stepErrors.lastName }}</p>
         </div>
       </div>
-
       <!-- Paso 2: Contacto -->
       <div v-if="currentStep === 1" class="space-y-4 animate-fade-in">
         <PhoneInput
@@ -129,7 +128,6 @@
           :disabled="isLoading"
         />
       </div>
-
       <!-- Paso 3: Detalles personales -->
       <div v-if="currentStep === 2" class="space-y-4 animate-fade-in">
         <div>
@@ -714,7 +712,6 @@ function addNetwork() {
 }
 
 function removeNetwork(index) {
-  debugger
   editForm.value?.socialNetwork?.splice(index, 1);
 }
 

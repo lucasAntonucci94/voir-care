@@ -1,6 +1,6 @@
 <template>
   <div v-if="visible" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh]">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[95vh]">
       <!-- Encabezado del modal -->
       <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b rounded-t-xl flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear evento</h3>
@@ -56,7 +56,7 @@
                 placeholder="Ej: Exposición de Animales"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :class="formErrors.title ? 'border-red-500' : ''"
-                aria-describedby="groupTitleError"
+                aria-describedby="title-error"
                 :aria-invalid="formErrors.title ? 'true' : 'false'"
                 aria-required="true"
                 minlength="1"
@@ -64,7 +64,7 @@
                 :disabled="isLoading"
                 required
               />
-              <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
+              <p v-if="formErrors.title" id="title-error"  role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción -->
@@ -78,7 +78,7 @@
                 placeholder="Describe brevemente el objetivo o tema del evento"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :class="formErrors.description ? 'border-red-500' : ''"
-                aria-describedby="groupDescriptionError"
+                aria-describedby="description-error"
                 :aria-invalid="formErrors.description ? 'true' : 'false'"
                 aria-required="true"
                 :minlength="10"
@@ -86,7 +86,7 @@
                 :disabled="isLoading"
                 required
               ></textarea>
-              <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
+              <p v-if="formErrors.description" id="description-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
             </div>
           </div>
 
@@ -107,13 +107,13 @@
                   formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
                 :disabled="isLoading"
-                aria-describedby="eventMediaError"
+                aria-describedby="media-error"
                 :aria-invalid="formErrors.media ? 'true' : 'false'"
                 aria-required="false"
                 required
               />
               <!-- Mensaje de error -->
-              <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
+              <p v-if="formErrors.media" id="media-error" role="alert" aria-live="polite" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
             </div>
 
             <!-- Previsualización de Media -->
@@ -184,17 +184,19 @@
               label="Fecha y Hora de Inicio"
               :disabled="isLoading"
               time-enabled
+              :error="formErrors.startTime"
               required
             />
-            <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p>
+            <!-- <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p> -->
             <!-- Fecha y Hora de Fin -->
             <SelectDate
               v-model="newEvent.endTime"
               label="Fecha y Hora de Fin"
               :disabled="isLoading"
+              :error="formErrors.endTime"
               time-enabled
             />
-            <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p>
+            <!-- <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p> -->
             <!-- Ubicación -->
             <div>
               <label for="eventLocation" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -204,8 +206,8 @@
                 v-model="newEvent.location"
                 placeholder="Ingresá una dirección"
                 :disabled="isLoading"
+                :error="formErrors.address"
               />
-              <p v-if="formErrors.address" class="text-sm text-red-500 mt-1">{{ formErrors.address }}</p>
             </div>
 
             <!-- Capacidad -->
@@ -222,7 +224,7 @@
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :class="formErrors.capacity ? 'border-red-500' : ''"
                 :disabled="isLoading"
-                aria-describedby="eventCapacityError"
+                aria-describedby="capacity-error"
                 :aria-invalid="formErrors.capacity ? 'true' : 'false'"
                 aria-required="false"
                 required
@@ -230,13 +232,8 @@
                 maxlength="5"
                 pattern="^[1-9][0-9]{0,4}$"
                 @input="newEvent.capacity = newEvent.capacity ? Math.max(1, newEvent.capacity) : null"
-                />
-                <!-- @keypress="if (!/[0-9]/.test($event.key)) $event.preventDefault()"
-                @paste="if (!/^[0-9]*$/.test($event.clipboardData.getData('text'))) $event.preventDefault()"
-                @keyup="if (newEvent.capacity && newEvent.capacity < 1) newEvent.capacity = 1"
-                @blur="if (newEvent.capacity && newEvent.capacity < 1) newEvent.capacity = 1"
-                @change="if (newEvent.capacity && newEvent.capacity < 1) newEvent.capacity = 1" -->
-              <p v-if="formErrors.capacity" class="text-sm text-red-500 mt-1">{{ formErrors.capacity }}</p>
+              />
+              <p v-if="formErrors.capacity" id="capacity-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.capacity }}</p>
             </div>
           </div>
 
@@ -268,8 +265,11 @@
                 :show-no-results="false"
                 :searchable="true"
                 :loading="isLoading"
+                role="listbox"  
+                aria-multiselectable="true"
+                aria-describedby="categories-error"
               ></multiselect>
-              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
+              <p v-if="formErrors.categories" id="categories-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
             </div>
             
             <!-- Modalidad (Presencial/Virtual) -->
@@ -282,7 +282,7 @@
                 id="eventModality"
                 class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                 :disabled="isLoading"
-                aria-describedby="modalityError"
+                aria-describedby="modality-error"
                 :aria-invalid="formErrors.modality ? 'true' : 'false'"
                 aria-required="true"
                 aria-label="Seleccionar modalidad del evento"
@@ -291,7 +291,7 @@
                 <option :value="0">Presencial</option>
                 <option :value="1">Virtual</option>
               </select>
-              <p v-if="formErrors.modality" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
+              <p v-if="formErrors.modality" id="modality-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
             </div>
 
             <!-- Privacidad -->
@@ -331,6 +331,10 @@
                       value="private"
                       :disabled="isLoading"
                       class="form-radio text-blue-600 focus:ring-blue-500"
+                      aria-describedby="privacy-error"
+                      :aria-invalid="formErrors.privacy ? 'true' : 'false'"
+                      aria-required="true"
+                      aria-label="Seleccionar privacidad privada del evento" 
                     />
                     <label
                       for="private"
@@ -342,19 +346,11 @@
                 </div>
               </fieldset>
               <p
-                v-if="formErrors.privacy"
-                id="privacy-error"
-                class="text-sm text-red-500 mt-1"
-                role="alert"
-                aria-live="polite"
-              >
+                v-if="formErrors.privacy" id="privacy-error" role="alert" aria-live="polite"class=" text-sm text-red-500 mt-1" >
                 {{ formErrors.privacy }}
               </p>
             </div>
-
           </div>
-          
-          
 
           <!-- Botones de navegación -->
           <div class="flex justify-between gap-3 mt-6">

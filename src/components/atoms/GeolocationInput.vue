@@ -7,25 +7,28 @@
       :value="modelValue?.address"
       class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
       :disabled="isLoading"
+      aria-label="Ingresar ubicación"
     />
-    <p v-if="error" class="text-sm text-red-500 mt-1">{{ error }}</p>
+    <p v-if="displayedError" class="text-sm text-red-500 mt-1">{{ displayedError }}</p>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import { useGoogleMaps } from '../../composable/useGoogleMaps';
 
 const props = defineProps({
   modelValue: { type: Object, default: () => ({ address: '', lat: null, lng: null }) },
   placeholder: { type: String, default: 'Buscar dirección...' },
+  error: { type: String, default: '' },
 });
 
 const emit = defineEmits(['update:modelValue']);
 const inputRef = ref(null);
 const { loadGoogleMaps } = useGoogleMaps();
 const isLoading = ref(false);
-const error = ref('');
+const errorLocal = ref('');
+const displayedError = computed(() => errorLocal.value || props.error);
 
 onMounted(async () => {
   try {
@@ -34,7 +37,7 @@ onMounted(async () => {
     await initAutocomplete();
   } catch (err) {
     console.error('Error al cargar Google Maps para autocompletado:', err);
-    error.value = 'No se pudo cargar el autocompletado. Verifica tu conexión.';
+    errorLocal.value = 'No se pudo cargar el autocompletado. Verifica tu conexión.';
   } finally {
     isLoading.value = false;
   }
@@ -56,11 +59,11 @@ async function initAutocomplete() {
   autocomplete.addListener('place_changed', () => {
     const place = autocomplete.getPlace();
     if (!place.geometry) {
-      error.value = 'No se encontró una ubicación válida';
+      errorLocal.value = 'No se encontró una ubicación válida';
       return;
     }
 
-    error.value = '';
+    errorLocal.value = '';
     const location = {
       address: place.formatted_address,
       lat: place.geometry.location.lat(),

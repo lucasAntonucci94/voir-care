@@ -1,13 +1,13 @@
 <template>
-  <div v-if="visible" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
+  <div v-if="visible" open class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh]">
       <!-- Encabezado del modal -->
-      <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center rounded-t-xl justify-between">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear grupo</h3>
-        <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+      <header class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center rounded-t-xl justify-between">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear grupo</h2>
+        <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" aria-label="Cerrar">
           <i class="fa-solid fa-xmark w-6 h-6"></i>
         </button>
-      </div>
+      </header>
 
       <!-- Barra de progreso -->
       <div class="p-6">
@@ -43,7 +43,8 @@
         <!-- Contenido del formulario -->
         <form @submit.prevent="handleCreateGroup" class="space-y-6">
           <!-- Paso 1: Información básica -->
-          <div v-if="currentStep === 1">
+          <section  v-if="currentStep === 1" aria-labelledby="step1-title">
+            <h3 id="step1-title" class="sr-only">Paso 1: Información básica</h3>
             <!-- Título del Grupo -->
             <div class="mb-4">
               <label for="groupTitle" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -57,14 +58,14 @@
                 class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                 :disabled="isLoading"
                 :class="formErrors.title ? 'border-red-500' : ''"
-                aria-describedby="groupTitleError"
+                aria-describedby="title-error"
                 :aria-invalid="formErrors.title ? 'true' : 'false'"
                 aria-required="true"
                 :minlength="1"
                 :maxlength="50"
                 required
               />
-              <p v-if="formErrors.title" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
+              <p v-if="formErrors.title" class="text-sm text-red-500 mt-1" id="title-error" role="alert" aria-live="assertive">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción del Grupo -->
@@ -80,18 +81,19 @@
                 :disabled="isLoading"
                 required
                 :class="formErrors.description ? 'border-red-500' : ''"
-                aria-describedby="groupDescriptionError"
+                aria-describedby="description-error"
                 :aria-invalid="formErrors.description ? 'true' : 'false'"
                 aria-required="true"
                 :minlength="10"
                 :maxlength="500"
               ></textarea>
-              <p v-if="formErrors.description" class="text-sm text-red-500 mt-1">{{ formErrors.description }}</p>
+              <p v-if="formErrors.description" class="text-sm text-red-500 mt-1" id="description-error" role="alert" aria-live="assertive">{{ formErrors.description }}</p>
             </div>
-          </div>
+          </section>
 
           <!-- Paso 2: Multimedia -->
-          <div v-if="currentStep === 2">
+          <section  v-if="currentStep === 2" aria-labelledby="step2-title">
+            <h3 id="step2-title" class="sr-only">Paso 2: Multimedia</h3>
             <!-- Imagen o Video -->
             <div class="relative">
               <label for="groupMedia" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -107,12 +109,12 @@
                   'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
                   formErrors.media ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
                 ]"
-                aria-describedby="groupMediaError"
+                aria-describedby="media-error"
                 :aria-invalid="formErrors.media ? 'true' : 'false'"
                 aria-required="false"
                 required
               />
-              <p v-if="formErrors.media" class="text-red-500 text-sm mt-1">{{ formErrors.media }}</p>
+              <p v-if="formErrors.media" class="text-sm text-red-500 mt-1" id="media-error" role="alert" aria-live="assertive">{{ formErrors.media }}</p>
             </div>
 
             <!-- Previsualización de Media -->
@@ -173,10 +175,11 @@
                 @dragstart="event => event.preventDefault()"                
               ></video>
             </div>
-          </div>
+          </section>
 
           <!-- Paso 3: Configuración -->
-          <div v-if="currentStep === 3">
+          <section  v-if="currentStep === 3" aria-labelledby="step3-title">
+            <h3 id="step1-title" class="sr-only">Paso 3: Configuración</h3>
             <!-- Categorías -->
              <div>
               <label for="postCategories" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -204,7 +207,7 @@
                 :searchable="true"
                 :loading="isLoading"
               ></multiselect>
-              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
+              <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1" id="categories-error" role="alert" aria-live="assertive">{{ formErrors.categories }}</p>
             </div>
           
             <!-- Privacidad -->
@@ -260,7 +263,7 @@
                 {{ formErrors.privacy }}
               </p>
             </div>
-          </div>
+          </section>
 
           <!-- Botones de navegación -->
           <div class="flex justify-between gap-3 mt-6">
