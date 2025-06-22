@@ -106,6 +106,10 @@
                   <button 
                     @click="toggleActionsMenu(user.uid)" 
                     class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
+                    :disabled="user.isDeleted"
+                    :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
+                    aria-label="Más acciones"
+                    :aria-disabled="user.isDeleted"
                   >
                     <i class="fas fa-ellipsis-h"></i>
                   </button>
@@ -116,7 +120,7 @@
                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
                       <li>
                         <button 
-                          @click="deleteUser(user.uid)" 
+                          @click="setGenericModalConfig('softDelete', user)" 
                           class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                           :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
                           :disabled="user.isDeleted"
@@ -126,7 +130,7 @@
                       </li>
                       <li>
                         <button 
-                          @click="toggleBlockUser(user)"
+                          @click="setGenericModalConfig('block', user)"
                           class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                           :class="[user.isBlocked ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
                           :disabled="user.isDeleted"
@@ -137,7 +141,7 @@
                       </li>
                       <li>
                         <button 
-                          @click="toggleSuscriptionUser(user)"
+                          @click="setGenericModalConfig('suscribe', user)"
                           class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                           :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
                           :disabled="user.isDeleted"
@@ -169,6 +173,18 @@
       @toggleAdmin="closeUserDetailModal"
       @toggleSubscription="closeUserDetailModal"
     />
+
+    <!-- Modal de confirmacion para mostrar un post (elimina idDoc de array de hiddenPosts) -->
+    <GenericConfirmModal
+      v-if="showConfirmModal"
+      :visible="showConfirmModal"
+      :title="genericModalConfig.title"
+      :message="genericModalConfig.message"
+      :confirmButtonText="genericModalConfig.confirmButtonText"
+      :cancelButtonText="genericModalConfig.cancelButtonText"
+      @cancel="genericModalConfig.cancelMethod"
+      @confirmed="genericModalConfig.confirmMethod"
+    />
   </div>
 </template>
 
@@ -177,6 +193,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useUsersStore } from '../../stores/users';
 import { useSnackbarStore } from '../../stores/snackbar';
 import UserDetailModal from '../../components/molecules/UserDetailModal.vue';
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 
 const usersStore = useUsersStore();
 const snackbarStore = useSnackbarStore();
@@ -185,9 +202,23 @@ const searchQuery = ref('');
 const filterCountry = ref('');
 const filterRole = ref('');
 const showUserDetailModal = ref(false);
+const showConfirmModal = ref(false);
 const selectedUser = ref(null);
 const activeDropdown = ref(null); // Estado para rastrear el dropdown activo
-
+const genericModalConfig = ref({
+  title: '',
+  message: '',
+  confirmButtonText: 'Confirmar',
+  cancelButtonText: 'Cancelar',
+  cancelMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+  },
+  confirmMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+  }
+});
 // Computed property for filtered users
 const filteredUsers = computed(() => {
   let filtered = usersStore.users;
@@ -213,7 +244,7 @@ const filteredUsers = computed(() => {
   return filtered;
 });
 
-// Unique countries for filter dropdown
+// implementacion para mock, reemplazar esto por selectCountry que ya tiene definido los paises.
 const uniqueCountries = computed(() => {
   const countries = new Set(usersStore.users.map((user) => user.country).filter(Boolean));
   return [...countries].sort();
@@ -234,7 +265,6 @@ const closeUserDetailModal = () => {
 
 // Delete user
 const deleteUser = async (uid) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) return;
   try {
     await usersStore.softDelete(uid);
     activeDropdown.value = null; // Cierra el dropdown tras la acción
@@ -280,6 +310,78 @@ const handleClickOutside = (event) => {
       activeDropdown.value = null;
     }
   });
+};
+
+
+// Set generic modal configuration
+const setGenericModalConfig = (action, user) => {
+  switch (action) {
+    case 'suscribe':
+      genericModalConfig.value = {
+        title: 'Asignar rol de suscripción',
+        message:`¿Deseas ${!user.isSuscribed ? 'suscribir' : 'desuscribir'} a este ${user.displayName}?`,
+        confirmButtonText: user.isSuscribed ? 'Desuscribir' : 'Suscribir',
+        cancelButtonText: 'Cancelar',
+        confirmMethod: () => {
+          toggleSuscriptionUser(user);
+          showConfirmModal.value = false;
+          document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+        },
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+        }
+      };
+      break;
+    case 'softDelete':
+      genericModalConfig.value = {
+        title: 'Eliminar usuario',
+        message: `¿Estás seguro de que deseas eliminar a ${user.displayName ?? 'este usuario'}?`,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar',
+        confirmMethod: () => {
+          deleteUser(user.uid);
+          showConfirmModal.value = false;
+          document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+        },
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+        }
+      };
+      break;
+    case 'block':
+      genericModalConfig.value = {
+        title: 'Bloquear usuario',
+        message: `¿Deseas ${!user.isBlocked ? 'bloquear' : 'desbloquear'} a ${user.displayName ?? 'este usuario'}?`,
+        confirmButtonText: 'Bloquear',
+        cancelButtonText: 'Cancelar',
+        confirmMethod: () => {
+          toggleBlockUser(user);
+          showConfirmModal.value = false;
+          document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+        },
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+        }
+      };
+      break;
+    default:
+      genericModalConfig.value = {
+        title: 'Acción no definida',
+        message: 'No se ha definido una acción para esta operación.',
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Cancelar',
+        confirmMethod: () => {},
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
+        }
+      };
+  }
+  showConfirmModal.value = true;
+  document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
 };
 
 // Manage subscription lifecycle
