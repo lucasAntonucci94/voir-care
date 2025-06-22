@@ -58,6 +58,7 @@ const filteredReels = computed(() => {
   const connectionUids = user.value?.connections
     ? user.value.connections.map((connection) => connection?.uid).filter((uid) => uid)
     : [];
+    
 
   // Filtramos los reels cuyo user.uid esté en connectionUids o sea del usuario logueado,
   // y excluimos los que ya han sido vistos
@@ -68,10 +69,13 @@ const filteredReels = computed(() => {
         (connectionUids.includes(reel.user.uid) || reel.user.uid === user.value?.uid);
       if (!isFromConnectionOrSelf) return false;
 
+      const isOwner = reel.user.uid === user.value?.uid
+
       const isViewedByUser =
         reel.viewDetails &&
         typeof reel.viewDetails === 'object' &&
-        reel.viewDetails[user.value?.uid];
+        reel.viewDetails[user.value?.uid] && !isOwner;
+
       if (isViewedByUser) return false;
 
       const reelDate = new Date(
@@ -115,7 +119,7 @@ const filteredReels = computed(() => {
     !user.value.connections ||
     user.value.connections.length === 0 ||
     !userReels ||
-    userReels.length < 10;
+    userReels.length < 50;
 
   if (shouldIncludeDefaultReels) {
     const defaultGroups = reelsStore.defaultReels.map((reel) => ({

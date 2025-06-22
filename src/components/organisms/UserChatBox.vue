@@ -6,7 +6,7 @@
       role="button"
       tabindex="0"
       @click="toggleChat"
-      @keydown.enter.space="toggleChat"
+      @keydown.enter.space.esc="toggleChat"
       aria-label="Abrir mensajes"
     >
       <i class="fa-solid fa-comment-dots text-white text-xl"></i>

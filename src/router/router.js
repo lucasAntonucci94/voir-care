@@ -14,6 +14,7 @@ import Events from '../pages/EventsPage.vue';
 import EventDetail from '../pages/EventDetail.vue';
 import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
+import PremiumPage from '../pages/PremiumPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
 import AdmUsersPage from '../pages/admin/UsersPage.vue';
@@ -136,6 +137,14 @@ const routes = [
         path:  '/blog/:idBlog?',
         name: 'blogDetail',
         component: BlogDetailPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/premium',
+        name: 'premium',
+        component: PremiumPage,
         meta: {
             requiresAuth: true,
         }

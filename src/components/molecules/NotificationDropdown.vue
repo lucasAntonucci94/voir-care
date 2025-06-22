@@ -24,7 +24,7 @@
     </button>
 
     <!-- Dropdown -->
-    <transition name="dropdown-smooth">
+    <transition name="dropdown">
       <div
         v-if="props.isOpen"
         id="notificationsDropdown"
@@ -33,7 +33,7 @@
         role="menu"
         aria-labelledby="notification-button"
         @keydown="onDropdownKeydown"
-        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-80 max-h-[calc(100vh-4rem)] bg-white dark:bg-gray-800 shadow-lg sm:rounded-lg z-30 overflow-y-auto flex flex-col pt-12 sm:pt-0"
+        class="fixed sm:absolute top-0 sm:top-auto left-0 sm:left-auto sm:right-0 w-full sm:w-80 max-h-[calc(100vh-4rem)] md:max-h-[calc(90vh-4rem)] bg-white dark:bg-gray-800 shadow-lg sm:rounded-lg z-30 overflow-y-auto flex flex-col pt-12 sm:pt-0"
       >
         <!-- Botón cerrar en mobile -->
         <button
@@ -276,7 +276,7 @@ function toggleActionsMenu(id, event) {
   if (activeActionsMenuId.value === id) {
     activeActionsMenuId.value = null;
   } else {
-    activeActionsMenuId.value = null; // Close any other open menus
+    activeActionsMenuId.value = null;
     const button = event.currentTarget.getBoundingClientRect();
     dropdownPositions.value = {
       [id]: {
@@ -307,19 +307,28 @@ function closeMenuOnClickOutside(e) {
 
 function onKeydown(notification, event) {
   const current = event.target;
-
-  if (event.key === 'Enter') {
-    handleClick(notification);
-  } else if (event.key === 'ArrowDown') {
-    event.preventDefault();
-    const next = current.nextElementSibling;
-    if (next) next.focus();
-  } else if (event.key === 'ArrowUp') {
-    event.preventDefault();
-    const prev = current.previousElementSibling;
-    if (prev) prev.focus();
-  } else if (event.key === 'Escape') {
-    toggle(); // Cierra el menú
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      const next = current.nextElementSibling;
+      if (next) next.focus();
+      break;
+    case 'ArrowUp':
+      event.preventDefault();
+      const prev = current.previousElementSibling;
+      if (prev) prev.focus();
+      break;
+    case 'Enter':
+    case ' ':
+      event.preventDefault();
+      handleClick(notification);
+      break;
+    case 'Escape':
+      activeActionsMenuId.value = null; // Cerrar el menú de acciones
+      break;
+  }
+  if (event.key === 'Escape') {
+    activeActionsMenuId.value = null; // Cerrar el menú de acciones
   }
 }
 
@@ -339,26 +348,74 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.dropdown-smooth-enter-active,
-.dropdown-smooth-leave-active {
-  transition: all 0.25s ease;
-  transform-origin: top;
-}
-.dropdown-smooth-enter-from {
-  opacity: 0;
-  transform: scale(0.95);
-}
-.dropdown-smooth-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
+/* Animación del desplegable */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s ease;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.15s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
+/* Mobile: Deslizamiento desde arriba */
+.dropdown-enter-from,
+.dropdown-leave-to {
   opacity: 0;
+  transform: translateY(-100%);
+}
+
+/* Desktop: Desvanecimiento y deslizamiento desde el botón */
+@media (min-width: 640px) {
+  .dropdown-enter-from,
+  .dropdown-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* Barra de desplazamiento suave para overflow */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* Efectos de hover y focus para botones */
+button:hover,
+a:hover {
+  transform: translateY(-1px);
+}
+
+button:focus,
+a:focus {
+  outline: none;
+}
+
+/* Estilos para el menú de acciones (mantener consistencia con el diseño) */
+.notification-actions {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.notification-actions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-actions::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-actions::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 </style>

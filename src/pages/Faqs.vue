@@ -80,7 +80,7 @@ const faqs = ref([
   // Categoría: Sobre la Comunidad
   {
     category: 'general',
-    question: '¿Qué es esta red social y cuál es su propósito?',
+    question: '¿Qué es Voir y cuál es su propósito?',
     answer:
       'Somos una comunidad apasionada por el cuidado y bienestar animal. Nuestro propósito es concientizar y educar a las personas sobre la tenencia responsable, ofrecer recursos educativos y crear un espacio donde los amantes de los animales puedan conectar, compartir experiencias y crecer juntos.',
   },

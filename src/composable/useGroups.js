@@ -250,6 +250,22 @@ export function useGroups() {
     }
   }
 
+  /**
+   * Obtiene la cantidad de grupos donde el usuario es el ownerId.
+   * @param {string} userId - El ID del usuario.
+   * @returns {Promise<number>} - La cantidad de grupos.
+   */
+  async function getGroupCountByOwnerId(userId) {
+    try {
+      const q = query(groupsRef, where('ownerId', '==', userId))
+      const querySnapshot = await getDocs(q)
+      return querySnapshot.size
+    } catch (error) {
+      console.error('Error al contar grupos por ownerId:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createGroup,
@@ -263,5 +279,6 @@ export function useGroups() {
     createPostGroup,
     suscribePostsByGroupId,
     subscribeToAdoptionGroups,
+    getGroupCountByOwnerId,
   }
 }

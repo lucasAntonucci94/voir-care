@@ -240,21 +240,58 @@ const dropdownRef = ref(null);
 const showDeleteModal = ref(false);
 const showReportModal = ref(false);
 
+// Almacenar índices actuales para navegación
+const currentGroupIndexRef = ref(-1);
+const currentReelInGroupIndexRef = ref(-1);
+
 // Computed
 const hasLiked = computed(() => {
   return props.reel?.likes?.some((like) => like.userId === user.value?.uid) || false;
 });
 
-const currentReelIndex = computed(() => {
-  if (!props.reel || !props.reels) return -1;
-  return props.reels.findIndex((group) => group.reels[0].id === props.reel.id);
-});
-
-const hasPreviousReel = computed(() => currentReelIndex.value > 0);
-const hasNextReel = computed(() => currentReelIndex.value < props.reels.length - 1);
-
 const isOwner = computed(() => {
   return props.reel?.user?.uid === user.value?.uid || false;
+});
+
+// Calcular índices basados en la lista actual
+const calculateIndices = () => {
+  if (!props.reel || !props.reels || !props.reels.length) {
+    currentGroupIndexRef.value = -1;
+    currentReelInGroupIndexRef.value = -1;
+    return;
+  }
+  const groupIndex = props.reels.findIndex((group) => group.reels.some((reel) => reel.id === props.reel.id));
+  if (groupIndex === -1) {
+    // Reel no encontrado, mantener índices previos o cerrar modal si no hay más reels
+    if (props.reels.length === 0) {
+      closeModal();
+    }
+    return;
+  }
+  const currentGroup = props.reels[groupIndex];
+  const reelIndex = currentGroup.reels.findIndex((reel) => reel.id === props.reel.id);
+  currentGroupIndexRef.value = groupIndex;
+  currentReelInGroupIndexRef.value = reelIndex;
+};
+
+// Determinar si hay un reel anterior
+const hasPreviousReel = computed(() => {
+  if (currentGroupIndexRef.value === -1) return false;
+  // Hay un reel anterior en el grupo actual
+  if (currentReelInGroupIndexRef.value > 0) return true;
+  // O hay un grupo anterior
+  return currentGroupIndexRef.value > 0;
+});
+
+// Determinar si hay un reel siguiente
+const hasNextReel = computed(() => {
+  if (currentGroupIndexRef.value === -1) return false;
+  const currentGroup = props.reels[currentGroupIndexRef.value];
+  if (!currentGroup) return false;
+  // Hay un reel siguiente en el grupo actual
+  if (currentReelInGroupIndexRef.value < currentGroup.reels.length - 1) return true;
+  // O hay un grupo siguiente
+  return currentGroupIndexRef.value < props.reels.length - 1;
 });
 
 // Utility
@@ -308,20 +345,63 @@ const handleToggleLike = async () => {
 const closeModal = () => {
   viewedReelId.value = null;
   showSettingsMenu.value = false;
+  currentGroupIndexRef.value = -1;
+  currentReelInGroupIndexRef.value = -1;
   emit('close');
 };
 
 const previousReel = () => {
-  if (hasPreviousReel.value) {
-    const previousGroup = props.reels[currentReelIndex.value - 1];
-    emit('update-reel', previousGroup.reels[0]);
+  if (!hasPreviousReel.value) return;
+
+  const currentGroup = props.reels[currentGroupIndexRef.value];
+  if (!currentGroup) {
+    closeModal();
+    return;
+  }
+  // Si hay un reel anterior en el grupo actual
+  if (currentReelInGroupIndexRef.value > 0) {
+    const previousReelInGroup = currentGroup.reels[currentReelInGroupIndexRef.value - 1];
+    currentReelInGroupIndexRef.value -= 1;
+    emit('update-reel', previousReelInGroup);
+  } else {
+    // Ir al último reel del grupo anterior
+    const previousGroupIndex = currentGroupIndexRef.value - 1;
+    const previousGroup = props.reels[previousGroupIndex];
+    if (!previousGroup) {
+      closeModal();
+      return;
+    }
+    const lastReelInPreviousGroup = previousGroup.reels[previousGroup.reels.length - 1];
+    currentGroupIndexRef.value = previousGroupIndex;
+    currentReelInGroupIndexRef.value = previousGroup.reels.length - 1;
+    emit('update-reel', lastReelInPreviousGroup);
   }
 };
 
 const nextReel = () => {
-  if (hasNextReel.value) {
-    const nextGroup = props.reels[currentReelIndex.value + 1];
-    emit('update-reel', nextGroup.reels[0]);
+  if (!hasNextReel.value) return;
+  const currentGroup = props.reels[currentGroupIndexRef.value];
+  if (!currentGroup) {
+    closeModal();
+    return;
+  }
+  // Si hay un reel siguiente en el grupo actual
+  if (currentReelInGroupIndexRef.value < currentGroup.reels.length - 1) {
+    const nextReelInGroup = currentGroup.reels[currentReelInGroupIndexRef.value + 1];
+    currentReelInGroupIndexRef.value += 1;
+    emit('update-reel', nextReelInGroup);
+  } else {
+    // Ir al primer reel del grupo siguiente
+    const nextGroupIndex = currentGroupIndexRef.value + 1;
+    const nextGroup = props.reels[nextGroupIndex];
+    if (!nextGroup) {
+      closeModal();
+      return;
+    }
+    const firstReelInNextGroup = nextGroup.reels[0];
+    currentGroupIndexRef.value = nextGroupIndex;
+    currentReelInGroupIndexRef.value = 0;
+    emit('update-reel', firstReelInNextGroup);
   }
 };
 
@@ -386,17 +466,19 @@ onUnmounted(() => {
 
 // Watch for modal visibility and reel changes
 watch(
-  [() => props.visible, () => props.reel],
-  ([newVisible, newReel], [oldVisible, oldReel]) => {
+  [() => props.visible, () => props.reel, () => props.reels],
+  ([newVisible, newReel, newReels], [oldVisible, oldReel]) => {
     if (newVisible && newReel?.idDoc && (newReel?.idDoc !== oldReel?.idDoc || !oldVisible)) {
       nextTick(() => {
         if (viewModal.value) {
           viewModal.value.focus();
-          if(!newReel?.default) incrementView();
+          calculateIndices();
+          if (!newReel?.default) incrementView();
         }
       });
     }
-  }
+  },
+  { deep: true }
 );
 </script>
 

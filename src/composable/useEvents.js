@@ -200,6 +200,22 @@ export function useEvents() {
     }
   }
 
+  /**
+   * Obtiene la cantidad de eventos donde el usuario es el ownerId.
+   * @param {string} userId - El ID del usuario.
+   * @returns {Promise<number>} - La cantidad de eventos.
+   */
+  async function getEventCountByOwnerId(userId) {
+    try {
+      const q = query(eventsRef, where('ownerId', '==', userId))
+      const querySnapshot = await getDocs(q)
+      return querySnapshot.size
+    } catch (error) {
+      console.error('Error al contar eventos por ownerId:', error)
+      throw error
+    }
+  }
+
   return {
     isCreating,
     createEvent,
@@ -211,5 +227,6 @@ export function useEvents() {
     findById,
     setUserAttendanceStatus,
     subscribeToAdoptionEvents,
+    getEventCountByOwnerId,
   }
 }

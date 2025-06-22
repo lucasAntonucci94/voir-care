@@ -57,7 +57,7 @@
     <div class="mt-8 space-y-2">
       <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-3">Explorar</h3>
       <router-link
-        v-for="item in otherNavItems"
+        v-for="item in filteredOtherNavItems"
         :key="item.to"
         :to="item.to"
         class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-gray-700 hover:bg-gray-200 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:hover:text-secondary"
@@ -79,6 +79,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import avatarDefault from '../../assets/avatar1.jpg';
 import { useAuth } from '../../api/auth/useAuth';
 
@@ -86,7 +87,12 @@ const { user, isAuthenticated } = useAuth();
 const emit = defineEmits(['toggle']);
 const props = defineProps(['show']);
 
-// Items de navecación principal
+// Computed para determinar si ocultar la página Premium
+const hidePremiumPage = computed(() => {
+  return !isAuthenticated.value || (isAuthenticated.value && user?.value?.isSuscribed) || false;
+});
+
+// Items de navegación principal
 const mainNavItems = [
   { to: '/home', icon: 'fa-home', label: 'Inicio' },
   { to: '/groups', icon: 'fa-users', label: 'Grupos' },
@@ -96,11 +102,17 @@ const mainNavItems = [
   { to: '/faqs', icon: 'fa-question', label: 'Preguntas Frecuentes' },
 ];
 
-// Items de navegación "Otros"
-const otherNavItems = [
+// Items de navegación "Otros" filtrados reactivamente
+const otherNavItems = computed(() => [
   { to: '/education', icon: 'fa-graduation-cap', label: 'Educación' },
   { to: '/adoption', icon: 'fa-paw', label: 'Adopción' },
-];
+  { to: '/premium', icon: 'fa-gem', label: 'Suscríbete a Voir', hidden: hidePremiumPage?.value ?? false },
+  // { to: '/about', icon: 'fa-info-circle', label: 'Acerca de Voir' },
+  // { to: '/contact', icon: 'fa-envelope', label: 'Contacto' },
+]);
+
+// Filtrar elementos ocultos para evitar v-for y v-if en el mismo elemento
+const filteredOtherNavItems = computed(() => otherNavItems.value.filter(item => !item.hidden));
 
 function pathLocation(isAuthenticated) {
   return isAuthenticated ? '/feed' : '/';
