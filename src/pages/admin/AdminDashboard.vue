@@ -1,9 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
     <div class="flex">
-      <!-- Sidebar -->
-      <!-- <SidebarAdmin /> -->
-
       <!-- Main content -->
       <main class="flex-1 p-6">
         <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Dashboard</h1>
@@ -18,32 +15,42 @@
           <DashboardCard title="Reportes" :value="stats.reports" icon="fas fa-exclamation-triangle" />
         </div>
 
-        <!-- Quick actions or recent activity -->
-        <div class="mt-10">
+        <!-- Ultimas acciones -->
+        <!-- <div class="mt-10">
           <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Últimas acciones</h2>
           <p class="text-gray-500 dark:text-gray-400">(Contenido en desarrollo...)</p>
-        </div>
+        </div> -->
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { ref, onMounted, onUnmounted } from 'vue';
 import DashboardCard from '../../components/atoms/DashboardCard.vue';
-import SidebarAdmin from '../../components/organisms/SidebarAdmin.vue';
+import { useUsersStore } from '../../stores/users';
+import { useEventsStore } from '../../stores/events';
+import { useGroupsStore } from '../../stores/groups';
+
+const usersStore = useUsersStore();
+const eventsStore = useEventsStore();
+const groupsStore = useGroupsStore();
 
 const stats = ref({
-  users: 1024,
-  events: 230,
-  groups: 56,
-  education: 18,
-  adoption: 35,
-  reports: 7,
+  users: 0,
+  events: 0,
+  groups: 0,
+  education: 0,
+  adoption: 0,
+  reports: 0,
+});
+
+onMounted(async () => {
+  stats.value.users = await usersStore.getCount();
+  stats.value.events = await eventsStore.getCount();
+  stats.value.groups = await groupsStore.getCount();
 });
 </script>
 
 <style scoped>
-/* Podés agregar animaciones o estilos personalizados si lo necesitás */
 </style>

@@ -657,7 +657,6 @@ export function useUsers() {
       // verifico que exista el usuario seleccionado
       const selectedUser = await getUser(id);
       if (!selectedUser) throw new Error('No hay usuario autenticado');
-      debugger
       // Actualizo propiedad isSuscribed en Firestore
       const userRef = doc(db, 'users', id);
       await updateDoc(userRef, {
@@ -666,6 +665,20 @@ export function useUsers() {
       // console.log(`Usuario con ID ${id} ${isSuscribed ? 'suscripto' : 'desuscripto'} exitosamente`);
     } catch (error) {
       console.error('Error al suscribir usuario:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Retorna la cantidad de usuarios registrados en la colección users
+   * @returns {Promise<number>} - Cantidad de usuarios
+   */
+  async function getUsersCount() {
+    try {
+      const querySnapshot = await getDocs(usersRef);
+      return querySnapshot.size; // Retorna el número total de documentos
+    } catch (error) {
+      console.error('Error al obtener la cantidad de usuarios:', error);
       throw error;
     }
   }
@@ -693,5 +706,6 @@ export function useUsers() {
     getUidsByEmails,
     getEmailByDisplayName,
     setRolAdmin,
+    getUsersCount,
   };
 }

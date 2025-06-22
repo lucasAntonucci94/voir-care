@@ -156,5 +156,16 @@ export const useEventsStore = defineStore('events', {
             this.unsubscribeAdoption()
             this.unsubscribeAdoption = null
         }
-    }},
+    },
+    async getCount() {
+        try {
+            const { getAllEventsCount } = useEvents();
+            return await getAllEventsCount();
+        } catch (error) {
+            console.error('Error al obtener la cantidad de eventos en el store:', error);
+            this.error = error.message || 'Error al obtener la cantidad de eventos en el store';
+            throw error;
+        }
+    },
+  },
 })

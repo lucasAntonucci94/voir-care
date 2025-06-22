@@ -4,6 +4,7 @@ import {
   collection,
   addDoc,
   getDoc,
+  getDocs,
   onSnapshot,
   query,
   orderBy,
@@ -216,6 +217,20 @@ export function useEvents() {
     }
   }
 
+  /**
+   * Obtiene la cantidad total de eventos en la colección events.
+   * @returns {Promise<number>} - La cantidad de eventos.
+   */
+  async function getAllEventsCount() {
+    try {
+      const querySnapshot = await getDocs(eventsRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al contar todos los eventos:', error);
+      throw error;
+    }
+  }
+  
   return {
     isCreating,
     createEvent,
@@ -228,5 +243,6 @@ export function useEvents() {
     setUserAttendanceStatus,
     subscribeToAdoptionEvents,
     getEventCountByOwnerId,
+    getAllEventsCount,
   }
 }

@@ -144,5 +144,15 @@ export const useUsersStore = defineStore('users', {
         throw error;
       }
     },
+    async getCount() {
+      try {
+        const { getUsersCount } = useUsers();
+        return await getUsersCount();
+      } catch (error) {
+        console.error('Error al obtener la cantidad de usuarios en el store:', error);
+        this.error = error.message || 'Error al obtener la cantidad de usuarios en el store';
+        throw error;
+      }
+    },
   },
 });

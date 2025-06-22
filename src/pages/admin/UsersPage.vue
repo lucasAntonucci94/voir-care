@@ -19,12 +19,12 @@
           v-model="searchQuery"
           type="text"
           placeholder="Buscar por nombre o email..."
-          class="w-full sm:w-1/3 p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
+          class="w-full sm:w-1/3 p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-200"
           aria-label="Buscar usuarios"
         />
         <select
           v-model="filterCountry"
-          class="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          class="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary dark:focus:ring-secondary "
           aria-label="Filtrar por país"
         >
           <option value="">Filtrar por país</option>
@@ -32,7 +32,7 @@
         </select>
         <select
           v-model="filterRole"
-          class="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          class="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary dark:focus:ring-secondary "
           aria-label="Filtrar por rol"
         >
           <option value="">Todos los roles</option>
@@ -60,7 +60,7 @@
             <tr
               v-for="user in filteredUsers"
               :key="user.uid"
-              class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600/80"
+              class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100/80 dark:hover:bg-gray-600/80"
             >
               <td class="py-3 px-6 text-left whitespace-nowrap">
                 <div class="flex items-center">
@@ -98,14 +98,14 @@
               <td class="flex items-center justify-between gap-2  py-3 px-6 text-center">
                 <button 
                   @click="openUserDetailModal(user)" 
-                  class="w-full text-left px-4 py-2 rounded-xl hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                  class="w-full text-left px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
                   <i class="fas fa-eye mr-2 text-primary dark:text-secondary"></i> Ver
                 </button>
                 <div class="relative" :ref="`dropdown-${user.uid}`">
                   <button 
                     @click="toggleActionsMenu(user.uid)" 
-                    class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
+                    class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-secondary focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-800 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
                     :disabled="user.isDeleted"
                     :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
                     aria-label="Más acciones"

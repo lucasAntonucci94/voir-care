@@ -53,6 +53,7 @@ import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
 const navItems = [
+  { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-tachometer-alt' },
   { label: 'Usuarios', route: '/admin/users', icon: 'fas fa-users' },
   {
     label: 'Categorias',

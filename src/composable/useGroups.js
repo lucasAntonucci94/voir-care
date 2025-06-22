@@ -12,6 +12,7 @@ import {
   deleteDoc,
   where,
   getDoc,
+  getDocs,
   arrayUnion,
   arrayRemove, 
   limit,
@@ -266,6 +267,20 @@ export function useGroups() {
     }
   }
 
+  /**
+   * Obtiene la cantidad total de grupos en la colección groups.
+   * @returns {Promise<number>} - La cantidad de grupos.
+   */
+  async function getAllGroupsCount() {
+    try {
+      const querySnapshot = await getDocs(groupsRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al contar todos los grupos:', error);
+      throw error;
+    }
+  }
+
   return {
     isCreating,
     createGroup,
@@ -280,5 +295,6 @@ export function useGroups() {
     suscribePostsByGroupId,
     subscribeToAdoptionGroups,
     getGroupCountByOwnerId,
+    getAllGroupsCount,
   }
 }

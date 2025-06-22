@@ -165,5 +165,15 @@ export const useGroupsStore = defineStore('groups', {
         this.isLoading = false;
       }
     },
+    async getCount() {
+      try {
+          const { getAllGroupsCount } = useGroups();
+          return await getAllGroupsCount();
+      } catch (error) {
+          console.error('Error al obtener la cantidad de grupos en el store:', error);
+          this.error = error.message || 'Error al obtener la cantidad de grupos en el store';
+          throw error;
+      }
+    },
   },
 });
