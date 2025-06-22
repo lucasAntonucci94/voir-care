@@ -240,6 +240,25 @@ export function useUsers() {
   }
 
   /**
+   * Realiza un borrado lógico de un usuario en Firestore estableciendo isDeleted en true
+   * @param {string} id - ID del usuario
+   * @returns {Promise<void>}
+   */
+  async function softDelete(id) {
+    try {
+      const userRef = doc(db, 'users', id);
+      await updateDoc(userRef, {
+        isDeleted: true,
+        deletedAt: new Date().toISOString(), // Opcional: registra la fecha de eliminación
+      });
+      // console.log(`Usuario con ID ${id} marcado como eliminado exitosamente`);
+    } catch (error) {
+      console.error('Error al realizar borrado lógico del usuario:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Carga la información completa del perfil del usuario desde Storage y Firestore.
    * @param {Object} firebaseUser - Objeto del usuario de Firebase Auth
    * @returns {Promise<Object>} - Datos combinados del usuario
@@ -616,6 +635,41 @@ export function useUsers() {
     }
   }
   
+  /**
+   * Seteo el valor de isAdmin para un usuario
+   * Esta función solo puede ser ejecutada por un usuario administrador
+   * @param {string} id - ID del usuario
+   * @param {boolean} isSuscribed - true para suscribir, false para desuscribir
+   * @returns {Promise<void>}
+   */
+  async function setRolAdmin(id, isAdmin) {
+    try {
+       // verifico que exista usuario logueado
+      const { user: authUser } = useAuth();
+      if (!authUser.value) throw new Error('No hay usuario autenticado');
+      
+      // Verifico que el usuario logueado sea admin
+      const currentUserDoc = await getDoc(doc(db, 'users', authUser.value.uid));
+      if (!currentUserDoc.exists() || !currentUserDoc.data().isAdmin) {
+        throw new Error('Solo los administradores pueden bloquear globalmente');
+      }  
+
+      // verifico que exista el usuario seleccionado
+      const selectedUser = await getUser(id);
+      if (!selectedUser) throw new Error('No hay usuario autenticado');
+      debugger
+      // Actualizo propiedad isSuscribed en Firestore
+      const userRef = doc(db, 'users', id);
+      await updateDoc(userRef, {
+        isAdmin: isAdmin,
+      });
+      // console.log(`Usuario con ID ${id} ${isSuscribed ? 'suscripto' : 'desuscripto'} exitosamente`);
+    } catch (error) {
+      console.error('Error al suscribir usuario:', error);
+      throw error;
+    }
+  }
+
   return {
     userProfile,
     getAllUsers,
@@ -624,6 +678,7 @@ export function useUsers() {
     createUser,
     updateUser,
     deleteUser,
+    softDelete,
     loadProfileInfo,
     addConnection,
     removeConnection,
@@ -637,5 +692,6 @@ export function useUsers() {
     updateUserTheme,
     getUidsByEmails,
     getEmailByDisplayName,
+    setRolAdmin,
   };
 }

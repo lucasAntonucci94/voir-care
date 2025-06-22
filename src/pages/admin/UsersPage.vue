@@ -52,6 +52,7 @@
               <th class="py-3 px-6 text-center">Admin</th>
               <th class="py-3 px-6 text-center">Estado</th>
               <th class="py-3 px-6 text-center">Suscripto</th>
+              <th class="py-3 px-6 text-center">Eliminado</th>
               <th class="py-3 px-6 text-center">Acciones</th>
             </tr>
           </thead>
@@ -80,8 +81,8 @@
                 </span>
               </td>
               <td class="py-3 px-6 text-center">
-                <span :class="user.isBlockedGlobally ? 'text-red-500' : 'text-green-500'">
-                  {{ user.isBlockedGlobally ? 'Bloqueado' : 'Activo' }}
+                <span :class="user.isBlocked ? 'text-red-500' : 'text-green-500'">
+                  {{ user.isBlocked ? 'Bloqueado' : 'Activo' }}
                 </span>
               </td>
                <td class="py-3 px-6 text-center">
@@ -89,37 +90,46 @@
                   {{ user.isSuscribed ? 'Sí' : 'No' }}
                 </span>
               </td>
+               <td class="py-3 px-6 text-center">
+                <span :class="user.isDeleted ? 'text-green-500' : 'text-red-500'">
+                  {{ user.isDeleted ? 'Sí' : 'No' }}
+                </span>
+              </td>
               <td class="py-3 px-6 text-center">
                 <div class="flex item-center justify-center gap-2">
                   <button
-                    @click="openEditModal(user)"
-                    class="text-blue-500 hover:text-blue-700"
-                    title="Editar"
-                    aria-label="Editar usuario"
+                    @click="openUserDetailModal(user)"
+                    class="text-pink-500 hover:text-blue-700"
+                    title="Ver usuario"
+                    aria-label="Ver usuario"
                   >
-                    <i class="fas fa-edit"></i>
+                    <i class="fas fa-eye"></i>
                   </button>
                   <button
                     @click="deleteUser(user.uid)"
                     class="text-red-500 hover:text-red-700"
+                    :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
                     title="Eliminar"
                     aria-label="Eliminar usuario"
+                    :disabled="user.isDeleted"
                   >
                     <i class="fas fa-trash"></i>
                   </button>
                   <button
                     @click="toggleBlockUser(user)"
-                    :class="user.isBlockedGlobally ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700'"
-                    :title="user.isBlockedGlobally ? 'Desbloquear' : 'Bloquear'"
-                    :aria-label="user.isBlockedGlobally ? 'Desbloquear usuario' : 'Bloquear usuario'"
+                    :class="[user.isBlocked ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
+                    :title="user.isBlocked ? 'Desbloquear' : 'Bloquear'"
+                    :aria-label="user.isBlocked ? 'Desbloquear usuario' : 'Bloquear usuario'"
+                    :disabled="user.isDeleted"
                   >
-                    <i :class="user.isBlockedGlobally ? 'fas fa-unlock' : 'fas fa-ban'"></i>
+                    <i :class="user.isBlocked ? 'fas fa-unlock' : 'fas fa-ban'"></i>
                   </button>
                   <button
                     @click="toggleSuscriptionUser(user)"
-                    :class="!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700'"
+                    :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
                     :title="!user.isSuscribed ? 'Suscribir' : 'Desuscribir'"
                     :aria-label="!user.isSuscribed ? 'Suscribir usuario' : 'Desuscribir usuario'"
+                    :disabled="user.isDeleted"
                   >
                     <i :class="!user.isSuscribed ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
                   </button>
@@ -134,93 +144,52 @@
       </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div
-      v-if="showEditModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Editar Usuario</h2>
-        <form @submit.prevent="saveUser">
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="displayName">Nombre</label>
-            <input
-              id="displayName"
-              v-model="editUser.displayName"
-              type="text"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              aria-required="true"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="email">Email</label>
-            <input
-              id="email"
-              v-model="editUser.email"
-              type="email"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              disabled
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="country">País</label>
-            <input
-              id="country"
-              v-model="editUser.country"
-              type="text"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="flex items-center text-gray-700 dark:text-gray-300">
-              <input
-                v-model="editUser.isAdmin"
-                type="checkbox"
-                class="mr-2"
-                aria-label="Es administrador"
-              />
-              Es Admin
-            </label>
-          </div>
-          <div class="flex justify-end gap-2">
-            <button
-              type="button"
-              @click="showEditModal = false"
-              class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md"
-              aria-label="Cancelar"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-primary text-white rounded-md"
-              aria-label="Guardar cambios"
-            >
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    
+    <!-- Modal detalle de usuario -->
+    <UserDetailModal
+      v-if="showUserDetailModal"
+      :visible="showUserDetailModal"
+      :user="selectedUser"
+      @close="closeUserDetailModal"
+      @softDelete="closeUserDetailModal"
+      @toggleAdmin="closeUserDetailModal"
+      @toggleSubscription="closeUserDetailModal"
+      />
+      <!-- @update="updateUserInList" -->
+
+    <!-- Confirmation Modal -->
+    <!-- <GenericConfirmModal
+      v-if="showEConfirmationModal"
+      :visible="showEConfirmationModal"
+      title="¿Desea mostrar esta publicación?"
+      message="Esta acción mostrará la publicación nuevamente en tu feed."
+      confirmButtonText="Mostrar"
+      cancelButtonText="Cancelar"
+      @cancel="closeModal"
+      @confirmed="deleteUser(selectedUser.uid)"
+    /> -->
+    
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { RouterLink } from 'vue-router';
 import { useUsers } from '../../composable/useUsers';
 import { useUsersStore } from '../../stores/users';
 import { useSnackbarStore } from '../../stores/snackbar';
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
+import UserDetailModal from '../../components/molecules/UserDetailModal.vue';
 
 const usersStore = useUsersStore();
 const snackbarStore = useSnackbarStore();
-const { updateUser } = useUsers();
 
 const searchQuery = ref('');
 const filterCountry = ref('');
 const filterRole = ref('');
+const showUserDetailModal = ref(false);
 const showEditModal = ref(false);
-const editUser = ref(null);
+const showEConfirmationModal = ref(false);
+const selectedUser = ref(null);
 
 // Computed property for filtered users
 const filteredUsers = computed(() => {
@@ -254,32 +223,27 @@ const uniqueCountries = computed(() => {
 });
 
 // Open edit modal
-const openEditModal = (user) => {
-  editUser.value = { ...user };
-  showEditModal.value = true;
+const openConfirmationModal = (action) => {
+  
+  showEConfirmationModal.value = true;
 };
 
-// Save user changes
-const saveUser = async () => {
-  try {
-    await updateUser(editUser.value.uid, {
-      displayName: editUser.value.displayName,
-      email: editUser.value.email,
-      country: editUser.value.country,
-      isAdmin: editUser.value.isAdmin,
-    });
-    showEditModal.value = false;
-  } catch (error) {
-    console.error('Error updating user:', error);
-    alert('Error al guardar los cambios. Intenta de nuevo.');
-  }
+// Open detail modal
+const openUserDetailModal = (user) => {
+  selectedUser.value = { ...user };
+  showUserDetailModal.value = true;
+};
+// close detail modal
+const closeUserDetailModal = () => {
+  selectedUser.value = null;
+  showUserDetailModal.value = false;
 };
 
 // Delete user
 const deleteUser = async (uid) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) return;
   try {
-    await usersStore.deleteUser(uid);
+    await usersStore.softDelete(uid);
   } catch (error) {
     alert(`Error al eliminar el usuario: ${usersStore.error || 'Intenta de nuevo.'}`);
   }
@@ -288,11 +252,12 @@ const deleteUser = async (uid) => {
 // Toggle global block status
 const toggleBlockUser = async (user) => {
   try {
-    const block = !user.isBlockedGlobally;
+    debugger
+    const block = !user.isBlocked;
     await usersStore.blockUserGlobally(user.uid, block);
     snackbarStore.show(`Usuario ${block ? 'bloqueado' : 'desbloqueado'} exitosamente`,'success');
   } catch (error) {
-    snackbarStore.show(`Error al ${user.isBlockedGlobally ? 'desbloquear' : 'bloquear'} usuario`, 'error');
+    snackbarStore.show(`Error al ${user.isBlocked ? 'desbloquear' : 'bloquear'} usuario`, 'error');
   }
 };
 

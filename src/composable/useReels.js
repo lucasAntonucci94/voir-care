@@ -1,4 +1,4 @@
-import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, query, orderBy, serverTimestamp, arrayUnion, arrayRemove, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, query, orderBy, serverTimestamp, Timestamp, where, arrayUnion, arrayRemove, updateDoc, increment, getDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { newGuid } from '../utils/newGuid';
 
@@ -55,7 +55,16 @@ export function useReels() {
    */
   function subscribeToIncomingReels(callback) {
     try {
-      const q = query(reelsRef, orderBy('createdAt', 'desc'));
+      // const q = query(reelsRef, orderBy('createdAt', 'desc'));
+      // Calcular la marca de tiempo de hace 24 horas
+      const twentyFourHoursAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+
+      // Crear la consulta con el filtro de createdAt >= hace 24 horas
+      const q = query(
+        reelsRef,
+        where('createdAt', '>=', twentyFourHoursAgo),
+        orderBy('createdAt', 'desc')
+      );
       return onSnapshot(q, (snapshot) => {
         const reels = snapshot.docs.map((doc) => {
           const reel = doc.data();

@@ -56,6 +56,22 @@ export const useUsersStore = defineStore('users', {
         throw error;
       }
     },
+    async softDelete(id) {
+      try {
+        const { softDelete } = useUsers();
+        await softDelete(id);
+        // Remove user from users array
+        // this.users = this.users.filter((user) => user.uid !== id);
+        // Remove user from cache
+        // delete this.usersCache[id];
+        this.error = null;
+        // console.log(`Usuario con ID ${id} eliminado del store`);
+      } catch (error) {
+        console.error('Error al eliminar usuario en el store:', error);
+        this.error = error.message || 'Error al eliminar el usuario';
+        throw error;
+      }
+    },
     async blockUserGlobally(id, block) {
       try {
         const { blockUserGlobally } = useUsers();
@@ -109,6 +125,22 @@ export const useUsersStore = defineStore('users', {
       } catch (error) {
         console.error('Error al suscribir/desuscribir usuario en el store:', error);
         this.error = error.message || 'Error al suscribir/desuscribir usuario';
+        throw error;
+      }
+    },
+    async setAdmin(id, isAdmin) {
+      try {
+        const { setRolAdmin } = useUsers();
+        await setRolAdmin(id, isAdmin);
+        const user = this.users.find((u) => u.uid === id);
+        if (user) {
+          user.isAdmin = isAdmin;
+        }
+        this.error = null;
+        // console.log(`Usuario con ID ${id} ${suscribe ? 'suscripto' : 'desuscripto'} en el store`);
+      } catch (error) {
+        console.error('Error al asignar rol administrador al usuario en el store:', error);
+        this.error = error.message || 'Error al asignar rol administrador al usuario en el store';
         throw error;
       }
     },
