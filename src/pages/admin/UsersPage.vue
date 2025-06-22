@@ -60,7 +60,7 @@
             <tr
               v-for="user in filteredUsers"
               :key="user.uid"
-              class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600/80"
             >
               <td class="py-3 px-6 text-left whitespace-nowrap">
                 <div class="flex items-center">
@@ -85,54 +85,69 @@
                   {{ user.isBlocked ? 'Bloqueado' : 'Activo' }}
                 </span>
               </td>
-               <td class="py-3 px-6 text-center">
+              <td class="py-3 px-6 text-center">
                 <span :class="user.isSuscribed ? 'text-green-500' : 'text-red-500'">
                   {{ user.isSuscribed ? 'Sí' : 'No' }}
                 </span>
               </td>
-               <td class="py-3 px-6 text-center">
+              <td class="py-3 px-6 text-center">
                 <span :class="user.isDeleted ? 'text-green-500' : 'text-red-500'">
                   {{ user.isDeleted ? 'Sí' : 'No' }}
                 </span>
               </td>
-              <td class="py-3 px-6 text-center">
-                <div class="flex item-center justify-center gap-2">
-                  <button
-                    @click="openUserDetailModal(user)"
-                    class="text-pink-500 hover:text-blue-700"
-                    title="Ver usuario"
-                    aria-label="Ver usuario"
+              <td class="flex items-center justify-between gap-2  py-3 px-6 text-center">
+                <button 
+                  @click="openUserDetailModal(user)" 
+                  class="w-full text-left px-4 py-2 rounded-xl hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                >
+                  <i class="fas fa-eye mr-2 text-primary dark:text-secondary"></i> Ver
+                </button>
+                <div class="relative" :ref="`dropdown-${user.uid}`">
+                  <button 
+                    @click="toggleActionsMenu(user.uid)" 
+                    class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
                   >
-                    <i class="fas fa-eye"></i>
+                    <i class="fas fa-ellipsis-h"></i>
                   </button>
-                  <button
-                    @click="deleteUser(user.uid)"
-                    class="text-red-500 hover:text-red-700"
-                    :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
-                    title="Eliminar"
-                    aria-label="Eliminar usuario"
-                    :disabled="user.isDeleted"
+                  <div 
+                    v-if="activeDropdown === user.uid"
+                    class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
                   >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                  <button
-                    @click="toggleBlockUser(user)"
-                    :class="[user.isBlocked ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
-                    :title="user.isBlocked ? 'Desbloquear' : 'Bloquear'"
-                    :aria-label="user.isBlocked ? 'Desbloquear usuario' : 'Bloquear usuario'"
-                    :disabled="user.isDeleted"
-                  >
-                    <i :class="user.isBlocked ? 'fas fa-unlock' : 'fas fa-ban'"></i>
-                  </button>
-                  <button
-                    @click="toggleSuscriptionUser(user)"
-                    :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
-                    :title="!user.isSuscribed ? 'Suscribir' : 'Desuscribir'"
-                    :aria-label="!user.isSuscribed ? 'Suscribir usuario' : 'Desuscribir usuario'"
-                    :disabled="user.isDeleted"
-                  >
-                    <i :class="!user.isSuscribed ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
-                  </button>
+                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+                      <li>
+                        <button 
+                          @click="deleteUser(user.uid)" 
+                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                          :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
+                          :disabled="user.isDeleted"
+                        >
+                          <i class="fas fa-trash-can mr-2 text-red-500"></i> Eliminar
+                        </button>
+                      </li>
+                      <li>
+                        <button 
+                          @click="toggleBlockUser(user)"
+                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                          :class="[user.isBlocked ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
+                          :disabled="user.isDeleted"
+                        >
+                          <i :class="user.isBlocked ? 'fas fa-unlock mr-2' : 'fas fa-ban mr-2'"></i>
+                          {{ user.isBlocked ? 'Desbloquear' : 'Bloquear' }}
+                        </button>
+                      </li>
+                      <li>
+                        <button 
+                          @click="toggleSuscriptionUser(user)"
+                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                          :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
+                          :disabled="user.isDeleted"
+                        >
+                          <i :class="!user.isSuscribed ? 'fa fa-check-circle mr-2' : 'fa fa-times-circle mr-2'"></i>
+                          {{ !user.isSuscribed ? 'Suscribir' : 'Desuscribir' }}
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -144,7 +159,6 @@
       </div>
     </div>
 
-    
     <!-- Modal detalle de usuario -->
     <UserDetailModal
       v-if="showUserDetailModal"
@@ -154,30 +168,14 @@
       @softDelete="closeUserDetailModal"
       @toggleAdmin="closeUserDetailModal"
       @toggleSubscription="closeUserDetailModal"
-      />
-      <!-- @update="updateUserInList" -->
-
-    <!-- Confirmation Modal -->
-    <!-- <GenericConfirmModal
-      v-if="showEConfirmationModal"
-      :visible="showEConfirmationModal"
-      title="¿Desea mostrar esta publicación?"
-      message="Esta acción mostrará la publicación nuevamente en tu feed."
-      confirmButtonText="Mostrar"
-      cancelButtonText="Cancelar"
-      @cancel="closeModal"
-      @confirmed="deleteUser(selectedUser.uid)"
-    /> -->
-    
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useUsers } from '../../composable/useUsers';
 import { useUsersStore } from '../../stores/users';
 import { useSnackbarStore } from '../../stores/snackbar';
-import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 import UserDetailModal from '../../components/molecules/UserDetailModal.vue';
 
 const usersStore = useUsersStore();
@@ -187,9 +185,8 @@ const searchQuery = ref('');
 const filterCountry = ref('');
 const filterRole = ref('');
 const showUserDetailModal = ref(false);
-const showEditModal = ref(false);
-const showEConfirmationModal = ref(false);
 const selectedUser = ref(null);
+const activeDropdown = ref(null); // Estado para rastrear el dropdown activo
 
 // Computed property for filtered users
 const filteredUsers = computed(() => {
@@ -222,18 +219,14 @@ const uniqueCountries = computed(() => {
   return [...countries].sort();
 });
 
-// Open edit modal
-const openConfirmationModal = (action) => {
-  
-  showEConfirmationModal.value = true;
-};
-
 // Open detail modal
 const openUserDetailModal = (user) => {
   selectedUser.value = { ...user };
   showUserDetailModal.value = true;
+  activeDropdown.value = null; // Cierra el dropdown al abrir el modal
 };
-// close detail modal
+
+// Close detail modal
 const closeUserDetailModal = () => {
   selectedUser.value = null;
   showUserDetailModal.value = false;
@@ -244,6 +237,7 @@ const deleteUser = async (uid) => {
   if (!confirm('¿Estás seguro de que deseas eliminar este usuario?')) return;
   try {
     await usersStore.softDelete(uid);
+    activeDropdown.value = null; // Cierra el dropdown tras la acción
   } catch (error) {
     alert(`Error al eliminar el usuario: ${usersStore.error || 'Intenta de nuevo.'}`);
   }
@@ -252,10 +246,10 @@ const deleteUser = async (uid) => {
 // Toggle global block status
 const toggleBlockUser = async (user) => {
   try {
-    debugger
     const block = !user.isBlocked;
     await usersStore.blockUserGlobally(user.uid, block);
-    snackbarStore.show(`Usuario ${block ? 'bloqueado' : 'desbloqueado'} exitosamente`,'success');
+    snackbarStore.show(`Usuario ${block ? 'bloqueado' : 'desbloqueado'} exitosamente`, 'success');
+    activeDropdown.value = null; // Cierra el dropdown tras la acción
   } catch (error) {
     snackbarStore.show(`Error al ${user.isBlocked ? 'desbloquear' : 'bloquear'} usuario`, 'error');
   }
@@ -266,19 +260,37 @@ const toggleSuscriptionUser = async (user) => {
   try {
     const suscribe = !user.isSuscribed;
     await usersStore.suscribeUser(user.uid, suscribe);
-    snackbarStore.show(`Usuario ${suscribe ? 'suscripto' : 'desuscripto'} exitosamente`,'success');
+    snackbarStore.show(`Usuario ${suscribe ? 'suscripto' : 'desuscripto'} exitosamente`, 'success');
+    activeDropdown.value = null; // Cierra el dropdown tras la acción
   } catch (error) {
     snackbarStore.show(`Error al ${user.isSuscribed ? 'suscrir' : 'desuscrir'} usuario`, 'error');
   }
 };
 
+// Toggle dropdown menu
+const toggleActionsMenu = (uid) => {
+  activeDropdown.value = activeDropdown.value === uid ? null : uid;
+};
+
+// Handle click outside to close dropdown
+const handleClickOutside = (event) => {
+  filteredUsers.value.forEach(user => {
+    const dropdown = document.querySelector(`[ref="dropdown-${user.uid}"]`);
+    if (dropdown && !dropdown.contains(event.target)) {
+      activeDropdown.value = null;
+    }
+  });
+};
+
 // Manage subscription lifecycle
 onMounted(() => {
   usersStore.subscribeUsers();
+  document.addEventListener('click', handleClickOutside);
 });
 
 onUnmounted(() => {
   usersStore.unsubscribeUsers();
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
