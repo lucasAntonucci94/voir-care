@@ -229,12 +229,12 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { ref, reactive } from "vue";
-import { useUsers } from "../../composable/useUsers";
+// Importaciones
+import { ref, reactive, onMounted, onUnmounted } from "vue";
 import { useSnackbarStore } from "../../stores/snackbar";
 import { useUsersStore } from '../../stores/users';
+
 // Props
 const props = defineProps({
   user: { type: Object, required: true },
@@ -250,11 +250,26 @@ const errorMessage = ref("");
 const snackbarStore = useSnackbarStore();
 const usersStore = useUsersStore();
 
-
 // Copia local del usuario para manejar toggles
 const localUser = reactive({
   isAdmin: props.user.isAdmin || false,
   isSuscribed: props.user.isSuscribed || false,
+});
+
+// Listener para la tecla Escape
+const handleEscape = (event) => {
+  if (event.key === 'Escape' && props.visible) {
+    emit('close');
+  }
+};
+
+// Agregar y remover el eventListener
+onMounted(() => {
+  window.addEventListener('keydown', handleEscape);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscape);
 });
 
 // Formateo de fechas
@@ -275,14 +290,12 @@ const statusLabel = (isBlocked, isDeleted) => {
 };
 
 // Acciones administrativas
-// Toggle global block status
 const toggleBlockUser = async () => {
   try {
-    debugger
     const block = !props.user.isBlocked;
     await usersStore.blockUserGlobally(props.user.uid, block);
     props.user.isBlocked = block;
-    snackbarStore.show(`Usuario ${block ? 'bloqueado' : 'desbloqueado'} exitosamente`,'success');
+    snackbarStore.show(`Usuario ${block ? 'bloqueado' : 'desbloqueado'} exitosamente`, 'success');
   } catch (error) {
     snackbarStore.show(`Error al ${props.isBlocked ? 'desbloquear' : 'bloquear'} usuario`, 'error');
   }
@@ -292,10 +305,9 @@ const toggleAdminRole = async () => {
   isLoading.value = true;
   errorMessage.value = "";
   try {
-    debugger
     const adminRol = !props.user.isAdmin;
     await usersStore.setAdmin(props.user.uid, adminRol);
-    snackbarStore.show(`Usuario ${adminRol ? 'suscripto' : 'desuscripto'} exitosamente`,'success');
+    snackbarStore.show(`Usuario ${adminRol ? 'suscripto' : 'desuscripto'} exitosamente`, 'success');
     props.user.isAdmin = adminRol; // Actualizar el estado local
     emit("update", { ...props.user, isAdmin: adminRol }); // Emitir el cambio
   } catch (err) {
@@ -311,7 +323,7 @@ const toggleSubscriberRole = async () => {
   try {
     const suscribe = !props.user.isSuscribed;
     await usersStore.suscribeUser(props.user.uid, suscribe);
-    snackbarStore.show(`Usuario ${suscribe ? 'suscripto' : 'desuscripto'} exitosamente`,'success');
+    snackbarStore.show(`Usuario ${suscribe ? 'suscripto' : 'desuscripto'} exitosamente`, 'success');
     props.user.isSuscribed = suscribe; // Actualizar el estado local
     emit("update", { ...props.user, isSuscribed: suscribe }); // Emitir el cambio
   } catch (error) {
@@ -323,7 +335,6 @@ const softDeleteUser = async () => {
   isLoading.value = true;
   errorMessage.value = "";
   try {
-    debugger
     await usersStore.softDelete(props.user.uid);
     const updatedUser = { ...props.user, isDeleted: true, deletedAt: new Date().toISOString() };
     emit("update", updatedUser);

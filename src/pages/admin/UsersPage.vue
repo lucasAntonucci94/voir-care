@@ -255,12 +255,14 @@ const openUserDetailModal = (user) => {
   selectedUser.value = { ...user };
   showUserDetailModal.value = true;
   activeDropdown.value = null; // Cierra el dropdown al abrir el modal
+  document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
 };
 
 // Close detail modal
 const closeUserDetailModal = () => {
   selectedUser.value = null;
   showUserDetailModal.value = false;
+  document.body.style.overflow = '';
 };
 
 // Delete user
@@ -311,7 +313,6 @@ const handleClickOutside = (event) => {
     }
   });
 };
-
 
 // Set generic modal configuration
 const setGenericModalConfig = (action, user) => {
