@@ -61,15 +61,15 @@ const navItems = [
     subItems: [
       { label: 'Posts', route: '/admin/categories/posts', icon: 'fas fa-square-share-nodes' },
       { label: 'Blogs', route: '/admin/categories/blogs', icon: 'fas fa-users-cog' },
-      { label: 'Grupos', route: '/admin/categories/groups', icon: 'fas fa-users-cog' },
-      { label: 'Eventos', route: '/admin/categories/events', icon: 'fas fa-calendar-alt' },
+      // { label: 'Grupos', route: '/admin/categories/groups', icon: 'fas fa-users-cog' },
+      // { label: 'Eventos', route: '/admin/categories/events', icon: 'fas fa-calendar-alt' },
     ],
   },
   { label: 'Default Reels', route: '/admin/defaultReels', icon: 'fas fa-book' },
   { label: 'Eventos', route: '/admin/events', icon: 'fas fa-calendar-alt' },
   { label: 'Grupos', route: '/admin/groups', icon: 'fas fa-users-cog' },
   { label: 'Educación', route: '/admin/education', icon: 'fas fa-graduation-cap' },
-  { label: 'Adopción', route: '/admin/adoption', icon: 'fas fa-paw' },
+  { label: 'Publicaciones', route: '/admin/adoption', icon: 'fas fa-book' },
   { label: 'Reportes', route: '/admin/reports', icon: 'fas fa-exclamation-triangle' },
 ];
 

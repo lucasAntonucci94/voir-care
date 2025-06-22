@@ -6,6 +6,7 @@ import { useSavedPosts } from '../composable/useSavedPost';
 export const usePostsStore = defineStore('posts', {
   state: () => {
     const posts = ref([]); // Posts globales (feed)
+    const postsCount = ref(0); // Contador de posts globales (feed)
     const profilePosts = ref([]); // Posts del perfil
     const adoptionPosts = ref([]); // Posts de adopción
     const isLoading = ref(true); // Loading global
@@ -249,6 +250,21 @@ export const usePostsStore = defineStore('posts', {
         // console.log('Cancelando suscripción a posts de adopción...');
         this.unsubscribeAdoption();
         this.unsubscribeAdoption = null;
+      }
+    },
+    /**
+     * Obtiene la cantidad total de reportes y actualiza el estado reportsCount.
+     * @returns {Promise<number>} - Cantidad de reportes
+     */
+    async getCount() {
+      const { getPostsCount } = usePosts();
+      try {
+        const count = await getPostsCount();
+        this.postsCount = count;
+        return count;
+      } catch (error) {
+        console.error('Error en el store al obtener el conteo de posts:', error);
+        throw error;
       }
     },
   },

@@ -379,6 +379,20 @@ export function usePosts() {
     }
   }
 
+  /**
+   * Retorna la cantidad de reportes en la colección reports.
+   * @returns {Promise<number>} - Cantidad de reportes
+   */
+  async function getPostsCount() {
+    try {
+      const querySnapshot = await getDocs(postRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al obtener la cantidad de reportes:', error);
+      throw error;
+    }
+  }
+
   return {
     savePost,
     subscribeToIncomingPosts,
@@ -394,5 +408,6 @@ export function usePosts() {
     hidePost,
     deleteHiddenPost,
     subscribeToAdoptionPosts,
+    getPostsCount,
   };
 }

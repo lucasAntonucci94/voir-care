@@ -273,6 +273,19 @@ async function deleteImage(url) {
   }
 }
 
+/**
+ * Retorna la cantidad de reportes en la colección reports.
+ * @returns {Promise<number>} - Cantidad de reportes
+ */
+async function getBlogsCount() {
+  try {
+    const querySnapshot = await getDocs(blogsRef);
+    return querySnapshot.size;
+  } catch (error) {
+    console.error('Error al obtener la cantidad de blogs:', error);
+    throw error;
+  }
+}
 export function useEducationBlogs() {
   return {
     blogs,
@@ -285,5 +298,6 @@ export function useEducationBlogs() {
     saveBlog,
     updateBlog,
     deleteBlog,
+    getBlogsCount,
   };
 }

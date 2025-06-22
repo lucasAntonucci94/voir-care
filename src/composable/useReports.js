@@ -1,11 +1,11 @@
-import { getFirestore, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, getDocs, updateDoc, collection, onSnapshot,deleteDoc } from 'firebase/firestore';
 import { newGuid } from '../utils/newGuid';
 
-// Incializamos Firestore
+// Inicializamos Firestore
 const db = getFirestore();
 const reportRef = collection(db, 'reports');
 
-// Tipos validos de entidad a reportar
+// Tipos válidos de entidad a reportar
 const VALID_ENTITY_TYPES = [
   'post',
   'reel',
@@ -60,7 +60,125 @@ export function useReports() {
     }
   }
 
+  /**
+   * Retorna la cantidad de reportes en la colección reports.
+   * @returns {Promise<number>} - Cantidad de reportes
+   */
+  async function getReportsCount() {
+    try {
+      const querySnapshot = await getDocs(reportRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al obtener la cantidad de reportes:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina un reporte por su ID de documento.
+   * @param {string} docId - ID del documento del reporte
+   * @returns {Promise<void>}
+   * @throws {Error} Si el reporte no existe o hay un error al eliminar
+   */
+  async function deleteReport(docId) {
+    try {
+      if (!docId) {
+        throw new Error('docId es requerido');
+      }
+      const reportDoc = doc(reportRef, docId);
+      await deleteDoc(reportDoc);
+    } catch (error) {
+      console.error('Error al eliminar el reporte:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Baja lógica de un reporte por su ID de documento.
+   * @param {string} docId - ID del documento del reporte
+   * @returns {Promise<void>}
+   * @throws {Error} Si el reporte no existe o hay un error al eliminar
+   */
+  async function softDeleteReport(docId) {
+    try {
+      if (!docId) {
+        throw new Error('docId es requerido');
+      }
+      const reportDoc = doc(reportRef, docId);
+      await updateDoc(reportDoc, {
+        isDeleted: true,
+        deletedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('Error al eliminar el reporte:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene un reporte por su ID de documento.
+   * @param {string} docId - ID del documento del reporte
+   * @returns {Promise<Object|null>} - Datos del reporte o null si no existe
+   * @throws {Error} Si docId es inválido
+   */
+  async function getReportById(docId) {
+    try {
+      if (!docId) {
+        throw new Error('docId es requerido');
+      }
+      const reportDoc = doc(reportRef, docId);
+      const reportSnap = await getDoc(reportDoc);
+      if (reportSnap.exists()) {
+        return { id: reportSnap.id, ...reportSnap.data() };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener el reporte por ID:', error);
+      throw error;
+    }
+  }
+
+  //metodo para obtener todo los reportes
+  async function getAllReports() {
+    try {
+      const querySnapshot = await getDocs(reportRef);
+      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error('Error al obtener todos los reportes:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Escucha los reportes en tiempo real.
+   * @param {function} callback - Función que recibe un array de reportes
+   * @returns {function} - Función para cancelar la suscripción
+   */
+  function subscribeToReports(callback) {
+    try {
+      return onSnapshot(reportRef, (snapshot) => {
+        const reports = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        callback(reports);
+      }, (error) => {
+        console.error('Error al suscribirse a reportes:', error);
+        throw error;
+      });
+    } catch (err) {
+      console.error('Error al configurar la suscripción a reportes:', err);
+      throw err;
+    }
+  }
+
   return {
     saveReport,
+    getReportsCount,
+    deleteReport,
+    getReportById,
+    getAllReports,
+    softDeleteReport,
+    subscribeToReports,
   };
 }

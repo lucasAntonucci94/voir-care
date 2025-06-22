@@ -7,6 +7,7 @@ import { useSnackbarStore } from './snackbar';
 export const useEducationBlogsStore = defineStore('educationBlogs', {
   state: () => ({
     blogs: ref([]),
+    blogsCount: ref(0),
     isLoading: ref(true),
     error: ref(null),
     unsubscribeFn: ref(null),
@@ -111,7 +112,6 @@ export const useEducationBlogsStore = defineStore('educationBlogs', {
         throw error;
       }
     },
-
     /**
      * Fetches a blog by ID
      * @param {string|number} id - Blog ID
@@ -125,6 +125,21 @@ export const useEducationBlogsStore = defineStore('educationBlogs', {
         console.error('Error al obtener blog:', error);
         const snackbarStore = useSnackbarStore();
         snackbarStore.show('Error al obtener blog: ' + error.message, 'error');
+        throw error;
+      }
+    },
+    /**
+     * Obtiene la cantidad total de reportes y actualiza el estado reportsCount.
+     * @returns {Promise<number>} - Cantidad de reportes
+     */
+    async getCount() {
+      const { getBlogsCount } = useEducationBlogs();
+      try {
+        const count = await getBlogsCount();
+        this.blogsCount = count;
+        return count;
+      } catch (error) {
+        console.error('Error en el store al obtener el conteo de blogs:', error);
         throw error;
       }
     },
