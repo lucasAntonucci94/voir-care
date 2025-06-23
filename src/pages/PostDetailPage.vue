@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center py-8 px-4">
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center py-8 px-4">
     <div class="w-full max-w-2xl">
       <!-- Header con botón de volver -->
       <header class="mb-6 flex items-center gap-4">
@@ -59,7 +59,6 @@ onMounted(async () => {
     error.value = null;
 
     // Cargar el posteo por idDoc
-    debugger
     const fetchedPost = await postsStore.getByIdDoc(postId.value);
     if (fetchedPost) {
       post.value = {

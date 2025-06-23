@@ -35,7 +35,7 @@
             <BlogPostCard
               v-for="blog in displayedBlogs"
               :key="blog.id"
-              :post="blog"
+              :blog="blog"
             />
           </div>
         </div>

@@ -242,7 +242,6 @@ async function deleteAllRead() {
 
 async function handleClick(notification) {
   await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id);
-  debugger
   if (notification.type === 'message') {
     await privateChatsStore.markChatAsReaded(user.value.email, notification.entityId);
     privateChatsStore.setSelectedChatId(notification.entityId);

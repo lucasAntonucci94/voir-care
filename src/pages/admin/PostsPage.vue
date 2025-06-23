@@ -173,7 +173,6 @@ onMounted(async () => {
 // Computed para posts filtrados
 const filteredPosts = computed(() => {
   let filtered = postsStore.posts.value;
-    debugger
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(

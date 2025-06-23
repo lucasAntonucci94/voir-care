@@ -107,7 +107,6 @@ export const useReportsStore = defineStore('reports', {
         }
         this.unsubscribe = subscribeToReports((reports) => {
           this.reports = reports;
-          debugger
           this.reportsCount = reports.length;
         });
       } catch (error) {

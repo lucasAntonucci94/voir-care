@@ -130,13 +130,11 @@ const emit = defineEmits(['close']);
 const modalTitleId = computed(() => `modal-title-${Math.random().toString(36).substring(7)}`);
 
 const isImage = computed(() => {
-  debugger
   if (!props.post.media?.url) return false;
   return props.post.media.type === 'image' || props.post.media.url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 });
 
 const isVideo = computed(() => {
-  debugger
   if (!props.post.media?.url) return false;
   return props.post.media.type === 'video' || props.post.media.url.match(/\.(mp4|webm|ogg)$/i);
 });

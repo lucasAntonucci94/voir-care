@@ -293,9 +293,9 @@
 
 <script setup>
 import { ref, computed, watchEffect } from 'vue';
-import { defineAsyncComponent } from 'vue';
 import { useEducationBlogsStore } from '../../stores/educationBlogs';
 import { useSnackbarStore } from '../../stores/snackbar';
+import { defineAsyncComponent } from 'vue';
 import 'vue-multiselect/dist/vue-multiselect.css';
 import { useThemeStore } from '../../stores/theme';
 
