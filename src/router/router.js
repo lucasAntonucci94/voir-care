@@ -17,6 +17,7 @@ import EducationPage from '../pages/EducationPage.vue';
 import PremiumPage from '../pages/PremiumPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
+import PostDetailPage from '../pages/PostDetailPage.vue';
 import AdmUsersPage from '../pages/admin/UsersPage.vue';
 import AdmEventsPage from '../pages/admin/EventsPage.vue';
 import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
@@ -146,6 +147,14 @@ const routes = [
         path:  '/premium',
         name: 'premium',
         component: PremiumPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/post/:id',
+        name: 'PostDetail',
+        component: PostDetailPage,
         meta: {
             requiresAuth: true,
         }

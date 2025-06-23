@@ -268,5 +268,20 @@ export const usePostsStore = defineStore('posts', {
         throw error;
       }
     },
+    /**
+     * Obtiene post por idDoc.
+     * @returns {Promise<number>} - Cantidad de reportes
+     */
+    async getByIdDoc(idDoc) {
+      const { getPostById } = usePosts();
+      try {
+        const post = await getPostById(idDoc);
+        this.postsCount = post ? 1 : 0;
+        return post;
+      } catch (error) {
+        console.error('Error en el store al obtener el conteo de posts:', error);
+        throw error;
+      }
+    },
   },
 });

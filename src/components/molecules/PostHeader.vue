@@ -18,6 +18,12 @@
     <div class="relative" ref="dropdownRef">
       <button 
         @click="toogleActionsMenu" 
+        :aria-label="post.showMenu ? 'Cerrar menú de acciones' : 'Abrir menú de acciones'"
+        :class="[
+          post.showMenu ? 'text-primary dark:text-secondary' : 'text-gray-600 dark:text-gray-400',
+          disableAction ? 'cursor-not-allowed opacity-50' : ''
+        ]"
+        :disabled="disableAction" 
         class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
       >
         <i class="fas fa-ellipsis-h"></i>
@@ -191,7 +197,17 @@ import { usePosts } from '../../composable/usePosts';
 import DefaultAvatar from '../../assets/avatar1.jpg';
 import { useSnackbarStore } from '../../stores/snackbar'
 
-const props = defineProps(['post']);
+const props = defineProps({
+  post: {
+    type: Object,
+    default: null,
+    required: true,
+  },
+  disableAction: {
+    type: Boolean,
+    default: false,
+  },
+});
 const emit = defineEmits(['delete', 'report']);
 
 const { user } = useAuth();

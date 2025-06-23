@@ -242,6 +242,7 @@ async function deleteAllRead() {
 
 async function handleClick(notification) {
   await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id);
+  debugger
   if (notification.type === 'message') {
     await privateChatsStore.markChatAsReaded(user.value.email, notification.entityId);
     privateChatsStore.setSelectedChatId(notification.entityId);
@@ -253,6 +254,8 @@ async function handleClick(notification) {
     router.push(`/group/${notification.extra.groupId ?? notification.entityId}`);
   } else if (notification.type === 'eventInvitation') {
     router.push(`/event/${notification.extra.eventId ?? notification.entityId}`);
+  } else if (notification.entityType === 'post' &&(notification.type === 'comment' || notification.type === 'like')) {
+    router.push(`/post/${notification.entityId}`);
   }
   toggle();
 }
