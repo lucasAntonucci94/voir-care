@@ -26,6 +26,7 @@ import BlogDetailPage from '../pages/BlogDetail.vue';
 import AdoptionPage from '../pages/AdoptionPage.vue';
 import AdmCategoriesPage from '../pages/admin/CategoriesPage.vue';
 import AdmBlogCategoriesPage from '../pages/admin/BlogCategoriesPage.vue';
+import AdmPostsPage from '../pages/admin/PostsPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -206,9 +207,9 @@ const routes = [
         }
       },
       {
-        path:  '/admin/adoption',
-        name: 'adoptionAdm',
-        component: AdmUsersPage,
+        path:  '/admin/posts',
+        name: 'postsAdm',
+        component: AdmPostsPage,
         meta: {
             requiresAuth: true,
         }

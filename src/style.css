@@ -250,14 +250,21 @@
   background-color: #1F2937;
   color: #f9fafb;
 }
-
+.multiselect__single {
+  color: #f9fafb !important; /* Texto en modo oscuro */
+  background-color:  var(--color-primary-md) !important;
+}
+.dark .multiselect__single {
+  color: #f9fafb !important; /* Texto en modo oscuro */
+  background-color:  var(--color-secondary-md) !important;
+}
 /* General input */
 .multiselect__input {
   color: inherit;
 }
 
 .dark .multiselect__input {
-  color: #f9fafb;
+  color: inherit;
 }
 
 /* Content wrapper (dropdown) */

@@ -16,12 +16,12 @@
         <!-- Stat grid -->
         <template v-else>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <DashboardCard title="Usuarios" :value="stats.users" icon="fas fa-users" />
-            <DashboardCard title="Eventos" :value="stats.events" icon="fas fa-calendar-alt" />
-            <DashboardCard title="Grupos" :value="stats.groups" icon="fas fa-users-cog" />
-            <DashboardCard title="Educación" :value="stats.educations" icon="fas fa-graduation-cap" />
-            <DashboardCard title="Publicaciones" :value="stats.posts" icon="fas fa-book" />
-            <DashboardCard title="Reportes" :value="stats.reports" icon="fas fa-exclamation-triangle" />
+            <DashboardCard title="Usuarios" :value="stats.users" icon="fas fa-users" routeTo="users"/>
+            <DashboardCard title="Eventos" :value="stats.events" icon="fas fa-calendar-alt" routeTo="events" />
+            <DashboardCard title="Grupos" :value="stats.groups" icon="fas fa-users-cog" routeTo="groups" />
+            <DashboardCard title="Educación" :value="stats.educations" icon="fas fa-graduation-cap" routeTo="education" />
+            <DashboardCard title="Publicaciones" :value="stats.posts" icon="fas fa-book" routeTo="posts" />
+            <DashboardCard title="Reportes" :value="stats.reports" icon="fas fa-exclamation-triangle" routeTo="reports" />
           </div>
         </template>
       </main>

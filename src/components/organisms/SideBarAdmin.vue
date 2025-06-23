@@ -69,7 +69,7 @@ const navItems = [
   { label: 'Eventos', route: '/admin/events', icon: 'fas fa-calendar-alt' },
   { label: 'Grupos', route: '/admin/groups', icon: 'fas fa-users-cog' },
   { label: 'Educación', route: '/admin/education', icon: 'fas fa-graduation-cap' },
-  { label: 'Publicaciones', route: '/admin/adoption', icon: 'fas fa-book' },
+  { label: 'Publicaciones', route: '/admin/posts', icon: 'fas fa-book' },
   { label: 'Reportes', route: '/admin/reports', icon: 'fas fa-exclamation-triangle' },
 ];
 

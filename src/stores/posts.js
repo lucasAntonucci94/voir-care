@@ -46,6 +46,7 @@ export const usePostsStore = defineStore('posts', {
       this.unsubscribeGlobal.value = subscribeToIncomingPosts((updatedPosts) => {
         // console.log('Posts globales recibidos desde Firebase:', updatedPosts);
         this.posts.value = updatedPosts;
+        debugger
         this.isLoading = false;
       });
     },

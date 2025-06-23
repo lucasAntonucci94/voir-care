@@ -24,7 +24,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     required: true,
@@ -40,12 +40,13 @@ defineProps({
   routeTo: {
     type: String,
     default: null,
+    required: false,
   },
 });
 
 function navigateTo() {
-  if (routeTo) {
-    router.push(routeTo);
+  if (props.routeTo) {
+    router.push(props.  routeTo);
   }
 }
 </script>
