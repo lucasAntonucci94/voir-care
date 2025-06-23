@@ -33,7 +33,7 @@
       </div>
 
       <!-- Posts Table -->
-      <div v-if="filteredPosts.length" class="overflow-x-auto">
+      <div v-if="filteredPosts.length" class="overflow-x-auto rounded-lg">
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
             <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
@@ -53,11 +53,11 @@
               class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100/80 dark:hover:bg-gray-600/80"
             >
               <td class="py-3 px-6 text-left whitespace-nowrap">
-                <div class="flex items-center">
-                  <span>{{ post.title || 'Sin título' }}</span>
+                <div class="flex items-center max-w-xs">
+                  <span class="truncate">{{ post.title || 'Sin título' }}</span>
                 </div>
               </td>
-              <td class="py-3 px-6 text-left">{{ post.userId || 'N/A' }}</td>
+              <td class="py-3 px-6 text-left">{{ post.user.displayName || 'N/A' }}</td>
               <td class="py-3 px-6 text-left">{{ post.categories?.length ? post.categories.map(cat => cat.name).join(', ') : 'N/A' }}</td>
               <td class="py-3 px-6 text-center">{{ formatDate(post.created_at) }}</td>
               <td class="py-3 px-6 text-center">{{ post.likes?.length || 0 }}</td>
@@ -69,7 +69,7 @@
               <td class="flex items-center justify-between gap-2 py-3 px-6 text-center">
                 <button
                   @click="openPostDetailModal(post)"
-                  class="w-full text-left px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                  class="flex w-full text-left px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                 >
                   <i class="fas fa-eye mr-2 text-primary dark:text-secondary"></i> Ver
                 </button>
@@ -173,7 +173,7 @@ onMounted(async () => {
 // Computed para posts filtrados
 const filteredPosts = computed(() => {
   let filtered = postsStore.posts.value;
-
+    debugger
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
@@ -306,33 +306,4 @@ td:last-child {
   border-right: none;
 }
 
-button i {
-  font-size: 1.25rem;
-}
-
-/* Primary color for buttons */
-.bg-primary {
-  background-color: #3b82f6;
-}
-
-.bg-primary:hover {
-  background-color: #2563eb;
-}
-
-.bg-primary-dark {
-  background-color: #2563eb;
-}
-
-/* Dark mode adjustments */
-.dark .bg-primary {
-  background-color: #60a5fa;
-}
-
-.dark .bg-primary:hover {
-  background-color: #3b82f6;
-}
-
-.dark .bg-primary-dark {
-  background-color: #3b82f6;
-}
 </style>

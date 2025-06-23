@@ -1,4 +1,3 @@
-```vue
 <template>
   <div
     v-if="visible"

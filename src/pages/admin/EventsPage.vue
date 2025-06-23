@@ -42,7 +42,7 @@
       </div>
 
       <!-- Events Table -->
-      <div v-if="filteredEvents.length" class="overflow-x-auto">
+      <div v-if="filteredEvents.length" class="overflow-x-auto rounded-lg">
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
             <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
