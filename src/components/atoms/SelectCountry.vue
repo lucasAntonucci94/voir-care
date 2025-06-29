@@ -24,7 +24,7 @@
   import { ref } from 'vue';
   
   // Props
-  defineProps({
+  const props = defineProps({
     modelValue: { type: String, default: '' }, // Para v-model
     label: { type: String, default: 'País' },
     id: { type: String, default: 'country-select' },

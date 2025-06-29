@@ -1,7 +1,7 @@
 <template>
   <div class="md:min-w-md p-8 my-8 mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg">
-    <h3 class="font-heading tracking-tight text-4xl font-bold text-primary dark:text-secondary mb-3 text-left">Registro</h3>
-    <p class="text-gray-500 dark:text-gray-300 mb-8 text-left">¡Bienvenido! Por favor, completa los pasos para registrarte.</p>
+    <h3 class="dosis-font font-heading tracking-tight text-4xl font-bold text-primary dark:text-secondary mb-3 text-left">Registro</h3>
+    <p class="josefin-font text-gray-500 dark:text-gray-300 mb-8 text-left">¡Bienvenido! Por favor, completa los pasos para registrarte.</p>
 
     <!-- Stepper -->
     <div class="flex justify-center mb-4">
@@ -55,7 +55,7 @@
             placeholder="Ingresa tu nombre de usuario"
             :disabled="isLoading"
           />
-          <p v-if="displayName.field.error" class="text-red-500 text-sm mt-1">{{ displayName.field.error }}</p>
+          <p v-if="displayName.field.error" class="josefin-font text-red-500 text-sm mt-1">{{ displayName.field.error }}</p>
         </div>
         <div class="mt-4">
           <InputText
@@ -67,7 +67,7 @@
             placeholder="Ingresa tu correo electrónico"
             :disabled="isLoading"
           />
-          <p v-if="email.field.error" class="text-red-500 text-sm mt-1">{{ email.field.error }}</p>
+          <p v-if="email.field.error" class="josefin-font text-red-500 text-sm mt-1">{{ email.field.error }}</p>
         </div>
       </div>
 
@@ -82,7 +82,7 @@
             placeholder="Ingresa tu contraseña"
             :disabled="isLoading"
           />
-          <p v-if="password.field.error" class="text-red-500 text-sm mt-1">{{ password.field.error }}</p>
+          <p v-if="password.field.error" class="josefin-font text-red-500 text-sm mt-1">{{ password.field.error }}</p>
         </div>
         <div class="mt-4">
           <InputPassword
@@ -92,7 +92,7 @@
             placeholder="Ingresa nuevamente tu contraseña"
             :disabled="isLoading"
           />
-          <p v-if="confirmPassword.field.error" class="text-red-500 text-sm mt-1">{{ confirmPassword.field.error }}</p>
+          <p v-if="confirmPassword.field.error" class="josefin-font text-red-500 text-sm mt-1">{{ confirmPassword.field.error }}</p>
         </div>
       </div>
 
@@ -112,13 +112,13 @@
           @click="currentStep < steps.length - 1 ? nextStep() : handleSubmit()"
           :disabled="isLoading"
           class="relative flex items-center justify-center px-5 h-12 w-full font-bold text-gray-100 hover:text-white bg-primary-md dark:bg-secondary-md hover:bg-primary hover:dark:bg-secondary rounded-lg transition-all duration-300 border dark:border-gray-800">
-          <span v-if="isLoading">{{ currentStep < steps.length - 1 ? 'Cargando...' : 'Registrando...' }}</span>
-          <span v-else>{{ currentStep < steps.length - 1 ? 'Siguiente' : 'Registrar' }}</span>
+          <span class="josefin-font" v-if="isLoading">{{ currentStep < steps.length - 1 ? 'Cargando...' : 'Registrando...' }}</span>
+          <span class="josefin-font" v-else>{{ currentStep < steps.length - 1 ? 'Siguiente' : 'Registrar' }}</span>
         </button>
       </div>
     </form>
 
-    <div v-if="currentStep === 0" class="text-center mt-6 text-gray-700 dark:text-gray-300">
+    <div v-if="currentStep === 0" class="josefin-font text-center mt-6 text-gray-700 dark:text-gray-300">
       ¿Ya tienes una cuenta?
       <router-link to="/login" class="text-primary hover:text-primary-md dark:text-secondary dark:hover:text-secondary-md font-semibold ml-1">Iniciar Sesión</router-link>
     </div>

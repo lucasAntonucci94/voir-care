@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tailwindcss/utilities";
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
 /* @import '@vuepic/vue-datepicker/dist/main.css'; */
 
 @theme{
@@ -53,6 +54,20 @@
   --df-messenger-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --df-messenger-transition: all 0.3s ease;
   --df-messenger-font-family: 'Inter', sans-serif;
+}
+
+.dosis-font {
+  font-family: "Dosis", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.josefin-font {
+  font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
 }
 
 .dark {

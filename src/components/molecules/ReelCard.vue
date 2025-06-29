@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { defineEmits, defineProps } from 'vue';
+import { defineEmits } from 'vue';
 
 const props = defineProps({
   group: {

@@ -109,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, defineProps, onMounted, onUnmounted } from 'vue';
+import { ref, defineEmits, onMounted, onUnmounted } from 'vue';
 import { useReelsStore } from '../../stores/reels';
 import { useAuth } from '../../api/auth/useAuth';
 import { fileToBase64 } from '../../utils/fileToBase64';

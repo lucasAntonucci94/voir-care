@@ -1,7 +1,7 @@
 <!-- PostCard.vue -->
 <template>
   <div
-    class="bg-white dark:bg-gray-800 text-gray-600 dark:text-white p-4 rounded-lg shadow-md hover:shadow-lg w-full max-w-lg border border-gray-100 dark:border-gray-800"
+    class="josefin-font bg-white dark:bg-gray-800 text-gray-600 dark:text-white p-4 rounded-lg shadow-md hover:shadow-lg w-full max-w-lg border border-gray-100 dark:border-gray-800"
   >
     <PostHeader :post="post" @delete="deletePost" @report="reportPost" />
     <h3 class="text-lg font-bold text-ellipsis">{{ post?.title }}</h3>

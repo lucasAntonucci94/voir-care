@@ -1,6 +1,6 @@
 <template>
   <div class="mb-4">
-    <label :for="id" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</label>
+    <label :for="id" class="josefin-font block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</label>
     <input
       :id="id"
       :minLength="minLength"
@@ -10,7 +10,7 @@
       @input="updateValue"
       :placeholder="placeholder ?? `Ingrese ${label}`"
       :class="[
-        'mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:bg-gray-100 dark:focus:bg-gray-600 dark:hover:bg-gray-600 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
+        'josefin-font mt-1 w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:bg-gray-100 dark:focus:bg-gray-600 dark:hover:bg-gray-600 focus:ring-primary dark:focus:ring-secondary focus:border-transparent',
         modelValue.hasError ? 'border-red-500' : 'border-gray-300 dark:border-gray-800',
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       ]"
@@ -18,7 +18,7 @@
       :aria-invalid="modelValue.hasError"
       :aria-describedby="modelValue.hasError ? `${id}-error` : null"
     />
-    <div v-if="modelValue.hasError" :id="`${id}-error`"  role="alert" class="text-red-500 text-sm mt-1">
+    <div v-if="modelValue.hasError" :id="`${id}-error`"  role="alert" class="josefin-font text-red-500 text-sm mt-1">
       <slot name="error-message">{{ modelValue.errorMessage ?? 'Este campo es obligatorio.' }}</slot>
     </div>
   </div>

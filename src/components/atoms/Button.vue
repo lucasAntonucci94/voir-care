@@ -12,5 +12,5 @@
   </template>
   
   <script setup>
-  defineProps(['type', 'disabled']);
+  const props = defineProps(['type', 'disabled']);
   </script>

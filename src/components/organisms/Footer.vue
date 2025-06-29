@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-primary dark:bg-secondary text-white py-6">
+  <footer class="dosis-font bg-primary dark:bg-secondary text-white py-6">
     <div class="container mx-auto px-4 text-center">
       <!-- Social Media Links -->
       <div class="flex justify-center space-x-6 mb-4">

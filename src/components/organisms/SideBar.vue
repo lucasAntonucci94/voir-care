@@ -1,7 +1,7 @@
 <template>
   <aside
     :class="[
-      'bg-gray-100 dark:bg-gray-800 w-64 p-6 shadow-lg transition-transform duration-300 fixed top-0 bottom-0 z-100',
+      'dosis-font bg-gray-100 dark:bg-gray-800 w-64 p-6 shadow-lg transition-transform duration-300 fixed top-0 bottom-0 z-100',
       show ? 'translate-x-0' : '-translate-x-full',
       'md:w-72 md:shadow-none md:static md:translate-x-0'
     ]"

@@ -1,5 +1,5 @@
 <template>
-  <header class="text-white bg-primary dark:bg-secondary p-4 relative shadow-md transition-all duration-300" ref="headerRef">
+  <header class="dosis-font text-white bg-primary dark:bg-secondary p-4 relative shadow-md transition-all duration-300" ref="headerRef">
     <div class="container mx-auto flex flex-wrap justify-between items-center md:py-4 px-4 md:px-8 lg:px-16">
       <div class="flex items-center mb-2 md:mb-0">
         <!-- Botón hamburguesa solo visible en móvil y en la ruta /feed -->
@@ -7,30 +7,19 @@
           <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
         </button>
         <span class="sr-only" role="heading" aria-level="1">Voir</span>
-        <router-link v-if="isAuthenticated" to="/feed" class="flex items-center">
-          <!-- Logo para tema claro -->
-          <img src="../../assets/icons/logoGreen.png" alt="Logo claro" class="h-10 dark:hidden" />
-
-          <!-- Logo para tema oscuro -->
-          <img src="../../assets/icons/logoOrange.png" alt="Logo oscuro" class="h-10 hidden dark:inline" />
-
-        </router-link>
-        <router-link v-else to="/" class="flex items-center">
-          <img src="../../assets/icons/logoGreen.png" alt="Logo claro" class="h-10 dark:hidden" />
-
-          <!-- Logo para tema oscuro -->
-          <img src="../../assets/icons/logoOrange.png" alt="Logo oscuro" class="h-10 hidden dark:inline" />
+        <router-link :to="isAuthenticated ? '/feed' : '/'" class="flex items-center">
+          <img src="../../assets/icons/logoBlancoPNG.png" alt="Logo Voir" class="h-10" />
         </router-link>
       </div>
       <nav class="flex flex-nowrap" aria-label="Navegación principal">
         <div class="flex items-center space-x-2 md:space-x-6">
-          <router-link v-if="!isAuthenticated" to="/login" class="flex items-center">
-            <i class="fa fa-user mr-2" aria-hidden="true"></i>
-            <span class="hidden sm:block font-bold hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300">Iniciar Sesión</span >
+          <router-link v-if="!isAuthenticated" to="/login" class="flex items-center group">
+            <i class="fa fa-user mr-2 text-white dark:text-white group-hover:text-primary-lighter dark:group-hover:text-secondary-lighter transition-colors duration-300" aria-hidden="true"></i>
+            <span class="dosis-font hidden sm:block font-bold  text-white dark:text-white group-hover:text-primary-lighter dark:group-hover:text-secondary-lighter transition-colors duration-300">Iniciar Sesión</span>
           </router-link>
-          <router-link v-if="!isAuthenticated" to="/register" class="flex items-center">
-            <i class="fa fa-clipboard-list mr-2" aria-hidden="true"></i>
-            <span class="hidden sm:block font-bold hover:text-primary-lighter dark:hover:text-secondary-lighter transition-colors duration-300">Register</span>
+          <router-link v-if="!isAuthenticated" to="/register" class="flex items-center group">
+            <i class="fa fa-clipboard-list mr-2  text-white dark:text-white group-hover:text-primary-lighter dark:group-hover:text-secondary-lighter transition-colors duration-300" aria-hidden="true"></i>
+            <span class="dosis-font hidden sm:block font-bold  text-white dark:text-white group-hover:text-primary-lighter dark:group-hover:text-secondary-lighter transition-colors duration-300">Register</span>
           </router-link>
           <NotificationDropdown
             v-if="isAuthenticated"
@@ -38,12 +27,6 @@
             @toggle="navbarStore.toggleMenu('notifications')"
             class="flex-shrink-0"
           />
-          <!-- <MessagesDropdown
-            v-if="isAuthenticated"
-            :is-open="navbarStore.isMessageMenuOpen"
-            @toggle="navbarStore.toggleMenu('messages')"
-            class="flex-shrink-0"
-          /> -->
           <UserDropdown
             v-if="isAuthenticated"
             :is-open="navbarStore.isUserMenuOpen"
@@ -58,11 +41,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-// import { useRoute } from 'vue-router';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSidebarStore } from '../../stores/sidebar';
 import UserDropdown from '../molecules/UserDropdown.vue';
-// import MessagesDropdown from '../molecules/MessagesDropdown.vue';
 import NotificationDropdown from '../molecules/NotificationDropdown.vue';
 import { useNavbarStore } from '../../stores/navbar';
 

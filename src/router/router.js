@@ -248,9 +248,38 @@ const routes = [
   },
 ];
 
+const scrollBehavior = (to, from, savedPosition) => {
+  // Si hay una posición guardada
+  if (savedPosition) {
+    return savedPosition;
+  }
+  // Si hay un hash en la URL (un anclaje)
+  else if (to.hash) {
+    // Busca el elemento en el DOM con el ID del hash
+    const el = document.querySelector(to.hash);
+    
+    if (el) {
+      // Retorna la configuración de scroll para desplazar al elemento
+      // top: el.getBoundingClientRect().top + window.scrollY - 0, 
+      // Si tienes un header fijo, ajusta el '0' a la altura de tu header para que no se oculte el contenido
+      return {
+        el: to.hash,
+        behavior: 'smooth', // Desplazamiento suave
+      };
+    }
+    // Si el elemento no existe, simplemente desplázate al top
+    return { top: 0, behavior: 'smooth' };
+  }
+  // Si no hay hash y no hay posición guardada, desplázate al inicio de la página
+  else {
+    return { top: 0, behavior: 'smooth' };
+  }
+};
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior,  
 });
 
 const { isAuthenticated, user } = useAuth();

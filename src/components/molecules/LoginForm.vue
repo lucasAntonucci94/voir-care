@@ -1,10 +1,10 @@
 <!-- LoginForm.vue -->
 <template>
   <div class="md:min-w-md p-8 mb-8 mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg">
-    <h3 class="font-heading tracking-tight text-4xl font-bold text-primary dark:text-secondary mb-3 text-left">
+    <h3 class="dosis-font font-heading tracking-tight text-4xl font-bold text-primary dark:text-secondary mb-3 text-left">
       {{ showResetForm ? 'Restablecer Contraseña' : 'Iniciar Sesión' }}
     </h3>
-    <p class="text-gray-500 dark:text-gray-300 mb-8 text-left">
+    <p class="josefin-font text-gray-500 dark:text-gray-300 mb-8 text-left">
       {{ showResetForm ? 'Ingresa tu correo para recibir un enlace de restablecimiento.' : '¡Bienvenido! Por favor, ingresa tus datos.' }}
     </p>
 
@@ -13,13 +13,13 @@
       <InputText v-model="email.field.value" label="Usuario" type="login" id="email" maxLength="254" placeholder="Ingresa tu usuario o email"/>
       <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
       <div class="text-right mb-8">
-        <button type="button" @click="showResetForm = true" class="inline-block text-sm font-semibold text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md">
+        <button type="button" @click="showResetForm = true" class="josefin-font inline-block text-sm font-semibold text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md">
           ¿Olvidaste tu contraseña?
         </button>
       </div>
       <button type="submit" :disabled="isLoading" class="relative flex items-center justify-center px-5 h-12 w-full font-bold text-gray-100 hover:text-white bg-primary-md dark:bg-secondary-md hover:bg-primary hover:dark:bg-secondary rounded-lg transition-all duration-300 border dark:border-gray-800">
-        <span v-if="isLoading">Cargando...</span>
-        <span v-else>Iniciar Sesión</span>
+        <span class="josefin-font" v-if="isLoading">Cargando...</span>
+        <span class="josefin-font" v-else>Iniciar Sesión</span>
       </button>
     </form>
 
@@ -27,18 +27,18 @@
     <form v-else @submit.prevent="handleResetPassword">
       <InputText v-model="resetEmail.field.value" label="Correo Electrónico" type="email" maxLength="254" id="reset-email" placeholder="Ingresa tu correo"/>
       <div class="flex gap-2 mt-4">
-        <button type="button" @click="showResetForm = false" class="flex-1 px-5 h-12 font-bold text-gray-700 bg-gray-200 hover:bg-gray-400 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg">
+        <button type="button" @click="showResetForm = false" class="josefin-font flex-1 px-5 h-12 font-bold text-gray-700 bg-gray-200 hover:bg-gray-400 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg">
           Volver
         </button>
         <button type="submit" :disabled="isResetting" class="flex-1 px-5 h-12 font-bold text-white bg-primary dark:bg-secondary hover:bg-primary-md dark:hover:bg-secondary-md rounded-lg">
-          <span v-if="isResetting">Enviando...</span>
-          <span v-else>Enviar</span>
+          <span class="josefin-font" v-if="isResetting">Enviando...</span>
+          <span class="josefin-font" v-else>Enviar</span>
         </button>
       </div>
     </form>
 
     <!-- Link de registro (solo visible en login) -->
-    <div v-if="!showResetForm" class="text-center mt-6 text-gray-700 dark:text-gray-300">
+    <div v-if="!showResetForm" class="josefin-font text-center mt-6 text-gray-700 dark:text-gray-300">
       ¿No tienes una cuenta?
       <router-link to="/register" class="text-primary hover:text-primary-md dark:text-secondary dark:hover:text-secondary-md font-semibold ml-1">Regístrate</router-link>
     </div>

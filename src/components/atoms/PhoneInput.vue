@@ -34,7 +34,7 @@
 <script setup>
 import { ref } from 'vue';
 
-defineProps({
+const props = defineProps({
   modelValue: String,
   label: String,
   id: String,
