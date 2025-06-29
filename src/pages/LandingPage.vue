@@ -91,10 +91,10 @@
 
   <!-- Educación y Adopción -->
   <section class="py-16 bg-gray-100/50 dark:bg-gray-800 font-poppins">
-    <div class="container flex flex-col items-center mx-auto px-4 text-center">
+    <div class="container flex flex-col items-center mx-auto">
       <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-12 font-abril">Aprendé y adoptá</h2>
       <video 
-        class="w-full lg:h-150 xl:h-100 xl:w-[80%] xxl:h-125  object-content lg:object-fit z-0 rounded-lg shadow-sm mt-8" 
+        class="w-full lg:h-150 xl:h-100  object-content z-0 rounded-xl shadow-sm mt-8" 
         src="../assets/videos/ConsejosAdopcion.mp4"
         autoplay
         loop
