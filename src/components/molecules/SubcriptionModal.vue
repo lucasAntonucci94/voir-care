@@ -61,7 +61,7 @@
         <!-- Paso 1: Aceptar términos -->
         <div v-if="currentStep === 1">
           <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Con Voir Premium, disfruta de creación ilimitada de grupos y eventos, acceso a contenido exclusivo y soporte prioritario. Para procesar tu suscripción, recopilaremos tu nombre, correo electrónico y datos de pago, protegidos bajo nuestra <a href="/privacy" target="_blank" class="underline text-primary dark:text-secondary hover:text-primary-darker dark:hover:text-secondary-darker">política de privacidad</a>.
+            Con Voir Premium, disfruta de creación ilimitada de grupos y eventos, acceso a contenido exclusivo y soporte prioritario. Para procesar tu suscripción, recopilaremos tu nombre y correo electrónico, protegidos bajo nuestra <a href="/privacy" target="_blank" class="underline text-primary dark:text-secondary hover:text-primary-darker dark:hover:text-secondary-darker">política de privacidad</a>.
           </p>
           <div class="flex items-center gap-2 mb-4">
             <input
@@ -96,12 +96,12 @@
               <i :class="['fa-solid', isAnnual ? 'fa-toggle-on' : 'fa-toggle-off', 'text-lg']"></i>
             </button>
             <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-              {{ isAnnual ? '$59.99/año' : '$5.99/mes' }}
-              <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $5/mes, ahorra 16%</span>
+              {{ isAnnual ? '$5999/año' : '$599/mes' }}
+              <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $599/mes, ahorra 16%</span>
             </p>
           </div>
           <p class="text-gray-600 dark:text-gray-400 text-sm text-center">
-            Total a pagar: <span class="font-semibold">{{ isAnnual ? '$59.99' : '$5.99' }}</span>
+            Total a pagar: <span class="font-semibold">{{ isAnnual ? '$5999' : '$599' }}</span>
           </p>
         </div>
 
@@ -112,7 +112,7 @@
             ¡Suscripción confirmada!
           </p>
           <p class="text-gray-600 dark:text-gray-400">
-            Has seleccionado el plan {{ isAnnual ? 'anual ($59.99)' : 'mensual ($5.99)' }}. El modal se cerrará en breve.
+            Has seleccionado el plan {{ isAnnual ? 'anual ($5999)' : 'mensual ($599)' }}. El modal se cerrará en breve.
           </p>
         </div>
       </div>
@@ -187,6 +187,9 @@ watch(currentStep, (newStep) => {
   if (newStep === 3) {
     setTimeout(() => {
       emit('confirm', isAnnual.value ? 'annual' : 'monthly');
+      currentStep.value = 1; // Reset step for next use
+      acceptedTerms.value = false; // Reset terms acceptance
+      isAnnual.value = true; // Reset plan selection
       emit('close');
     }, 1000);
   }

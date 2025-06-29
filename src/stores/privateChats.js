@@ -60,7 +60,7 @@ export const usePrivateChatsStore = defineStore('privateChats', {
         this.photoCache.set(email, photoUrl);
         return photoUrl;
       } catch (error) {
-        console.error(`Error fetching photo for ${email}:`, error);
+        // console.error(`Error fetching photo for ${email}:`, error);
         this.photoCache.set(email, AvatarImage);
         return AvatarImage;
       }

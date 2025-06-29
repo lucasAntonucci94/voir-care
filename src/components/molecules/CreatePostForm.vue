@@ -99,7 +99,6 @@
           :show-no-results="false"
           :searchable="true"
           :loading="isLoading"
-          :options-limit="3"
         ></multiselect>
         <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
       </div>

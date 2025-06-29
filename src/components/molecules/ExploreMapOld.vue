@@ -145,8 +145,8 @@ function centerOnUserLocation() {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
       };
-      map.value.setCenter(userLatLng);
-      map.value.setZoom(15);
+      map?.value?.setCenter(userLatLng);
+      map?.value?.setZoom(15);
       addCustomMarker(userLatLng, 'Tu ubicación', 'https://img.icons8.com/?size=100&id=13800&format=png');
     },
     (error) => {

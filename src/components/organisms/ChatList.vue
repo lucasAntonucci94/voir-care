@@ -183,7 +183,7 @@ const getChatUserPhoto = async (chatId) => {
     avatars.value.set(email, imageUrl || AvatarFallback);
     return imageUrl || AvatarFallback;
   } catch (error) {
-    console.error(`Error fetching avatar for ${email}:`, error);
+    //console.error(`Error fetching avatar for ${email}:`, error);
     avatars.value.set(email, AvatarFallback);
     return AvatarFallback;
   }

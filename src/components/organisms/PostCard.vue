@@ -22,7 +22,7 @@
         :autoplay="true"
         :loop="true"
         muted
-        class="w-full h-48 rounded-lg cursor-pointer"
+        class="w-full h-48 rounded-lg object-cover cursor-pointer" 
         @click="openMediaModal"
       ></video>
     </div>

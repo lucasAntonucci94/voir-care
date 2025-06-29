@@ -7,4 +7,13 @@ export default defineConfig({
     vue(),
     tailwindcss(),
   ],
+  assetsInclude: [
+    '**/*.png', 
+    '**/*.jpg', 
+    '**/*.svg', 
+    '**/*.mp4', 
+    '**/*.MOV',
+    '**/*.mov',
+    '**/*.webm',
+  ], 
 })

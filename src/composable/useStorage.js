@@ -22,8 +22,13 @@ export function useStorage() {
    * @returns {Promise<string>} - URL de descarga del archivo
    */
   async function getFileUrl(filepath) {
-    const imageRef = storageRef(storage, filepath);
-    return await getDownloadURL(imageRef);
+    try {
+      // Intentamos obtener la URL de descarga del archivo
+      const imageRef = storageRef(storage, filepath);
+      return await getDownloadURL(imageRef);
+    }catch (error) {
+      return null; // Si ocurre un error, devolvemos null
+    }
   }
 
   /**

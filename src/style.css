@@ -76,16 +76,21 @@
 }
 
 .bg-login{
-  background-image: url("./assets/bg/bg-cat.png");
-  /* background-image: url("./assets/bg/bg-cat1.jpg"); */
+  background-image: url("./assets/bg/bgSVGLight1.svg");
   background-size: cover;
   background-repeat: no-repeat;
 }
 .bg-register{
-  background-image: url("./assets/bg/bg-dog.png");
+  background-image: url("./assets/bg/bgSVGLight2.svg");
   /* background-image: url("./assets/bg/bg-dog1.jpg"); */
   background-size: cover;
   background-repeat: no-repeat;
+}
+.dark .bg-login{
+  background-image: url("./assets/bg/bgSVGDark1.svg");
+}
+.dark .bg-register{
+  background-image: url("./assets/bg/bgSVGDark2.svg");
 }
 
 .overflow-hidden {
@@ -218,12 +223,19 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Smooth transition for focus */
 }
+.multiselect:hover {
+  background-color: #c9c9c9;
+}
 
 /* Dark mode styles using global .dark class */
 .dark .multiselect {
-  border-color: #1f2937; /* gray-800 for dark mode */
-  background-color: #1f2937; /* Matches --df-messenger-chat-background-color */
-  color: #f9fafb; /* Matches --df-messenger-font-color */
+  border-color: #374151; /* gray-800 for dark mode */
+  background-color: #374151; 
+  color: #f9fafb;
+}
+/* Dark mode styles using global .dark class */
+.dark .multiselect:hover {
+  background-color: #4B5563;
 }
 
 /* Focus styles */
@@ -254,8 +266,8 @@
 }
 
 .dark .multiselect__tags {
-  border-color: #1f2937; /* gray-800 for dark mode */
-  background-color: #1f2937;
+  border-color: #4B5563; /* gray-800 for dark mode */
+  background-color: #4B5563;
   color: #f9fafb;
 }
 
@@ -266,7 +278,7 @@
 }
 
 .dark .multiselect__tags input {
-  background-color: #1f2937;
+  background-color: #4B5563;
   color: #f9fafb;
 }
 
@@ -295,8 +307,9 @@
 }
 
 .dark .multiselect__input {
-  color: #f9fafb; /* Dark mode text */
+  color: #f9fafb !important;
   background-color: transparent;
+  /* background-color: transparent; */
 }
 
 /* Content wrapper (dropdown) */
@@ -307,8 +320,8 @@
 }
 
 .dark .multiselect__content-wrapper {
-  background-color: #1f2937;
-  color: #f9fafb;
+  background-color: #374151;
+  color: #f9fafb !important;
   border-color: #1f2937; /* gray-800 for dark mode */
 }
 
@@ -320,7 +333,7 @@
 
 .dark .multiselect__option {
   background-color: #1f2937;
-  color: #f9fafb;
+  color: #f9fafb !important;
 }
 
 /* Highlighted option */
@@ -345,5 +358,5 @@
 }
 
 .dark .multiselect--disabled {
-  background-color: #374151; /* Dark mode disabled */
+  background-color: #484f5a; /* Dark mode disabled */
 }
