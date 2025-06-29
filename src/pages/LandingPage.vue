@@ -71,7 +71,7 @@
           <img :src="service.image" :alt="service.name" class="w-full h-40 object-cover rounded-lg mb-4" loading="lazy" />
           <h4 class="text-xl font-bold mb-2 dosis-font">{{ service.name }}</h4>
           <p class="text-sm text-[#666666] dark:text-gray-300 mb-6">{{ service.description }}</p>
-          <!-- <router-link :to="service.link" class="dosis-font px-6 py-3 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-colors" :aria-label="`Ver más sobre ${service.name}`">Ver más</router-link> -->
+          <router-link :to="service.link" class="dosis-font px-6 py-3 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-colors" :aria-label="`Ver más sobre ${service.name}`">Ver más</router-link>
         </div>
       </div>
     </div>
