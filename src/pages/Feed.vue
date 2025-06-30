@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-1 overflow-hidden">
-    <main class="flex-grow py-10 min-h-screen font-poppins overflow-y-auto">
+    <main class="flex-grow py-2 min-h-screen font-poppins overflow-y-auto">
       <div class="container mx-auto px-4">
         <CarrouselReels />
         <CreatePostModal />
@@ -15,7 +15,7 @@
               :key="post.idDoc"
               :post="post"
             />
-            <p v-if="postsStore.posts.value.length === 0" class="text-center text-gray-500">No hay publicaciones aún.</p>
+            <p v-if="postsStore.posts?.value?.length === 0" class="text-center text-gray-500">No hay publicaciones aún.</p>
           </template>
         </section>
       </div>
@@ -35,19 +35,23 @@ const { user } = useAuth();
 const postsStore = usePostsStore();
 
 const visiblePosts = computed(() => {
-  console.log(user.value.hiddenPosts)
   return postsStore.posts.value?.filter(post => 
-    !user.value?.hiddenPosts?.some(hidden => hidden.postId === post.id)
+    !user.value?.hiddenPosts?.some(hidden => hidden.postId === post.idDoc)
   );
 });
 onMounted(() => {
-  console.log('Feed.vue montado, iniciando suscripción global...');
+  // console.log('Feed.vue montado, iniciando suscripción global...');
   postsStore.subscribeGlobal(); // Suscripción global
+  if (user.value?.uid) {
+    // console.log('Iniciando suscripción a posts guardados en Feed.vue...');
+    postsStore.subscribeToSavedPosts(user.value.uid); // Suscripción a savedPosts
+  }
 });
 
 onUnmounted(() => {
-  console.log('Feed.vue desmontado, cancelando suscripción global...');
+  // console.log('Feed.vue desmontado, cancelando suscripción global...');
   postsStore.unsubscribeGlobal(); // Cancela solo la suscripción global
+  postsStore.unsubscribeSavedPosts(); // Cancela la suscripción a savedPosts
 });
 </script>
 

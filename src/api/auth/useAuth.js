@@ -8,12 +8,20 @@ import {
   updateProfile,
   sendPasswordResetEmail,
 } from 'firebase/auth';
+import { getDatabase, ref as rtdbRef, set, onDisconnect, onValue } from 'firebase/database';
 import { useUsers } from '../../composable/useUsers';
+import { useUserStatus } from '../../composable/useUserStatus';
 import { firebaseApp } from '../../api/firebase/config';
+import { useThemeStore } from '../../stores/theme';
+// Importamos Pinia para asegurarnos que el store esté disponible
+import { getActivePinia } from 'pinia';
+import { AppError } from '../../api/Exceptions/AppError';
 
+// Inicializo la instancia de autenticación de Firebase
 const auth = getAuth(firebaseApp);
-const { createUser, loadProfileInfo } = useUsers();
-
+const { createUser, loadProfileInfo, getEmailByDisplayName } = useUsers();
+const userStatus = useUserStatus();
+// Mensajes de error para autenticación
 const AUTH_ERRORS_MESSAGES = {
   'auth/invalid-email': 'El email no tiene un formato correcto.',
   'auth/internal-error': 'Verifique los datos y vuelva a intentarlo',
@@ -47,25 +55,55 @@ const initializeAuthListener = () => {
       isAuthenticated.value = true;
       localStorage.setItem(AUTH_STORAGE_KEY, 'true'); // Guardo en localStorage para asi poder mantener el estado autenticado cuando se reinicia la app. Por unos segundos pierde la autenticacion reactiva genenrando un mal fucionamiento en al redireccion.
       user.value = await loadProfileInfo(firebaseUser); // Cargar perfil completo, datos de collection users
+      // Actualizar estado de autenticación en useUserStatus
+      userStatus.setAuthState(user.value, isAuthenticated.value);
+      await userStatus.updateUserStatus();
+      // Verifica si Pinia está activo antes de usar el store
+      const pinia = getActivePinia();
+      if (pinia) {
+        // Importa el store dinámicamente para evitar uso antes de inicialización
+        const { useThemeStore } = await import('../../stores/theme');
+        const themeStore = useThemeStore();
+        // Inicializa el tema con la configuración del usuario en Firestore
+        themeStore.initializeTheme(user.value?.configs?.theme || null);
+      } else {
+        console.warn('Pinia no está activo, omitiendo inicialización del tema');
+      }
     } else {
       user.value = null;
       isAuthenticated.value = false;
       localStorage.removeItem(AUTH_STORAGE_KEY); // Limpiar localStorage
+      
+      // Verifica si Pinia está activo antes de usar el store
+      const pinia = getActivePinia();
+      if (pinia) {
+        const { useThemeStore } = await import('../../stores/theme');
+        const themeStore = useThemeStore();
+        // Inicializa el tema sin configuración de usuario
+        themeStore.initializeTheme();
+      } else {
+        console.warn('Pinia no está activo, omitiendo inicialización del tema');
+      }
     }
   });
 };
 
 // Login
-async function login(email, password) {
+async function login(email, password, isEmail = true) {
   loading.value = true;
   error.value = null;
   try {
+    if (!isEmail) {
+      // Si no es un email, buscar el email asociado al displayName
+      email = await getEmailByDisplayName(email);
+    }
     await signInWithEmailAndPassword(auth, email, password);
+    await userStatus.updateUserStatus();
     return true;
   } catch (err) {
     error.value = {
-      code: err.code,
-      message: AUTH_ERRORS_MESSAGES[err.code] || err.message,
+      code: err instanceof AppError ? err.code : err.code || 'auth/unknown-error',
+      message: err instanceof AppError ? err.message : AUTH_ERRORS_MESSAGES[err.code] || err.message,
     };
     return false;
   } finally {
@@ -78,6 +116,12 @@ async function logout() {
   loading.value = true;
   error.value = null;
   try {
+    // // Marcar como desconectado antes de cerrar sesión
+    if (user.value?.uid) {
+      const rtdb = getDatabase(firebaseApp);
+      const rtdbStatusRef = rtdbRef(rtdb, `status/${user.value.uid}`);
+      await set(rtdbStatusRef, { isOnline: false, email: user.value.email, lastActivity: Date.now() });
+    }
     await signOut(auth);
     localStorage.removeItem(AUTH_STORAGE_KEY); // Limpiar al cerrar sesión
   } catch (err) {

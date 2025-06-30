@@ -14,9 +14,20 @@ import Events from '../pages/EventsPage.vue';
 import EventDetail from '../pages/EventDetail.vue';
 import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
+import PremiumPage from '../pages/PremiumPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
+import PostDetailPage from '../pages/PostDetailPage.vue';
+import AdmUsersPage from '../pages/admin/UsersPage.vue';
+import AdmEventsPage from '../pages/admin/EventsPage.vue';
+import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
+import AdmDefaultReelsPage from '../pages/admin/DefaultReelsPage.vue';
+import AdmEducationsPage from '../pages/admin/EducationsPage.vue';
 import BlogDetailPage from '../pages/BlogDetail.vue';
+import AdoptionPage from '../pages/AdoptionPage.vue';
+import AdmCategoriesPage from '../pages/admin/CategoriesPage.vue';
+import AdmBlogCategoriesPage from '../pages/admin/BlogCategoriesPage.vue';
+import AdmPostsPage from '../pages/admin/PostsPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -117,9 +128,33 @@ const routes = [
         }
       },
       {
+        path:  '/adoption',
+        name: 'adoption',
+        component: AdoptionPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
         path:  '/blog/:idBlog?',
         name: 'blogDetail',
         component: BlogDetailPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/premium',
+        name: 'premium',
+        component: PremiumPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/post/:id',
+        name: 'PostDetail',
+        component: PostDetailPage,
         meta: {
             requiresAuth: true,
         }
@@ -134,8 +169,72 @@ const routes = [
       },
       {
         path:  '/admin/reports',
-        name: 'reports',
+        name: 'reportsAdm',
         component: ReportsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/users',
+        name: 'usersAdm',
+        component: AdmUsersPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/defaultReels',
+        name: 'defaultReelsAdm',
+        component: AdmDefaultReelsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/events',
+        name: 'eventsAdm',
+        component: AdmEventsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/groups',
+        name: 'groupsAdm',
+        component: AdmGroupsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/education',
+        name: 'educationAdm',
+        component: AdmEducationsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/posts',
+        name: 'postsAdm',
+        component: AdmPostsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/categories/posts',
+        name: 'categoriesAdm',
+        component: AdmCategoriesPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/categories/blogs',
+        name: 'BlogcategoriesAdm',
+        component: AdmBlogCategoriesPage,
         meta: {
             requiresAuth: true,
         }
@@ -149,17 +248,51 @@ const routes = [
   },
 ];
 
+const scrollBehavior = (to, from, savedPosition) => {
+  // Si hay una posición guardada
+  if (savedPosition) {
+    return savedPosition;
+  }
+  // Si hay un hash en la URL (un anclaje)
+  else if (to.hash) {
+    // Busca el elemento en el DOM con el ID del hash
+    const el = document.querySelector(to.hash);
+    
+    if (el) {
+      // Retorna la configuración de scroll para desplazar al elemento
+      // top: el.getBoundingClientRect().top + window.scrollY - 0, 
+      // Si tienes un header fijo, ajusta el '0' a la altura de tu header para que no se oculte el contenido
+      return {
+        el: to.hash,
+        behavior: 'smooth', // Desplazamiento suave
+      };
+    }
+    // Si el elemento no existe, simplemente desplázate al top
+    return { top: 0, behavior: 'smooth' };
+  }
+  // Si no hay hash y no hay posición guardada, desplázate al inicio de la página
+  else {
+    return { top: 0, behavior: 'smooth' };
+  }
+};
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior,  
 });
 
-const { isAuthenticated } = useAuth();
+const { isAuthenticated, user } = useAuth();
 // Verificamos si una ruta requiere de autenticación para poder acceder.
 router.beforeEach((to, from) => {
   if(to.meta.requiresAuth && !isAuthenticated.value) {
       return {
           path: '/login',
+      }
+  }
+  if(to.path.includes('/admin') && !user?.value?.isAdmin) {
+      return {
+          path: '/feed',
       }
   }
   if(to.path === '/' && isAuthenticated.value) {

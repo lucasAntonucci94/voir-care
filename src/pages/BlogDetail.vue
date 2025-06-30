@@ -12,7 +12,7 @@
     <div class="max-w-3xl mx-auto px-4 py-10">
       <div class="mb-6 text-sm text-gray-600 dark:text-gray-300 flex flex-wrap gap-2">
         <span v-for="category in blog?.categories" :key="category" class="bg-teal-100 dark:bg-teal-700 text-teal-900 dark:text-white px-3 py-1 rounded-full text-xs font-semibold">
-          {{ category }}
+          {{ category.name }}
         </span>
       </div>
 
@@ -30,30 +30,37 @@
           />
         </div>
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">Publicado el {{ blog?.date }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Publicado el {{ formatTimestamp(blog?.date) }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { blogs } from '../data/blogs.js'
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useEducationBlogsStore } from '../stores/educationBlogs';
+import { formatTimestamp } from '../utils/formatTimestamp';
 
-const route = useRoute()
-const router = useRouter()
-const blog = ref(null)
+const route = useRoute();
+const router = useRouter();
+const blog = ref(null);
+const educationBlogsStore = useEducationBlogsStore();
 
-onMounted(() => {
-  const blogId = parseInt(route.params.idBlog)
-  const found = blogs.value.find(b => b.id === blogId)
-  if (!found) {
-    router.push('/blog') // fallback si no se encuentra
-  } else {
-    blog.value = found
+onMounted(async () => {
+  const blogId = route.params.idBlog;
+  try {
+    const foundBlog = await educationBlogsStore.getBlogById(blogId);
+    if (!foundBlog) {
+      router.push('/blog'); // Fallback
+    } else {
+      blog.value = foundBlog;
+    }
+  } catch (error) {
+    console.error('Error al cargar el blog:', error);
+    router.push('/blog'); // Fallback
   }
-})
+});
 </script>
 
 <style scoped>

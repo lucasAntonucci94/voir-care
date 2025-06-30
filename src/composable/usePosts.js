@@ -1,6 +1,7 @@
-import { getFirestore, addDoc, deleteDoc, doc, getDocs, updateDoc, collection, onSnapshot, query, where, orderBy, limit, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, addDoc, deleteDoc, doc, getDoc, getDocs, updateDoc, collection, onSnapshot, query, where, orderBy, limit, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { newGuid } from '../utils/newGuid';
 import { useStorage } from './useStorage'; // Importamos el composable de storage
+import { useNotifications } from './useNotifications'
 
 const { uploadFile, getFileUrl, getFileMetadata } = useStorage();
 const db = getFirestore();
@@ -22,17 +23,20 @@ export function usePosts() {
         body,
         categories: categories || [],
         created_at: serverTimestamp(),
-        media: media || null,
+        media: null,
         likes: [],
         connections: [],
       };
 
-      if (data.media && data.media?.imageBase64) {
-        const extension = data.media.type === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
+      if (media && media?.imageBase64) {
+        const extension = media.type === 'image' ? 'jpg' : 'mp4'; // Dinámico según mediaType
         const filePath = `post/${data.user.email}/${data.id}.${extension}`;
-        await uploadFile(filePath, data.media.imageBase64);
-        data.media.path = filePath;
-        data.media.url = await getFileUrl(filePath);
+        await uploadFile(filePath, media.imageBase64);
+        data.media ={
+          path: filePath,
+          url: await getFileUrl(filePath),
+          type: media.type,
+        }
       }
 
       await addDoc(postRef, data);
@@ -47,7 +51,7 @@ export function usePosts() {
    * @param {{user: Object, title: string, body: string, categories: Array, imageBase64: string}} data
    * @returns {Promise<void>}
    */
-  async function updatePost(postId, { user, title, body, categories, imageUrlFile, imagePathFile, mediaType }) {
+  async function updatePost(postId, { title, body, categories, media, user }) {
     try {
       const postDocRef = doc(db, 'posts', postId);
       const updatedData = {
@@ -55,9 +59,7 @@ export function usePosts() {
         title,
         body,
         categories: categories || [],
-        imageUrlFile: imageUrlFile || null,
-        imagePathFile: imagePathFile || null,
-        mediaType: mediaType || null,
+        media: media || null,
         updated_at: serverTimestamp(), // Actualizamos timestamp al editar
       };
       await updateDoc(postDocRef, updatedData);
@@ -139,25 +141,27 @@ export function usePosts() {
    */
   async function getPostById(id) {
     try {
-      const queryPost = query(postRef, where('id', '==', id), limit(1));
-      const snapshot = await getDocs(queryPost);
-      if (snapshot.empty) throw new Error('Post no encontrado');
-
-      const post = snapshot.docs[0].data();
-      const filePath = `post/${post.user.email}/${post.id}.jpg`;
-
+      const postDocRef = doc(db, 'posts', id)
+      const postSnap = await getDoc(postDocRef)
+  
+      if (!postSnap.exists()) throw new Error('Post no encontrado')
+  
+      const post = postSnap.data()
+  
       return {
+        idDoc: id,
         id: post.id,
         title: post.title,
         body: post.body,
         user: post.user,
+        categories: post.categories,
         created_at: post.created_at,
-        imagePathFile: post.imagePathFile ?? filePath,
-        imageUrlFile: post.imageUrlFile ?? null,
-      };
+        likes: post.likes || [],
+        media: post.media ?? null,
+      }
     } catch (err) {
-      console.error('Error al obtener post por ID:', err);
-      throw err;
+      console.error('Error al obtener post por ID:', err)
+      throw err
     }
   }
 
@@ -179,6 +183,7 @@ export function usePosts() {
   // Nuevo método para agregar un Like
   async function addLike(postIdDoc, userData) {
     try {
+      const { sendNotification } = useNotifications()
       const docRef = doc(db, 'posts', postIdDoc);
       const likeData = {
         userId: userData.id,
@@ -188,20 +193,34 @@ export function usePosts() {
       await updateDoc(docRef, {
         likes: arrayUnion(likeData), // Agrega el like si no existe
       });
+      
+      // Obtener datos del post para saber quién es el autor
+      const postSnap = await getDoc(docRef)
+      const post = postSnap.data()
+
+      // Evitar notificar si el usuario se da like a sí mismo
+      if (post.user?.id !== userData.id) {
+        await sendNotification({
+          toUid: post.user?.id,
+          fromUid: userData.id,
+          type: 'like',
+          message: `${userData.email} le dio me gusta a tu publicación.`,
+          entityId: postIdDoc,
+          entityType: 'post',
+        })
+      } 
     } catch (err) {
       console.error('Error al agregar like:', err);
       throw err;
     }
   }
 
-  // Nuevo método para quitar un Like
   async function removeLike(postIdDoc, userData) {
     try {
       const docRef = doc(db, 'posts', postIdDoc);
       const likeData = {
         userId: userData.id,
         email: userData.email,
-        // No necesitamos email ni timestamp aquí, Firestore compara por igualdad estricta
       };
       await updateDoc(docRef, {
         likes: arrayRemove(likeData), // Quita el like si existe
@@ -302,6 +321,77 @@ export function usePosts() {
       return false
     }
   }
+  async function deleteHiddenPost(userId, postId) {
+    try {
+      const hiddenPostsRef = collection(db, 'users', userId, 'hiddenPosts');
+      const q = query(hiddenPostsRef, where('postId', '==', postId));
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        const docRef = querySnapshot.docs[0].ref;
+        await deleteDoc(docRef);
+        return true;
+      }
+      return false; // No se encontró el hiddenPost
+    } catch (err) {
+      console.error('Error al eliminar el hiddenPost:', err);
+      return false;
+    }
+  }
+
+  /**
+   * Escucha los últimos 5 posts con categoría "Adopción" en tiempo real.
+   * @param {function} callback - Función que recibe un array de posts
+   * @returns {function} - Función para cancelar la suscripción
+   */
+  function subscribeToAdoptionPosts(callback) {
+    try {
+      const q = query(
+        postRef,
+        where('categories', 'array-contains', { id: '01fef174-f5e6-432b-bb44-6a156927f0af', name: 'Adopción' }),
+        orderBy('created_at', 'desc'),
+        limit(5)
+      );
+      return onSnapshot(q, (snapshot) => {
+        const posts = snapshot.docs.map((doc) => {
+          const post = doc.data();
+          return {
+            idDoc: doc.id,
+            id: post.id,
+            title: post.title,
+            body: post.body,
+            user: post.user,
+            categories: post.categories,
+            created_at: post.created_at,
+            likes: post.likes || [],
+            media: post.media ?? null,
+            userAvatar: post.user.photoURLFile || null, 
+            userName: post.user.displayName || post.user.email,
+            date: post.created_at ? post.created_at : null,
+            image: post.media?.url || null,
+          };
+        });
+        callback(posts);
+      });
+    } catch (err) {
+      console.error('Error al suscribirse a posts de adopción:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Retorna la cantidad de reportes en la colección reports.
+   * @returns {Promise<number>} - Cantidad de reportes
+   */
+  async function getPostsCount() {
+    try {
+      const querySnapshot = await getDocs(postRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al obtener la cantidad de reportes:', error);
+      throw error;
+    }
+  }
 
   return {
     savePost,
@@ -316,5 +406,8 @@ export function usePosts() {
     addLike,
     removeLike,
     hidePost,
+    deleteHiddenPost,
+    subscribeToAdoptionPosts,
+    getPostsCount,
   };
 }

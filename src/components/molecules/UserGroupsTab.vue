@@ -1,20 +1,35 @@
 <template>
     <div class="container mx-auto px-4 py-6">
       <!-- Encabezado -->
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white sr-only">Tus Grupos</h2>
       </div>
-  
-      <!-- Lista de grupos -->
-      <div v-if="groupsStore.userGroups?.value?.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <GroupCard
-          v-for="group in groupsStore.userGroups?.value"
-          :key="group.idDoc"
-          :group="group"
+      <!-- Filtro -->
+      <GroupFilters
+        v-if="groupsStore.userGroups?.value?.length > 0"
+        v-model="searchQuery"
+        v-model:selectedCategory="selectedCategory"
+        v-model:selectedOwnership="selectedOwnership"
+        :showSearch="true"
+        :showSelect="true"
+        :showOwnership="true"
         />
+      <!-- Lista de grupos -->
+      <div v-if="filteredGroups?.length > 0" class="flex justify-center md:block">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <GroupCard
+            v-for="group in filteredGroups"
+            :key="group.idDoc"
+            :group="group"
+          />
+        </div>
       </div>
 
       <!-- Sin grupos -->
+      <div v-else-if="(searchQuery !== '' || selectedCategory !== '') && filteredGroups?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
+        <i class="fa-regular fa-calendar-xmark text-4xl mb-3"></i>
+        <p>No hay grupos para los filtros seleccionados.</p>
+      </div>
       <div
         v-else
         class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md"
@@ -37,40 +52,61 @@
   </template>
   
   <script setup>
+  import { ref, computed, onMounted, onUnmounted } from 'vue';
   import { useGroupsStore } from '../../stores/groups';
-  import { useRouter } from 'vue-router';
-  import { computed } from 'vue';
-  import { useAuth } from '../../api/auth/useAuth';
   import GroupCard from '../organisms/GroupCard.vue';
+  import GroupFilters from '../molecules/GroupFilters.vue';
+  import { useAuth } from '../../api/auth/useAuth';
 
   const groupsStore = useGroupsStore();
-  const router = useRouter();
   const { user } = useAuth();
+  const searchQuery = ref('');
+  const selectedCategory = ref('');
+  const selectedOwnership = ref('all');
 
+  const filteredGroups = computed(() => {
+    let groups = groupsStore.userGroups?.value ?? [];
+
+    // Filtro por búsqueda
+    groups = groups.filter(group =>
+      group.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+
+    // Filtro por categoría
+    groups = groups.filter(group =>
+      !selectedCategory.value ||
+      group.categories?.some(c => c.id === selectedCategory.value)
+    );
+
+    // Filtro por propiedad
+    if (selectedOwnership.value === 'owned') {
+      groups = groups.filter(group => group.ownerId === user.value.uid);
+    } else if (selectedOwnership.value === 'joined') {
+      groups = groups.filter(group => group.ownerId !== user.value.uid);
+    }
+
+    return groups;
+  });
+  
   const emit = defineEmits(['open-create-modal','open-discover-tab']);
+  
+  const navigateToCreateGroup = () => emit('open-create-modal');
+  const navigateToDiscoverGroup = () => emit('open-discover-tab');
 
-  // Determinar el rol del usuario en el grupo
-  const roleLabel = (group) => {
-    const userId = user.value.uid;
-    if (group.ownerId === userId) return 'Propietario';
-    if (group.admins.includes(userId)) return 'Administrador';
-    return 'Miembro';
-  };
   
-  // Verificar si el usuario es admin o propietario
-  const isAdmin = (group) => {
-    return group.ownerId === user.value.uid || group.admins.includes(user.value.uid);
-  };
-  
-  const navigateToCreateGroup = () => {
-    emit('open-create-modal')
-  };
-  
-  const navigateToDiscoverGroup = () => {
-    emit('open-discover-tab')
-  };
+  // Suscripción a eventos del usuario
+  onMounted(() => {
+    if (user.value) {
+      groupsStore.subscribeUserGroups(user.value.uid)
+    }
+  })
+
+  // Desuscripción al desmontar el componente
+  onUnmounted(() => {
+    groupsStore.unsubscribeFromUserGroups()
+  })
   </script>
-  
+
   <style scoped>
   .group-card {
     display: flex;

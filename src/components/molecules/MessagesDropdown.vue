@@ -120,7 +120,7 @@ function toggle() {
 
 function markAllAsRead() {
   // Lógica placeholder para marcar como leídos (puedes emitir un evento si lo necesitas)
-  console.log('Marcar todos como leídos');
+  // console.log('Marcar todos como leídos');
 }
 
 const getOtherUserEmail = (usersArray) => {

@@ -1,6 +1,8 @@
 import { ref } from 'vue';
-import { doc, getFirestore, addDoc,  updateDoc, increment, FieldPath,  collection, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
+import { doc, getFirestore, addDoc,  updateDoc, increment, FieldPath,  collection, getDoc, getDocs, onSnapshot, serverTimestamp, orderBy, query, where, limit, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../api/auth/useAuth';
+import { useNotifications } from './useNotifications'
+import { useUsers } from './useUsers'
 
 
 const { user } = useAuth();
@@ -17,8 +19,10 @@ const privateRefCache = ref([]);
 export function usePrivateChats() {
     // Funciones internas
     async function createPrivateChatRef(from, to) {
-      const users = [from,to];
+      const users = [from, to];
       const chatKey = [from, to].sort().join('_');
+      const sanitizedFrom = from.replace(/\./g, '_');
+      const sanitizedTo = to.replace(/\./g, '_');
       const docRef = await addDoc(privateChatRef, {
         users,
         chatKey,
@@ -26,6 +30,10 @@ export function usePrivateChats() {
         unreadCount: {
           [from]: 0,
           [to]: 0
+        },
+        presence: {
+          [sanitizedFrom]: false,
+          [sanitizedTo]: false
         }
       });
       const id = docRef.id;
@@ -76,7 +84,7 @@ export function usePrivateChats() {
       const currentChatRef = await getPrivateChatRef(from, to);
       const chatId = currentChatRef.path.split('/')[1]; // Extraer chatId
       const senderEmail = user?.value?.email ?? from;
-    
+      
       await addDoc(currentChatRef, {
         message,
         user: {
@@ -87,10 +95,32 @@ export function usePrivateChats() {
         created_at: serverTimestamp(),
         readBy: [senderEmail]
       });
-    
-      // Incrementar unreadCount del receptor
-      const chatDocRef = doc(db, 'chats-private', chatId);
-      await updateDoc(chatDocRef, new FieldPath('unreadCount', to), increment(1));
+      const isRecipientPresent = await getUserPresence(chatId, to);
+      
+      if (!isRecipientPresent) {
+        // Incrementar unreadCount del receptor
+        const chatDocRef = doc(db, 'chats-private', chatId);
+        await updateDoc(chatDocRef, new FieldPath('unreadCount', to), increment(1));
+
+        const { getUserIdByEmail } = useUsers();
+        const { sendNotification } = useNotifications();
+
+        // Notificar solo si el receptor no está presente en el chat
+        if (to !== from) {
+          const toUid = await getUserIdByEmail(to);
+          const fromUid = user?.value?.id ?? await getUserIdByEmail(from);
+
+          await sendNotification({
+            toUid,
+            fromUid,
+            type: 'message',
+            message: `${user.value?.displayName || from} te ha enviado un mensaje.`,
+            entityId: chatId,
+            entityType: 'chat',
+            extra: null
+          });
+        }
+      }
     }
 
     async function markMessagesAsRead(chatId, userEmail) {
@@ -169,7 +199,7 @@ export function usePrivateChats() {
         // Eliminar el documento del chat
         await deleteDoc(chatRef);
 
-        console.log('Chat y mensajes eliminados correctamente.');
+        // console.log('Chat y mensajes eliminados correctamente.');
       } catch (err) {
         console.error('Error al eliminar el chat y sus mensajes:', err);
         throw err;
@@ -274,9 +304,9 @@ export function usePrivateChats() {
         where('users', 'array-contains', email),
         orderBy('created_at', 'desc')
       );
-      const updatedChats = [];
       
       const unsubscribe = onSnapshot(q, async (snapshot) => {
+        const updatedChats = [];
         for (const doc of snapshot.docs) {
           const chatData = doc.data();
           const chatId = doc.id;
@@ -345,15 +375,55 @@ export function usePrivateChats() {
         return true; // sino lo mantenemos
       });
     };
-
-    const resetUnreadCount = async (chatId, userEmail) => {
+    async function markChatAsRead(userEmail, chatId) {
       const chatDocRef = doc(db, 'chats-private', chatId);
-      await updateDoc(chatDocRef, {
-        [`unreadCount.${userEmail}`]: 0
-      });
-    };
-
+      const fieldPath = new FieldPath('unreadCount', userEmail);
+      await updateDoc(chatDocRef, fieldPath, 0); 
+    }
     
+    async function setUserPresence(chatId, userEmail, isPresent) {
+      try {
+        const chatDocRef = doc(db, 'chats-private', chatId);
+        // Sanitize the email by replacing dots with underscores to avoid nested paths
+        const sanitizedEmail = userEmail.replace(/\./g, '_');
+        // Use a merge option to ensure the presence field is updated as an object
+        await updateDoc(chatDocRef, {
+          [`presence.${sanitizedEmail}`]: isPresent
+        }, { merge: true });
+      } catch (err) {
+        console.error('Error updating user presence:', err);
+        throw err;
+      }
+    }
+
+    async function getUserPresence(chatId, userEmail) {
+      try {
+        const chatDocRef = doc(db, 'chats-private', chatId);
+        const chatDoc = await getDoc(chatDocRef);
+        if (chatDoc.exists()) {
+          const presence = chatDoc.data().presence || {};
+          const sanitizedEmail = userEmail.replace(/\./g, '_');
+          return !!presence[sanitizedEmail];
+        }
+        return false;
+      } catch (err) {
+        console.error('Error fetching user presence:', err);
+        return false;
+      }
+    }
+
+    function subscribeToChatPresence(chatId, callback) {
+      const chatDocRef = doc(db, 'chats-private', chatId);
+      return onSnapshot(chatDocRef, (doc) => {
+        if (doc.exists()) {
+          const presence = doc.data().presence || {};
+          callback(presence);
+        }
+      }, (err) => {
+        console.error('Error subscribing to chat presence:', err);
+      });
+    }
+
   return {
     savePrivateMessage,
     subscribeToIncomingPrivateMessages,
@@ -364,6 +434,10 @@ export function usePrivateChats() {
     deleteChatMessage,
     privateRefCache,
     getChatIdByReference,
-    markMessagesAsRead
+    markMessagesAsRead,
+    markChatAsRead,
+    setUserPresence,
+    getUserPresence,
+    subscribeToChatPresence
   };
 }

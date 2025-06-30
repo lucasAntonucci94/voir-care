@@ -3,10 +3,18 @@
   <form @submit.prevent="submitComment" class="flex gap-2 mt-2">
     <input 
       v-model="comment" 
-      type="text" 
+      id="comment-input"
+      type="text"
+      :minLength="1"
+      :maxLength="500"
       placeholder="Escribe un comentario..." 
+      :aria-label="'Comentario de ' + (user?.value?.displayName || 'Usuario Anónimo')"
+      :aria-required="true"
+      :aria-invalid="!cleanedComment || !cleanedComment.length"
+      :aria-describedby="cleanedComment ? null : 'comment-error'"
       class="w-full p-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:bg-gray-600 text-gray-700 dark:text-gray-300 placeholder-gray-400 transition-all duration-200" 
     />
+
    <Button 
       type="submit" 
       :disabled="!cleanedComment || !cleanedComment.length"
@@ -22,7 +30,7 @@ import { ref, computed } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useComments } from '../../composable/useComments';
 import Button from '../atoms/Button.vue';
-
+import InputText from '../atoms/InputText.vue';
 const props =defineProps({
   idPost: {
     type: String,

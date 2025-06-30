@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, nextTick, onMounted } from 'vue';
+import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { useEventsStore } from '../../stores/events';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -155,11 +155,20 @@ watch(calendarEvents, async (newEvents) => {
 });
 
 onMounted(async () => {
+  eventsStore.subscribeAllEvents()
   await nextTick();
   const calendarApi = calendarRef.value?.getApi();
   if (calendarApi && calendarEvents?.value?.length > 0) {
     calendarApi.removeAllEvents();
     calendarApi.addEventSource(calendarEvents.value);
+  }
+});
+
+onUnmounted(() => {
+  eventsStore.unsubscribeAllEvents()
+  const calendarApi = calendarRef.value?.getApi();
+  if (calendarApi) {
+    calendarApi.removeAllEvents();
   }
 });
 </script>

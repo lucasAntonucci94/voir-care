@@ -1,48 +1,42 @@
 <template>
-    <div class="relative w-full h-[60vh] md:h-[70vh]">
-      <div
-        v-if="loading"
-        class="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 z-10"
-      >
-        <i class="fa-solid fa-spinner animate-spin h-8 w-8 text-indigo-600"></i>
-      </div>
-      <div v-else id="map" class="w-full h-full rounded-b-2xl"></div>
+  <div class="relative w-full h-[60vh] md:h-[70vh]">
+    <div
+      v-if="loading"
+      class="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 z-10"
+    >
+      <i class="fa-solid fa-spinner animate-spin h-8 w-8 text-indigo-600"></i>
     </div>
-  </template>
+    <div v-else id="map" class="w-full h-full rounded-b-2xl"></div>
+  </div>
+</template>
   
-  <script setup>
-  import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue'
-  import { useGoogleMaps } from '../../composable/useGoogleMaps'
-  import CatIcon from '../../assets/icons/cat_1998592.png'
-  import DogIcon from '../../assets/icons/dog_1998627.png'
+<script setup>
+import { ref, onMounted, onBeforeUnmount, watch, nextTick, computed } from 'vue'
+import { useGoogleMaps } from '../../composable/useGoogleMaps'
+import CatIcon from '../../assets/icons/cat_1.png'
+import DogIcon from '../../assets/icons/dog_1998627.png'
+
+const props = defineProps({
+  locations: Array,
+  loading: Boolean
+})
+const emit = defineEmits(['map-ready'])
+const { loadGoogleMaps } = useGoogleMaps()
+
+const map = ref(null)
+const markers = ref(new Map())
+let AdvancedMarkerElement = null
   
-  const props = defineProps({
-    locations: Array,
-    loading: Boolean
-  })
-  const emit = defineEmits(['map-ready'])
-  const { loadGoogleMaps } = useGoogleMaps()
-  
-  const map = ref(null)
-  const markers = ref(new Map())
-  const isMapReady = ref(false)
-  let AdvancedMarkerElement = null
-  
-//   onMounted(async () => {
-//   await initMap()
-//   isMapReady.value = true
-//   emit('map-ready')
-// })
 onMounted(async () => {
   await initMap();
   emit('map-ready');
 
   watch(locationIds, async (newVal, oldVal) => {
-    console.log('WatchInit', newVal, oldVal);
+    // console.log('WatchInit', newVal, oldVal);
     if (!map.value || !AdvancedMarkerElement || !props.locations?.length) return;
-    console.log('UpdateMapMarkers', newVal, oldVal);
+    // console.log('UpdateMapMarkers', newVal, oldVal);
     await updateMapMarkers();
-    console.log('Watchends');
+    // console.log('Watchends');
   }, { immediate: true });
 });
   
@@ -67,7 +61,7 @@ onMounted(async () => {
 //   { immediate: true }
 // )
   async function initMap() {
-    console.log('InitMap')
+    // console.log('InitMap')
     try {
       // Cargar la librería 'marker'
       await loadGoogleMaps({ libraries: ['marker'] })
@@ -88,7 +82,7 @@ onMounted(async () => {
   
   // Función para eliminar los marcadores existentes
   function deleteAllMarkers() {
-    console.log('Eliminando markers:', markers.value.size)
+    // console.log('Eliminando markers:', markers.value.size)
     for (const marker of markers.value.values()) {
       if (marker && typeof marker.remove === 'function') {
         marker.remove()
@@ -111,7 +105,7 @@ onMounted(async () => {
   }
   
   async function updateMapMarkers() {
-    console.log('updateMapMarkers init')
+    // console.log('updateMapMarkers init')
 
     if (!map.value || !AdvancedMarkerElement) return
   
@@ -150,7 +144,7 @@ onMounted(async () => {
   
       markers.value.set(location.id, marker)
     }
-    console.log('Finish UpdateMapMarkers')
+    // console.log('Finish UpdateMapMarkers')
   }
   
   function centerOnUserLocation() {

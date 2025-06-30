@@ -3,7 +3,7 @@
     <!-- Filtros superiores -->
     <div class="flex flex-wrap gap-4 justify-between items-center">
       <div class="flex gap-2 flex-wrap">
-        <label for="filter" class="text-sm font-medium text-gray-700 dark:text-white">Filtrar por</label>
+        <label for="filter" class="text-sm font-medium text-gray-700 dark:text-white sr-only">Filtrar por</label>
         <select
           id="filter"
           v-model="selectedFilter"
@@ -16,10 +16,9 @@
         </select>
       </div>
     </div>
-
     <!-- Contenido -->
-    <div v-if="totalFilteredEvents > 0">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div v-if="totalFilteredEvents > 0" class="flex justify-center md:block">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-1">
         <EventCard
           v-for="event in filteredByCategory"
           :key="event.idDoc"
@@ -35,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useEventsStore } from '../../stores/events'
 import { useAuth } from '../../api/auth/useAuth'
 import { useUpcomingEventFilters } from '../../composable/useUpcomingEventFilters'
@@ -43,9 +42,21 @@ import EventCard from '../organisms/EventCard.vue'
 
 const { user } = useAuth()
 const eventsStore = useEventsStore()
+
+onMounted(() => {
+  eventsStore.subscribeUpcomingEvents()
+})
+
+onUnmounted(() => {
+  eventsStore.unsubscribeUpcomingEvents()
+})
+
 const selectedFilter = ref('all')
 const notOwnedEvents = computed(() =>
-  eventsStore.upcomingEvents?.value?.filter(e => e.ownerId !== user?.value?.uid) ?? []
+  eventsStore.upcomingEvents?.value
+  ?.filter(e => e.ownerId !== user?.value?.uid)
+  ?.filter(e => e.privacy === 'public')
+  ?? []
 )
 
 const { filteredEvents, filterEventsByCategory } = useUpcomingEventFilters(notOwnedEvents)

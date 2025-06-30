@@ -16,6 +16,7 @@
         <p class="text-xs text-gray-500 hover:text-gray-90 mt-1">{{ formatTimestamp(comment.created_at) }}</p>
       </div>
       <button 
+        v-if="comment.user.id === user?.uid"
         @click="showDeleteModal(comment.idDoc)" 
         class=" text-primary dark:text-secondary hover:text-primary-md  dark:hover:text-secondary-md transition-colors duration-200 focus:outline-none"
         title="Eliminar comentario"
@@ -50,8 +51,9 @@
 
 <script setup>
 import { ref } from 'vue';
-import { formatTimestamp } from '../../utils/formatTimestamp'; // Ruta correcta
-import { useComments } from '../../composable/useComments'; // Ruta correcta
+import { formatTimestamp } from '../../utils/formatTimestamp';
+import { useComments } from '../../composable/useComments';
+import { useAuth } from '../../api/auth/useAuth';
 
 // Definimos las props
 const props = defineProps({
@@ -63,6 +65,9 @@ const props = defineProps({
 
 // Usamos el composable con el idDoc del post
 const { comments, deleteComment } = useComments(props.post.idDoc);
+
+// Obtenemos el usuario autenticado
+const { user } = useAuth();
 
 // Estado para el modal
 const showModal = ref(false);
@@ -98,11 +103,21 @@ async function confirmDelete() {
 .comments-list::-webkit-scrollbar {
   width: 6px;
 }
+
 .comments-list::-webkit-scrollbar-thumb {
-  background-color: #02bcae; /* Color teal consistente */
+  background-color:var(--color-primary-md);  /* Color teal for light mode */
   border-radius: 3px;
 }
+
+.dark .comments-list::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-md); /* #D8690E for dark mode */
+}
+
 .comments-list::-webkit-scrollbar-track {
-  background: #f1f5f9; /* Fondo gris claro */
+  background: #f1f5f9; /* Fondo gris claro for light mode */
+}
+
+.dark .comments-list::-webkit-scrollbar-track {
+  background: #1F2937; /* Fondo gris oscuro for dark mode */
 }
 </style>

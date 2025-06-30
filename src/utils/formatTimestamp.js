@@ -1,6 +1,6 @@
 export function formatTimestamp(date, options = { includeTime: false }) {
     if (date === undefined || date === null) return;
-  
+    
     if (date instanceof Date && !isNaN(date)) {
       return date;
     }
