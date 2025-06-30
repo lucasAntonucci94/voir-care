@@ -28,7 +28,7 @@
   --tooltip-bg: var(--color-primary);
   --checkbox-bg: var(--color-primary);
   --select-down-arrow-bg: url("./assets/icons/down.png");
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Josefin Sans","Dosis", sans-serif;
   line-height: 1.5;
   font-weight: 400;
   /* color-scheme: light; */
@@ -40,8 +40,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* estilado de chatbot dialogflow mesenger */
-  --df-messenger-button-titlebar-color: #02bcae;
+  /* estilado de chatbot dialogflow mesenger // Al final no lo use el agente */
+  /* --df-messenger-button-titlebar-color: #02bcae;
   --df-messenger-user-message: #02bcae;
   --df-messenger-bot-message: #e0f7f5;
   --df-messenger-chat-background-color: #f9fafb;
@@ -53,7 +53,7 @@
   --df-messenger-message-border-radius: 12px;
   --df-messenger-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --df-messenger-transition: all 0.3s ease;
-  --df-messenger-font-family: 'Inter', sans-serif;
+  --df-messenger-font-family: 'Inter', sans-serif; */
 }
 
 .dosis-font {
@@ -75,8 +75,8 @@
   --checkbox-bg: var(--color-secondary);
   --select-down-arrow-bg: url("./assets/icons/down-white.png");
 
-  /* estilado de chatbot dialogflow mesenger */
-  --df-messenger-button-titlebar-color: #F28C38;
+  /* estilado de chatbot dialogflow mesenger // No lo borro para futuras pruebas.*/
+  /* --df-messenger-button-titlebar-color: #F28C38;
   --df-messenger-user-message: #F28C38;
   --df-messenger-bot-message: #4B5563;
   --df-messenger-chat-background-color: #1F2937;
@@ -87,7 +87,7 @@
   --df-messenger-input-placeholder-font-color: #9CA3AF;
   --df-messenger-message-border-radius: 12px;
   --df-messenger-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  --df-messenger-transition: all 0.3s ease;
+  --df-messenger-transition: all 0.3s ease; */
 }
 
 .bg-login{
@@ -97,7 +97,6 @@
 }
 .bg-register{
   background-image: url("./assets/bg/bgSVGLight2.svg");
-  /* background-image: url("./assets/bg/bg-dog1.jpg"); */
   background-size: cover;
   background-repeat: no-repeat;
 }

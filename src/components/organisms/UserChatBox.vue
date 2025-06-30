@@ -2,7 +2,7 @@
   <div class="chat-box-container">
     <!-- Botón flotante -->
     <div
-      class="fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary dark:bg-secondary rounded-full flex items-center justify-center shadow-lg hover:bg-primary-dark dark:hover:bg-secondary-dark cursor-pointer group"
+      class="fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary-md dark:bg-secondary-md rounded-full flex items-center justify-center shadow-lg hover:bg-primary-darker dark:hover:bg-secondary-darker cursor-pointer group"
       role="button"
       tabindex="0"
       @click="toggleChat"

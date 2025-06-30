@@ -19,8 +19,8 @@
           <i :class="['fa-solid', isAnnual ? 'fa-toggle-on' : 'fa-toggle-off', 'text-lg']"></i>
         </button>
         <p class="text-3xl font-bold text-primary dark:text-secondary">
-          {{ isAnnual ? '$5999/año' : '$599/mes' }}
-          <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $599/mes, ahorra 16%</span>
+          {{ isAnnual ? '$59999/año' : '$5999/mes' }}
+          <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $5999/mes, ahorra 16%</span>
         </p>
       </div>
     </section>
@@ -101,7 +101,7 @@
         ¡Da el salto a Premium hoy!
       </h3>
       <p class="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-6 transition-colors duration-300">
-        Desbloquea todo el potencial de nuestra comunidad por solo {{ isAnnual ? '$5999/año (~$599/mes)' : '$599/mes' }}. ¡Crea sin límites y accede a contenido exclusivo!
+        Desbloquea todo el potencial de nuestra comunidad por solo {{ isAnnual ? '$59999/año (~$5999/mes)' : '$5999/mes' }}. ¡Crea sin límites y accede a contenido exclusivo!
       </p>
       <button
         @click="openSubscriptionModal"
