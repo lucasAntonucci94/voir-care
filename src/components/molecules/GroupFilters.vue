@@ -6,7 +6,7 @@
       v-model="searchModel"
       type="text"
       placeholder="Buscar grupo..."
-      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white  focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary"
     />
     <!-- Filtro por categoría -->
     <select

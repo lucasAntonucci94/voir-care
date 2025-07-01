@@ -6,7 +6,7 @@
       v-model="searchModel"
       type="text"
       placeholder="Buscar evento..."
-      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary dark:bg-gray-800 dark:text-white"
     />
     <!-- Filtro por categoría -->
     <select
@@ -24,6 +24,18 @@
       >
         {{ category.name }}
       </option>
+    </select>
+    <!-- Filtro por fecha -->
+    <select
+      v-if="showSelectDate"
+      v-model="dateFilterModel"
+      name="selectDateFilter"
+      id="selectDateFilter"
+      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+    >
+      <option value="all">Todos los eventos</option>
+      <option value="upcoming">Próximos eventos</option>
+      <option value="past">Eventos pasados</option>
     </select>
     <!-- Filtro por propiedad -->
     <select
@@ -59,6 +71,10 @@ const props = defineProps({
     type: String,
     default: 'all',
   },
+  selectedDateFilter: {
+    type: String,
+    default: 'upcoming',
+  },
   showSearch: {
     type: Boolean,
     default: true,
@@ -66,6 +82,10 @@ const props = defineProps({
   showSelect: {
     type: Boolean,
     default: true,
+  },
+  showSelectDate: {
+    type: Boolean,
+    default: false,
   },
   showOwnership: {
     type: Boolean,
@@ -91,13 +111,14 @@ const ownershipOptions = [
   { id: 'joined', name: 'Participante' },
 ];
 
-const emit = defineEmits([
-  'update:modelValue',
-  'update:selectedCategory',
-  'update:selectedOwnership',
-]);
+// const emit = defineEmits([
+//   'update:modelValue',
+//   'update:selectedCategory',
+//   'update:selectedOwnership',
+// ]);
 
 const searchModel = defineModel('modelValue');
 const selectModel = defineModel('selectedCategory');
 const ownershipModel = defineModel('selectedOwnership');
+const dateFilterModel = defineModel('selectedDateFilter');
 </script>

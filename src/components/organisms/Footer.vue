@@ -8,7 +8,7 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Visita nuestro perfil de Facebook"
-          class="hover:text-primary-md dark:hover:text-secondary-md transition-colors duration-300"
+          class="hover:text-gray-200 dark:hover:text-gray-200 transition-colors duration-300 transition-all duration-300 hover:scale-95 inline-block"
         >
           <i class="fab fa-facebook-f fa-lg"></i>
         </a>
@@ -17,7 +17,7 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Visita nuestro perfil de Instagram"
-          class="hover:text-primary-md dark:hover:text-secondary-md transition-colors duration-300"
+          class="hover:text-gray-200 dark:hover:text-gray-200 transition-colors duration-300 transition-all duration-300 hover:scale-95 inline-block"
         >
           <i class="fab fa-instagram fa-lg"></i>
         </a>

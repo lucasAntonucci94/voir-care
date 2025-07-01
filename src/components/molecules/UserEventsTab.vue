@@ -6,8 +6,10 @@
         v-model="searchQuery"
         v-model:selectedCategory="selectedCategory"
         v-model:selectedOwnership="selectedOwnership"
+        v-model:selectedDateFilter="selectedDateFilter"
         :showSearch="true"
         :showSelect="true"
+        :showSelectDate="true"
         :showOwnership="true"
       />
     <div v-if="filteredEvents.length > 0" class="flex justify-center md:block">
@@ -61,6 +63,7 @@ const emit = defineEmits(['open-create-modal', 'open-discover-tab'])
 const searchQuery = ref('');
 const selectedCategory = ref('');
 const selectedOwnership = ref('all');
+const selectedDateFilter = ref('upcoming');
 
 // Computados
 const filteredEvents = computed(() => {
@@ -71,6 +74,23 @@ const filteredEvents = computed(() => {
 
   // Filtro por categoría
   events = events.filter(event => !selectedCategory.value || event.categories?.some(c => c.id === selectedCategory.value))
+  
+  // Filtro por fecha
+  const now = new Date(); // Obtiene la fecha y hora actual
+  if (selectedDateFilter.value === 'upcoming') {
+    // Filtra eventos cuya fecha es igual o posterior a la fecha actual
+    events = events.filter(event => {
+      const eventDate = event.startTime?.toDate ? event.startTime.toDate() : new Date(event.startTime);
+      return eventDate >= now;
+    });
+  } else if (selectedDateFilter.value === 'past') {
+    // Filtra eventos cuya fecha es anterior a la fecha actual
+    events = events.filter(event => {
+      debugger
+      const eventDate = event.startTime?.toDate ? event.startTime.toDate() : new Date(event.startTime);
+      return eventDate < now;
+    });
+  }
 
   // Filtro por propiedad
   if (selectedOwnership.value === 'owned') {
@@ -80,6 +100,12 @@ const filteredEvents = computed(() => {
   }
   return events;
 })
+
+// Helper to check if event is upcoming
+const isUpcoming = (startTime) => {
+  const now = new Date();
+  return startTime && new Date(startTime.toDate ? startTime.toDate() : startTime) > now;
+};
 
 // Suscripción a eventos del usuario
 onMounted(() => {

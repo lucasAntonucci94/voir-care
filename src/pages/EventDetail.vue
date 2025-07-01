@@ -367,7 +367,7 @@ const loadEventData = async (id) => {
   try {
     event.value = await eventsStore.findEventById(id);
     isGoing.value = event.value?.attendees?.going?.includes(user.value?.uid) || false;
-    isAdmin.value = event.value?.ownerId === user.value?.uid || false;
+    isAdmin.value = event.value?.ownerId === user.value?.uid || user.value?.isAdmin || false;
     // Cargar detalles del propietario
     if (event.value?.ownerId) {
       ownerDetails.value = await usersStore.getUser(event.value.ownerId);

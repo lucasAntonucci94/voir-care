@@ -4,7 +4,10 @@
       <!-- Encabezado -->
       <div class="bg-white dark:bg-gray-800 shadow-sm">
         <div class="container mx-auto px-4 md:px-8 lg:px-16 py-4 flex items-center justify-between">
-          <h1 class="text-xl font-bold text-[#2c3e50] dark:text-white">Eventos</h1>
+          <h1 class="text-xl font-bold text-[rgb(44,62,80)] dark:text-white">
+            <i class="fa-solid fa-calendar mr-2 text-primary dark:text-secondary"></i>
+            Eventos
+          </h1>
           <button
             @click="handleModalCreate"
             class="hidden sm:inline-flex px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors"

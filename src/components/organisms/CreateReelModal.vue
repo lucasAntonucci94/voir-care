@@ -22,7 +22,9 @@
       </button>
 
       <h3 :id="modalTitleId" class="text-xl font-semibold mb-5 text-gray-800 dark:text-gray-200">
-        Subir Nuevo Reel
+        Crea tú Historia
+        <i class="fa-solid fa-video ml-2 text-primary dark:text-secondary" aria-hidden="true"></i>
+        <i class="fa-solid fa-image ml-2 text-primary dark:text-secondary" aria-hidden="true"></i>
       </h3>
       <form @submit.prevent="uploadReel" novalidate>
         <div class="mb-5">
@@ -82,12 +84,13 @@
             {{ errorFileMessage }}
           </p>
         </div>
-        <div class="flex justify-end space-x-3">
+        <div class="flex justify-between space-x-3">
           <button
             type="button"
             @click="closeModal"
             class="px-4 py-2 bg-gray-200 text-gray-700 dark:text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors duration-200"
           >
+            <i class="fa-solid fa-close ml-2" aria-hidden="true"></i>
             Cancelar
           </button>
           <button
@@ -96,7 +99,10 @@
             :disabled="isLoading || (!newReel.base64 && !newReel.title)"
             aria-busy="true"
           >
-            <span v-if="!isLoading">Subir</span>
+          <span v-if="!isLoading">
+            Subir
+            <i class="fa-solid fa-save ml-2" aria-hidden="true"></i>
+          </span>
             <span v-else class="flex items-center">
               <i class="fa-solid fa-circle-notch animate-spin mr-2" aria-hidden="true"></i>
               Subiendo...
