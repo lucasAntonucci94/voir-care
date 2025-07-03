@@ -248,7 +248,6 @@ const handleVideoError = (event) => {
 // Propiedad computada para calcular el ancho de la barra de progreso
 const progressBarWidth = computed(() => {
   if (videoDuration.value > 0) {
-    debugger
     const percentage = (currentTime.value / videoDuration.value) * 100;
     return `${Math.min(percentage, 100)}%`;
   }

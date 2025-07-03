@@ -86,7 +86,6 @@ const filteredEvents = computed(() => {
   } else if (selectedDateFilter.value === 'past') {
     // Filtra eventos cuya fecha es anterior a la fecha actual
     events = events.filter(event => {
-      debugger
       const eventDate = event.startTime?.toDate ? event.startTime.toDate() : new Date(event.startTime);
       return eventDate < now;
     });

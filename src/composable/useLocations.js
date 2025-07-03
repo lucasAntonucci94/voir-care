@@ -188,6 +188,7 @@ export function useLocations() {
             user: L.user,
           };
         });
+
         callback(locations);
       }, (err) => {
         console.error('Error en onSnapshot locations:', err);

@@ -151,6 +151,35 @@ export const useGroupsStore = defineStore('groups', {
         this.isLoading = false;
       }
     },
+    // Unirse a un grupo
+    async joinDefautGroups(userId) {
+      debugger
+      try {
+        const groupDefaultIds = [
+          'AybOkhRASczu3DnP3gm3',
+          'qhDTjajjusURU1eOcEcN',
+          'uy39JvtFJueZjkmMs7uW',   
+          'U5ciLrvMr5vxmhRVOlku',   
+          '4gGYZIwn75V7futYU3h5',   
+          'Jf7OftGTVx4nPaFd4wju',   
+        ];
+        const joinPromises = groupDefaultIds.map(groupId => this.joinGroup(groupId, userId));
+        this.isLoading = true;
+        await Promise.all(joinPromises);
+        console.log('Usuario unido a grupos por defecto exitosamente');
+        // Retornar el resultado de unirse al primer grupo como confirmación
+        if (joinPromises.length > 0) {
+          return joinPromises[0];
+        }
+        console.warn('No se proporcionaron grupos por defecto para unirse');
+        return null;
+      } catch (error) {
+        console.error(`Error al unirse al grupo`, error);
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
 
     // Salir de un grupo
     async leaveGroup(groupId, userId) {

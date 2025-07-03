@@ -3,7 +3,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
       <!-- Encabezado del modal -->
       <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear Nuevo Lugar</h3>
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">{{ modalTitle }}</h3>
         <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
           <i class="fa-solid fa-xmark w-6 h-6"></i>
         </button>
@@ -146,6 +146,15 @@
                 controls
                 class="w-full h-48 rounded-lg shadow-sm"
               ></video>
+              <!-- Botón para eliminar media existente/previsualizada -->
+              <button
+                type="button"
+                @click="clearMedia"
+                class="mt-2 px-3 py-1 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                :disabled="isSubmitting"
+              >
+                Eliminar Media
+              </button>
             </div>
           </div>
 
@@ -157,7 +166,7 @@
               @click="previousStep"
               :disabled="isSubmitting"
               class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              aria-label="Cancelar edición del perfil"
+              aria-label="Volver al paso anterior"
             >
               <i class="fa-solid fa-arrow-left"></i>
               <p class="hidden md:block">Atrás</p>
@@ -168,7 +177,7 @@
               @click="closeModal"
               :disabled="isSubmitting"
               class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              aria-label="Volver al paso anterior"
+              aria-label="Cancelar"
             >
               <i class="fa-solid fa-times"></i>
               <p class="hidden md:block">Cancelar</p>
@@ -179,7 +188,7 @@
               type="button"
               @click="nextStep"
               :disabled="isSubmitting"
-               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               aria-label="Avanzar al siguiente paso"
             >
               <p class="hidden md:block">Siguiente</p>
@@ -191,17 +200,16 @@
               type="submit"
               :disabled="isSubmitting"
               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              aria-label="Guardar perfil"
+              aria-label="Guardar cambios o crear"
             >
               <span v-if="isSubmitting">
                 <i class="fa-solid fa-circle-notch animate-spin"></i>
               </span>
               <p class="hidden md:block">
-                {{ isSubmitting ? 'Creando...' : 'Crear' }}
+                {{ isSubmitting ? (isEditMode ? 'Guardando...' : 'Creando...') : submitButtonText }}
               </p>
               <i v-if="!isSubmitting" class="fa-solid fa-save"></i>
             </button>
-
           </div>
         </form>
       </div>
@@ -210,7 +218,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useMediaUpload } from '../../composable/useMediaUpload';
 import { newGuid } from '../../utils/newGuid';
 import { useLocationsStore } from '../../stores/locations';
@@ -219,7 +227,7 @@ import GeolocationInput from '../atoms/GeolocationInput.vue';
 import PhoneInput from '../atoms/PhoneInput.vue';
 import { useSnackbarStore } from '../../stores/snackbar';
 
-// logos
+
 import CatIcon from '../../assets/icons/cat_1.png';
 import VetIcon from '../../assets/icons/locations/veterinary 2.png';
 import TrainerIcon from '../../assets/icons/locations/trainer1.png';
@@ -235,14 +243,19 @@ import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
 import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
 import TherapyIcon from '../../assets/icons/locations/rehab1.png';
 
-const emits = defineEmits(['close', 'locationCreated']);
+const emits = defineEmits(['close', 'locationCreated', 'locationUpdated']);
 const props = defineProps({
   visible: {
     type: Boolean,
     default: false,
   },
+  locationToEdit: {
+    type: Object,
+    default: null,
+  },
 });
-const { uploadMedia } = useMediaUpload();
+
+const { uploadMedia } = useMediaUpload(); //, deleteMedia crear metodo para eliminar media del storage
 const { user } = useAuth();
 const locationsStore = useLocationsStore();
 const snackbarStore = useSnackbarStore();
@@ -272,38 +285,41 @@ const locationTypes = ref([
   { id: 'parque', label: 'Parques y Plazas', icon: ParqueIcon },
   { id: 'petfriendly', label: 'Lugares Pet-Friendly', icon: PetfriendlyIcon },
   { id: 'refugio', label: 'Refugios y Adopción', icon: ShelterIcon },
-  // { id: 'eventos', label: 'Eventos Pet-Friendly', icon: EventIcon },
   { id: 'emergencias', label: 'Emergencias', icon: EmergencyIcon },
-  // { id: 'alojamiento', label: 'Alojamientos Pet-Friendly', icon: AccommodationIcon },
-  // { id: 'suministros', label: 'Entrega de Suministros', icon: DeliveryIcon },
   { id: 'rehabilitacion', label: 'Rehabilitación y Terapia', icon: TherapyIcon },
 ]);
 
-const newLocation = ref({
-  id: newGuid(),
-  title: '',
-  description: '',
-  address: {
-    street: '',
-    coordinates: {
-      lat: null,
-      lng: null,
+// Función para inicializar o resetear los datos del formulario
+function initializeNewLocation(data = null) {
+  return {
+    id: data?.id || newGuid(), // Preserva ID si edita, sino nuevo GUID
+    title: data?.title || '',
+    description: data?.description || '',
+    address: {
+      street: data?.address?.street || '',
+      coordinates: {
+        lat: data?.address?.coordinates?.lat || null,
+        lng: data?.address?.coordinates?.lng || null,
+      },
     },
-  },
-  type: '',
-  contact: {
-    phone: '',
-    socialNetworkLink: null,
-  },
-  media: {
-    url: '',
-    path: '',
-    imageBase64: null,
-    type: '',
-  },
-  timestamp: '',
-  pending: false,
-});
+    type: data?.type || '',
+    contact: {
+      phone: data?.contact?.phone || '',
+      socialNetworkLink: data?.contact?.socialNetworkLink || null,
+    },
+    media: {
+      url: data?.media?.url || '',
+      path: data?.media?.path || '',
+      imageBase64: null,
+      type: data?.media?.type || '',
+    },
+    timestamp: data?.timestamp || '',
+    pending: data?.pending ?? true,
+    user: data?.user || null,
+  };
+}
+
+const newLocation = ref(initializeNewLocation());
 
 // Variable para GeolocationInput
 const locationInput = ref({
@@ -311,6 +327,20 @@ const locationInput = ref({
   lat: null,
   lng: null,
 });
+
+// Propiedad computada para determinar el modo (crear o editar)
+const isEditMode = computed(() => !!props.locationToEdit);
+
+// Propiedad computada para el título del modal
+const modalTitle = computed(() => {
+  return isEditMode.value ? 'Editar Lugar' : 'Crear Nuevo Lugar';
+});
+
+// Propiedad computada para el texto del botón de submit
+const submitButtonText = computed(() => {
+  return isEditMode.value ? 'Guardar Cambios' : 'Crear';
+});
+
 
 // Sincronizar locationInput con newLocation.address
 watch(locationInput, (newVal) => {
@@ -324,6 +354,7 @@ watch(locationInput, (newVal) => {
 }, { deep: true });
 
 // Sincronizar en la dirección opuesta (si newLocation.address cambia)
+// Esto es importante cuando se carga una ubicación para editar
 watch(() => newLocation.value.address, (newVal) => {
   locationInput.value = {
     address: newVal.street,
@@ -332,65 +363,67 @@ watch(() => newLocation.value.address, (newVal) => {
   };
 }, { deep: true });
 
+
+// Watch para inicializar el formulario cuando el modal se hace visible
+// o cuando locationToEdit cambia (si el modal ya está visible y se cambia la prop)
+watch(() => [props.visible, props.locationToEdit], ([newVisible, newLocationToEdit]) => {
+  if (newVisible) {
+    resetForm(); // Siempre resetear al abrir
+    if (newLocationToEdit) {
+      // Si hay un locationToEdit, inicializar con esos datos
+      newLocation.value = initializeNewLocation(newLocationToEdit);
+      // Asegurarse de que locationInput también se prellene
+      locationInput.value = {
+        address: newLocationToEdit.address?.street || '',
+        lat: newLocationToEdit.address?.coordinates?.lat || null,
+        lng: newLocationToEdit.address?.coordinates?.lng || null,
+      };
+    }
+  }
+}, { deep: true, immediate: true }); // 'immediate: true' para que se ejecute al montar si 'visible' ya es true
+
+
 function closeModal() {
   resetForm();
-  errorFileMessage.value = '';
-  locationError.value = '';
-  currentStep.value = 1;
-  errors.value = {};
   emits('close');
 }
 
 function resetForm() {
-  newLocation.value = {
-    id: newGuid(),
-    title: '',
-    description: '',
-    address: {
-      street: '',
-      coordinates: {
-        lat: null,
-        lng: null,
-      },
-    },
-    type: '',
-    contact: {
-      phone: '',
-      socialNetworkLink: null,
-    },
-    media: {
-      url: '',
-      path: '',
-      imageBase64: null,
-      type: '',
-    },
-    timestamp: '',
-    pending: false,
-  };
+  newLocation.value = initializeNewLocation();
   locationInput.value = {
     address: '',
     lat: null,
     lng: null,
   };
+  currentStep.value = 1;
+  errors.value = {};
+  errorFileMessage.value = '';
+  locationError.value = '';
 }
 
 function handleMediaUpload(event) {
   errorFileMessage.value = '';
   const file = event.target.files[0];
-  if (!file) return;
-  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-    errorFileMessage.value = 'El tipo de archivo no es permitido. Selecciona una imagen o video.';
-    event.target.value = '';
+  if (!file) {
+    // Si el usuario cancela la selección de archivo, limpia la previsualización
+    newLocation.value.media = { url: '', path: '', imageBase64: null, type: '' };
     return;
   }
+
+  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+    errorFileMessage.value = 'El tipo de archivo no es permitido. Selecciona una imagen o video.';
+    event.target.value = ''; // Limpia el input de archivo
+    return;
+  }
+
   const reader = new FileReader();
   reader.onloadend = () => {
     newLocation.value.media = {
-      url: URL.createObjectURL(file),
-      path: null,
+      url: URL.createObjectURL(file), // URL para previsualización
+      path: null, // La ruta real se asignará después de la subida a Firebase Storage
       type: file.type.startsWith('image') ? 'image' : 'video',
+      imageBase64: reader.result, // Base64 para la subida
     };
-    newLocation.value.media.imageBase64 = reader.result;
   };
   reader.onerror = (error) => {
     console.error('Error al leer el archivo:', error);
@@ -398,6 +431,22 @@ function handleMediaUpload(event) {
   };
   reader.readAsDataURL(file);
 }
+
+// Nueva función para limpiar el media previsualizado/existente
+function clearMedia() {
+  newLocation.value.media = {
+    url: '',
+    path: '',
+    imageBase64: null,
+    type: '',
+  };
+  // Si hay un input de tipo file, también límpialo para evitar que se re-seleccione el mismo archivo
+  const fileInput = document.getElementById('media');
+  if (fileInput) {
+    fileInput.value = '';
+  }
+}
+
 
 function validateStep(step) {
   errors.value = {};
@@ -408,16 +457,16 @@ function validateStep(step) {
       errors.value.title = 'El título es obligatorio';
       isValid = false;
     }
-    if (!newLocation.value.description) {
+    if (!newLocation.value.description || newLocation.value.description.trim() === '') {
       errors.value.description = 'La descripción es obligatoria';
       isValid = false;
     }
-    if (!newLocation.value.type) {
+    if (!newLocation.value.type || newLocation.value.type.trim() === '') {
       errors.value.type = 'El tipo es obligatorio';
       isValid = false;
     }
   } else if (step === 2) {
-    if (!newLocation.value.address.street) {
+    if (!newLocation.value.address.street || newLocation.value.address.street.trim() === '') {
       locationError.value = 'La dirección es obligatoria';
       isValid = false;
     }
@@ -452,41 +501,51 @@ function previousStep() {
 async function handleSubmit() {
   isSubmitting.value = true;
   try {
-    // Validar todos los pasos
+    // Validar todos los pasos antes de enviar
     if (!validateStep(1) || !validateStep(2)) {
-      currentStep.value = 1; // Volver al primer paso con errores
+      currentStep.value = 1; // Volver al primer paso con errores si falla la validación
+      snackbarStore.show('Por favor, completa todos los campos obligatorios.', 'error');
       return;
     }
 
-    // Obtener el ID del usuario autenticado
     const ownerId = user.value?.uid || user.value?.id || null;
+    if (!ownerId) {
+      snackbarStore.show('Error: Usuario no autenticado.', 'error');
+      return;
+    }
 
-    // Subir el archivo multimedia si existe
-    let updatedMedia = {
-      url: null,
-      path: null,
-      type: null,
+    let finalMediaData = {
+      url: newLocation.value.media.url || null,
+      path: newLocation.value.media.path || null,
+      type: newLocation.value.media.type || null,
     };
 
+    // Si hay un nuevo archivo seleccionado para subir
     if (newLocation.value.media.imageBase64) {
       const dynamicPath = `locations/${ownerId}/${newGuid()}`;
       const { url, path } = await uploadMedia({
-        currentUrl: null,
-        currentPath: null,
+        currentUrl: isEditMode.value ? props.locationToEdit?.media?.url : null, // URL actual si es edición
+        currentPath: isEditMode.value ? props.locationToEdit?.media?.path : null, // Path actual si es edición
         newMediaBase64: newLocation.value.media.imageBase64,
         mediaType: newLocation.value.media.type,
         dynamicPath,
       });
-      updatedMedia = {
+      finalMediaData = {
         url,
         path,
         type: newLocation.value.media.type,
       };
+    } else if (isEditMode.value && props.locationToEdit?.media?.url && !newLocation.value.media.url) {
+      if (props.locationToEdit.media?.path) {
+        // await deleteMedia(props.locationToEdit.media.path); // Eliminar el media de Storage
+      }
+      finalMediaData = { url: null, path: null, type: null }; // Limpiar media en la base de datos
     }
+
 
     // Preparar los datos para Firestore
     const locationData = {
-      id: newLocation.value.id,
+      id: newLocation.value.id, // Se mantiene el ID si es edición
       title: newLocation.value.title,
       description: newLocation.value.description,
       address: {
@@ -499,12 +558,12 @@ async function handleSubmit() {
       type: newLocation.value.type,
       contact: {
         phone: newLocation.value.contact.phone || null,
-        socialNetworkLink: newLocation.value.contact.socialNetworkLink,
+        socialNetworkLink: newLocation.value.contact.socialNetworkLink || null,
       },
-      media: updatedMedia,
-      timestamp: newLocation.value.timestamp,
-      pending: newLocation.value.pending,
-      user: {
+      media: finalMediaData,
+      timestamp: isEditMode.value ? newLocation.value.timestamp : new Date(), // Preserva en edición, crea en nuevo
+      pending: isEditMode.value ? newLocation.value.pending : true, // Preserva en edición, pendiente en nuevo
+      user: isEditMode.value ? newLocation.value.user : { // Preserva en edición, crea en nuevo
         id: ownerId,
         displayName: user.value?.displayName,
         email: user.value?.email,
@@ -512,13 +571,22 @@ async function handleSubmit() {
       },
     };
 
-    // Guardar en Firestore
-    await locationsStore.addLocation(locationData);
+    if (isEditMode.value) {
+      // Actualizar ubicación existente
+      await locationsStore.updateLocation(props.locationToEdit.idDoc, locationData); // Usa idDoc para actualizar
+      snackbarStore.show('Lugar actualizado exitosamente', 'success');
+      emits('locationUpdated', locationData); // Emitir evento de actualización
+    } else {
+      // Añadir nueva ubicación
+      await locationsStore.addLocation(locationData);
+      snackbarStore.show('Lugar creado exitosamente', 'success');
+      emits('locationCreated', locationData); // Emitir evento de creación
+    }
+
     closeModal();
-    snackbarStore.show('Lugar creado exitosamente', 'success');
   } catch (error) {
-    console.error('Error al crear location:', error);
-    snackbarStore.show('Error al crear el lugar. Por favor, intenta nuevamente.', 'error');
+    console.error('Error al guardar location:', error);
+    snackbarStore.show('Error al guardar el lugar. Por favor, intenta nuevamente.', 'error');
   } finally {
     isSubmitting.value = false;
   }

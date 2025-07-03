@@ -101,6 +101,7 @@
             <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
             <UserEventsTab v-else-if="activeTab === 'eventos'" />
             <UserGroupsTab v-else-if="activeTab === 'grupos'" />
+            <MapTab v-else-if="activeTab === 'mapa'" />
             <SavedPostTab v-else-if="activeTab === 'guardado'" />
             <HiddenPostsTab v-else-if="activeTab === 'oculto'" />
           </div>
@@ -127,7 +128,7 @@ import UserEventsTab from '../components/molecules/ProfileUserEventsTab.vue';
 import UserGroupsTab from '../components/molecules/ProfileUserGroupsTab.vue';
 import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
 import HiddenPostsTab from '../components/molecules/HiddenPostsTab.vue';
-
+import MapTab from '../components/molecules/ProfileUserMapTab.vue';
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();
@@ -148,11 +149,13 @@ const profileHeader = ref(null); // Ref to ProfileHeader component
 // Tabs
 const allTabs = [
   { name: 'Publicaciones', icon: 'fa-solid fa-square-share-nodes', hidden: false },
+  { name: 'Reels', icon: 'fa-solid fa-video', hidden: false },
+  // { name: 'Galería', icon: 'fa-solid fa-images', hidden: false },
+  { name: 'Eventos', icon: 'fa-solid fa-calendar-days', hidden: true },
+  { name: 'Grupos', icon: 'fa-solid fa-users', hidden: false },
+  { name: 'Mapa', icon: 'fa-solid fa-map', hidden: true },
   { name: 'Información', icon: 'fa-solid fa-circle-info', hidden: false },
   { name: 'Conexiones', icon: 'fa-solid fa-user-group', hidden: false },
-  { name: 'Galería', icon: 'fa-solid fa-images', hidden: false },
-  { name: 'Eventos', icon: 'fa-solid fa-calendar-days', hidden: true },
-  { name: 'Grupos', icon: 'fa-solid fa-users', hidden: true },
   { name: 'Guardado', icon: 'fa-solid fa-bookmark', hidden: true },
   { name: 'Oculto', icon: 'fa-solid fa-ban', hidden: true },
 ];

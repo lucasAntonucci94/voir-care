@@ -20,7 +20,8 @@ import { AppError } from '../../api/Exceptions/AppError';
 // Inicializo la instancia de autenticación de Firebase
 const auth = getAuth(firebaseApp);
 const { createUser, loadProfileInfo, getEmailByDisplayName } = useUsers();
-const userStatus = useUserStatus();
+const userStatusComposable = useUserStatus();
+// const groupsComposable = useGroups();
 // Mensajes de error para autenticación
 const AUTH_ERRORS_MESSAGES = {
   'auth/invalid-email': 'El email no tiene un formato correcto.',
@@ -56,8 +57,8 @@ const initializeAuthListener = () => {
       localStorage.setItem(AUTH_STORAGE_KEY, 'true'); // Guardo en localStorage para asi poder mantener el estado autenticado cuando se reinicia la app. Por unos segundos pierde la autenticacion reactiva genenrando un mal fucionamiento en al redireccion.
       user.value = await loadProfileInfo(firebaseUser); // Cargar perfil completo, datos de collection users
       // Actualizar estado de autenticación en useUserStatus
-      userStatus.setAuthState(user.value, isAuthenticated.value);
-      await userStatus.updateUserStatus();
+      userStatusComposable.setAuthState(user.value, isAuthenticated.value);
+      await userStatusComposable.updateUserStatus();
       // Verifica si Pinia está activo antes de usar el store
       const pinia = getActivePinia();
       if (pinia) {
@@ -98,7 +99,7 @@ async function login(email, password, isEmail = true) {
       email = await getEmailByDisplayName(email);
     }
     await signInWithEmailAndPassword(auth, email, password);
-    await userStatus.updateUserStatus();
+    await userStatusComposable.updateUserStatus();
     return true;
   } catch (err) {
     error.value = {
@@ -137,19 +138,23 @@ async function doRegister(displayName, email, password) {
   error.value = null;
   try {
     const { user: newAuthUser } = await createUserWithEmailAndPassword(auth, email, password);
+    debugger
     if (newAuthUser) {
       await createUser(newAuthUser.uid, {
         email: email,
         displayName: displayName,
       });
     }
-    return true;
+     return  {
+        id: newAuthUser?.uid,
+        status: true,
+      };
   } catch (err) {
     error.value = {
       code: err.code,
       message: AUTH_ERRORS_MESSAGES[err.code] || err.message,
     };
-    return false;
+    return {status: false, error: error.value.message};
   } finally {
     loading.value = false;
   }
