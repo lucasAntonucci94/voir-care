@@ -4,7 +4,15 @@
       type="text" 
       placeholder="¿Qué tienes en mente?" 
       @click="openModal" 
-      class="w-full hover:bg-gray-50 max-w-lg p-4 rounded-full bg-white dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-300 dark:border-gray-800 border border-gray-200 dark:border-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary cursor-pointer text-gray-700 placeholder-gray-400 transition-all duration-200 hover:shadow-lg" 
+      class="w-full max-w-lg p-4 rounded-full font-bold
+      bg-white hover:bg-gray-100/10 text-gray-700
+      dark:bg-gray-700 dark:hover:bg-gray-300/20 dark:text-gray-200 dark:hover:text-gray-300
+      dark:border-gray-800 border border-gray-200 dark:border-gray-800 
+       shadow-md focus:outline-none 
+       hover:ring-2 hover:ring-primary dark:hover:ring-secondary 
+       focus:ring-2 focus:ring-primary dark:focus:ring-secondary 
+       cursor-pointer 
+       transition transition-transform hover:scale-101" 
       readonly 
     />
   </section>

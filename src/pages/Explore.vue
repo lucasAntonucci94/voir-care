@@ -76,11 +76,11 @@ const handleMapReady = () => {
 
 
 onMounted(() => {
-  locationsStore.subscribe();
+  locationsStore.subscribeTolocations();
 });
 
 onUnmounted(() => {
-  locationsStore.unsubscribe();
+  locationsStore.unsubscribeAllFn();
 });
 </script> 
 

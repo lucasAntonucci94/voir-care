@@ -1,6 +1,5 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col h-full">
-    
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col h-full transition transition-transform hover:scale-101">
     <!-- Media Section (Image or Video) -->
     <div class="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden bg-gray-200 dark:bg-gray-700">
       <template v-if="location.media && location.media.url">
@@ -9,7 +8,6 @@
           :src="location.media.url"
           :alt="location.title"
           class="w-full h-full object-cover"
-          onerror="this.onerror=null;this.src='https://placehold.co/600x400/E0E0E0/666666?text=No+Image';"
         />
         <video
           v-else-if="location.media.type === 'video'"
@@ -20,24 +18,23 @@
           muted
           playsinline
           class="w-full h-full object-cover"
-          onerror="this.onerror=null;this.src='https://placehold.co/600x400/E0E0E0/666666?text=No+Video';"
         ></video>
         <img
           v-else
-          src="https://placehold.co/600x400/E0E0E0/666666?text=Media+Type+Unknown"
+          :src="AvatarFallback"
           alt="Media Type Unknown"
           class="w-full h-full object-cover"
         />
       </template>
       <img
         v-else
-        src="https://placehold.co/600x400/E0E0E0/666666?text=No+Media"
+        :src=AvatarFallback
         alt="No Media Available"
         class="w-full h-full object-cover"
       />
       <!-- Botón de elipsis -->
         <div
-            v-if="location.user.id === user?.id || user?.isAdmin"
+            v-if="location.user.id === user?.uid || user?.isAdmin"
             class="absolute top-3 right-3"
         >
             <button
@@ -277,14 +274,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* You might need to import Font Awesome if you haven't already in your main CSS or HTML */
-/* Example: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> */
 
-/* Utility for line clamping */
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
 </style>

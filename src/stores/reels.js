@@ -6,17 +6,21 @@ import { useDefaultReels } from '../composable/useDefaultReels';
 export const useReelsStore = defineStore('reels', {
   state: () => {
     const reels = ref([]);
+    const userReels = ref([]);
     const defaultReels = ref([]);
     const isLoading = ref(true);
     const unsubscribe = ref(null);
     const unsubscribeDefaultReels = ref(null);
+    const unsubscribeUserReels = ref(null);
 
     return {
       reels,
+      userReels,
       defaultReels,
       isLoading,
       unsubscribe,
       unsubscribeDefaultReels,
+      unsubscribeUserReels,
     };
   },
   actions: {
@@ -63,6 +67,24 @@ export const useReelsStore = defineStore('reels', {
         this.unsubscribeDefaultReels = null;
       }
     },
+    // Suscribirse a los reels en tiempo real
+    subscribeToUserReels(userId) {
+      if (this.unsubscribeUserReels) {
+        return;
+      }
+      const { subscribeToUserReels } = useReels();
+      this.unsubscribeUserReels = subscribeToUserReels(userId, (fetchedReed) => {
+        this.userReels = fetchedReed;
+        this.isLoading = false;
+      });
+    },
+    // Cancelar la suscripción
+    unsubscribeFromReels() {
+      if (this.unsubscribeUserReels) {
+        this.unsubscribeUserReels();
+        this.unsubscribeUserReels = null;
+      }
+    },
     // Fetch default reels once
     // async fetchDefaultReels() {
     //   console.log('Fetching default reels...');
@@ -78,22 +100,50 @@ export const useReelsStore = defineStore('reels', {
     // },
     // Añadir un nuevo reel
     async addReel(newReelData) {
-      // console.log('Añadiendo nuevo reel:', newReelData);
-      const { saveReel } = useReels();
-      const reelData = {
-        user: newReelData.user,
-        title: newReelData.title,
-        file: newReelData.file,
-        mediaType: newReelData.mediaType,
-        thumbnail: newReelData.thumbnail,
-      };
-      await saveReel(reelData);
+      this.loading = true;
+      this.error = null;
+      try {
+        const { saveReel } = useReels();
+        await saveReel(newReelData);
+      } catch (err) {
+        console.error('Error en el store al añadir reel:', err);
+        this.error = err.message;
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+    // Para actualizar un reel existente
+    async updateReel(idDoc, updatedReelData) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { updateReelData } = useReels();
+        // Pasamos idDoc y los datos actualizados, incluyendo base64 si hay un nuevo archivo
+        await updateReelData(idDoc, updatedReelData);
+      } catch (err) {
+        console.error('Error en el store al actualizar reel:', err);
+        this.error = err.message;
+        throw err;
+      } finally {
+        this.loading = false;
+      }
     },
     // Eliminar un reel
-    async deleteReel(reelIdDoc) {
-      // console.log('Eliminando reel con idDoc:', reelIdDoc);
-      const { deleteReel } = useReels();
-      await deleteReel(reelIdDoc);
+    async deleteReel(reel) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { deleteReel } = useReels();
+        await deleteReel(reel.idDoc, reel.mediaPath, reel.thumbnailPath);
+        this.reels = this.reels.filter(r => r.idDoc !== reel.idDoc);
+      } catch (err) {
+        console.error('Error en el store al eliminar reel:', err);
+        this.error = err.message;
+        throw err;
+      } finally {
+        this.loading = false;
+      }
     },
     // Toggle like en un reel
     async toggleLike(reelIdDoc, userData) {

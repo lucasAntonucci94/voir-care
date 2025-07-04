@@ -82,7 +82,6 @@ function sanitizeMessage(message) {
     .replace(/</g, '<')
     .replace(/>/g, '>')
     .replace(/[-\u001F\u007F-\u009F]/g, '') // caracteres no imprimibles
-    .trim();
 }
 
 // Actualizar presencia cuando el usuario abre o cambia de chat

@@ -54,7 +54,7 @@
             class="flex items-center gap-3 rounded hover:bg-gray-300/50 dark:hover:bg-gray-700/50 p-2 transition-all duration-200"
           >
             <img v-if="!reel?.default"
-              :src="reel?.user?.photoURL || AvantarDefault"
+              :src="reel?.user?.photoURL || AvatarDefault"
               alt="User avatar"
               class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md"
             />
@@ -203,7 +203,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp.js';
 import { useReelsStore } from '../../stores/reels.js';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
-import AvantarDefault from '../../assets/avatar1.jpg';
+import AvatarDefault from '../../assets/avatar1.jpg';
 import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 import ModalReport from '../molecules/ReportModal.vue';
 
@@ -222,7 +222,7 @@ const props = defineProps({
     required: true,
   },
 });
-
+debugger
 // Emits
 const emit = defineEmits(['close', 'update-reel']);
 
@@ -410,7 +410,7 @@ const deleteReel = async () => {
   showSettingsMenu.value = false;
   if (!props.reel?.idDoc) return;
   try {
-    await reelsStore.deleteReel(props.reel.idDoc);
+    await reelsStore.deleteReel(props.reel);
     snackbarStore.show('Reel eliminado exitosamente', 'success');
     closeModal();
     emit('update-reel', null);

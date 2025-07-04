@@ -96,12 +96,13 @@
                 </button>
               </div>
             </div>
-            <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" @trigger-edit="triggerEditProfile" :isOwnProfile="isOwnProfile" />
-            <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" @active-tab="setActiveTab" />
-            <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
+            <ReelsTab v-else-if="activeTab === 'reels'" :userId="activeUser.uid" />
             <UserEventsTab v-else-if="activeTab === 'eventos'" />
             <UserGroupsTab v-else-if="activeTab === 'grupos'" />
             <MapTab v-else-if="activeTab === 'mapa'" />
+            <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" @trigger-edit="triggerEditProfile" :isOwnProfile="isOwnProfile" />
+            <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" @active-tab="setActiveTab" />
+            <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
             <SavedPostTab v-else-if="activeTab === 'guardado'" />
             <HiddenPostsTab v-else-if="activeTab === 'oculto'" />
           </div>
@@ -129,6 +130,7 @@ import UserGroupsTab from '../components/molecules/ProfileUserGroupsTab.vue';
 import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
 import HiddenPostsTab from '../components/molecules/HiddenPostsTab.vue';
 import MapTab from '../components/molecules/ProfileUserMapTab.vue';
+import ReelsTab from '../components/molecules/ProfileUserReelsTab.vue';
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();
