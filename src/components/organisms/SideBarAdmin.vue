@@ -1,7 +1,7 @@
 <template>
   <aside class="w-64 bg-white dark:bg-gray-800 p-4 hidden md:block">
     <nav class="space-y-4">
-      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Panel Admin</h2>
+      <h2 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Panel de Administración</h2>
       <ul class="space-y-2">
         <li v-for="item in navItems" :key="item.label">
           <!-- Ítem con desplegable -->

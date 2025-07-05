@@ -9,8 +9,8 @@
       playsinline></video>
 
     <div class="container mx-auto px-6 sm:px-8 z-20"> <div class="max-w-lg sm:max-w-xl">
-        <h1 class="dosis-font text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 leading-tight text-white">Tu comunidad para el amor y cuidado animal</h1>
-        <p class="josefin-font text-md sm:text-lg mb-6 text-gray-100">Conectá con otros amantes de los animales, aprendé sobre bienestar y colaborá para que cada mascota tenga un hogar feliz.</p>
+        <h1 class="dosis-font text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 leading-tight text-gray-700 dark:text-white">Tu comunidad para el amor y cuidado animal</h1>
+        <p class="josefin-font text-md sm:text-lg mb-6 text-gray-500 dark:text-gray-100">Conectá con otros amantes de los animales, aprendé sobre bienestar y colaborá para que cada mascota tenga un hogar feliz.</p>
         <div class="flex flex-col sm:flex-row gap-4">
           <router-link to="/register" class="dosis-font px-6 py-3 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Únete a la comunidad de Voir">
             Unite ahora
@@ -122,23 +122,31 @@
     </div>
   </section>
 
-  <!-- Ultimo Section de cierre y llamado a la accion -->
-  <section class="py-16 bg-gray-200/50 dark:bg-gray-900 josefin-font">
-    <div class="container flex flex-col items-center mx-auto px-4">
-      <!-- Título principal -->
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6 dosis-font">Unite a la Comunidad Voir</h2>
-      <!-- Subtítulo -->
-      <h3 class="text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-8 text-center">Hacé una diferencia, encontrá tu tribu, crezcamos juntos</h3>
-      <!-- Descripción motivadora -->
-      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-center mb-8">
-        ¿Sos un amante de los animales? En <span class="font-bold">Voir</span>, tu pasión encuentra un hogar. Unite a miles de personas en Buenos Aires y más allá que comparten tu amor por las mascotas. Juntos, podemos construir un mundo donde cada animal tenga un hogar feliz y saludable.
-      </p>
-      <!-- Lista de beneficios -->
-      <ul class="text-base text-gray-600 dark:text-gray-300 max-w-2xl mb-10 space-y-4 text-center">
-        <li><span class="font-semibold">Conectá:</span> Formá parte de una comunidad vibrante donde compartís experiencias, consejos y momentos especiales con tus mascotas.</li>
-        <li><span class="font-semibold">Colaborá:</span> Sumate a iniciativas de adopción, rescate y cuidado responsable que transforman vidas.</li>
-        <li><span class="font-semibold">Creá impacto:</span> Tu participación ayuda a fomentar el bienestar animal y a construir una red de apoyo para cada peludo.</li>
-      </ul>
+
+  <!-- Mision y Vision -->
+  <section class="py-16 bg-white dark:bg-gray-900 josefin-font">
+    <div class="mx-auto max-w-290 px-4 flex flex-col md:flex-row gap-10">
+      <div class="md:w-1/2">
+        <!-- Título principal -->
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6 dosis-font text-left">Unite a la Comunidad Voir</h2>
+        <!-- Subtítulo -->
+        <h3 class="text-lg md:text-xl xxl:text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-8 text-left">Hacé una diferencia, encontrá tu tribu, crezcamos juntos</h3>
+        <!-- Descripción motivadora -->
+        <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl mb-8 text-left">
+          ¿Sos un amante de los animales? En <span class="font-bold">Voir</span>, tu pasión encuentra un hogar. Unite a miles de personas en Buenos Aires y más allá que comparten tu amor por las mascotas. Juntos, podemos construir un mundo donde cada animal tenga un hogar feliz y saludable.
+        </p>
+        <!-- Lista de beneficios -->
+        <ul class="text-base text-gray-600 dark:text-gray-300 max-w-2xl mb-10 space-y-4 text-left">
+          <li><span class="font-semibold">Conectá:</span> Formá parte de una comunidad vibrante donde compartís experiencias, consejos y momentos especiales con tus mascotas.</li>
+          <li><span class="font-semibold">Colaborá:</span> Sumate a iniciativas de adopción, rescate y cuidado responsable que transforman vidas.</li>
+          <li><span class="font-semibold">Creá impacto:</span> Tu participación ayuda a fomentar el bienestar animal y a construir una red de apoyo para cada peludo.</li>
+        </ul>
+      </div>
+      <div class="md:w-1/2 px-4 flex flex-col items-center justify-center">
+        <img src="../assets/CAT&DOG.png" alt="Perro y gato recostados" class="mx-auto mb-4" loading="lazy">
+      </div>
+    </div>
+    <div class="text-center mt-8">
       <!-- Call to Action -->
       <router-link to="/register" class="dosis-font px-8 py-4 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Unite a la comunidad Voir">
         ¡Unite a Voir ahora!
