@@ -293,7 +293,6 @@ const locationTypes = ref([
 
 // Función para inicializar o resetear los datos del formulario
 function initializeNewLocation(data = null) {
-  debugger
   return {
     id: data?.id || newGuid(), //Originalmente los cree con id Guid autoGenerado, y lo mantuve. Tanto idDoc como el id interno son el mismo valor.
     idDoc: data?.idDoc || newGuid(),
@@ -575,7 +574,6 @@ async function handleSubmit() {
         photoURLFile: user.value?.photoURLFile,
       },
     };
-    debugger
     if (isEditMode.value) {
       // Actualizar ubicación existente
       await locationsStore.updateLocation(props.locationToEdit.idDoc, locationData); // Usa idDoc para actualizar

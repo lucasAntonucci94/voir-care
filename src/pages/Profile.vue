@@ -82,12 +82,6 @@
               <PostCard v-for="post in filteredProfilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
               <div  v-if="!filteredProfilePosts?.length" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                 <p class="text-gray-500 dark:text-gray-400">No tienes publicaciones guardadas aún.</p>
-                <!-- <button
-                  class="mt-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
-                  @click="navigateToFeed"
-                >
-                  Crear publicación
-                </button> -->
                 <button
                   class="mt-4 ml-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
                   @click="navigateToFeed"
@@ -150,12 +144,12 @@ const profileHeader = ref(null); // Ref to ProfileHeader component
 
 // Tabs
 const allTabs = [
+  { name: 'Grupos', icon: 'fa-solid fa-users', hidden: false },
+  { name: 'Eventos', icon: 'fa-solid fa-calendar-days', hidden: true },
+  { name: 'Mapa', icon: 'fa-solid fa-map', hidden: true },
   { name: 'Publicaciones', icon: 'fa-solid fa-square-share-nodes', hidden: false },
   { name: 'Reels', icon: 'fa-solid fa-video', hidden: false },
   // { name: 'Galería', icon: 'fa-solid fa-images', hidden: false },
-  { name: 'Eventos', icon: 'fa-solid fa-calendar-days', hidden: true },
-  { name: 'Grupos', icon: 'fa-solid fa-users', hidden: false },
-  { name: 'Mapa', icon: 'fa-solid fa-map', hidden: true },
   { name: 'Información', icon: 'fa-solid fa-circle-info', hidden: false },
   { name: 'Conexiones', icon: 'fa-solid fa-user-group', hidden: false },
   { name: 'Guardado', icon: 'fa-solid fa-bookmark', hidden: true },

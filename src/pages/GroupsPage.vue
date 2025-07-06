@@ -76,11 +76,11 @@ import GroupFeedTab from '../components/organisms/GroupFeedTab.vue'
 
 // Control de tabs
 const tabs = [
-  { id: 'feed', label: 'Tus Feed', icon: 'fa-solid fa-rss' },
   { id: 'discover', label: 'Descubrir', icon: 'fa-solid fa-magnifying-glass' },
+  { id: 'feed', label: 'Tu Feed', icon: 'fa-solid fa-rss' },
   { id: 'yourGroups', label: 'Tus Grupos', icon: 'fa-solid fa-user-check' },
 ];
-const activeTab = ref('feed')
+const activeTab = ref('discover')
 
 // Control de la modal de creación de grupo
 const showModalCreate = ref(false)

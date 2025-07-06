@@ -218,7 +218,6 @@ const handleSubmit = async () => {
   } else {
     router.push('/');
     snackbarStore.show('Bienvenido!', 'success');
-    debugger
     groupsStore.joinDefautGroups(result.id);
   }
 

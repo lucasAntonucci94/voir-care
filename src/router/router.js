@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MainLayout from '../components/templates/MainLayout.vue';
+import Home from '../pages/Home.vue';
 import Feed from '../pages/Feed.vue';
 import Profile from '../pages/Profile.vue';
 import Login from '../pages/Login.vue';
@@ -38,6 +39,14 @@ const routes = [
       {
         path: '/feed',
         name: 'feed',
+        component: Home,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/social',
+        name: 'social',
         component: Feed,
         meta: {
             requiresAuth: true,

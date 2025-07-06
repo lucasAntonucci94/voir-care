@@ -163,6 +163,7 @@ import ServiceImage3 from '../assets/3.png';
 import { useThemeStore } from '../stores/theme';
 import HeroLight from '../assets/hero/heroLadingPageLight.mp4';
 import HeroDark from '../assets/hero/heroLadingPageDark.mp4';
+import HeroDark1 from '../assets/hero/heroLadingPageDark2.mp4';
 import chatPrivadoLight from '../assets/icons/gatetoAcostadoLight.png';
 import chatPrivadoDark from '../assets/icons/gatetoAcostadoDark.png';
 

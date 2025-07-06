@@ -406,7 +406,7 @@ async function loadGroupData(id) {
   try {
     group.value = await groupsStore.findGroupById(id);
     isMember.value = group.value?.members?.includes(user.value?.uid) || false;
-    isAdmin.value = group.value?.ownerId === user.value?.uid || false;
+    isAdmin.value = group.value?.ownerId === user.value?.uid || user.value.isAdmin || false;
 
     // Cargar detalles del propietario
     if (group.value?.ownerId) {

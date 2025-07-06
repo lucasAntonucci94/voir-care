@@ -70,7 +70,6 @@
   const filteredReels = computed(() => {
     if (!user.value) return []; // Si no hay usuario, retorna un array vacío
     let reels = reelsStore.userReels ?? []; //inicializo array si no hay ubicaciones
-    debugger
     
     // reels = reels.filter(reel => reel.user?.id === activeId.value); // Filtra los reels por el ID del usuario activo
     return reels;

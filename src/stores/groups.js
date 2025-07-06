@@ -153,7 +153,6 @@ export const useGroupsStore = defineStore('groups', {
     },
     // Unirse a un grupo
     async joinDefautGroups(userId) {
-      debugger
       try {
         const groupDefaultIds = [
           'AybOkhRASczu3DnP3gm3',

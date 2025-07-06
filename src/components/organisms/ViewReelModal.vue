@@ -222,7 +222,6 @@ const props = defineProps({
     required: true,
   },
 });
-debugger
 // Emits
 const emit = defineEmits(['close', 'update-reel']);
 

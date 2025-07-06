@@ -40,7 +40,6 @@ export function useLocations() {
         pending = true,
         user,
       } = locationData;
-debugger
       // Si faltan coords, intentamos geocodificar a partir de address.street
       let lat = address.coordinates?.lat ?? null;
       let lng = address.coordinates?.lng ?? null;
