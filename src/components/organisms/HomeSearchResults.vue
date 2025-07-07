@@ -91,7 +91,7 @@
             <div v-if="filteredEntertainmentItems.length">
                 <h3 class="text-xl font-bold font-dosis mb-4">Contenido Recreativo</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div v-for="item in filteredEntertainmentItems" :key="item.id" 
+                    <div v-for="item in filteredEntertainmentItems" :key="item.id"  @click="item.type === 'reel' ? '' : router.push(`/post/${item.id}`)"
                         :class="{'bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden relative': item.type === 'reel', 'bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden': item.type === 'post'}"
                         :role="item.type === 'reel' ? 'img' : 'article'" 
                         :aria-label="item.type === 'reel' ? `Reel de ${item.userDisplayName}` : undefined"

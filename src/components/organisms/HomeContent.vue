@@ -93,7 +93,7 @@
                                         <span class="text-white text-xs font-semibold">{{ item.userDisplayName }}</span>
                                     </div>
                                 </div>
-                                <div v-else-if="item.type === 'post'" class="p-4">
+                                <div @click="router.push(`/post/${item.id}`)" v-else-if="item.type === 'post'" class="p-4">
                                     <h3 :id="`post-title-${item.id}`" class="font-bold font-dosis">{{ item.title }}</h3>
                                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{{ item.body }}</p>
                                     <div class="flex items-center mt-3">
@@ -157,7 +157,7 @@
                 <h2 id="adoption-promo-title" class="text-2xl md:text-3xl font-bold font-dosis">Transformando Vidas, un Hogar a la Vez</h2>
                 <p class="mt-1">Descubrí mascotas que esperan una segunda oportunidad.</p>
             </div>
-            <RouterLink to="/adoption" class="px-6 py-3 bg-white text-primary dark:text-secondary font-bold rounded-full shadow-md hover:bg-teal-50 dark:hover:bg-orange-50 transition-colors shrink-0" aria-label="Ver Mascotas en Adopción">
+            <RouterLink to="/adoption" class="px-6 py-3 bg-white text-primary dark:text-secondary font-bold rounded-full shadow-md hover:bg-teal-50 dark:hover:bg-orange-50 transition-colors shrink-0  transition-transform transform hover:scale-101" aria-label="Ver Mascotas en Adopción">
                 Ver Mascotas en Adopción
             </RouterLink>
         </section>

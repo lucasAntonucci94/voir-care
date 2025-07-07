@@ -102,6 +102,13 @@ const applyFilters = () => {
     showFilters.value = false;
 };
 
+const closeFiltersDropdown = (event) => {
+    // Verifica si el clic fue fuera del botón y del dropdown
+    if (showFilters.value && !event.target.closest('.relative.mt-6.flex.items-center')) {
+        showFilters.value = false;
+    }
+};
+
 // Computed properties para los datos filtrados (basados en searchQuery)
 const baseFilteredEvents = computed(() => {
     if (searchQuery.value) {
@@ -244,24 +251,25 @@ const displayEntertainmentItems = computed(() => {
     return selectedFilters.value.includes('entertainment') ? baseFilteredEntertainmentItems.value : [];
 });
 
-
 // Suscripciones
 onMounted(() => {
-    eventsStore.subscribeAllEvents();
-    groupsStore.subscribeAllGroups();
-    blogsStore.subscribeToBlogs();
-    postsStore.subscribeGlobal();
-    reelsStore.subscribeToReels();
-    locationsStore.subscribeTolocations();
+  eventsStore.subscribeAllEvents();
+  groupsStore.subscribeAllGroups();
+  blogsStore.subscribeToBlogs();
+  postsStore.subscribeGlobal();
+  reelsStore.subscribeToReels();
+  locationsStore.subscribeTolocations();
+  document.addEventListener('click', closeFiltersDropdown);
 });
 
 onUnmounted(() => {
-    eventsStore.unsubscribeAllEvents();
-    groupsStore.unsubscribeAllGroups();
-    blogsStore.unsubscribeFromBlogs();
-    postsStore.unsubscribeGlobal();
-    reelsStore.unsubscribeFromReels();
-    locationsStore.unsubscribeAll();
+  eventsStore.unsubscribeAllEvents();
+  groupsStore.unsubscribeAllGroups();
+  blogsStore.unsubscribeFromBlogs();
+  postsStore.unsubscribeGlobal();
+  reelsStore.unsubscribeFromReels();
+  locationsStore.unsubscribeAll();
+  document.removeEventListener('click', closeFiltersDropdown);
 });
 </script>
 
