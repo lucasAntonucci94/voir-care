@@ -15,7 +15,7 @@
           <router-link to="/register" class="dosis-font px-6 py-3 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Únete a la comunidad de Voir">
             Unite ahora
           </router-link>
-          <router-link :to="{ path: '/', hash: '#que-ofrecemos' }" class="dosis-font text-bold px-6 py-3 bg-transparent border border-2 border-white text-white font-semibold rounded-lg hover:bg-gray-300/20 transition-colors dark:hover:bg-gray-800/10" aria-label="Explora las funcionalidades de Voir">
+          <router-link :to="{ path: '/', hash: '#que-ofrecemos' }" class="dosis-font text-bold px-6 py-3 bg-primary/60 border border-2 border-white text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors dark:hover:bg-gray-800/10" aria-label="Explora las funcionalidades de Voir">
             Descubrí Voir
           </router-link>
         </div>

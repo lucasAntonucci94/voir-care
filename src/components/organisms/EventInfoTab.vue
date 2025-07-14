@@ -68,7 +68,7 @@
           <button
             v-if="user"
             @click="handleAttendance"
-            class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2"
+            class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
             :class="isGoing ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
           >
             <i
@@ -92,7 +92,7 @@
           :href="event.ticketLink"
           target="_blank"
           rel="nofollow noreferrer"
-          class="inline-flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-300"
+          class="inline-flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-300 cursor-pointer"
           :disabled="!event.ticketLink"
         >
           <i class="fas fa-ticket"></i>
@@ -127,7 +127,7 @@
           <button
             v-if="ownerDetails?.email !== user?.email"
             @click="SendMessage(ownerDetails?.email)"
-            class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200"
+            class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 cursor-pointer"
             :disabled="!ownerDetails?.email"
             aria-label="Enviar mensaje al organizador"
           >
@@ -144,7 +144,7 @@
             <i class="fas fa-users"></i> Invitados
           </h2>
           <button
-            class="w-auto px-4 py-2 bg-primary dark:bg-secondary text-white rounded-md shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 flex items-center gap-2"
+            class="w-auto px-4 py-2 bg-primary dark:bg-secondary text-white rounded-md shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 flex items-center gap-2 cursor-pointer"
             @click="openInviteFriendsModal"
           >
             <i class="fas fa-user-plus"></i> <span class="hidden md:block">Invitar</span>
@@ -161,7 +161,7 @@
           </div>
           <button
             @click="switchToParticipants"
-            class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1"
+            class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1 cursor-pointer"
           >
             <span class="flex items-center justify-center w-6 h-6 bg-gray-200 dark:bg-gray-600 rounded-full opacity-80 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
               <i class="fas fa-eye text-primary dark:text-secondary"></i>

@@ -91,8 +91,8 @@
               </div>
             </div>
             <ReelsTab v-else-if="activeTab === 'reels'" :userId="activeUser.uid" />
-            <UserEventsTab v-else-if="activeTab === 'eventos'" />
-            <UserGroupsTab v-else-if="activeTab === 'grupos'" />
+            <UserEventsTab v-else-if="activeTab === 'eventos'" :userId="activeUser.uid" />
+            <UserGroupsTab v-else-if="activeTab === 'grupos'" :userId="activeUser.uid" />
             <MapTab v-else-if="activeTab === 'mapa'" />
             <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" @trigger-edit="triggerEditProfile" :isOwnProfile="isOwnProfile" />
             <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" @active-tab="setActiveTab" />

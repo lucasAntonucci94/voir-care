@@ -14,7 +14,6 @@
       />
     <div v-if="filteredEvents.length > 0" class="flex justify-center md:block">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-      <!-- <div v-if="filteredEvents.length > 0" class="flex flex-wrap gap-2 md:gap-6 justify-center mt-4"> -->
         <EventCard
           v-for="event in filteredEvents"
           :key="event.idDoc"
@@ -29,7 +28,7 @@
     </div>
     <div
       v-else
-      class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md"
+      class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-5"
     >
       <p class="text-gray-500 dark:text-gray-400">No perteneces a ningún evento aún.</p>
       <button

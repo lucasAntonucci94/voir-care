@@ -84,18 +84,23 @@ const selectedCategoryIds = ref([]);
 watch(categories, (newCategories) => {
     if (newCategories && newCategories.length > 0) {
         selectedCategoryIds.value = ['all', ...newCategories.map(cat => cat.id)];
+    }else {
+        selectedCategoryIds.value = [];
     }
 }, { immediate: true });
+
 // Maneja la selección de "Todas las Categorías"
 const handleSelectAll = () => {
     if (selectedCategoryIds.value.includes('all')) {
-        // Si "all" se selecciona, deselecciona las demás y solo deja "all"
+        // Si 'all' se marcó, seleccionamos todas las categorías individuales
         selectedCategoryIds.value = ['all', ...categories.value.map(cat => cat.id)];
     } else {
-        // Si "all" se deselecciona y no hay otras seleccionadas, selecciona "all" para asegurar que siempre haya al menos una opción
-        if (selectedCategoryIds.value.length === 0) {
-            selectedCategoryIds.value = ['all', ...categories.value.map(cat => cat.id)];
-        }
+        // Si 'all' se desmarcó, desmarcamos todas las categorías individuales
+        selectedCategoryIds.value = [];
+    }
+    // Si desmarcan 'all' y el array queda vacío, lo volvemos a poner para mostrar todo
+    if (selectedCategoryIds.value.length === 0 && categories.value.length > 0) {
+        selectedCategoryIds.value = ['all', ...categories.value.map(cat => cat.id)];
     }
 };
 
@@ -121,7 +126,7 @@ const applyFilters = () => {
     showFilters.value = false;
 };
 
-const closeFiltersDropdown = (event) => {
+const closeFiltersDropdown = (event) => { //TODO AGREGAR ID ESPECIFICA APRA ESTETILO DE EVENTO
     const filterContainer = document.querySelector('.flex.items-center.gap-4.mb-6'); // Selector ajustado
     if (showFilters.value && filterContainer && !filterContainer.contains(event.target)) {
         showFilters.value = false;
@@ -130,13 +135,23 @@ const closeFiltersDropdown = (event) => {
 
 const filteredAndVisiblePosts = computed(() => {
     let postsToFilter = postsStore.posts.value || [];
-
+    // 1. Filtrar por categorías seleccionadas
     if (selectedCategoryIds.value.length > 0 && !selectedCategoryIds.value.includes('all')) {
-        postsToFilter = postsToFilter.filter(post => 
-            post.category && selectedCategoryIds.value.includes(post.category)
-        );
+        postsToFilter = postsToFilter.filter(post => {
+            // Verifica si el post tiene la propiedad 'categories' y si es un array
+            if (post.categories && Array.isArray(post.categories)) {
+                // Comprueba si AL MENOS UNA de las categorías del post
+                // coincide con ALGUNA de las categorías seleccionadas por el usuario.
+                return post.categories.some(postCategory =>
+                    selectedCategoryIds.value.includes(postCategory.id)
+                );
+            }
+            return false; // Si el post no tiene 'categories' o no es un array, no lo incluimos
+        });
     }
+    // Si 'all' está seleccionado (o no hay filtros específicos), no filtramos por categoría
 
+    // 2. Filtrar por posts ocultos por el usuario (esta lógica está correcta)
     if (user.value?.hiddenPosts) {
         postsToFilter = postsToFilter.filter(post => 
             !user.value.hiddenPosts.some(hidden => hidden.postId === post.idDoc)

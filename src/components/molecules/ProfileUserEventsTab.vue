@@ -34,13 +34,11 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useAuth } from '../../api/auth/useAuth'
 import { useEventsStore } from '../../stores/events'
 import EventCard from '../organisms/EventCard.vue'
 import EventFilters from '../molecules/EventFilters.vue'
 import { useRouter } from 'vue-router';
 
-const { user } = useAuth()
 const eventsStore = useEventsStore()
 const router = useRouter()
 
@@ -58,6 +56,13 @@ const categories = [
   { id: 'otros', name: 'Otros' }
 ]
 
+const props = defineProps({
+  userId: {
+    type: String,
+    required: true
+  }
+});
+
 // Computados
 const filteredEvents = computed(() => {
   return eventsStore.events?.value
@@ -68,7 +73,7 @@ const filteredEvents = computed(() => {
 
 // Suscripción a eventos del usuario
 onMounted(() => {
-  if (user.value) eventsStore.subscribeUserEvents(user.value.uid);
+  if (props.userId) eventsStore.subscribeUserEvents(props.userId);
 })
 
 // Desuscripción al desmontar el componente

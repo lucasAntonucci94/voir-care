@@ -66,7 +66,7 @@
         <div ref="dropdownRef" class="relative">
           <button
             @click="showSettingsMenu = !showSettingsMenu"
-            class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md"
+            class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md cursor-pointer"
           >
             <i class="fas fa-cog"></i>
             <span class="ml-2 text-sm  hidden md:inline">Configuración</span>
@@ -247,7 +247,7 @@
                 <button
                   v-if="!isAdmin"
                   @click="toggleMembership"
-                  class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2"
+                  class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
                   :class="isMember ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
                 >
                   <i
@@ -267,7 +267,7 @@
               <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
                 <button
-                  class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center"
+                  class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
                   @click="openInviteFriendsModal"
                 >
                  <i class="fas fa-user-plus"></i> <span class="hidden md:block ml-2">Invitar</span>
@@ -302,7 +302,7 @@
                   <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Miembros</h2>
                   <button
                     @click="activeTab = 'members'"
-                    class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1"
+                    class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1 cursor-pointer"
                   >
                     <i class="fas fa-eye"></i>
                     <span class="hidden md:block ml-2">Ver todos</span>

@@ -5,7 +5,7 @@
             
             <RouterLink to="/explorar" class="flex flex-col items-center justify-center text-center p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300" aria-label="Ir a Mapa Interactivo">
                 <div class="flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900/50 rounded-full mb-3">
-                    <i class="fas fa-map-marked-alt text-2xl text-primary-accent" aria-hidden="true"></i>
+                    <i class="fas fa-map-marked-alt text-2xl text-secondary" aria-hidden="true"></i>
                 </div>
                 <span class="font-bold font-dosis text-sm md:text-base">Mapa Interactivo</span>
             </RouterLink>
@@ -19,23 +19,23 @@
 
             <RouterLink to="/events" class="flex flex-col items-center justify-center text-center p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300" aria-label="Ir a Eventos">
                 <div class="flex items-center justify-center w-16 h-16 bg-teal-100 dark:bg-teal-900/50 rounded-full mb-3">
-                    <i class="fas fa-calendar-alt text-2xl text-secondary-accent" aria-hidden="true"></i>
+                    <i class="fas fa-calendar-alt text-2xl text-primary" aria-hidden="true"></i>
                 </div>
                 <span class="font-bold font-dosis text-sm md:text-base">Eventos</span>
             </RouterLink>
             
+            <RouterLink to="/education" class="flex flex-col items-center justify-center text-center p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300" aria-label="Ir a Entretenimiento">
+                <div class="flex items-center justify-center w-16 h-16 bg-violet-100 dark:bg-violet-900/50 rounded-full mb-3">
+                    <i class="fas fa-graduation-cap text-2xl text-violet-500" aria-hidden="true"></i>
+                </div>
+                <span class="font-bold font-dosis text-sm md:text-base">Educación</span>
+            </RouterLink>
+
             <RouterLink to="/adoption" class="flex flex-col items-center justify-center text-center p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300" aria-label="Ir a Adopción">
                 <div class="flex items-center justify-center w-16 h-16 bg-rose-100 dark:bg-rose-900/50 rounded-full mb-3">
                     <i class="fas fa-heart text-2xl text-rose-500" aria-hidden="true"></i>
                 </div>
                 <span class="font-bold font-dosis text-sm md:text-base">Adopción</span>
-            </RouterLink>
-
-            <RouterLink to="/social" class="flex flex-col items-center justify-center text-center p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300" aria-label="Ir a Entretenimiento">
-                <div class="flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full mb-3">
-                    <i class="fas fa-photo-video text-2xl text-blue-500" aria-hidden="true"></i>
-                </div>
-                <span class="font-bold font-dosis text-sm md:text-base">Recreativo</span>
             </RouterLink>
         </section>
         
@@ -45,24 +45,44 @@
                 <section aria-labelledby="groups-title">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="groups-title" class="text-2xl font-bold font-dosis">Grupos Destacados</h2>
-                        <RouterLink to="/groups" class="text-sm font-semibold text-primary-accent hover:underline" aria-label="Ver todos los grupos">Ver todos</RouterLink>
+                        <RouterLink to="/groups" class="text-sm font-semibold text-secondary hover:underline" aria-label="Ver todos los grupos">Ver todos</RouterLink>
                     </div>
                     <div class="space-y-4">
-                        <div v-for="group in filteredGroups"
+                        <div
+                            v-for="group in filteredGroups"
                             :key="group.idDoc"
                             @click="redirectToGroup(group.idDoc)"
-                            class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow transition transition-transform hover:scale-101 cursor-pointer"
-                            role="listitem">
-                            <img :src="group.media?.url || 'https://placehold.co/64x64/CCCCCC/666666?text=G'" 
-                                    :alt="`Imagen del grupo ${group.title}`" 
-                                    class="flex-shrink-0 w-16 h-16 object-cover rounded-lg mr-4">
-                            
+                            class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow transition-transform hover:scale-101 cursor-pointer"
+                            role="listitem"
+                        >
+                            <!-- Renderizar video o imagen según el tipo de medio -->
+                            <div class="flex-shrink-0 w-16 h-16 rounded-lg mr-4 overflow-hidden">
+                            <video
+                                v-if="group.media?.type?.startsWith('video')"
+                                :src="group.media.url"
+                                class="w-full h-full object-cover"
+                                muted
+                                playsinline
+                                loop
+                                autoplay
+                                :alt="`Video del grupo ${group.title}`"
+                                @error="handleMediaError($event, group)"
+                            ></video>
+                            <img
+                                v-else
+                                :src="group.media?.url || 'https://placehold.co/64x64/CCCCCC/666666?text=G'"
+                                :alt="`Imagen del grupo ${group.title}`"
+                                class="w-full h-full object-cover"
+                            />
+                            </div>
                             <div class="flex-grow">
-                                <h3 class="font-bold font-dosis">{{ group.title }}</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">{{ group.description || 'Sin descripción.' }}</p>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                    <i class="fas fa-users fa-fw mr-1" aria-hidden="true"></i>{{ group.members?.length || 0 }} miembros
-                                </div>
+                            <h3 class="font-bold font-dosis">{{ group.title }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">
+                                {{ group.description || 'Sin descripción.' }}
+                            </p>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-users fa-fw mr-1" aria-hidden="true"></i>{{ group.members?.length || 0 }} miembros
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -70,7 +90,7 @@
                 <section aria-labelledby="entertainment-title">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="entertainment-title" class="text-2xl font-bold font-dosis">Recreativo</h2>
-                        <RouterLink to="/social" class="text-sm font-semibold text-primary-accent hover:underline" aria-label="Explorar entretenimiento">Ver más</RouterLink>
+                        <RouterLink to="/social" class="text-sm font-semibold text-secondary hover:underline" aria-label="Explorar entretenimiento">Ver más</RouterLink>
                     </div>
                     <div class="flex overflow-x-auto space-x-6 pb-4 horizontal-scrollbar" role="region" aria-label="Carrusel de Historias y Publicaciones">
                         <template v-if="filteredEntertainmentItems?.length > 0">
@@ -115,7 +135,7 @@
                 <section aria-labelledby="events-title">
                     <div class="flex justify-between items-center mb-4">
                            <h2 id="events-title" class="text-2xl font-bold font-dosis">Eventos Próximos</h2>
-                           <RouterLink to="/events" class="text-sm font-semibold text-primary-accent hover:underline" aria-label="Ver todos los eventos">Ver todos</RouterLink>
+                           <RouterLink to="/events" class="text-sm font-semibold text-secondary hover:underline" aria-label="Ver todos los eventos">Ver todos</RouterLink>
                     </div>
                     <div class="space-y-4">
                         <div v-for="event in filteredEvents"
@@ -138,7 +158,7 @@
                 <section aria-labelledby="blogs-title">
                     <div class="flex justify-between items-center mb-4">
                            <h2 id="blogs-title" class="text-2xl font-bold font-dosis">Blogs Educativos</h2>
-                           <RouterLink to="/education" class="text-sm font-semibold text-primary-accent hover:underline" aria-label="Explorar blogs">Explorar</RouterLink>
+                           <RouterLink to="/education" class="text-sm font-semibold text-secondary hover:underline" aria-label="Explorar blogs">Explorar</RouterLink>
                     </div>
                     <div class="space-y-4">
                         <RouterLink v-for="blog in filteredBlogs" :key="blog.id" :to="`/blog/${blog.id}`" class="flex items-center bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow transition transition-transform hover:scale-101" role="listitem">
@@ -187,13 +207,6 @@ function redirectToGroup(groupId) {
     router.push({ name: 'groupDetail', params: { idGroup: groupId } });
 }
 
-function redirectToBlog(blogId) {
-    router.push({ name: 'blogDetail', params: { id: blogId } });
-}
-// Nota: Los estilos CSS (excepto los específicos del carrusel) se mantienen en HomeView.vue 
-// o se pueden mover a un archivo CSS global/utility para Tailwind, si aún no lo están.
-// Sin embargo, para que el carrusel funcione, los estilos .horizontal-scrollbar deben estar accesibles.
-// Aquí se incluyen para que sea un componente autónomo, pero lo ideal es que estén en un archivo global.
 </script>
 
 <style scoped>
@@ -220,23 +233,11 @@ function redirectToBlog(blogId) {
     background: #4a5568;
 }
 
-/* Utility for line clamping */
+/* Utility para recortar lineas de texto al exceder cierto lenght */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-/* Clase para ocultar visualmente elementos pero mantenerlos accesibles para lectores de pantalla */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
 }
 </style>

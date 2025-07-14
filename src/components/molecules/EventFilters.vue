@@ -14,7 +14,7 @@
       v-model="selectModel"
       name="selectCategories"
       id="selectCategories"
-      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary dark:bg-gray-800 dark:text-white"
     >
       <option value="">Todas las categorías</option>
       <option
@@ -31,7 +31,7 @@
       v-model="dateFilterModel"
       name="selectDateFilter"
       id="selectDateFilter"
-      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary dark:bg-gray-800 dark:text-white"
     >
       <option value="all">Todos los eventos</option>
       <option value="upcoming">Próximos eventos</option>
@@ -41,7 +41,7 @@
     <select
       v-if="showOwnership"
       v-model="ownershipModel"
-      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+      class="px-3 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary dark:bg-gray-800 dark:text-white"
     >
       <option value="all">Todos los eventos</option>
       <option
