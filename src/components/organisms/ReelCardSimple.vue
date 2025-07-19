@@ -7,7 +7,7 @@
       <video
         v-if="reel?.mediaType && reel.mediaType.startsWith('video')"
         :src="reel.mediaUrl"
-        :poster="reel.thumbnailUrl || 'https://placehold.co/640x360/CCCCCC/666666?text=Video'"
+        :poster="reel.thumbnailUrl || ImageFallback"
         controls
         class="w-full h-auto max-h-[70vh] object-contain rounded-lg"
         :aria-label="`Video del reel ${reel?.title || 'sin título'}`"
@@ -64,6 +64,8 @@
 <script setup>
 import { formatTimestamp } from '../../utils/formatTimestamp'; 
 import AvatarFallback from '../../assets/avatar1.jpg';
+import ImageFallback from '../../assets/fallbackimage.png';
+
 const props = defineProps({
   reel: {
     type: Object,

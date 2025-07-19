@@ -45,7 +45,7 @@
                 <section aria-labelledby="groups-title">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="groups-title" class="text-2xl font-bold font-dosis">Grupos Destacados</h2>
-                        <RouterLink to="/groups" class="text-sm font-semibold text-secondary hover:underline" aria-label="Ver todos los grupos">Ver todos</RouterLink>
+                        <RouterLink to="/groups" class="text-sm font-semibold text-primary dark:text-secondary hover:underline" aria-label="Ver todos los grupos">Ver todos</RouterLink>
                     </div>
                     <div class="space-y-4">
                         <div
@@ -90,7 +90,7 @@
                 <section aria-labelledby="entertainment-title">
                     <div class="flex justify-between items-center mb-4">
                         <h2 id="entertainment-title" class="text-2xl font-bold font-dosis">Recreativo</h2>
-                        <RouterLink to="/social" class="text-sm font-semibold text-secondary hover:underline" aria-label="Explorar entretenimiento">Ver más</RouterLink>
+                        <RouterLink to="/social" class="text-sm font-semibold text-primary dark:text-secondary hover:underline" aria-label="Explorar entretenimiento">Ver más</RouterLink>
                     </div>
                     <div class="flex overflow-x-auto space-x-6 pb-4 horizontal-scrollbar" role="region" aria-label="Carrusel de Historias y Publicaciones">
                         <template v-if="filteredEntertainmentItems?.length > 0">
@@ -136,7 +136,7 @@
                 <section aria-labelledby="events-title">
                     <div class="flex justify-between items-center mb-4">
                            <h2 id="events-title" class="text-2xl font-bold font-dosis">Eventos Próximos</h2>
-                           <RouterLink to="/events" class="text-sm font-semibold text-secondary hover:underline" aria-label="Ver todos los eventos">Ver todos</RouterLink>
+                           <RouterLink to="/events" class="text-sm font-semibold text-primary dark:text-secondary hover:underline" aria-label="Ver todos los eventos">Ver todos</RouterLink>
                     </div>
                     <div class="space-y-4">
                         <div v-for="event in filteredEvents"
@@ -151,7 +151,7 @@
                             <div>
                                 <h3 class="font-bold font-dosis">{{ event.title }}</h3>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    <i class="fas fa-map-marker-alt fa-fw mr-1" aria-hidden="true"></i>
+                                    <i :class="event.modality === 0 ? 'fa-solid fa-location-dot' : 'fa-solid fa-video'" class="fas fa-modality text-primary-md dark:text-secondary-md pr-1"></i>
                                     {{ event.modality === 0 ? formatGoogleMapsAddress(event.location?.address)?.formatedAddress : event.meetLink }}
                                 </p>
                             </div>
@@ -162,7 +162,7 @@
                 <section aria-labelledby="blogs-title">
                     <div class="flex justify-between items-center mb-4">
                            <h2 id="blogs-title" class="text-2xl font-bold font-dosis">Blogs Educativos</h2>
-                           <RouterLink to="/education" class="text-sm font-semibold text-secondary hover:underline" aria-label="Explorar blogs">Explorar</RouterLink>
+                           <RouterLink to="/education" class="text-sm font-semibold text-primary dark:text-secondary hover:underline" aria-label="Explorar blogs">Explorar</RouterLink>
                     </div>
                     <div class="space-y-4">
                         <RouterLink v-for="blog in filteredBlogs" :key="blog.id" :to="`/blog/${blog.id}`" class="flex items-center bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow transition transition-transform hover:scale-101" role="listitem">
@@ -218,7 +218,7 @@ function redirectToGroup(groupId) {
 /* Estilo para el scrollbar del carrusel (repetido aquí para autonomía, idealmente global) */
 .horizontal-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #F4A261 #e2e8f0;
+    scrollbar-color: #02BCAE #e2e8f0;
 }
 .horizontal-scrollbar::-webkit-scrollbar {
     height: 6px;
@@ -228,7 +228,7 @@ function redirectToGroup(groupId) {
     border-radius: 10px;
 }
 .horizontal-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #F4A261;
+    background-color: #02BCAE;
     border-radius: 10px;
 }
 .dark .horizontal-scrollbar {

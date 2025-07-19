@@ -12,7 +12,7 @@
                         @click="redirectToUser(userResult.email)"
                         class="flex-none w-64 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow transition transition-transform hover:scale-101 cursor-pointer p-4 flex flex-col items-center text-center"
                         role="listitem">
-                        <img :src="userResult.photoURLFile || 'https://placehold.co/80x80/CCCCCC/666666?text=U'" 
+                        <img :src="userResult.photoURLFile || AvatarFallback" 
                             :alt="`Foto de perfil de ${userResult.displayName || userResult.firstName}`" 
                             class="w-20 h-20 object-cover rounded-full mb-3 border-2 border-primary-accent dark:border-secondary-accent">
                         <h4 class="font-bold font-dosis text-lg">{{ userResult.displayName || `${userResult.firstName} ${userResult.lastName}` }}</h4>
@@ -49,7 +49,7 @@
                             <!-- @error="handleMediaError($event, group)" -->
                         <img
                             v-else
-                            :src="group.media?.url || 'https://placehold.co/64x64/CCCCCC/666666?text=G'"
+                            :src="group.media?.url || ImageFallback"
                             :alt="`Imagen del grupo ${group.title}`"
                             class="w-full h-full object-cover"
                         />
@@ -80,8 +80,11 @@
                             <span class="text-xs uppercase font-semibold">{{ formatEventDate(event.startTime).month }}</span>
                         </div>
                         <div>
-                            <h4 class="font-bold font-dosis">{{ event.title }}</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-map-marker-alt fa-fw mr-1" aria-hidden="true"></i>{{ event.modality === 0 ? formatGoogleMapsAddress(event.location?.address)?.formatedAddress : 'Online' }}</p>
+                            <h3 class="font-bold font-dosis">{{ event.title }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                <i :class="event.modality === 0 ? 'fa-solid fa-location-dot' : 'fa-solid fa-video'" class="fas fa-modality text-primary-md dark:text-secondary-md pr-1"></i>
+                                {{ event.modality === 0 ? formatGoogleMapsAddress(event.location?.address)?.formatedAddress : event.meetLink }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -107,7 +110,7 @@
                         @click="redirectToLocation(location.idDoc)"
                         class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow transition transition-transform hover:scale-101 cursor-pointer"
                         role="listitem">
-                        <img :src="location.media?.url || 'https://placehold.co/64x64/CCCCCC/666666?text=L'" 
+                        <img :src="location.media?.url || ImageFallback" 
                                 :alt="`Imagen de ${location.title}`" 
                                 class="flex-shrink-0 w-16 h-16 object-cover rounded-lg mr-4">
                         <div class="flex-grow">
@@ -178,6 +181,7 @@ import { useRouter, RouterLink } from 'vue-router';
 import { formatGoogleMapsAddress } from '../../utils/formatGoogleMapsAddress';
 import { formatEventDate } from '../../utils/formatEventDate';
 import ImageFallback from '../../assets/fallbackimage.png';
+import AvatarFallback from '../../assets/avatar1.jpg';
 
 const props = defineProps({
     searchQuery: String,
