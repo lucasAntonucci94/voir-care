@@ -25,11 +25,11 @@
     </div>
 
     <!-- Información del Usuario y Título - Debajo del Media -->
-    <div class="flex items-center mb-3">
+    <router-link :to="`/profile/${reel?.user?.email}`" class="flex items-center mb-3">
       <img
         :src="reel?.user?.photoURL || AvatarFallback"
         :alt="`Avatar de ${reel?.user?.displayName || 'Usuario Anónimo'}`"
-        class="w-10 h-10 rounded-full object-cover mr-3 border-2 border-primary-accent"
+        class="w-10 h-10 rounded-full object-cover mr-3 border-2 border-primary"
       />
       <div>
         <p class="font-semibold text-gray-800 dark:text-gray-100">{{ reel?.user?.displayName || 'Usuario Anónimo' }}</p>
@@ -37,7 +37,7 @@
           {{ formatTimestamp(reel?.createdAt) }}
         </p>
       </div>
-    </div>
+    </router-link>
 
     <!-- Título del Reel -->
     <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">{{ reel?.title || 'Sin título' }}</h3>

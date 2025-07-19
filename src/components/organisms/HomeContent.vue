@@ -102,7 +102,7 @@
                                 :aria-labelledby="item.type === 'post' ? `post-title-${item.id}` : undefined">
                                 
                                 <template v-if="item.mediaType && item.mediaType.startsWith('video')">
-                                    <video :src="item.mediaUrl" controls class="w-full" :class="item.type === 'reel' ? 'h-full object-cover' : 'h-32 object-cover'"></video>
+                                    <video :src="item.mediaUrl" autoplay loop muted class="w-full" :class="item.type === 'reel' ? 'h-full object-cover' : 'h-32 object-cover'"></video>
                                 </template>
                                 <template v-else-if="item.mediaUrl && item.mediaType.startsWith('image')">
                                     <img :src="item.mediaUrl" :alt="item.title || 'Contenido'" class="w-full" :class="item.type === 'reel' ? 'h-full object-cover' : 'h-32 object-cover'">
