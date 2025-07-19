@@ -224,10 +224,36 @@
   .dp__overlay_container.dark {
     background-color: #1f2937;
   }
+}
 
-   /* .fc-prev-button, .fc-next-button, .fc-dayGridMonth-button, .fc-dayGridWeek-button, .fc-dayGridDay-button {
+@media (max-width: 570px) {
+  .fc-toolbar-title {
+    font-size: 15px !important;
+  }
+  /* Botones de navegación del calendario */
+  .fc-prev-button, .fc-next-button {
+    display: block !important;
+    font-size: 10px !important;
+  }
+  /* Botones de temporalidad del calendario Mensual */
+  .fc-dayGridMonth-button {
     display: none !important;
-  } */
+    font-size: 10px !important;
+  }
+  /* Botones de temporalidad del calendario Semanal */
+  .fc-dayGridWeek-button {
+    display: block !important;
+    font-size: 10px !important;
+  }
+  /* Botones de temporalidad Diario */
+  .fc-dayGridDay-button {
+    display: block !important;
+    font-size: 10px !important;
+  }
+  /* Botones de Hoy */
+   .fc-today-button {
+    display: none !important;
+  }
 }
 
 /* Base styles for vue-multiselect */

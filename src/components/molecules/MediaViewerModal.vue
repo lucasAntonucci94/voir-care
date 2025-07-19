@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { watch, onUnmounted } from 'vue'; // Importa watch y onUnmounted
+import { watch, onUnmounted } from 'vue';
 
 const props = defineProps({
   visible: {
@@ -65,7 +65,6 @@ watch(() => props.visible, (newValue) => {
   }
 });
 
-// Asegúrate de limpiar el event listener cuando el componente se desmonte
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown);
 });
