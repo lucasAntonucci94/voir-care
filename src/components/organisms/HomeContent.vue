@@ -70,19 +70,19 @@
                             ></video>
                             <img
                                 v-else
-                                :src="group.media?.url || 'https://placehold.co/64x64/CCCCCC/666666?text=G'"
+                                :src="group.media?.url || AvatarFallback"
                                 :alt="`Imagen del grupo ${group.title}`"
                                 class="w-full h-full object-cover"
                             />
                             </div>
                             <div class="flex-grow">
-                            <h3 class="font-bold font-dosis">{{ group.title }}</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">
-                                {{ group.description || 'Sin descripción.' }}
-                            </p>
-                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                <i class="fas fa-users fa-fw mr-1" aria-hidden="true"></i>{{ group.members?.length || 0 }} miembros
-                            </div>
+                                <h3 class="font-bold font-dosis">{{ group.title }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">
+                                    {{ group.description || 'Sin descripción.' }}
+                                </p>
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <i class="fas fa-users fa-fw mr-1" aria-hidden="true"></i>{{ group.members?.length || 0 }} miembros
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -95,6 +95,7 @@
                     <div class="flex overflow-x-auto space-x-6 pb-4 horizontal-scrollbar" role="region" aria-label="Carrusel de Historias y Publicaciones">
                         <template v-if="filteredEntertainmentItems?.length > 0">
                             <div v-for="item in filteredEntertainmentItems" :key="item.id" 
+                                @click="item.type === 'post' ?  router.push(`/post/${item.id}`) : router.push(`/reel/${item.id}`)"
                                 :class="{'flex-none w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden relative': item.type === 'reel', 'flex-none w-72 bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden': item.type === 'post'}"
                                 :role="item.type === 'reel' ? 'img' : 'article'" 
                                 :aria-label="item.type === 'reel' ? `Reel de ${item.userDisplayName}` : undefined"
@@ -103,7 +104,7 @@
                                 <template v-if="item.mediaType && item.mediaType.startsWith('video')">
                                     <video :src="item.mediaUrl" controls class="w-full" :class="item.type === 'reel' ? 'h-full object-cover' : 'h-32 object-cover'"></video>
                                 </template>
-                                <template v-else>
+                                <template v-else-if="item.mediaUrl && item.mediaType.startsWith('image')">
                                     <img :src="item.mediaUrl" :alt="item.title || 'Contenido'" class="w-full" :class="item.type === 'reel' ? 'h-full object-cover' : 'h-32 object-cover'">
                                 </template>
                                 
@@ -113,7 +114,7 @@
                                         <span class="text-white text-xs font-semibold">{{ item.userDisplayName }}</span>
                                     </div>
                                 </div>
-                                <div @click="router.push(`/post/${item.id}`)" v-else-if="item.type === 'post'" class="p-4">
+                                <div v-else-if="item.type === 'post'" class="p-4">
                                     <h3 :id="`post-title-${item.id}`" class="font-bold font-dosis">{{ item.title }}</h3>
                                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{{ item.body }}</p>
                                     <div class="flex items-center mt-3">
@@ -149,7 +150,10 @@
                             </div>
                             <div>
                                 <h3 class="font-bold font-dosis">{{ event.title }}</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-map-marker-alt fa-fw mr-1" aria-hidden="true"></i>{{ event.modality === 0 ? formatGoogleMapsAddress(event.location?.address)?.formatedAddress : 'Online' }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-map-marker-alt fa-fw mr-1" aria-hidden="true"></i>
+                                    {{ event.modality === 0 ? formatGoogleMapsAddress(event.location?.address)?.formatedAddress : event.meetLink }}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -188,6 +192,7 @@
 import { RouterLink, useRouter } from 'vue-router';
 import { formatGoogleMapsAddress } from '../../utils/formatGoogleMapsAddress';
 import { formatEventDate } from '../../utils/formatEventDate';
+import AvatarFallback from '../../assets/fallbackimage.png';
 
 const props = defineProps({
     user: Object,

@@ -4,7 +4,7 @@
       <!-- Encabezado del modal -->
       <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b rounded-t-xl flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Crear evento</h3>
-        <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+        <button @click="closeModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" aria-label="Cerrar modal">
           <i class="fa-solid fa-xmark w-6 h-6"></i>
         </button>
       </div>
@@ -22,7 +22,7 @@
                   'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-300': currentStep < index + 1,
                 }"
                 :aria-current="currentStep === index + 1 ? 'step' : undefined"
-                :aria-label="`Paso ${index + 1}`"
+                :aria-label="`Paso ${index + 1}: ${step.label}`"
               >
                 <span v-if="currentStep <= index + 1">{{ index + 1 }}</span>
                 <i v-else class="fa-solid fa-check"></i>
@@ -64,7 +64,7 @@
                 :disabled="isLoading"
                 required
               />
-              <p v-if="formErrors.title" id="title-error"  role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
+              <p v-if="formErrors.title" id="title-error" role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción -->
@@ -176,7 +176,7 @@
             </div>
           </div>
 
-          <!-- Paso 3: Detalles del evento -->
+          <!-- Paso 3: Fechas y Horas -->
           <div v-if="currentStep === 3">
             <!-- Fecha y Hora de Inicio -->
             <SelectDate
@@ -187,7 +187,6 @@
               :error="formErrors.startTime"
               required
             />
-            <!-- <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p> -->
             <!-- Fecha y Hora de Fin -->
             <SelectDate
               v-model="newEvent.endTime"
@@ -196,9 +195,34 @@
               :error="formErrors.endTime"
               time-enabled
             />
-            <!-- <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p> -->
-            <!-- Ubicación -->
-            <div>
+          </div>
+
+          <!-- Paso 4: Modalidad, Ubicación/Link y Capacidad -->
+          <div v-if="currentStep === 4">
+            <!-- Modalidad (Presencial/Virtual) -->
+            <div class="mb-4">
+              <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Modalidad
+              </label>
+              <select
+                v-model="newEvent.modality"
+                id="eventModality"
+                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :disabled="isLoading"
+                aria-describedby="modality-error"
+                :aria-invalid="formErrors.modality ? 'true' : 'false'"
+                aria-required="true"
+                aria-label="Seleccionar modalidad del evento"
+                required
+              >
+                <option :value="0">Presencial</option>
+                <option :value="1">Virtual</option>
+              </select>
+              <p v-if="formErrors.modality" id="modality-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
+            </div>
+
+            <!-- Ubicación (si es Presencial) -->
+            <div v-if="newEvent.modality === 0" class="mb-4">
               <label for="eventLocation" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Ubicación
               </label>
@@ -208,6 +232,28 @@
                 :disabled="isLoading"
                 :error="formErrors.address"
               />
+              <p v-if="formErrors.address" id="address-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.address }}</p>
+            </div>
+
+            <!-- Link del Meet (si es Virtual) -->
+            <div v-if="newEvent.modality === 1" class="mb-4">
+              <label for="eventMeetLink" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Link del Meet
+              </label>
+              <input
+                v-model="newEvent.meetLink"
+                id="eventMeetLink"
+                type="url"
+                placeholder="Ej: https://meet.google.com/abc-xyz"
+                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :class="formErrors.meetLink ? 'border-red-500' : ''"
+                aria-describedby="meetlink-error"
+                :aria-invalid="formErrors.meetLink ? 'true' : 'false'"
+                aria-required="true"
+                :disabled="isLoading"
+                required
+              />
+              <p v-if="formErrors.meetLink" id="meetlink-error" role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.meetLink }}</p>
             </div>
 
             <!-- Capacidad -->
@@ -237,11 +283,11 @@
             </div>
           </div>
 
-          <!-- Paso 4: Configuración adicional -->
-          <div v-if="currentStep === 4">
+          <!-- Paso 5: Configuración adicional (Categorías y Privacidad) -->
+          <div v-if="currentStep === 5">
             <!-- Categorías -->
             <div>
-              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label for="eventCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Categorías
               </label>
               <multiselect
@@ -269,31 +315,9 @@
                 aria-multiselectable="true"
                 aria-describedby="categories-error"
               ></multiselect>
-              <p v-if="formErrors.categories" id="categories-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
+              <p v-if="formErrors.categories" id="categories-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
             
-            <!-- Modalidad (Presencial/Virtual) -->
-            <div class="mt-4">
-              <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Modalidad
-              </label>
-              <select
-                v-model="newEvent.modality"
-                id="eventModality"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                :disabled="isLoading"
-                aria-describedby="modality-error"
-                :aria-invalid="formErrors.modality ? 'true' : 'false'"
-                aria-required="true"
-                aria-label="Seleccionar modalidad del evento"
-                required
-              >
-                <option :value="0">Presencial</option>
-                <option :value="1">Virtual</option>
-              </select>
-              <p v-if="formErrors.modality" id="modality-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
-            </div>
-
             <!-- Privacidad -->
             <div class="flex flex-col gap-4 mt-4">
               <fieldset>
@@ -372,7 +396,7 @@
               @click="closeModal"
               :disabled="isLoading"
               class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              aria-label="Cancelar edición del perfil"
+              aria-label="Cancelar creación del evento"
             >
               <i class="fa-solid fa-times"></i>
               <p class="hidden md:block">Cancelar</p>
@@ -392,7 +416,7 @@
               type="submit"
               :disabled="isLoading"
               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              aria-label="Guardar perfil"
+              aria-label="Crear evento"
             >
               <span v-if="isLoading">
                 <i class="fa-solid fa-circle-notch animate-spin"></i>
@@ -447,8 +471,9 @@ const formErrors = ref({});
 const steps = ref([
   { label: 'Información' },
   { label: 'Multimedia' },
-  { label: 'Detalles' },
-  { label: 'Configuración' },
+  { label: 'Fechas' },
+  { label: 'Ubicación/Link' }, // Nuevo label para el paso 4
+  { label: 'Configuración' }, // Nuevo label para el paso 5
 ]);
 
 const categories = ref([
@@ -472,11 +497,12 @@ const newEvent = ref({
   privacy: 'public',
   startTime: '',
   endTime: '',
-  location: {
+  location: { // Se mantiene, pero sus valores se validarán condicionalmente
     address: '',
     lat: null,
     lng: null,
   },
+  meetLink: '', // Nueva propiedad para el link de meet
   capacity: null,
   modality: 0, // Default to Presencial (0)
 });
@@ -500,6 +526,7 @@ function resetForm() {
     startTime: '',
     endTime: '',
     location: { address: '', lat: null, lng: null },
+    meetLink: '',
     capacity: null,
     modality: 0, // Reset to Presencial
   };
@@ -508,14 +535,27 @@ function resetForm() {
 function validateStep(step) {
   let isValid = true;
   const errors = {};
-  
+  // Regex para validar URLs
+  // Acepta los siguientes formatos:
+  // - http://dominio.com
+  // - https://dominio.com
+  // - www.dominio.com
+  // - dominio.com (con al menos un punto)
+  const urlRegex = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
+
   if (step === 1) {
     if (!newEvent.value.title) {
       errors.title = 'El título es obligatorio';
       isValid = false;
+    } else if (newEvent.value.title.length < 1 || newEvent.value.title.length > 50) {
+      errors.title = 'El título debe tener entre 1 y 50 caracteres.';
+      isValid = false;
     }
     if (!newEvent.value.description) {
       errors.description = 'La descripción es obligatoria';
+      isValid = false;
+    } else if (newEvent.value.description.length < 10 || newEvent.value.description.length > 500) {
+      errors.description = 'La descripción debe tener entre 10 y 500 caracteres.';
       isValid = false;
     }
   } else if (step === 2) {
@@ -523,42 +563,57 @@ function validateStep(step) {
       errors.media = 'Debe cargarle una portada al evento.';
       isValid = false;
     }
-  } else if (step === 3) {
+  } else if (step === 3) { // Solo fechas
     if (!newEvent.value.startTime) {
       errors.startTime = 'La fecha y hora de inicio son obligatorias';
       isValid = false;
-    }
-    if (newEvent.value.startTime && new Date(newEvent.value.startTime) <= new Date()) {
-      errors.startTime = 'La fecha y hora de inicio debe ser un fecha futura.';
+    } else if (new Date(newEvent.value.startTime) <= new Date()) {
+      errors.startTime = 'La fecha y hora de inicio debe ser una fecha futura.';
       isValid = false;
     }
+    // End time es opcional, pero si existe, debe ser posterior a start time
     if (newEvent.value.endTime && new Date(newEvent.value.startTime) >= new Date(newEvent.value.endTime)) {
       errors.endTime = 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio';
       isValid = false;
     }
+  } else if (step === 4) { // Modalidad, Ubicación/Link y Capacidad
+    if (![0, 1].includes(newEvent.value.modality)) {
+      errors.modality = 'La modalidad debe ser Presencial o Virtual';
+      isValid = false;
+    }
+
+    if (newEvent.value.modality === 0) { // Presencial
+      if (!newEvent.value.location.address) {
+        errors.address = 'La ubicación es obligatoria para eventos presenciales';
+        isValid = false;
+      }
+    } else if (newEvent.value.modality === 1) { // Virtual
+      if (!newEvent.value.meetLink) {
+        errors.meetLink = 'El link del meet es obligatorio para eventos virtuales';
+        isValid = false;
+      } else if (!urlRegex.test(newEvent.value.meetLink)) {
+        errors.meetLink = 'El link del meet no es una URL válida.';
+        isValid = false;
+      }
+    }
+
     if (!newEvent.value.capacity || newEvent.value.capacity <= 0) {
       errors.capacity = 'La capacidad debe ser un número positivo';
       isValid = false;
-    }
-    if (!newEvent.value.location.address) {
-      errors.address = 'La ubicación es obligatoria';
+    } else if (newEvent.value.capacity > 99999) { // Límite de 5 dígitos como en el pattern
+      errors.capacity = 'La capacidad máxima es 99999';
       isValid = false;
     }
-  } else if (step === 4) {
+  } else if (step === 5) { // Categorías y Privacidad
     if (newEvent.value.categories.length === 0) {
       errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
-    }
-    if (newEvent.value.categories.length > 3) {
+    } else if (newEvent.value.categories.length > 3) {
       errors.categories = 'Debes seleccionar como máximo 3 categorías';
       isValid = false;
     }
     if (newEvent.value.privacy !== 'public' && newEvent.value.privacy !== 'private') {
       errors.privacy = 'La privacidad debe ser pública o privada';
-      isValid = false;
-    }
-    if (![0, 1].includes(newEvent.value.modality)) {
-      errors.modality = 'La modalidad debe ser Presencial o Virtual';
       isValid = false;
     }
   }
@@ -583,14 +638,15 @@ async function handleCreateEvent() {
     // Validar todos los pasos
     for (let i = 1; i <= steps.value.length; i++) {
       if (!validateStep(i)) {
-        currentStep.value = i;
+        currentStep.value = i; // Regresar al paso con error
+        snackbarStore.show('Por favor, completa todos los campos requeridos.', 'error');
         return;
       }
     }
 
     const ownerId = user.value?.uid || user.value?.id || null;
-    let updatedPhotoUrl = null;
-    let updatedPhotoPath = null;
+    let updatedMediaUrl = null;
+    let updatedMediaPath = null;
     if (newEvent.value.newMediaBase64) {
       const dynamicPath = `events/${ownerId}/${newGuid()}`;
       const { url, path } = await uploadMedia({
@@ -600,36 +656,39 @@ async function handleCreateEvent() {
         mediaType: newEvent.value.mediaType,
         dynamicPath,
       });
-      updatedPhotoUrl = url;
-      updatedPhotoPath = path;
+      updatedMediaUrl = url;
+      updatedMediaPath = path;
     }
+
     const eventData = {
       title: newEvent.value.title,
       description: newEvent.value.description,
-      media: updatedPhotoUrl || null,
-      mediaPath: updatedPhotoPath || null,
+      media: updatedMediaUrl || null,
+      mediaPath: updatedMediaPath || null,
       mediaType: newEvent.value.mediaType || null,
       categories: newEvent.value.categories,
       privacy: newEvent.value.privacy,
-      modality: newEvent.value.modality, // Add modality to eventData
+      modality: newEvent.value.modality,
       ownerId: ownerId,
       startTime: newEvent.value.startTime ? new Date(newEvent.value.startTime) : null,
       endTime: newEvent.value.endTime ? new Date(newEvent.value.endTime) : null,
-      location: newEvent.value.location,
       capacity: newEvent.value.capacity,
-      modality: newEvent.value.modality,
       attendees: {
         going: [ownerId],
         interested: [],
         notInterested: [],
       },
+      // Condicionalmente incluye location o meetLink
+      location: newEvent.value.modality === 0 ? newEvent.value.location : null,
+      meetLink: newEvent.value.modality === 1 ? newEvent.value.meetLink : null,
     };
+
     await eventsStore.createEvent(eventData);
     emits('eventCreated', eventData);
     closeModal();
     snackbarStore.show('Evento creado exitosamente', 'success');
   } catch (error) {
-    snackbarStore.show('Error al crear evento:'+error, 'error');
+    snackbarStore.show('Error al crear evento: ' + error.message, 'error');
     console.error('Error al crear evento:', error);
   } finally {
     isLoading.value = false;

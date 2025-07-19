@@ -204,30 +204,30 @@
                 Detalles del Grupo
               </h2>
               <ul class="space-y-4 text-gray-600 dark:text-gray-300">
-                <li class="flex items-center gap-3">
+                <li class="flex items-start gap-3">
                   <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Descripción:</strong> {{ group.description || 'Sin descripción' }}</span>
                 </li>
-                <li class="flex items-center gap-3">
+                <li class="flex items-start gap-3">
                   <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Privacidad:</strong> {{ group.privacy.toLowerCase() === 'public' ? 'Público' : 'Privado' }}</span>
                 </li>
-                <li class="flex items-center gap-3">
+                <li class="flex items-start gap-3">
                   <i class="fas fa-tags text-primary dark:text-secondary text-xl"></i>
                   <span>
                     <strong>Categorías:</strong> 
                     {{ group.categories?.length ? group.categories.map(cat => cat.name).join(', ') : 'Ninguna' }}
                   </span>
                 </li>
-                <li class="flex items-center gap-3">
+                <li class="flex items-start gap-3">
                   <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Creado el:</strong> {{ formatTimestamp(group.createdAt) }}</span>
                 </li>
-                <li class="flex items-center gap-3">
+                <li class="flex items-start gap-3">
                   <i class="fas fa-users text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Miembros:</strong> {{ (group.members && group.members.length ? group.members.length - 1 : 0) || 0 }}</span>
                 </li>
-                <li v-if="group.rules" class="flex items-center gap-3">
+                <li v-if="group.rules" class="flex items-start gap-3">
                   <i class="fas fa-book text-primary dark:text-secondary text-xl"></i>
                   <span><strong>Reglas:</strong> {{ group.rules }}</span>
                 </li>

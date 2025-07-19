@@ -120,20 +120,6 @@
             {{ reel?.title }}
           </h3>
 
-          <!-- Mensaje de feedback -->
-          <transition name="fade">
-            <div
-              v-if="message"
-              class="p-3 rounded-lg text-sm"
-              :class="{
-                'bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200': messageType === 'success',
-                'bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200': messageType === 'error',
-              }"
-            >
-              {{ message }}
-            </div>
-          </transition>
-
           <!-- Acciones -->
           <div v-if="!reel?.default" class="text-sm space-y-4">
             <p class="flex items-center space-x-2">
@@ -230,8 +216,6 @@ const viewModal = ref(null);
 const reelsStore = useReelsStore();
 const { user, isAuthenticated } = useAuth();
 const isLiking = ref(false);
-const message = ref(null);
-const messageType = ref(null);
 const snackbarStore = useSnackbarStore();
 const viewedReelId = ref(null);
 const showSettingsMenu = ref(false);
@@ -504,16 +488,6 @@ watch(
 
 .word-break-break-word {
   word-break: break-word;
-}
-
-/* Message transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 /* Responsive styles for mobile */

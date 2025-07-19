@@ -19,6 +19,7 @@ import PremiumPage from '../pages/PremiumPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
 import PostDetailPage from '../pages/PostDetailPage.vue';
+import ReelDetailPage from '../pages/ReelDetailPage.vue';
 import AdmUsersPage from '../pages/admin/UsersPage.vue';
 import AdmEventsPage from '../pages/admin/EventsPage.vue';
 import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
@@ -164,6 +165,14 @@ const routes = [
         path: '/post/:id',
         name: 'PostDetail',
         component: PostDetailPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/reel/:id',
+        name: 'ReelDetail',
+        component: ReelDetailPage,
         meta: {
             requiresAuth: true,
         }

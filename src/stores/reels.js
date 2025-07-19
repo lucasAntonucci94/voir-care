@@ -185,5 +185,21 @@ export const useReelsStore = defineStore('reels', {
         throw err;
       }
     },
+    /**
+     * Obtiene un reel por su idDoc.
+     * @param {string} idDoc - El ID del documento del reel a buscar.
+     * @returns {Promise<Object|null>} El objeto reel si se encuentra, o null si no.
+     */
+    async getByIdDoc(idDoc) {
+      try {
+        const { getReelByIdDoc } = useReels();
+        const reel = await getReelByIdDoc(idDoc);
+        return reel;
+      } catch (err) {
+        console.error('Error en el store al obtener reel por ID:', err);
+        throw err;
+      } finally {
+      }
+    },
   },
 });

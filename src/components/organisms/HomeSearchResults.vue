@@ -143,7 +143,7 @@
                             <video :src="item.mediaUrl" controls class="w-full h-32 object-cover"></video>
                         </template>
                         <template v-else>
-                            <img :src="item.mediaUrl" :alt="item.title || 'Contenido'" class="w-full h-32 object-cover">
+                            <img :src="item.mediaUrl ?? ImageFallback" :alt="item.title || 'Contenido'" class="w-full h-32 object-cover">
                         </template>
                         
                         <div v-if="item.type === 'reel'" class="absolute bottom-0 left-0 w-full p-2 bg-gradient-to-t from-black/60 to-transparent">
@@ -177,6 +177,7 @@ import { computed } from 'vue';
 import { useRouter, RouterLink } from 'vue-router';
 import { formatGoogleMapsAddress } from '../../utils/formatGoogleMapsAddress';
 import { formatEventDate } from '../../utils/formatEventDate';
+import ImageFallback from '../../assets/fallbackimage.png';
 
 const props = defineProps({
     searchQuery: String,

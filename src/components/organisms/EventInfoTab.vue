@@ -6,44 +6,48 @@
       <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Detalles</h2>
         <ul class="space-y-4 text-gray-600 dark:text-gray-300">
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
             <span><strong>Descripción:</strong> {{ event.description || 'Sin descripción' }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
             <span><strong>Inicio:</strong> {{ formatTimestamp(event.startTime, { includeTime: true }) }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
             <span><strong>Fin:</strong> {{ formatTimestamp(event.endTime, { includeTime: true }) }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-map-marker-alt text-primary dark:text-secondary text-xl"></i>
             <span><strong>Ubicación:</strong> {{ event.location?.address || 'No definida' }}</span>
           </li>
-          <li v-if="event.price" class="flex items-center gap-3">
+          <li v-if="event.price" class="flex items-start gap-3">
             <i class="fas fa-dollar-sign text-primary dark:text-secondary text-xl"></i>
             <span><strong>Precio:</strong> ${{ event.price }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-users text-primary dark:text-secondary text-xl"></i>
             <!-- <span><strong>Capacidad:</strong> {{ event.capacity - (event?.attendees?.going?.length || 0) || 'Ilimitada' }}</span> -->
             <span><strong>Capacidad:</strong> {{ event.capacity - (event?.attendees?.going && event?.attendees?.going?.length ? event.attendees.going.length - 1 : 0) || 0 }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
             <span><strong>Privacidad:</strong> {{ event.privacy ??  event.privacy === 'public' ? 'Público' : 'Privado'  }}</span>
           </li>
-          <li class="flex items-center gap-3" v-if="event.modality === 0 || event.modality === 1">
-            <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
+          <li class="flex items-start gap-3" v-if="event.modality === 0 || event.modality === 1">
+            <i :class="event.modality === 0 ? 'fa-solid fa-location-dot' : 'fa-solid fa-video'" class="fas fa-modality text-primary dark:text-secondary text-xl"></i>
             <span><strong>Modalidad:</strong> {{ event.modality === 0 ? 'Presencial' : 'Virtual' }}</span>
+          </li>
+          <li class="flex items-start gap-3" v-if="event.modality === 1 && event.meetLink">
+            <i class="fas fa-link text-primary dark:text-secondary text-xl"></i>
+            <span><strong>Link:</strong> {{ event.meetLink }}</span>
           </li>
         </ul>
       </div>
 
       <!-- Mapa -->
-      <div v-if="event.location?.address" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div v-if="event.modality === 0 && event.location?.address" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Ubicación</h2>
         <div class="w-full h-50 sm:h-90 rounded-lg overflow-hidden">
           <iframe
@@ -228,7 +232,6 @@ const props = defineProps({
   isGoing: { type: Boolean, required: true },
   handleAttendance: { type: Function, required: true },
 });
-
 const router = useRouter();
 const { user } = useAuth();
 const { getChatIdByReference } = usePrivateChats();

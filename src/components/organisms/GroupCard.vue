@@ -98,7 +98,8 @@
               class="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
             >
               <i class="fas fa-users text-primary dark:text-secondary"></i>
-              {{ (group?.members && group?.members?.length ? group.members.length - 1 : 0) || 0 }} {{ (group?.members && group?.members?.length ? group.members.length - 1 : 0) === 1 ? 'miembro' : 'miembros' }}            </span>
+              {{ (group?.members && group?.members?.length ? group.members.length - 1 : 0) || 0 }} {{ (group?.members && group?.members?.length ? group.members.length - 1 : 0) === 1 ? 'miembro' : 'miembros' }}
+            </span>
             <span
               v-if="isMember"
               class="px-2 py-1 text-xs font-medium rounded-full transition-colors"
@@ -124,15 +125,6 @@
             <i :class="isMember ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
             <p class="hidden lg:block">{{ isMember ? 'Salir' : 'Unirme' }}</p>
           </button>
-          <!-- <button
-            v-if="!isAdmin(group)"
-            @click.stop="toggleMembership"
-            class="flex items-center gap-2 px-4 py-2 text-sm text-white rounded-lg shadow-sm transition-colors duration-200"
-            :class="isMember ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'"
-          >
-            <i :class="isMember ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-            <p class="hidden lg:block">{{ isMember ? 'Salir' : 'Unirme' }}</p>
-          </button> -->
         </div>
       </div>
     </div>

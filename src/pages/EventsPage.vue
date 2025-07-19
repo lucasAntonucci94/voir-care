@@ -31,7 +31,7 @@
               activeTab === tab.id
                 ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
                 : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700',
-              tab.hidden ? 'hidden sm:block' : ''
+              tab.hidden ? 'hidden' : ''
             ]"
             :aria-selected="activeTab === tab.id"
             role="tab"
@@ -81,7 +81,7 @@ const showModalCreate = ref(false);
 // Definición de las tabs
 const tabs = [
   { id: 'upcoming', label: 'Proximamente', icon: 'fa-solid fa-clock', hidden: false },
-  { id: 'calendar', label: 'Calendario', icon: 'fa-solid fa-calendar-days', hidden: true },
+  { id: 'calendar', label: 'Calendario', icon: 'fa-solid fa-calendar-days', hidden: false },
   { id: 'discover', label: 'Descubrir', icon: 'fa-solid fa-magnifying-glass', hidden: false },
   { id: 'userEvents', label: 'Tus Eventos', icon: 'fa-solid fa-user-check', hidden: false },
 ];

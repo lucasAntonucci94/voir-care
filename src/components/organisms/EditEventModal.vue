@@ -1,10 +1,10 @@
 <template>
   <div v-if="visible" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="fixed inset-0 bg-black/60 z-101 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh]">
       <!-- Encabezado del modal -->
-      <div class="sticky top-0 bg-white dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
+      <div class="sticky top-0 bg-white rounded-t-xl dark:bg-gray-800 z-10 p-6 border-b flex items-center justify-between">
         <h3 id="modal-title" class="text-lg font-semibold text-gray-800 dark:text-gray-300">Editar Evento</h3>
-        <button @click="closeModal"  aria-label="Cerrar modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
+        <button @click="closeModal" aria-label="Cerrar modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100">
           <i class="fa-solid fa-xmark w-6 h-6"></i>
         </button>
       </div>
@@ -23,7 +23,7 @@
                   'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-300': currentStep < index + 1,
                 }"
                 :aria-current="currentStep === index + 1 ? 'step' : undefined"
-                :aria-label="`Paso ${index + 1}`"
+                :aria-label="`Paso ${index + 1}: ${step.label}`"
               >
                 <span v-if="currentStep <= index + 1">{{ index + 1 }}</span>
                 <i v-else class="fa-solid fa-check"></i>
@@ -66,7 +66,7 @@
                 :disabled="isLoading"
                 required
               />
-              <p v-if="formErrors.title" id="title-error"  role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
+              <p v-if="formErrors.title" id="title-error" role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.title }}</p>
             </div>
 
             <!-- Descripción -->
@@ -100,7 +100,7 @@
                 Imagen o Video
               </label>
               <input
-               id="eventMedia"
+                id="eventMedia"
                 type="file"
                 accept="image/*,video/*"
                 @change="handleMediaUpload"
@@ -178,7 +178,7 @@
             </div>
           </div>
 
-          <!-- Paso 3: Detalles del evento -->
+          <!-- Paso 3: Fechas y Horas -->
           <div v-if="currentStep === 3">
             <!-- Fecha y Hora de Inicio -->
             <SelectDate
@@ -189,7 +189,6 @@
               required
               :error="formErrors.startTime"
             />
-            <!-- <p v-if="formErrors.startTime" class="text-sm text-red-500 mt-1">{{ formErrors.startTime }}</p> -->
             <!-- Fecha y Hora de Fin -->
             <SelectDate
               v-model="editForm.endTime"
@@ -198,9 +197,34 @@
               time-enabled
               :error="formErrors.endTime"
             />
-            <!-- <p v-if="formErrors.endTime" class="text-sm text-red-500 mt-1">{{ formErrors.endTime }}</p> -->
-            <!-- Ubicación -->
-            <div>
+          </div>
+
+          <!-- Paso 4: Modalidad, Ubicación/Link y Capacidad -->
+          <div v-if="currentStep === 4">
+            <!-- Modalidad (Presencial/Virtual) -->
+            <div class="mb-4">
+              <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Modalidad
+              </label>
+              <select
+                v-model="editForm.modality"
+                id="eventModality"
+                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :disabled="isLoading"
+                aria-describedby="modality-error"
+                :aria-invalid="formErrors.modality ? 'true' : 'false'"
+                aria-required="true"
+                aria-label="Seleccionar modalidad del evento"
+                required
+              >
+                <option :value="0">Presencial</option>
+                <option :value="1">Virtual</option>
+              </select>
+              <p v-if="formErrors.modality" id="modality-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
+            </div>
+
+            <!-- Ubicación (si es Presencial) -->
+            <div v-if="editForm.modality === 0" class="mb-4">
               <label for="eventLocation" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Ubicación
               </label>
@@ -210,6 +234,28 @@
                 :disabled="isLoading"
                 :error="formErrors.address"
               />
+              <p v-if="formErrors.address" id="address-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.address }}</p>
+            </div>
+
+            <!-- Link del Meet (si es Virtual) -->
+            <div v-if="editForm.modality === 1" class="mb-4">
+              <label for="eventMeetLink" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Link del Meet
+              </label>
+              <input
+                v-model="editForm.meetLink"
+                id="eventMeetLink"
+                type="url"
+                placeholder="Ej: https://meet.google.com/abc-xyz"
+                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                :class="formErrors.meetLink ? 'border-red-500' : ''"
+                aria-describedby="meetlink-error"
+                :aria-invalid="formErrors.meetLink ? 'true' : 'false'"
+                aria-required="true"
+                :disabled="isLoading"
+                required
+              />
+              <p v-if="formErrors.meetLink" id="meetlink-error" role="alert" class="text-sm text-red-500 mt-1">{{ formErrors.meetLink }}</p>
             </div>
 
             <!-- Capacidad -->
@@ -233,17 +279,17 @@
                 minlength="1"
                 maxlength="5"
                 pattern="^[1-9][0-9]{0,4}$"
-                @input="newEvent.capacity = newEvent.capacity ? Math.max(1, newEvent.capacity) : null"
+                @input="editForm.capacity = editForm.capacity ? Math.max(1, editForm.capacity) : null"
               />
               <p v-if="formErrors.capacity" id="capacity-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.capacity }}</p>
             </div>
           </div>
 
-          <!-- Paso 4: Configuración adicional -->
-          <div v-if="currentStep === 4">
+          <!-- Paso 5: Configuración adicional (Categorías y Privacidad) -->
+          <div v-if="currentStep === 5">
             <!-- Categorías -->
             <div>
-              <label for="postCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <label for="eventCategories" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
                 Categorías
               </label>
               <multiselect
@@ -274,28 +320,6 @@
               <p v-if="formErrors.categories" id="categories-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
             
-            <!-- Modalidad (Presencial/Virtual) -->
-            <div class="mt-4">
-              <label for="eventModality" class="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                Modalidad
-              </label>
-              <select
-                v-model="editForm.modality"
-                id="eventModality"
-                class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                :disabled="isLoading"
-                aria-describedby="modality-error"
-                :aria-invalid="formErrors.modality ? 'true' : 'false'"
-                aria-required="true"
-                aria-label="Seleccionar modalidad del evento"
-                required
-              >
-                <option :value="0">Presencial</option>
-                <option :value="1">Virtual</option>
-              </select>
-              <p v-if="formErrors.modality" id="modality-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.modality }}</p>
-            </div>
-
             <!-- Privacidad -->
             <div class="flex flex-col gap-4 mt-4">
               <fieldset>
@@ -354,8 +378,6 @@
             </div>
           </div>
           
-          
-
           <!-- Botones de navegación -->
           <div class="flex justify-between gap-3 mt-6">
             <button
@@ -376,7 +398,7 @@
               @click="closeModal"
               :disabled="isLoading"
               class="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              aria-label="Cancelar edición del perfil"
+              aria-label="Cancelar edición del evento"
             >
               <i class="fa-solid fa-times"></i>
               <p class="hidden md:block">Cancelar</p>
@@ -396,7 +418,7 @@
               type="submit"
               :disabled="isLoading"
               class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              aria-label="Guardar perfil"
+              aria-label="Guardar evento"
             >
               <span v-if="isLoading">
                 <i class="fa-solid fa-circle-notch animate-spin"></i>
@@ -458,8 +480,9 @@ const currentStep = ref(1);
 const steps = ref([
   { label: 'Información' },
   { label: 'Multimedia' },
-  { label: 'Detalles' },
-  { label: 'Configuración' },
+  { label: 'Fechas' },
+  { label: 'Ubicación/Link' }, // Nuevo label para el paso 4
+  { label: 'Configuración' }, // Nuevo label para el paso 5
 ]);
 
 const categories = ref([
@@ -488,6 +511,7 @@ const editForm = ref({
     lat: null,
     lng: null,
   },
+  meetLink: '', // Agregado para el link del meet
   capacity: null,
   idDoc: '',
   ownerId: '',
@@ -516,6 +540,8 @@ watch(
       startTime: formatFirebaseTimestamp(newVal.startTime),
       endTime: formatFirebaseTimestamp(newVal.endTime),
       modality: newVal.modality !== undefined ? newVal.modality : 0, // Set modality from event or default to 0
+      meetLink: newVal.meetLink || '', // Inicializa meetLink
+      location: newVal.location || { address: '', lat: null, lng: null }, // Asegura que location no sea null
     };
     newMediaBase64.value = null;
   },
@@ -531,14 +557,26 @@ function closeModal() {
 function validateStep(step) {
   let isValid = true;
   const errors = {};
-
+  // Regex para validar URLs
+  // Acepta los siguientes formatos:
+  // - http://dominio.com
+  // - https://dominio.com
+  // - www.dominio.com
+  // - dominio.com (con al menos un punto)
+  const urlRegex = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
   if (step === 1) {
     if (!editForm.value.title) {
       errors.title = 'El título es obligatorio';
       isValid = false;
+    } else if (editForm.value.title.length < 1 || editForm.value.title.length > 50) {
+      errors.title = 'El título debe tener entre 1 y 50 caracteres.';
+      isValid = false;
     }
     if (!editForm.value.description) {
-      errors.description = 'La descripción es obligatorio';
+      errors.description = 'La descripción es obligatoria';
+      isValid = false;
+    } else if (editForm.value.description.length < 10 || editForm.value.description.length > 500) {
+      errors.description = 'La descripción debe tener entre 10 y 500 caracteres.';
       isValid = false;
     }
   } else if (step === 2) {
@@ -546,50 +584,57 @@ function validateStep(step) {
       errors.media = 'Debe cargarle una portada al evento.';
       isValid = false;
     }
-  } else if (step === 3) {
+  } else if (step === 3) { // Solo fechas
     if (!editForm.value.startTime) {
       errors.startTime = 'La fecha y hora de inicio son obligatorias';
       isValid = false;
-    }
-    if (editForm.value.startTime && new Date(editForm.value.startTime) <= new Date()) {
-      errors.startTime = 'La fecha y hora de inicio debe ser un fecha futura.';
+    } else if (editForm.value.startTime && new Date(editForm.value.startTime) <= new Date()) {
+      errors.startTime = 'La fecha y hora de inicio debe ser una fecha futura.';
       isValid = false;
     }
+    // End time es opcional, pero si existe, debe ser posterior a start time
     if (editForm.value.endTime && new Date(editForm.value.startTime) >= new Date(editForm.value.endTime)) {
       errors.endTime = 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio';
       isValid = false;
     }
-    if (!editForm.value.capacity) {
-      errors.capacity = 'La capacidad es obligatoria';
+  } else if (step === 4) { // Modalidad, Ubicación/Link y Capacidad
+    if (![0, 1].includes(editForm.value.modality)) {
+      errors.modality = 'La modalidad debe ser Presencial o Virtual';
       isValid = false;
     }
-    if (editForm.value.capacity && editForm.value.capacity <= 0) {
+
+    if (editForm.value.modality === 0) { // Presencial
+      if (!editForm.value.location.address) {
+        errors.address = 'La ubicación es obligatoria para eventos presenciales';
+        isValid = false;
+      }
+    } else if (editForm.value.modality === 1) { // Virtual
+       if (!editForm.value.meetLink) {
+        errors.meetLink = 'El link del meet es obligatorio para eventos virtuales';
+        isValid = false;
+      } else if (!urlRegex.test(editForm.value.meetLink)) {
+        errors.meetLink = 'El link del meet no es una URL válida.';
+        isValid = false;
+      }
+    }
+
+    if (!editForm.value.capacity || editForm.value.capacity <= 0) {
       errors.capacity = 'La capacidad debe ser un número positivo';
       isValid = false;
-    }
-    if (!editForm.value.location.address) {
-      errors.address = 'La ubicación es obligatoria';
+    } else if (editForm.value.capacity > 99999) { // Límite de 5 dígitos como en el pattern
+      errors.capacity = 'La capacidad máxima es 99999';
       isValid = false;
     }
-    if (editForm.value.location.address.trim() === '') {
-      errors.address = 'La ubicación no puede estar vacía';
-      isValid = false;
-    }
-  } else if (step === 4) {
+  } else if (step === 5) { // Categorías y Privacidad
     if (editForm.value.categories.length === 0) {
       errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
-    }
-    if (editForm.value.categories.length > 3) {
+    } else if (editForm.value.categories.length > 3) {
       errors.categories = 'Debes seleccionar como máximo 3 categorías';
       isValid = false;
     }
     if (editForm.value.privacy !== 'public' && editForm.value.privacy !== 'private') {
       errors.privacy = 'La privacidad debe ser pública o privada';
-      isValid = false;
-    }
-    if (![0, 1].includes(editForm.value.modality)) {
-      errors.modality = 'La modalidad debe ser Presencial o Virtual';
       isValid = false;
     }
   }
@@ -614,7 +659,8 @@ async function handleSubmit() {
     // Validar todos los pasos
     for (let i = 1; i <= steps.value.length; i++) {
       if (!validateStep(i)) {
-        currentStep.value = i;
+        currentStep.value = i; // Regresar al paso con error
+        snackbarStore.show('Por favor, completa todos los campos requeridos.', 'error');
         return;
       }
     }
@@ -623,6 +669,9 @@ async function handleSubmit() {
       ...editForm.value,
       startTime: editForm.value.startTime ? new Date(editForm.value.startTime) : null,
       endTime: editForm.value.endTime ? new Date(editForm.value.endTime) : null,
+      // Condicionalmente incluye location o meetLink
+      location: editForm.value.modality === 0 ? editForm.value.location : null,
+      meetLink: editForm.value.modality === 1 ? editForm.value.meetLink : null,
     };
 
     if (newMediaBase64.value) {
@@ -692,25 +741,6 @@ function handleMediaUpload(event) {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-/* Estilos para el scroll del modal */
-.overflow-y-auto {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
-}
-
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: rgba(155, 155, 155, 0.5);
-  border-radius: 3px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: transparent;
 }
 
 /* Animación para los pasos del stepper */

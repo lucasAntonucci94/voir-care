@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto py-6">
       <!-- Encabezado -->
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white sr-only">Tus Grupos</h2>

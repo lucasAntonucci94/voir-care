@@ -5,10 +5,11 @@
             <p class="text-base md:text-lg text-gray-600 dark:text-gray-400">¿Qué te gustaría descubrir hoy en Voir?</p>
             <div class="relative mt-6 flex items-center">
                 <input type="text" 
-                placeholder="Buscar lugares, eventos, grupos..." 
-                class="w-full pl-12 pr-28 py-3 bg-white dark:bg-gray-800 border-2 border-transparent rounded-full shadow-sm focus:outline-none focus:border-secondary dark:focus:border-secondary transition-colors" 
-                aria-label="Buscar en Voir"
-                v-model="searchQuery">
+                    placeholder="Buscar eventos, grupos, usuarios, lugares..." 
+                    class="w-full pl-12 pr-28 py-3 bg-white dark:bg-gray-800 border-2 border-transparent rounded-full shadow-sm focus:outline-none focus:border-secondary dark:focus:border-secondary transition-colors" 
+                    aria-label="Buscar en Voir"
+                    v-model="searchQuery"
+                >
             
                 <!-- Icono de búsqueda (visible cuando el campo está vacío) -->
                 <i v-if="!searchQuery" class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
@@ -79,7 +80,7 @@ import { useEducationBlogsStore } from '../stores/educationBlogs';
 import { useUsersStore } from '../stores/users';
 import HomeContent from '../components/organisms/HomeContent.vue';
 import HomeSearchResults from '../components/organisms/HomeSearchResults.vue';
-
+import AvatarFallback from '../assets/avatar1.jpg';
 const { user } = useAuth();
 
 // Stores
@@ -194,7 +195,9 @@ const baseFilteredPosts = computed(() => {
             post.user?.displayName?.toLowerCase().includes(query)
         ) ?? [];
     }
-    return postsStore.posts?.value ?? [];
+    return postsStore.posts?.value?.filter(post => 
+        post.media !== null 
+    ) ?? [];
 });
 
 const baseFilteredReels = computed(() => {
@@ -220,9 +223,9 @@ const baseFilteredEntertainmentItems = computed(() => {
             type: 'post',
             title: post.title,
             body: post.body,
-            mediaUrl: post.media?.url || 'https://placehold.co/400x250/cccccc/333333?text=No+Image', 
+            mediaUrl: post.media?.url, 
             mediaType: post.media?.type || 'image', 
-            userPhotoURL: post.user?.photoURLFile || 'https://placehold.co/40x40/CCCCCC/666666?text=U', 
+            userPhotoURL: post.user?.photoURLFile || AvatarFallback, 
             userDisplayName: post.user?.displayName || 'Usuario Anónimo',
             createdAt: post.created_at 
         });
@@ -236,7 +239,7 @@ const baseFilteredEntertainmentItems = computed(() => {
             title: reel.title,
             mediaUrl: reel.mediaUrl || reel.thumbnailUrl, 
             mediaType: reel.mediaType || 'image', 
-            userPhotoURL: reel.user?.photoURL || 'https://placehold.co/40x40/CCCCCC/666666?text=U', 
+            userPhotoURL: reel.user?.photoURL || AvatarFallback, 
             userDisplayName: reel.user?.displayName || 'Usuario Anónimo',
             createdAt: reel.createdAt 
         });
@@ -255,7 +258,6 @@ const baseFilteredEntertainmentItems = computed(() => {
     // Si hay búsqueda activa, ya vienen filtrados por el término, no limitar más.
     return combinedItems;
 });
-
 
 // Computed properties que se pasan a HomeSearchResults, aplicando los filtros de categoría
 const displayUsers = computed(() => {

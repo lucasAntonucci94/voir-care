@@ -18,34 +18,34 @@
           </div>
         </div>
       </div>
-        <!-- Tabs para grupos -->
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-          <div
-            class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto scrollbar-hide whitespace-nowrap"
+      <!-- Tabs para grupos -->
+      <div class="container mx-auto px-4 md:px-8 lg:px-16">
+        <div
+          class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto scrollbar-hide whitespace-nowrap"
+        >
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            :class="[
+              'relative px-4 py-3 text-sm font-medium transition-all duration-300 flex items-center space-x-2',
+              activeTab === tab.id
+                ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
+                : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
+            ]"
+            :aria-selected="activeTab === tab.id"
+            role="tab"
           >
-            <button
-              v-for="tab in tabs"
-              :key="tab.id"
-              @click="activeTab = tab.id"
-              :class="[
-                'relative px-4 py-3 text-sm font-medium transition-all duration-300 flex items-center space-x-2',
-                activeTab === tab.id
-                  ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
-              ]"
-              :aria-selected="activeTab === tab.id"
-              role="tab"
-            >
-              <i :class="tab.icon" aria-hidden="true"></i>
-              <span>{{ tab.label }}</span>
-              <!-- Línea indicadora para la pestaña activa -->
-              <span
-                v-if="activeTab === tab.id"
-                class="absolute inset-x-0 bottom-0 h-0.5 bg-primary dark:bg-secondary"
-              ></span>
-            </button>
-          </div>
+            <i :class="tab.icon" aria-hidden="true"></i>
+            <span>{{ tab.label }}</span>
+            <!-- Línea indicadora para la pestaña activa -->
+            <span
+              v-if="activeTab === tab.id"
+              class="absolute inset-x-0 bottom-0 h-0.5 bg-primary dark:bg-secondary"
+            ></span>
+          </button>
         </div>
+      </div>
       <!-- Contenido de tab -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16">
         <!-- Tab: GroupsFeed -->

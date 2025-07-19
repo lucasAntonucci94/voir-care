@@ -81,15 +81,17 @@
 
       <!-- Contenido -->
       <div class="p-4 space-y-2 text-sm text-gray-800 dark:text-gray-200 flex-grow">
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p v-if="event.modality === 0 && event.location && (event.location?.address !== null || event.location?.address !== '')" class="text-sm text-gray-500 dark:text-gray-400">
           {{ event.location?.address || 'Ubicación no definida' }}
+        </p>
+        <p  v-if="event.modality === 1 && event.meetLink !== null" class="text-sm text-gray-500 dark:text-gray-400">
+          {{ event.meetLink || 'Link no definido' }}
         </p>
         <h3 class="text-xl font-semibold">{{ event?.title }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
           {{ event.description || 'Sin descripción' }}
         </p>
         <div class="flex flex-col gap-1">
-          <!-- <span><strong>Inicio:</strong> {{ formattedStartTime }}</span> -->
           <!-- Categorías -->
           <div class="flex flex-wrap gap-2">
             <span
@@ -111,8 +113,8 @@
               class="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
             >
               <i class="fas fa-users text-primary dark:text-secondary"></i>
-              {{ event?.attendees?.going?.length > 0 ? event?.attendees?.going?.length - 1 : 0 }}
-              {{ event?.attendees?.going?.length === 1 ? 'participante' : 'participantes' }}
+              {{ event?.attendees?.going?.length - 1 > 0 ? event?.attendees?.going?.length - 1 : 0 }}
+              {{ event?.attendees?.going?.length - 1 === 1 ? 'participante' : 'participantes' }}
             </span>
             <span
               v-if="event.modality === 0 || event.modality === 1"

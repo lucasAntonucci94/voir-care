@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-6">
+  <div class="container mx-auto py-6">
     <!-- Sticky Header with Sorting -->
     <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 py-4 mb-6 rounded-lg shadow-sm">
       <div class="flex justify-between items-center max-w-2xl mx-5 xs:mx-10 lg:mx-auto">

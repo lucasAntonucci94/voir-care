@@ -378,6 +378,44 @@ export function useReels() {
     }
   }
 
+  /**
+   * Obtiene un reel individual por su idDoc.
+   * @param {string} idDoc - El ID del documento del reel a buscar.
+   * @returns {Promise<Object|null>} El objeto reel si se encuentra, o null si no.
+   */
+  async function getReelByIdDoc(idDoc) {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const docRef = doc(db, 'reels', idDoc);
+      const reelSnap = await getDoc(docRef);
+
+      if (reelSnap.exists()) {
+        const reel = reelSnap.data();
+        return reel;
+        // return {
+        //   idDoc: postId,
+        //   id: reel.id,
+        //   title: reel.title,
+        //   body: reel.body,
+        //   user: reel.user,
+        //   categories: reel.categories,
+        //   createdAt: reel.createdAt,
+        //   likes: reel.likes || [],
+        //   media: reel.media ?? null,
+        // };
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.error('Error al obtener reel por ID:', err);
+      error.value = 'Error al obtener el reel.';
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   return {
     saveReel,
     updateReelData,
@@ -387,6 +425,7 @@ export function useReels() {
     addLike,
     removeLike,
     incrementView,
+    getReelByIdDoc,
     error,
     isLoading,
   };
