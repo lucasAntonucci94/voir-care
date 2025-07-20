@@ -283,7 +283,7 @@
             </div>
           </div>
 
-          <!-- Paso 5: Configuración adicional (Categorías y Privacidad) -->
+          <!-- Paso 5: Configuración adicional (Categorías, Privacidad y Venta Online) -->
           <div v-if="currentStep === 5">
             <!-- Categorías -->
             <div>
@@ -311,13 +311,13 @@
                 :show-no-results="false"
                 :searchable="true"
                 :loading="isLoading"
-                role="listbox"  
+                role="listbox"
                 aria-multiselectable="true"
                 aria-describedby="categories-error"
               ></multiselect>
               <p v-if="formErrors.categories" id="categories-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
-            
+
             <!-- Privacidad -->
             <div class="flex flex-col gap-4 mt-4">
               <fieldset>
@@ -337,12 +337,9 @@
                       aria-describedby="privacy-error"
                       :aria-invalid="formErrors.privacy ? 'true' : 'false'"
                       aria-required="true"
-                      aria-label="Seleccionar privacidad pública del evento" 
+                      aria-label="Seleccionar privacidad pública del evento"
                     />
-                    <label
-                      for="public"
-                      class="text-sm text-gray-700 dark:text-gray-100"
-                    >
+                    <label for="public" class="text-sm text-gray-700 dark:text-gray-100">
                       Público
                     </label>
                   </div>
@@ -358,21 +355,83 @@
                       aria-describedby="privacy-error"
                       :aria-invalid="formErrors.privacy ? 'true' : 'false'"
                       aria-required="true"
-                      aria-label="Seleccionar privacidad privada del evento" 
+                      aria-label="Seleccionar privacidad privada del evento"
                     />
-                    <label
-                      for="private"
-                      class="text-sm text-gray-700 dark:text-gray-100"
-                    >
+                    <label for="private" class="text-sm text-gray-700 dark:text-gray-100">
                       Privado
                     </label>
                   </div>
                 </div>
               </fieldset>
-              <p
-                v-if="formErrors.privacy" id="privacy-error" role="alert" aria-live="polite"class=" text-sm text-red-500 mt-1" >
+              <p v-if="formErrors.privacy" id="privacy-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">
                 {{ formErrors.privacy }}
               </p>
+            </div>
+
+            <!-- Venta Online -->
+            <div v-if="user.isSuscribed" class="flex flex-col gap-4 mt-4">
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="newEvent.hasOnlineSale"
+                  type="checkbox"
+                  id="hasOnlineSale"
+                  :disabled="isLoading"
+                  class="form-checkbox text-blue-600 focus:ring-blue-500 h-5 w-5"
+                  aria-label="Habilitar venta online"
+                />
+                <label for="hasOnlineSale" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  ¿Tiene Venta Online?
+                </label>
+              </div>
+
+              <!-- Campos condicionales para Venta Online -->
+              <transition name="fade">
+                <div v-if="newEvent.hasOnlineSale" class="space-y-4">
+                  <!-- Link de Venta -->
+                  <div>
+                    <label for="sellTicketLink" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Link de Venta
+                    </label>
+                    <input
+                      v-model="newEvent.sellTicketLink"
+                      id="sellTicketLink"
+                      type="url"
+                      placeholder="Ej: https://example.com/tickets"
+                      class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                      :class="formErrors.sellTicketLink ? 'border-red-500' : ''"
+                      aria-describedby="sellTicketLink-error"
+                      :aria-invalid="formErrors.sellTicketLink ? 'true' : 'false'"
+                      aria-required="true"
+                      :disabled="isLoading"
+                      required
+                    />
+                    <p v-if="formErrors.sellTicketLink" id="sellTicketLink-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">
+                      {{ formErrors.sellTicketLink }}
+                    </p>
+                  </div>
+
+                  <!-- Descripción de Venta -->
+                  <div>
+                    <label for="sellTicketText" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Descripción de Venta
+                    </label>
+                    <textarea
+                      v-model="newEvent.sellTicketText"
+                      id="sellTicketText"
+                      placeholder="Breve descripción para el botón de compra (opcional)"
+                      class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[80px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                      :class="formErrors.sellTicketText ? 'border-red-500' : ''"
+                      aria-describedby="sellTicketText-error"
+                      :aria-invalid="formErrors.sellTicketText ? 'true' : 'false'"
+                      :maxlength="200"
+                      :disabled="isLoading"
+                    ></textarea>
+                    <p v-if="formErrors.sellTicketText" id="sellTicketText-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">
+                      {{ formErrors.sellTicketText }}
+                    </p>
+                  </div>
+                </div>
+              </transition>
             </div>
           </div>
 
@@ -472,8 +531,8 @@ const steps = ref([
   { label: 'Información' },
   { label: 'Multimedia' },
   { label: 'Fechas' },
-  { label: 'Ubicación/Link' }, // Nuevo label para el paso 4
-  { label: 'Configuración' }, // Nuevo label para el paso 5
+  { label: 'Ubicación/Link' },
+  { label: 'Configuración' },
 ]);
 
 const categories = ref([
@@ -497,14 +556,13 @@ const newEvent = ref({
   privacy: 'public',
   startTime: '',
   endTime: '',
-  location: { // Se mantiene, pero sus valores se validarán condicionalmente
-    address: '',
-    lat: null,
-    lng: null,
-  },
-  meetLink: '', // Nueva propiedad para el link de meet
+  location: { address: '', lat: null, lng: null },
+  meetLink: '',
   capacity: null,
-  modality: 0, // Default to Presencial (0)
+  modality: 0,
+  hasOnlineSale: false, // New property for checkbox
+  sellTicketLink: '', // New property for ticket sale link
+  sellTicketText: '', // New property for ticket sale description
 });
 
 function closeModal() {
@@ -528,7 +586,10 @@ function resetForm() {
     location: { address: '', lat: null, lng: null },
     meetLink: '',
     capacity: null,
-    modality: 0, // Reset to Presencial
+    modality: 0,
+    hasOnlineSale: false,
+    sellTicketLink: '',
+    sellTicketText: '',
   };
 }
 
@@ -536,11 +597,6 @@ function validateStep(step) {
   let isValid = true;
   const errors = {};
   // Regex para validar URLs
-  // Acepta los siguientes formatos:
-  // - http://dominio.com
-  // - https://dominio.com
-  // - www.dominio.com
-  // - dominio.com (con al menos un punto)
   const urlRegex = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
 
   if (step === 1) {
@@ -563,7 +619,7 @@ function validateStep(step) {
       errors.media = 'Debe cargarle una portada al evento.';
       isValid = false;
     }
-  } else if (step === 3) { // Solo fechas
+  } else if (step === 3) {
     if (!newEvent.value.startTime) {
       errors.startTime = 'La fecha y hora de inicio son obligatorias';
       isValid = false;
@@ -571,23 +627,21 @@ function validateStep(step) {
       errors.startTime = 'La fecha y hora de inicio debe ser una fecha futura.';
       isValid = false;
     }
-    // End time es opcional, pero si existe, debe ser posterior a start time
     if (newEvent.value.endTime && new Date(newEvent.value.startTime) >= new Date(newEvent.value.endTime)) {
       errors.endTime = 'La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio';
       isValid = false;
     }
-  } else if (step === 4) { // Modalidad, Ubicación/Link y Capacidad
+  } else if (step === 4) {
     if (![0, 1].includes(newEvent.value.modality)) {
       errors.modality = 'La modalidad debe ser Presencial o Virtual';
       isValid = false;
     }
-
-    if (newEvent.value.modality === 0) { // Presencial
+    if (newEvent.value.modality === 0) {
       if (!newEvent.value.location.address) {
         errors.address = 'La ubicación es obligatoria para eventos presenciales';
         isValid = false;
       }
-    } else if (newEvent.value.modality === 1) { // Virtual
+    } else if (newEvent.value.modality === 1) {
       if (!newEvent.value.meetLink) {
         errors.meetLink = 'El link del meet es obligatorio para eventos virtuales';
         isValid = false;
@@ -596,15 +650,14 @@ function validateStep(step) {
         isValid = false;
       }
     }
-
     if (!newEvent.value.capacity || newEvent.value.capacity <= 0) {
       errors.capacity = 'La capacidad debe ser un número positivo';
       isValid = false;
-    } else if (newEvent.value.capacity > 99999) { // Límite de 5 dígitos como en el pattern
+    } else if (newEvent.value.capacity > 99999) {
       errors.capacity = 'La capacidad máxima es 99999';
       isValid = false;
     }
-  } else if (step === 5) { // Categorías y Privacidad
+  } else if (step === 5) {
     if (newEvent.value.categories.length === 0) {
       errors.categories = 'Debes seleccionar al menos una categoría';
       isValid = false;
@@ -615,6 +668,19 @@ function validateStep(step) {
     if (newEvent.value.privacy !== 'public' && newEvent.value.privacy !== 'private') {
       errors.privacy = 'La privacidad debe ser pública o privada';
       isValid = false;
+    }
+    if (newEvent.value.hasOnlineSale) {
+      if (!newEvent.value.sellTicketLink) {
+        errors.sellTicketLink = 'El link de venta es obligatorio si se habilita la venta online';
+        isValid = false;
+      } else if (!urlRegex.test(newEvent.value.sellTicketLink)) {
+        errors.sellTicketLink = 'El link de venta no es una URL válida.';
+        isValid = false;
+      }
+      if (newEvent.value.sellTicketText && newEvent.value.sellTicketText.length > 200) {
+        errors.sellTicketText = 'La descripción de venta no puede exceder los 200 caracteres.';
+        isValid = false;
+      }
     }
   }
 
@@ -638,7 +704,7 @@ async function handleCreateEvent() {
     // Validar todos los pasos
     for (let i = 1; i <= steps.value.length; i++) {
       if (!validateStep(i)) {
-        currentStep.value = i; // Regresar al paso con error
+        currentStep.value = i;
         snackbarStore.show('Por favor, completa todos los campos requeridos.', 'error');
         return;
       }
@@ -678,9 +744,11 @@ async function handleCreateEvent() {
         interested: [],
         notInterested: [],
       },
-      // Condicionalmente incluye location o meetLink
       location: newEvent.value.modality === 0 ? newEvent.value.location : null,
       meetLink: newEvent.value.modality === 1 ? newEvent.value.meetLink : null,
+      hasOnlineSale: newEvent.value.hasOnlineSale,
+      sellTicketLink: newEvent.value.hasOnlineSale ? newEvent.value.sellTicketLink : null,
+      sellTicketText: newEvent.value.hasOnlineSale ? newEvent.value.sellTicketText : null,
     };
 
     await eventsStore.createEvent(eventData);
@@ -702,7 +770,7 @@ function handleMediaUpload(event) {
   if (!file) return;
   if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
     formErrors.value.media = "El tipo de archivo no es permitido. Selecciona una imagen o video.";
-    event.target.value = ''; // Limpiar el input
+    event.target.value = '';
     return;
   }
   const reader = new FileReader();
@@ -765,5 +833,16 @@ function handleMediaUpload(event) {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
+}
+
+/* Transición de fade para los campos condicionales */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

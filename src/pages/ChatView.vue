@@ -3,7 +3,7 @@
   <button
     v-if="isDesktop"
     @click="goBack"
-    class="absolute top-4 left-5 z-20 flex items-center px-4 py-2 rounded-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
+    class="absolute top-4 left-5 z-20 flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
     aria-label="Volver a la página anterior"
   >
     <i class="fa-solid fa-arrow-left text-lg mr-2"></i>

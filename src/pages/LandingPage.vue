@@ -24,7 +24,7 @@
   </section>
 
   <!-- Que ofrecemos -->
-  <section id="que-ofrecemos" class="py-16 bg-gray-200 dark:bg-gray-800 josefin-font">
+  <section id="que-ofrecemos" class="py-10 md:py-16 bg-gray-200 dark:bg-gray-800 josefin-font">
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-3xl md:text-4xl font-bold text-gray-700 dark:text-white mb-12 dosis-font">Todo lo que necesitás para cuidar a tus mascotas</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -40,15 +40,15 @@
   </section>
 
   <!-- Mision y Vision -->
-  <section class="py-16 bg-gray-100/50 dark:bg-gray-900 josefin-font">
+  <section class="py-10 md:py-16 bg-gray-100/50 dark:bg-gray-900 josefin-font">
     <div class="container mx-auto max-w-290 px-4 flex flex-col md:flex-row gap-10">
       <div class="md:w-1/2 px-4">
         <h2 class="text-3xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Un mundo mejor para los animales</h2>
-        <p class="text-base text-[#666666] dark:text-gray-300 mb-4">En Voir, creamos una comunidad unida por el amor a los animales, donde podés educarte, colaborar y hacer una diferencia en el bienestar de las mascotas.</p>
-        <p class="text-base text-[#666666] dark:text-gray-300 mb-6">Nuestra misión es fomentar la adopción responsable y el cuidado consciente, conectando a personas apasionadas por los animales en Buenos Aires y más allá.</p>
+        <p class="text-base text-gray-700 dark:text-gray-300 mb-4">En Voir, creamos una comunidad unida por el amor a los animales, donde podés educarte, colaborar y hacer una diferencia en el bienestar de las mascotas.</p>
+        <p class="text-base text-gray-700 dark:text-gray-300 mb-6">Nuestra misión es fomentar la adopción responsable y el cuidado consciente, conectando a personas apasionadas por los animales en Buenos Aires y más allá.</p>
       </div>
-      <div class="md:w-1/2">
-        <div class="relative h-70 xs:h-90 sm:h-80 md:h-70 rounded-lg overflow-hidden">
+      <div class="md:w-1/2 px-4">
+        <div class="relative h-40 xs:h-90 sm:h-80 md:h-70 rounded-lg overflow-hidden">
          <video
             src="../assets/videos/VideoAnimalsLight.mp4"
             alt="Gato jugando en la comunidad de Voir"
@@ -63,7 +63,7 @@
   </section>
 
   <!-- Explorar Comunidad -->
-  <section class="py-16 bg-gradient-to-b from-primary to-primary-md  dark:from-secondary dark:to-secondary-md text-white josefin-font">
+  <section class="py-10 md:py-16 bg-gradient-to-b from-primary to-primary-md  dark:from-secondary dark:to-secondary-md text-white josefin-font">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 dosis-font">Explorá nuestra comunidad</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto md:flex md:flex-wrap md:justify-center">
@@ -78,11 +78,11 @@
   </section>
   
   <!-- Chats Privados -->
-  <section class="py-16 bg-[#F9FAFB] dark:bg-gray-900 josefin-font">
+  <section class="py-10 md:py-16 bg-[#F9FAFB] dark:bg-gray-900 josefin-font">
     <div class="container mx-auto px-4 text-center">
-      <img :src="chatPrivadoImage" alt="Gato Chateando" class="w-55 h-55 mx-auto mb-4" loading="lazy">
-      <h2 class="text-3xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Comunicación privada y segura</h2>
-      <p class="text-base text-[#666666] dark:text-gray-300 max-w-2xl mx-auto mb-8">Conectá con otros amantes de los animales a través de chats privados. Por ejemplo, coordiná un rescate por tu zona o pedí consejos a un veterinario de confianza.</p>
+      <img :src="chatPrivadoImage" alt="Gato Chateando" class="w-45 h-45 sm:w-55 sm:h-55 mx-auto mb-4" loading="lazy">
+      <h2 class="text-2xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Comunicación privada y segura</h2>
+      <p class="text-base text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8">Conectá con otros amantes de los animales a través de chats privados. Por ejemplo, coordiná un rescate por tu zona o pedí consejos a un veterinario de confianza.</p>
       <router-link to="/chats" class="inline-block dosis-font px-8 py-4 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Iniciar un chat privado en Voir">
         Empezá a chatear
       </router-link>
@@ -90,11 +90,11 @@
   </section>
 
   <!-- Educación y Adopción -->
-  <section class="py-16 bg-gray-100/50 dark:bg-gray-800 josefin-font">
-    <div class="container flex flex-col items-center mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-12 dosis-font">Aprendé y adoptá</h2>
-      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-center">Conocé más consejos de adopción responsable y cuidado animal.</p>
-      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-center">Aprendé sobre razas, salud y bienestar para que tu mascota sea feliz y saludable.</p>
+  <section class="py-10 md:py-16 px-4 bg-gray-100/50 dark:bg-gray-800 josefin-font">
+    <div class="container px-4 flex flex-col items-left mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6 sm:mb-12 dosis-font text-left sm:text-center">Aprendé y adoptá</h2>
+      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-left sm:text-center">Conocé más consejos de adopción responsable y cuidado animal.</p>
+      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-left sm:text-center">Aprendé sobre razas, salud y bienestar para que tu mascota sea feliz y saludable.</p>
 
       <div class="relative w-full lg:w-auto mt-8">
         <video
@@ -124,7 +124,7 @@
 
 
   <!-- Mision y Vision -->
-  <section class="py-16 bg-white dark:bg-gray-900 josefin-font">
+  <section class="py-10 md:py-16 bg-white dark:bg-gray-900 josefin-font">
     <div class="mx-auto max-w-290 px-4 flex flex-col md:flex-row gap-10">
       <div class="md:w-1/2">
         <!-- Título principal -->

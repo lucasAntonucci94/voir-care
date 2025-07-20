@@ -285,7 +285,7 @@
             </div>
           </div>
 
-          <!-- Paso 5: Configuración adicional (Categorías y Privacidad) -->
+          <!-- Paso 5: Configuración adicional (Categorías, Privacidad y Venta Online) -->
           <div v-if="currentStep === 5">
             <!-- Categorías -->
             <div>
@@ -313,13 +313,13 @@
                 :show-no-results="false"
                 :searchable="true"
                 :loading="isLoading"
-                role="listbox"  
+                role="listbox"
                 aria-multiselectable="true"
                 aria-describedby="categories-error"
               ></multiselect>
               <p v-if="formErrors.categories" id="categories-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
             </div>
-            
+
             <!-- Privacidad -->
             <div class="flex flex-col gap-4 mt-4">
               <fieldset>
@@ -339,12 +339,9 @@
                       aria-describedby="privacy-error"
                       :aria-invalid="formErrors.privacy ? 'true' : 'false'"
                       aria-required="true"
-                      aria-label="Seleccionar privacidad pública del evento" 
+                      aria-label="Seleccionar privacidad pública del evento"
                     />
-                    <label
-                      for="public"
-                      class="text-sm text-gray-700 dark:text-gray-100"
-                    >
+                    <label for="public" class="text-sm text-gray-700 dark:text-gray-100">
                       Público
                     </label>
                   </div>
@@ -360,21 +357,83 @@
                       aria-describedby="privacy-error"
                       :aria-invalid="formErrors.privacy ? 'true' : 'false'"
                       aria-required="true"
-                      aria-label="Seleccionar privacidad privada del evento" 
+                      aria-label="Seleccionar privacidad privada del evento"
                     />
-                    <label
-                      for="private"
-                      class="text-sm text-gray-700 dark:text-gray-100"
-                    >
+                    <label for="private" class="text-sm text-gray-700 dark:text-gray-100">
                       Privado
                     </label>
                   </div>
                 </div>
               </fieldset>
-              <p
-                v-if="formErrors.privacy" id="privacy-error" role="alert" aria-live="polite"class=" text-sm text-red-500 mt-1" >
+              <p v-if="formErrors.privacy" id="privacy-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">
                 {{ formErrors.privacy }}
               </p>
+            </div>
+
+            <!-- Venta Online -->
+            <div v-if="user.isSuscribed" class="flex flex-col gap-4 mt-4">
+              <div class="flex items-center gap-2">
+                <input
+                  v-model="editForm.hasOnlineSale"
+                  type="checkbox"
+                  id="hasOnlineSale"
+                  :disabled="isLoading"
+                  class="form-checkbox text-blue-600 focus:ring-blue-500 h-5 w-5"
+                  aria-label="Habilitar venta online"
+                />
+                <label for="hasOnlineSale" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  ¿Tiene Venta Online?
+                </label>
+              </div>
+
+              <!-- Campos condicionales para Venta Online -->
+              <transition name="fade">
+                <div v-if="editForm.hasOnlineSale" class="space-y-4">
+                  <!-- Link de Venta -->
+                  <div>
+                    <label for="sellTicketLink" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Link de Venta
+                    </label>
+                    <input
+                      v-model="editForm.sellTicketLink"
+                      id="sellTicketLink"
+                      type="text"
+                      placeholder="Ej: https://example.com/tickets"
+                      class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                      :class="formErrors.sellTicketLink ? 'border-red-500' : ''"
+                      aria-describedby="sellTicketLink-error"
+                      :aria-invalid="formErrors.sellTicketLink ? 'true' : 'false'"
+                      aria-required="true"
+                      :disabled="isLoading"
+                      required
+                    />
+                    <p v-if="formErrors.sellTicketLink" id="sellTicketLink-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">
+                      {{ formErrors.sellTicketLink }}
+                    </p>
+                  </div>
+
+                  <!-- Descripción de Venta -->
+                  <div>
+                    <label for="sellTicketText" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Descripción de Venta
+                    </label>
+                    <textarea
+                      v-model="editForm.sellTicketText"
+                      id="sellTicketText"
+                      placeholder="Breve descripción para el botón de compra (opcional)"
+                      class="w-full p-3 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[80px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                      :class="formErrors.sellTicketText ? 'border-red-500' : ''"
+                      aria-describedby="sellTicketText-error"
+                      :aria-invalid="formErrors.sellTicketText ? 'true' : 'false'"
+                      :maxlength="200"
+                      :disabled="isLoading"
+                    ></textarea>
+                    <p v-if="formErrors.sellTicketText" id="sellTicketText-error" role="alert" aria-live="polite" class="text-sm text-red-500 mt-1">
+                      {{ formErrors.sellTicketText }}
+                    </p>
+                  </div>
+                </div>
+              </transition>
             </div>
           </div>
           
@@ -522,6 +581,9 @@ const editForm = ref({
     notInterested: [],
   },
   modality: 0, // Default to Presencial (0) or from props.event.modality
+  hasOnlineSale: false, // New property for checkbox
+  sellTicketLink: '', // New property for ticket sale link
+  sellTicketText: '', // New property for ticket sale description
 });
 
 watch(() => props.visible, (newVal) => {
@@ -542,6 +604,9 @@ watch(
       modality: newVal.modality !== undefined ? newVal.modality : 0, // Set modality from event or default to 0
       meetLink: newVal.meetLink || '', // Inicializa meetLink
       location: newVal.location || { address: '', lat: null, lng: null }, // Asegura que location no sea null
+      hasOnlineSale: newVal.hasOnlineSale || false, // Initialize from event or default to false
+      sellTicketLink: newVal.sellTicketLink || '', // Initialize from event or default to empty
+      sellTicketText: newVal.sellTicketText || '', // Initialize from event or default to empty
     };
     newMediaBase64.value = null;
   },
@@ -552,6 +617,20 @@ function closeModal() {
   currentStep.value = 1;
   formErrors.value = {};
   emit('cancel');
+}
+
+// Función para normalizar URLs
+function normalizeUrl(url) {
+  if (!url) return '';
+  // Eliminar espacios en blanco y convertir a minúsculas
+  let normalized = url.trim().toLowerCase();
+  // Remover barra final si existe
+  normalized = normalized.replace(/\/+$/, '');
+  // Añadir https:// si no tiene protocolo
+  if (!/^https?:\/\//i.test(normalized)) {
+    normalized = `https://${normalized}`;
+  }
+  return normalized;
 }
 
 function validateStep(step) {
@@ -637,6 +716,19 @@ function validateStep(step) {
       errors.privacy = 'La privacidad debe ser pública o privada';
       isValid = false;
     }
+    if (editForm.value.hasOnlineSale) {
+      if (!editForm.value.sellTicketLink) {
+        errors.sellTicketLink = 'El link de venta es obligatorio si se habilita la venta online';
+        isValid = false;
+      } else if (!urlRegex.test(editForm.value.sellTicketLink)) {
+        errors.sellTicketLink = 'El link de venta no es una URL válida.';
+        isValid = false;
+      }
+      if (editForm.value.sellTicketText && editForm.value.sellTicketText.length > 200) {
+        errors.sellTicketText = 'La descripción de venta no puede exceder los 200 caracteres.';
+        isValid = false;
+      }
+    }
   }
 
   formErrors.value = errors;
@@ -671,7 +763,9 @@ async function handleSubmit() {
       endTime: editForm.value.endTime ? new Date(editForm.value.endTime) : null,
       // Condicionalmente incluye location o meetLink
       location: editForm.value.modality === 0 ? editForm.value.location : null,
-      meetLink: editForm.value.modality === 1 ? editForm.value.meetLink : null,
+      meetLink: editForm.value.modality === 1 ? normalizeUrl(editForm.value.meetLink) : null,
+      sellTicketLink: editForm.value.hasOnlineSale ? normalizeUrl(editForm.value.sellTicketLink) : null, // Include only if hasOnlineSale
+      sellTicketText: editForm.value.hasOnlineSale ? editForm.value.sellTicketText : null, // Include only if hasOnlineSale
     };
 
     if (newMediaBase64.value) {
