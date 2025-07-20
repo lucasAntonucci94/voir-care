@@ -71,14 +71,14 @@
             <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 tracking-wide">{{ event.title }}</h2>
 
             <!-- Descripción -->
-            <p class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-line line-clamp-4 leading-relaxed">
+            <!-- <p class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-line line-clamp-4 leading-relaxed">
               {{ event.description || 'Sin descripción disponible.' }}
-            </p>
+            </p> -->
 
             <!-- Info principal -->
             <div class="text-sm space-y-2 text-gray-700 dark:text-gray-200">
               <div>
-                <strong>Ubicación:</strong>
+                <strong class="sr-only">Ubicación:</strong>
                 {{ event.location?.address || 'No definida' }}
               </div>
               <div v-if="event.price">
@@ -86,7 +86,7 @@
               </div>
               <div>
                 <strong>Capacidad:</strong>
-                {{ event.capacity || 'Ilimitada' }}
+                {{ event.capacity - (event.attendees?.going?.length ?? 0) + 1 || 'Ilimitada' }}
               </div>
               <div class="flex gap-2">
                 <span

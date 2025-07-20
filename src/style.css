@@ -228,28 +228,24 @@
 
 @media (max-width: 570px) {
   .fc-toolbar-title {
-    font-size: 15px !important;
+    font-size: 17px !important;
   }
   /* Botones de navegación del calendario */
-  .fc-prev-button, .fc-next-button {
+  /* .fc-prev-button, .fc-next-button {
     display: block !important;
     font-size: 10px !important;
-  }
+  } */
   /* Botones de temporalidad del calendario Mensual */
   .fc-dayGridMonth-button {
     display: none !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
   }
-  /* Botones de temporalidad del calendario Semanal */
-  .fc-dayGridWeek-button {
+  /* Botones de navegación del calendario y temporalidad del calendario Semanal */
+  .fc-prev-button, .fc-next-button, .fc-dayGridWeek-button, .fc-dayGridDay-button {
     display: block !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
   }
-  /* Botones de temporalidad Diario */
-  .fc-dayGridDay-button {
-    display: block !important;
-    font-size: 10px !important;
-  }
+ 
   /* Botones de Hoy */
    .fc-today-button {
     display: none !important;
