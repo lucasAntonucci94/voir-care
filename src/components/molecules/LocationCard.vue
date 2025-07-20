@@ -99,14 +99,14 @@
       </div>
 
       <!-- User Info -->
-      <div v-if="location.user" class="flex items-center mt-auto pt-3 border-t border-gray-200 dark:border-gray-700">
+      <!-- <div v-if="location.user" class="flex items-center mt-auto pt-3 border-t border-gray-200 dark:border-gray-700">
         <img
           :src="location.user.photoURLFile || AvatarFallback"
           :alt="location.user.displayName || 'Usuario'"
           class="w-8 h-8 rounded-full object-cover mr-3"
         /> 
         <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ location.user.displayName || 'Usuario Desconocido' }}</span>
-      </div>
+      </div> -->
 
       <!-- Timestamp (optional, can be formatted) -->
       <p v-if="location.timestamp" class="text-xs text-gray-500 dark:text-gray-400 mt-2">

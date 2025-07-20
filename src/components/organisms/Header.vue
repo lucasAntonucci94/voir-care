@@ -8,7 +8,7 @@
         </button>
         <span class="sr-only" role="heading" aria-level="1">Voir</span>
         <router-link :to="isAuthenticated ? '/feed' : '/'" class="flex items-center">
-          <img src="../../assets/icons/logoBlancoPNG.png" alt="Logo Voir" class="h-10" />
+          <img src="../../assets/icons/logoBlancoPNG.png" alt="Logo Voir" class="h-7 md:h-10" />
         </router-link>
       </div>
       <nav class="flex flex-nowrap" aria-label="Navegación principal">

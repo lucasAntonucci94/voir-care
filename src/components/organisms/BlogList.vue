@@ -3,7 +3,7 @@
     <!-- Sección de Cabecera y Búsqueda -->
     <div class="mb-6">
       <!-- Título principal -->
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4 text-center md:text-left">
+      <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4 text-center md:text-left">
         Blog de Cuidado Animal
       </h2>
 
