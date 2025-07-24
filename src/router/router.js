@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MainLayout from '../components/templates/MainLayout.vue';
+import Home from '../pages/Home.vue';
 import Feed from '../pages/Feed.vue';
 import Profile from '../pages/Profile.vue';
 import Login from '../pages/Login.vue';
@@ -15,9 +16,12 @@ import EventDetail from '../pages/EventDetail.vue';
 import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
 import PremiumPage from '../pages/PremiumPage.vue';
+import TermsAndConditionsPage from '../pages/ConditionsAndTermsPage.vue';
+import PrivacyPolicyPage from '../pages/PrivacyPolicyPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
 import PostDetailPage from '../pages/PostDetailPage.vue';
+import ReelDetailPage from '../pages/ReelDetailPage.vue';
 import AdmUsersPage from '../pages/admin/UsersPage.vue';
 import AdmEventsPage from '../pages/admin/EventsPage.vue';
 import AdmGroupsPage from '../pages/admin/GroupsPage.vue';
@@ -28,6 +32,7 @@ import AdoptionPage from '../pages/AdoptionPage.vue';
 import AdmCategoriesPage from '../pages/admin/CategoriesPage.vue';
 import AdmBlogCategoriesPage from '../pages/admin/BlogCategoriesPage.vue';
 import AdmPostsPage from '../pages/admin/PostsPage.vue';
+import AdmSubscriptionsPage from '../pages/admin/SubscriptionsPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -38,6 +43,14 @@ const routes = [
       {
         path: '/feed',
         name: 'feed',
+        component: Home,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/social',
+        name: 'social',
         component: Feed,
         meta: {
             requiresAuth: true,
@@ -160,6 +173,30 @@ const routes = [
         }
       },
       {
+        path: '/reel/:id',
+        name: 'ReelDetail',
+        component: ReelDetailPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path: '/termsandconditions',
+        name: 'TermsAndConditions',
+        component: TermsAndConditionsPage,
+        meta: {
+            requiresAuth: false,
+        }
+      },
+      {
+        path: '/privacypolicy',
+        name: 'PrivacyPolicy',
+        component: PrivacyPolicyPage,
+        meta: {
+            requiresAuth: false,
+        }
+      },
+      {
         path:  '/admin/dashboard',
         name: 'dashboard',
         component: AdminDashboardPage,
@@ -235,6 +272,14 @@ const routes = [
         path:  '/admin/categories/blogs',
         name: 'BlogcategoriesAdm',
         component: AdmBlogCategoriesPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/subscriptions',
+        name: 'SubscriptionsAdm',
+        component: AdmSubscriptionsPage,
         meta: {
             requiresAuth: true,
         }

@@ -6,6 +6,7 @@
         <!-- Sección izquierda: Botón de retroceso y título -->
         <div class="flex items-center gap-3 md:gap-4">
           <button
+            v-if="isDesktop"
             @click="goBack"
             class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
             aria-label="Volver a la página anterior"
@@ -52,6 +53,13 @@ const exploreMapRef = ref(null) //que hace esta ref? me permite acceder al compo
 const loadingLocation = ref(false);
 const flagCentered = ref(false);
 const activeFilters = ref([]);
+const isDesktop = ref(false);
+
+// Detectar si estamos en desktop o mobile
+const checkIfDesktop = () => {
+  isDesktop.value = window.innerWidth >= 768;
+};
+
 
 function centerOnUserLocation() {
   exploreMapRef.value?.centerOnUserLocation()
@@ -74,13 +82,15 @@ const handleMapReady = () => {
   // console.log('Mapa listo');
 };
 
-
 onMounted(() => {
-  locationsStore.subscribe();
+  locationsStore.subscribeTolocations();
+  checkIfDesktop();
+  window.addEventListener('resize', checkIfDesktop);
 });
 
 onUnmounted(() => {
-  locationsStore.unsubscribe();
+  locationsStore.unsubscribeAllFn();
+  window.removeEventListener('resize', checkIfDesktop);
 });
 </script> 
 

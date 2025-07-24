@@ -4,7 +4,10 @@
       <!-- Encabezado -->
       <div class="bg-white dark:bg-gray-800 shadow-sm">
         <div class="container mx-auto px-4 md:px-8 lg:px-16 py-4 flex items-center justify-between">
-          <h1 class="text-xl font-bold text-[#2c3e50] dark:text-white">Eventos</h1>
+          <h1 class="text-xl font-bold text-[rgb(44,62,80)] dark:text-white">
+            <i class="fa-solid fa-calendar mr-2 text-primary dark:text-secondary"></i>
+            Eventos
+          </h1>
           <button
             @click="handleModalCreate"
             class="hidden sm:inline-flex px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors"
@@ -28,7 +31,7 @@
               activeTab === tab.id
                 ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary'
                 : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700',
-              tab.hidden ? 'hidden sm:block' : ''
+              tab.hidden ? 'hidden' : ''
             ]"
             :aria-selected="activeTab === tab.id"
             role="tab"
@@ -78,7 +81,7 @@ const showModalCreate = ref(false);
 // Definición de las tabs
 const tabs = [
   { id: 'upcoming', label: 'Proximamente', icon: 'fa-solid fa-clock', hidden: false },
-  { id: 'calendar', label: 'Calendario', icon: 'fa-solid fa-calendar-days', hidden: true },
+  { id: 'calendar', label: 'Calendario', icon: 'fa-solid fa-calendar-days', hidden: false },
   { id: 'discover', label: 'Descubrir', icon: 'fa-solid fa-magnifying-glass', hidden: false },
   { id: 'userEvents', label: 'Tus Eventos', icon: 'fa-solid fa-user-check', hidden: false },
 ];

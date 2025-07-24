@@ -6,7 +6,7 @@
     <!-- Imagen del reel (usamos el thumbnail del primer reel) -->
     <div class="relative">
       <img
-        :src="group.reels[0].thumbnailUrl"
+        :src="group.reels[0].thumbnailUrl ?? AvatarFallback"
         :alt="group.reels[0].title"
         class="w-full h-28 object-cover rounded-t-lg"
         loading="lazy"
@@ -64,7 +64,7 @@
 
 <script setup>
 import { defineEmits } from 'vue';
-
+import AvatarFallback from '../../assets/avatar1.jpg';
 const props = defineProps({
   group: {
     type: Object,

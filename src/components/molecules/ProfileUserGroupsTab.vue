@@ -52,8 +52,14 @@
   const searchQuery = ref('');
   const selectedCategory = ref('');
   const router = useRouter();
- const selectedOwnership = ref('all');
+  const selectedOwnership = ref('all');
 
+  const props = defineProps({
+    userId: {
+      type: String,
+      required: true
+    }
+  });
   const filteredGroups = computed(() => {
     let groups = groupsStore.userGroups?.value ?? [];
 
@@ -70,9 +76,9 @@
 
     // Filtro por propiedad
     if (selectedOwnership.value === 'owned') {
-      groups = groups.filter(group => group.ownerId === user.value.uid);
+      groups = groups.filter(group => group.ownerId === props.userId);
     } else if (selectedOwnership.value === 'joined') {
-      groups = groups.filter(group => group.ownerId !== user.value.uid);
+      groups = groups.filter(group => group.ownerId !== props.userId);
     }
 
     return groups;
@@ -84,8 +90,8 @@
   
   // Suscripción a eventos del usuario
   onMounted(() => {
-    if (user.value) {
-      groupsStore.subscribeUserGroups(user.value.uid)
+    if (props.userId) {
+      groupsStore.subscribeUserGroups(props.userId)
     }
   })
 

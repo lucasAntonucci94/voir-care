@@ -9,13 +9,13 @@
       playsinline></video>
 
     <div class="container mx-auto px-6 sm:px-8 z-20"> <div class="max-w-lg sm:max-w-xl">
-        <h1 class="dosis-font text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 leading-tight text-white">Tu comunidad para el amor y cuidado animal</h1>
-        <p class="josefin-font text-md sm:text-lg mb-6 text-gray-100">Conectá con otros amantes de los animales, aprendé sobre bienestar y colaborá para que cada mascota tenga un hogar feliz.</p>
+        <h1 class="dosis-font text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 leading-tight text-gray-700 dark:text-white">Tu comunidad para el amor y cuidado animal</h1>
+        <p class="josefin-font text-md sm:text-lg mb-6 text-gray-500 dark:text-gray-100">Conectá con otros amantes de los animales, aprendé sobre bienestar y colaborá para que cada mascota tenga un hogar feliz.</p>
         <div class="flex flex-col sm:flex-row gap-4">
           <router-link to="/register" class="dosis-font px-6 py-3 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Únete a la comunidad de Voir">
             Unite ahora
           </router-link>
-          <router-link :to="{ path: '/', hash: '#que-ofrecemos' }" class="dosis-font text-bold px-6 py-3 bg-transparent border border-2 border-white text-white font-semibold rounded-lg hover:bg-gray-300/20 transition-colors dark:hover:bg-gray-800/10" aria-label="Explora las funcionalidades de Voir">
+          <router-link :to="{ path: '/', hash: '#que-ofrecemos' }" class="dosis-font text-bold px-6 py-3 bg-primary/60 border border-2 border-white text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors dark:hover:bg-gray-800/10" aria-label="Explora las funcionalidades de Voir">
             Descubrí Voir
           </router-link>
         </div>
@@ -24,7 +24,7 @@
   </section>
 
   <!-- Que ofrecemos -->
-  <section id="que-ofrecemos" class="py-16 bg-gray-200 dark:bg-gray-800 josefin-font">
+  <section id="que-ofrecemos" class="py-10 md:py-16 bg-gray-200 dark:bg-gray-800 josefin-font">
     <div class="container mx-auto px-4 text-center">
       <h2 class="text-3xl md:text-4xl font-bold text-gray-700 dark:text-white mb-12 dosis-font">Todo lo que necesitás para cuidar a tus mascotas</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -40,15 +40,15 @@
   </section>
 
   <!-- Mision y Vision -->
-  <section class="py-16 bg-gray-100/50 dark:bg-gray-900 josefin-font">
+  <section class="py-10 md:py-16 bg-gray-100/50 dark:bg-gray-900 josefin-font">
     <div class="container mx-auto max-w-290 px-4 flex flex-col md:flex-row gap-10">
       <div class="md:w-1/2 px-4">
         <h2 class="text-3xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Un mundo mejor para los animales</h2>
-        <p class="text-base text-[#666666] dark:text-gray-300 mb-4">En Voir, creamos una comunidad unida por el amor a los animales, donde podés educarte, colaborar y hacer una diferencia en el bienestar de las mascotas.</p>
-        <p class="text-base text-[#666666] dark:text-gray-300 mb-6">Nuestra misión es fomentar la adopción responsable y el cuidado consciente, conectando a personas apasionadas por los animales en Buenos Aires y más allá.</p>
+        <p class="text-base text-gray-700 dark:text-gray-300 mb-4">En Voir, creamos una comunidad unida por el amor a los animales, donde podés educarte, colaborar y hacer una diferencia en el bienestar de las mascotas.</p>
+        <p class="text-base text-gray-700 dark:text-gray-300 mb-6">Nuestra misión es fomentar la adopción responsable y el cuidado consciente, conectando a personas apasionadas por los animales en Buenos Aires y más allá.</p>
       </div>
-      <div class="md:w-1/2">
-        <div class="relative h-70 xs:h-90 sm:h-80 md:h-70 rounded-lg overflow-hidden">
+      <div class="md:w-1/2 px-4">
+        <div class="relative h-40 xs:h-90 sm:h-80 md:h-70 rounded-lg overflow-hidden">
          <video
             src="../assets/videos/VideoAnimalsLight.mp4"
             alt="Gato jugando en la comunidad de Voir"
@@ -63,7 +63,7 @@
   </section>
 
   <!-- Explorar Comunidad -->
-  <section class="py-16 bg-gradient-to-b from-primary to-primary-md  dark:from-secondary dark:to-secondary-md text-white josefin-font">
+  <section class="py-10 md:py-16 bg-gradient-to-b from-primary to-primary-md  dark:from-secondary dark:to-secondary-md text-white josefin-font">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 dosis-font">Explorá nuestra comunidad</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto md:flex md:flex-wrap md:justify-center">
@@ -78,11 +78,11 @@
   </section>
   
   <!-- Chats Privados -->
-  <section class="py-16 bg-[#F9FAFB] dark:bg-gray-900 josefin-font">
+  <section class="py-10 md:py-16 bg-[#F9FAFB] dark:bg-gray-900 josefin-font">
     <div class="container mx-auto px-4 text-center">
-      <img :src="chatPrivadoImage" alt="Gato Chateando" class="w-55 h-55 mx-auto mb-4" loading="lazy">
-      <h2 class="text-3xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Comunicación privada y segura</h2>
-      <p class="text-base text-[#666666] dark:text-gray-300 max-w-2xl mx-auto mb-8">Conectá con otros amantes de los animales a través de chats privados. Por ejemplo, coordiná un rescate por tu zona o pedí consejos a un veterinario de confianza.</p>
+      <img :src="chatPrivadoImage" alt="Gato Chateando" class="w-45 h-45 sm:w-55 sm:h-55 mx-auto mb-4" loading="lazy">
+      <h2 class="text-2xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Comunicación privada y segura</h2>
+      <p class="text-base text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8">Conectá con otros amantes de los animales a través de chats privados. Por ejemplo, coordiná un rescate por tu zona o pedí consejos a un veterinario de confianza.</p>
       <router-link to="/chats" class="inline-block dosis-font px-8 py-4 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Iniciar un chat privado en Voir">
         Empezá a chatear
       </router-link>
@@ -90,11 +90,11 @@
   </section>
 
   <!-- Educación y Adopción -->
-  <section class="py-16 bg-gray-100/50 dark:bg-gray-800 josefin-font">
-    <div class="container flex flex-col items-center mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-12 dosis-font">Aprendé y adoptá</h2>
-      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-center">Conocé más consejos de adopción responsable y cuidado animal.</p>
-      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-center">Aprendé sobre razas, salud y bienestar para que tu mascota sea feliz y saludable.</p>
+  <section class="py-10 md:py-16 px-4 bg-gray-100/50 dark:bg-gray-800 josefin-font">
+    <div class="container px-4 flex flex-col items-left mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6 sm:mb-12 dosis-font text-left sm:text-center">Aprendé y adoptá</h2>
+      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-left sm:text-center">Conocé más consejos de adopción responsable y cuidado animal.</p>
+      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-left sm:text-center">Aprendé sobre razas, salud y bienestar para que tu mascota sea feliz y saludable.</p>
 
       <div class="relative w-full lg:w-auto mt-8">
         <video
@@ -122,23 +122,31 @@
     </div>
   </section>
 
-  <!-- Ultimo Section de cierre y llamado a la accion -->
-  <section class="py-16 bg-gray-200/50 dark:bg-gray-900 josefin-font">
-    <div class="container flex flex-col items-center mx-auto px-4">
-      <!-- Título principal -->
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6 dosis-font">Unite a la Comunidad Voir</h2>
-      <!-- Subtítulo -->
-      <h3 class="text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-8 text-center">Hacé una diferencia, encontrá tu tribu, crezcamos juntos</h3>
-      <!-- Descripción motivadora -->
-      <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-center mb-8">
-        ¿Sos un amante de los animales? En <span class="font-bold">Voir</span>, tu pasión encuentra un hogar. Unite a miles de personas en Buenos Aires y más allá que comparten tu amor por las mascotas. Juntos, podemos construir un mundo donde cada animal tenga un hogar feliz y saludable.
-      </p>
-      <!-- Lista de beneficios -->
-      <ul class="text-base text-gray-600 dark:text-gray-300 max-w-2xl mb-10 space-y-4 text-center">
-        <li><span class="font-semibold">Conectá:</span> Formá parte de una comunidad vibrante donde compartís experiencias, consejos y momentos especiales con tus mascotas.</li>
-        <li><span class="font-semibold">Colaborá:</span> Sumate a iniciativas de adopción, rescate y cuidado responsable que transforman vidas.</li>
-        <li><span class="font-semibold">Creá impacto:</span> Tu participación ayuda a fomentar el bienestar animal y a construir una red de apoyo para cada peludo.</li>
-      </ul>
+
+  <!-- Mision y Vision -->
+  <section class="py-10 md:py-16 bg-white dark:bg-gray-900 josefin-font">
+    <div class="mx-auto max-w-290 px-4 flex flex-col md:flex-row gap-10">
+      <div class="md:w-1/2">
+        <!-- Título principal -->
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6 dosis-font text-left">Unite a la Comunidad Voir</h2>
+        <!-- Subtítulo -->
+        <h3 class="text-lg md:text-xl xxl:text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-8 text-left">Hacé una diferencia, encontrá tu tribu, crezcamos juntos</h3>
+        <!-- Descripción motivadora -->
+        <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl mb-8 text-left">
+          ¿Sos un amante de los animales? En <span class="font-bold">Voir</span>, tu pasión encuentra un hogar. Unite a miles de personas en Buenos Aires y más allá que comparten tu amor por las mascotas. Juntos, podemos construir un mundo donde cada animal tenga un hogar feliz y saludable.
+        </p>
+        <!-- Lista de beneficios -->
+        <ul class="text-base text-gray-600 dark:text-gray-300 max-w-2xl mb-10 space-y-4 text-left">
+          <li><span class="font-semibold">Conectá:</span> Formá parte de una comunidad vibrante donde compartís experiencias, consejos y momentos especiales con tus mascotas.</li>
+          <li><span class="font-semibold">Colaborá:</span> Sumate a iniciativas de adopción, rescate y cuidado responsable que transforman vidas.</li>
+          <li><span class="font-semibold">Creá impacto:</span> Tu participación ayuda a fomentar el bienestar animal y a construir una red de apoyo para cada peludo.</li>
+        </ul>
+      </div>
+      <div class="md:w-1/2 px-4 flex flex-col items-center justify-center">
+        <img src="../assets/CAT&DOG.png" alt="Perro y gato recostados" class="mx-auto mb-4" loading="lazy">
+      </div>
+    </div>
+    <div class="text-center mt-8">
       <!-- Call to Action -->
       <router-link to="/register" class="dosis-font px-8 py-4 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Unite a la comunidad Voir">
         ¡Unite a Voir ahora!
@@ -155,6 +163,7 @@ import ServiceImage3 from '../assets/3.png';
 import { useThemeStore } from '../stores/theme';
 import HeroLight from '../assets/hero/heroLadingPageLight.mp4';
 import HeroDark from '../assets/hero/heroLadingPageDark.mp4';
+import HeroDark1 from '../assets/hero/heroLadingPageDark2.mp4';
 import chatPrivadoLight from '../assets/icons/gatetoAcostadoLight.png';
 import chatPrivadoDark from '../assets/icons/gatetoAcostadoDark.png';
 
@@ -248,7 +257,6 @@ const handleVideoError = (event) => {
 // Propiedad computada para calcular el ancho de la barra de progreso
 const progressBarWidth = computed(() => {
   if (videoDuration.value > 0) {
-    debugger
     const percentage = (currentTime.value / videoDuration.value) * 100;
     return `${Math.min(percentage, 100)}%`;
   }

@@ -97,16 +97,17 @@ const mainNavItems = [
   { to: '/home', icon: 'fa-home', label: 'Inicio' },
   { to: '/groups', icon: 'fa-users', label: 'Grupos' },
   { to: '/events', icon: 'fa-calendar', label: 'Eventos' },
+  { to: '/education', icon: 'fa-graduation-cap', label: 'Educación' },
+  { to: '/social', icon: 'fa-photo-video', label: 'Recreativo' },
   { to: '/explorar', icon: 'fa-compass', label: 'Mapa interactivo' },
   { to: '/chats', icon: 'fa-message', label: 'Mensajes' },
-  { to: '/faqs', icon: 'fa-question', label: 'Preguntas Frecuentes' },
 ];
 
 // Items de navegación "Otros" filtrados reactivamente
 const otherNavItems = computed(() => [
-  { to: '/education', icon: 'fa-graduation-cap', label: 'Educación' },
   { to: '/adoption', icon: 'fa-paw', label: 'Adopción' },
   { to: '/premium', icon: 'fa-gem', label: 'Suscríbete a Voir', hidden: hidePremiumPage?.value ?? false },
+  { to: '/faqs', icon: 'fa-question', label: 'Preguntas Frecuentes' },
   // { to: '/about', icon: 'fa-info-circle', label: 'Acerca de Voir' },
   // { to: '/contact', icon: 'fa-envelope', label: 'Contacto' },
 ]);

@@ -68,7 +68,7 @@
         <div ref="dropdownRef" class="relative">
           <button
             @click="showSettingsMenu = !showSettingsMenu"
-            class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md"
+            class="flex items-center text-gray-600 hover:text-primary dark:text-white dark:hover:text-gray-300 focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-600 rounded-lg p-2 h-8 shadow-sm hover:shadow-md cursor-pointer"
           >
             <i class="fas fa-cog"></i>
             <span class="ml-2 text-sm hidden md:inline">Configuración</span>
@@ -267,21 +267,19 @@ async function handleAttendance() {
       event.value.attendees.going = event.value.attendees.going.filter(uid => uid !== user.value.uid);
       attendeesDetails.value = attendeesDetails.value.filter(member => member.id !== user.value.uid);
       isGoing.value = false;
-      // console.log(`Usuario cancela asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
-      snackbarStore.show(`Usuario cancela asistencia al evento: ${event.value.title}`, 'success');
+      snackbarStore.show(`Cancela asistencia al evento: ${event.value.title}`, 'success');
     } else {
       // Join attendance: add user.uid to attendees.going
       event.value.attendees.going = [...event.value.attendees.going, user.value.uid];
       const newAttendee = await usersStore.getUser(user.value.uid);
       if (newAttendee) attendeesDetails.value.push(newAttendee);
       isGoing.value = true;
-      // console.log(`Usuario confirma asistencia al evento: ${event.value.idDoc}, ${event.value.title}`);
-      snackbarStore.show(`Usuario confirma asistencia al evento: ${event.value.title}`, 'success');
+      snackbarStore.show(`Confirma asistencia al evento: ${event.value.title}`, 'success');
     }
     showSettingsMenu.value = false;
   } catch (error) {
     console.error(`Error al ${currentStatus ? 'cancelar' : 'confirmar'} asistencia:`, error);
-    snackbarStore.show(`Error al ${currentStatus ? 'cancelar' : 'confirmar'} asistencia al evento`, 'error');
+    snackbarStore.show(`Error al ${currentStatus ? 'cancelar' : 'confirmar'} asistencia al evento`, error);
   }
 }
 
@@ -367,7 +365,7 @@ const loadEventData = async (id) => {
   try {
     event.value = await eventsStore.findEventById(id);
     isGoing.value = event.value?.attendees?.going?.includes(user.value?.uid) || false;
-    isAdmin.value = event.value?.ownerId === user.value?.uid || false;
+    isAdmin.value = event.value?.ownerId === user.value?.uid || user.value?.isAdmin || false;
     // Cargar detalles del propietario
     if (event.value?.ownerId) {
       ownerDetails.value = await usersStore.getUser(event.value.ownerId);

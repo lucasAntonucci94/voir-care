@@ -54,7 +54,7 @@
             class="flex items-center gap-3 rounded hover:bg-gray-300/50 dark:hover:bg-gray-700/50 p-2 transition-all duration-200"
           >
             <img v-if="!reel?.default"
-              :src="reel?.user?.photoURL || AvantarDefault"
+              :src="reel?.user?.photoURL || AvatarDefault"
               alt="User avatar"
               class="w-12 h-12 rounded-full object-cover border-2 border-primary dark:border-secondary shadow-md"
             />
@@ -119,20 +119,6 @@
           <h3 class="text-xl font-bold text-gray-800 dark:text-white tracking-tight overflow-wrap break-word word-break-break-word max-w-full">
             {{ reel?.title }}
           </h3>
-
-          <!-- Mensaje de feedback -->
-          <transition name="fade">
-            <div
-              v-if="message"
-              class="p-3 rounded-lg text-sm"
-              :class="{
-                'bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200': messageType === 'success',
-                'bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200': messageType === 'error',
-              }"
-            >
-              {{ message }}
-            </div>
-          </transition>
 
           <!-- Acciones -->
           <div v-if="!reel?.default" class="text-sm space-y-4">
@@ -203,7 +189,7 @@ import { formatTimestamp } from '../../utils/formatTimestamp.js';
 import { useReelsStore } from '../../stores/reels.js';
 import { useAuth } from '../../api/auth/useAuth';
 import { useSnackbarStore } from '../../stores/snackbar';
-import AvantarDefault from '../../assets/avatar1.jpg';
+import AvatarDefault from '../../assets/avatar1.jpg';
 import GenericConfirmModal from '../molecules/GenericConfirmModal.vue';
 import ModalReport from '../molecules/ReportModal.vue';
 
@@ -222,7 +208,6 @@ const props = defineProps({
     required: true,
   },
 });
-
 // Emits
 const emit = defineEmits(['close', 'update-reel']);
 
@@ -231,8 +216,6 @@ const viewModal = ref(null);
 const reelsStore = useReelsStore();
 const { user, isAuthenticated } = useAuth();
 const isLiking = ref(false);
-const message = ref(null);
-const messageType = ref(null);
 const snackbarStore = useSnackbarStore();
 const viewedReelId = ref(null);
 const showSettingsMenu = ref(false);
@@ -410,7 +393,7 @@ const deleteReel = async () => {
   showSettingsMenu.value = false;
   if (!props.reel?.idDoc) return;
   try {
-    await reelsStore.deleteReel(props.reel.idDoc);
+    await reelsStore.deleteReel(props.reel);
     snackbarStore.show('Reel eliminado exitosamente', 'success');
     closeModal();
     emit('update-reel', null);
@@ -505,16 +488,6 @@ watch(
 
 .word-break-break-word {
   word-break: break-word;
-}
-
-/* Message transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 /* Responsive styles for mobile */

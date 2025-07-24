@@ -82,12 +82,6 @@
               <PostCard v-for="post in filteredProfilePosts" :key="post.id" :post="post" @delete="deletePost(post.id)" />
               <div  v-if="!filteredProfilePosts?.length" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                 <p class="text-gray-500 dark:text-gray-400">No tienes publicaciones guardadas aún.</p>
-                <!-- <button
-                  class="mt-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
-                  @click="navigateToFeed"
-                >
-                  Crear publicación
-                </button> -->
                 <button
                   class="mt-4 ml-4 px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg text-sm transition-colors"
                   @click="navigateToFeed"
@@ -96,11 +90,13 @@
                 </button>
               </div>
             </div>
+            <ReelsTab v-else-if="activeTab === 'reels'" :userId="activeUser.uid" />
+            <UserEventsTab v-else-if="activeTab === 'eventos'" :userId="activeUser.uid" />
+            <UserGroupsTab v-else-if="activeTab === 'grupos'" :userId="activeUser.uid" />
+            <MapTab v-else-if="activeTab === 'mapa'" />
             <ProfileInfo v-else-if="activeTab === 'información'" :userInfo="activeUser" @trigger-edit="triggerEditProfile" :isOwnProfile="isOwnProfile" />
             <ConnectionsTab v-else-if="activeTab === 'conexiones'" :connections="connections" @active-tab="setActiveTab" />
             <GalleryTab v-else-if="activeTab === 'galería'" :activeUser="activeUser" />
-            <UserEventsTab v-else-if="activeTab === 'eventos'" />
-            <UserGroupsTab v-else-if="activeTab === 'grupos'" />
             <SavedPostTab v-else-if="activeTab === 'guardado'" />
             <HiddenPostsTab v-else-if="activeTab === 'oculto'" />
           </div>
@@ -127,7 +123,8 @@ import UserEventsTab from '../components/molecules/ProfileUserEventsTab.vue';
 import UserGroupsTab from '../components/molecules/ProfileUserGroupsTab.vue';
 import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
 import HiddenPostsTab from '../components/molecules/HiddenPostsTab.vue';
-
+import MapTab from '../components/molecules/ProfileUserMapTab.vue';
+import ReelsTab from '../components/molecules/ProfileUserReelsTab.vue';
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();
@@ -147,12 +144,14 @@ const profileHeader = ref(null); // Ref to ProfileHeader component
 
 // Tabs
 const allTabs = [
+  { name: 'Grupos', icon: 'fa-solid fa-users', hidden: false },
+  { name: 'Eventos', icon: 'fa-solid fa-calendar-days', hidden: true },
+  { name: 'Mapa', icon: 'fa-solid fa-map', hidden: true },
   { name: 'Publicaciones', icon: 'fa-solid fa-square-share-nodes', hidden: false },
+  { name: 'Reels', icon: 'fa-solid fa-video', hidden: false },
+  // { name: 'Galería', icon: 'fa-solid fa-images', hidden: false },
   { name: 'Información', icon: 'fa-solid fa-circle-info', hidden: false },
   { name: 'Conexiones', icon: 'fa-solid fa-user-group', hidden: false },
-  { name: 'Galería', icon: 'fa-solid fa-images', hidden: false },
-  { name: 'Eventos', icon: 'fa-solid fa-calendar-days', hidden: true },
-  { name: 'Grupos', icon: 'fa-solid fa-users', hidden: true },
   { name: 'Guardado', icon: 'fa-solid fa-bookmark', hidden: true },
   { name: 'Oculto', icon: 'fa-solid fa-ban', hidden: true },
 ];

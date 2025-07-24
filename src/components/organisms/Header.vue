@@ -1,14 +1,14 @@
 <template>
   <header class="dosis-font text-white bg-primary dark:bg-secondary p-4 relative shadow-md transition-all duration-300" ref="headerRef">
-    <div class="container mx-auto flex flex-wrap justify-between items-center md:py-4 px-4 md:px-8 lg:px-16">
+    <div class="container mx-auto flex flex-wrap justify-between items-center md:py-4 px-2 md:px-8 lg:px-16">
       <div class="flex items-center mb-2 md:mb-0">
         <!-- Botón hamburguesa solo visible en móvil y en la ruta /feed -->
-        <button v-if="isAuthenticated" class="md:hidden mr-4 text-lg hover:text-primary transition-colors duration-200" @click="sidebarStore.toggleSidebar">
+        <button v-if="isAuthenticated" class="md:hidden mr-6 text-lg hover:text-primary transition-colors duration-200" @click="sidebarStore.toggleSidebar">
           <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
         </button>
         <span class="sr-only" role="heading" aria-level="1">Voir</span>
         <router-link :to="isAuthenticated ? '/feed' : '/'" class="flex items-center">
-          <img src="../../assets/icons/logoBlancoPNG.png" alt="Logo Voir" class="h-10" />
+          <img src="../../assets/icons/logoBlancoPNG.png" alt="Logo Voir" class="h-7 md:h-10" />
         </router-link>
       </div>
       <nav class="flex flex-nowrap" aria-label="Navegación principal">

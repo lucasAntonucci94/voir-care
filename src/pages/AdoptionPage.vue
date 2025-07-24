@@ -8,40 +8,6 @@
       </p>
     </div>
 
-    <!-- Sección: Blogs -->
-    <section class="mb-12">
-      <div v-if="blogsStore.isLoading" class="text-center py-8">
-        <p class="text-gray-600 dark:text-gray-300">Cargando blogs...</p>
-      </div>
-      <div v-else-if="blogsStore.error" class="text-center py-8 text-red-600">
-        {{ blogsStore.error }}
-      </div>
-      <div v-else>
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Blogs</h2>
-          <button
-            v-if="filteredBlogs.length > 5"
-            class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
-            @click="viewMoreBlogs"
-          >
-            Ver más
-          </button>
-        </div>
-        <div v-if="filteredBlogs.length === 0" class="text-center text-gray-500 dark:text-gray-400 italic">
-          No hay blogs disponibles en este momento.
-        </div>
-        <div v-else>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            <BlogPostCard
-              v-for="blog in displayedBlogs"
-              :key="blog.id"
-              :blog="blog"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Sección: Eventos -->
     <section class="mb-12">
       <div class="flex justify-between items-center mb-4">
@@ -87,6 +53,41 @@
           :key="group.idDoc"
           :group="group"
         />
+      </div>
+    </section>
+
+    
+    <!-- Sección: Blogs -->
+    <section class="mb-12">
+      <div v-if="blogsStore.isLoading" class="text-center py-8">
+        <p class="text-gray-600 dark:text-gray-300">Cargando blogs...</p>
+      </div>
+      <div v-else-if="blogsStore.error" class="text-center py-8 text-red-600">
+        {{ blogsStore.error }}
+      </div>
+      <div v-else>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Blogs</h2>
+          <button
+            v-if="filteredBlogs.length > 5"
+            class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
+            @click="viewMoreBlogs"
+          >
+            Ver más
+          </button>
+        </div>
+        <div v-if="filteredBlogs.length === 0" class="text-center text-gray-500 dark:text-gray-400 italic">
+          No hay blogs disponibles en este momento.
+        </div>
+        <div v-else>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <BlogPostCard
+              v-for="blog in displayedBlogs"
+              :key="blog.id"
+              :blog="blog"
+            />
+          </div>
+        </div>
       </div>
     </section>
   </div>

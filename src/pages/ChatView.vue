@@ -1,23 +1,16 @@
 <template>
-  <!-- Header -->
-  <div class="p-1 md:p-6 bg-primary-md dark:bg-secondary-md border-b border-gray-200 dark:border-gray-700">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <button
-          @click="goBack"
-          class="flex items-center justify-center w-6 h-6 md:w-10 md:h-10 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
-          aria-label="Volver a la página anterior"
-        >
-          <i class="fa-solid fa-arrow-left text-sm md:text-lg"></i>
-        </button>
-        <h1 class="text-2xl font-bold text-white">Chats</h1>
-      </div>
-    </div>
-  </div>
-
+  <!-- Botón "Volver" para Desktop: Visible solo en desktop, posicionado en la esquina superior izquierda -->
+  <button
+    v-if="isDesktop"
+    @click="goBack"
+    class="absolute top-4 left-5 z-20 flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
+    aria-label="Volver a la página anterior"
+  >
+    <i class="fa-solid fa-arrow-left text-lg mr-2"></i>
+    <span class="font-semibold">Volver</span>
+  </button>
   <!-- Contenedor principal -->
-  <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-3rem)] md:h-[calc(92vh-6rem)]">
-  <!-- <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-3rem)] md:h-[calc(80vh-6rem)]"> -->
+  <div class="w-full flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900 h-[calc(100vh-1rem)] md:h-[calc(92vh-6rem)] relative md:mt-12">
     <!-- Columna izquierda: Listado de chats -->
     <transition name="fade">
       <div
@@ -48,6 +41,10 @@
         v-if="showMessages || isDesktop"
         class="w-full md:w-2/3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg m-5 flex flex-col max-h-full"
       >
+        <!-- El botón "Volver" específico para móvil se ha eliminado de aquí,
+             ya que el botón principal ahora maneja la navegación en desktop.
+             En móvil, la lógica de `handleGoBack` se activa al ocultar `ChatMessagesList`. -->
+          
         <ChatMessagesList @go-back="handleGoBack" />
       </div>
     </transition>
@@ -72,8 +69,10 @@ const isDesktop = ref(false);
 // Detectar si estamos en desktop o mobile
 const checkIfDesktop = () => {
   isDesktop.value = window.innerWidth >= 768;
+  // En desktop, siempre mostramos ambas columnas, así que no necesitamos showMessages
+  // En mobile, si pasamos de desktop a mobile, ocultamos los mensajes para ver la lista de chats
   if (isDesktop.value) {
-    showMessages.value = false;
+    showMessages.value = false; // Asegura que al redimensionar a desktop, se muestre la lista de chats por defecto
   }
 };
 
@@ -98,7 +97,7 @@ const handleSelectChat = (chatId) => {
 const handleGoBack = () => {
   if (!isDesktop.value) {
     showMessages.value = false;
-    privateChatsStore.setSelectedChatId(null);
+    privateChatsStore.setSelectedChatId(null); // Deselecciona el chat actual
   }
 };
 
@@ -118,6 +117,7 @@ const deleteChat = (chatId) => {
   snackbarStore.show('Chat eliminado', 'success');
 };
 
+// Función para volver a la página anterior en el historial del navegador
 const goBack = () => {
   window.history.back();
 };

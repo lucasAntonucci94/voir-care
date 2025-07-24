@@ -1,28 +1,47 @@
-import { getFirestore, addDoc, deleteDoc, doc, collection, onSnapshot, query, orderBy, serverTimestamp, Timestamp, where, arrayUnion, arrayRemove, updateDoc, increment, getDoc } from 'firebase/firestore';
-import { useStorage } from './useStorage';
+import { ref } from 'vue';
+import { getFirestore, addDoc, doc, updateDoc, deleteDoc, collection, onSnapshot, query, orderBy, serverTimestamp, Timestamp, where, arrayUnion, arrayRemove, increment, getDoc } from 'firebase/firestore';
+import { useStorage } from './useStorage'; // Importamos el composable useStorage
 import { newGuid } from '../utils/newGuid';
 
-const { uploadFile, getFileUrl } = useStorage();
 const db = getFirestore();
 const reelsRef = collection(db, 'reels');
 
 export function useReels() {
+  // Instanciamos useStorage para acceder a sus métodos
+  const { uploadFile, getFileUrl, deleteFile } = useStorage();
+
+  const error = ref(null);
+  const isLoading = ref(false);
+
   /**
-   * Guarda un reel en Firestore y sube el archivo a Firebase Storage.
-   * @param {{user: Object, title: string, file: File, mediaType: string, thumbnail: File}} data
+   * Guarda un nuevo reel en Firestore y sube el archivo a Firebase Storage.
+   * @param {Object} reelData - Datos del reel.
+   * @param {Object} reelData.user - Información del usuario.
+   * @param {string} reelData.title - Título del reel.
+   * @param {string} reelData.base64 - Contenido del archivo en base64.
+   * @param {string} reelData.mediaType - Tipo de medio ('image' o 'video').
+   * @param {string} reelData.thumbnailBase64 - Contenido del thumbnail en base64.
    * @returns {Promise<void>}
    */
-  async function saveReel({ user, title, file, mediaType, thumbnail }) {
+  async function saveReel(reelData) {
+    isLoading.value = true;
+    error.value = null;
     try {
-      const extension = mediaType === 'image' ? 'jpg' : 'mp4';
-      const filePath = `reels/${user.uid}/${newGuid()}.${extension}`;
-      const thumbnailPath = `reels/${user.uid}/${newGuid()}_thumb.jpg`;
-      await uploadFile(filePath, file);
-      const mediaUrl = await getFileUrl(filePath);
-      await uploadFile(thumbnailPath, thumbnail);
-      const thumbnailUrl = await getFileUrl(thumbnailPath);
-      const reelData = {
-        id: newGuid(),
+      const { user, title, base64, mediaType, thumbnailBase64 } = reelData;
+      const mediaExtension = mediaType === 'image' ? 'jpg' : 'mp4';
+      const mediaPath = `reels/${user.uid}/${newGuid()}.${mediaExtension}`;
+      const thumbnailUrlPath = `reels/${user.uid}/thumbnails/${newGuid()}_thumb.jpg`;
+
+      // Subir archivo principal usando useStorage.uploadFile
+      await uploadFile(mediaPath, base64);
+      const mediaUrl = await getFileUrl(mediaPath);
+
+      // Subir thumbnail usando useStorage.uploadFile
+      await uploadFile(thumbnailUrlPath, thumbnailBase64);
+      const thumbnailUrl = await getFileUrl(thumbnailUrlPath);
+
+      const newReelDoc = {
+        id: newGuid(), // Generar un ID único para el documento
         user: {
           uid: user.uid,
           displayName: user.displayName || user.email,
@@ -31,20 +50,133 @@ export function useReels() {
         },
         title,
         mediaUrl,
+        mediaPath,
         thumbnailUrl,
+        thumbnailPath: thumbnailUrlPath,
         mediaType,
-        mediaPath: filePath,
         createdAt: serverTimestamp(),
         likes: [],
         views: 0,
-        viewDetails: {}, // Inicializar viewDetails como objeto vacío
+        viewDetails: {},
         isPublic: true,
         status: 'active',
       };
-      await addDoc(reelsRef, reelData);
+
+      await addDoc(reelsRef, newReelDoc);
+      console.log('Reel guardado exitosamente en Firestore.');
     } catch (err) {
       console.error('Error al guardar el reel:', err);
+      error.value = 'Error al guardar el reel.';
       throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /**
+   * Actualiza un reel existente en Firestore y gestiona la subida/eliminación de archivos en Storage.
+   * @param {string} idDoc - El ID del documento de Firestore a actualizar.
+   * @param {Object} updatedData - Los datos actualizados del reel.
+   * @param {string} [updatedData.base64] - Nuevo contenido del archivo en base64 si se cambió el medio.
+   * @param {string} [updatedData.thumbnailBase64] - Nuevo contenido del thumbnail en base64 si se cambió el medio.
+   * @param {string} [updatedData.originalMediaPath] - Ruta original del medio en Storage si se cambió.
+   * @param {string} [updatedData.originalThumbnailPath] - Ruta original del thumbnail en Storage si se cambió.
+   * @returns {Promise<void>}
+   */
+  async function updateReelData(idDoc, updatedData) {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const reelDocRef = doc(db, 'reels', idDoc);
+      const dataToUpdate = { ...updatedData };
+
+      // Lógica para el archivo principal (media)
+      if (updatedData.base64) {
+        // Si hay un nuevo archivo base64, significa que el medio ha cambiado.
+        // 1. Eliminar el archivo antiguo si existe
+        if (updatedData.originalMediaPath) {
+          await deleteFile(updatedData.originalMediaPath);
+        }
+
+        // 2. Subir el nuevo archivo
+        const mediaExtension = updatedData.mediaType === 'image' ? 'jpg' : 'mp4';
+        const newMediaPath = `reels/${updatedData.user.uid}/${newGuid()}.${mediaExtension}`;
+        await uploadFile(newMediaPath, updatedData.base64);
+        const newMediaUrl = await getFileUrl(newMediaPath);
+
+        dataToUpdate.mediaUrl = newMediaUrl;
+        dataToUpdate.mediaPath = newMediaPath;
+      } else if (updatedData.mediaUrl === null && updatedData.originalMediaPath) {
+        // Si mediaUrl es null y había una ruta original, significa que se eliminó el medio
+        await deleteFile(updatedData.originalMediaPath);
+        dataToUpdate.mediaPath = null;
+        dataToUpdate.mediaType = null;
+      }
+
+      // Lógica para el thumbnail
+      if (updatedData.thumbnailBase64) {
+        // Si hay un nuevo thumbnail base64, significa que el thumbnail ha cambiado.
+        if (updatedData.originalThumbnailPath) {
+          await deleteFile(updatedData.originalThumbnailPath);
+        }
+        const newThumbnailPath = `reels/${updatedData.user.uid}/thumbnails/${newGuid()}_thumb.jpg`;
+        await uploadFile(newThumbnailPath, updatedData.thumbnailBase64);
+        const newThumbnailUrl = await getFileUrl(newThumbnailPath);
+
+        dataToUpdate.thumbnailUrl = newThumbnailUrl;
+        dataToUpdate.thumbnailPath = newThumbnailPath;
+      } else if (updatedData.thumbnailUrl === null && updatedData.originalThumbnailPath) {
+        // Si thumbnailUrl es null y había una ruta original, significa que se eliminó el thumbnail
+        await deleteFile(updatedData.originalThumbnailPath);
+        dataToUpdate.thumbnailPath = null;
+      }
+
+      // Eliminar los campos temporales de base64 y las rutas originales antes de actualizar Firestore
+      delete dataToUpdate.base64;
+      delete dataToUpdate.thumbnailBase64;
+      delete dataToUpdate.originalMediaPath;
+      delete dataToUpdate.originalThumbnailPath;
+
+      await updateDoc(reelDocRef, dataToUpdate);
+      console.log('Reel actualizado exitosamente en Firestore.');
+    } catch (err) {
+      console.error('Error al actualizar el reel:', err);
+      error.value = 'Error al actualizar el reel.';
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /**
+   * Elimina un reel de Firestore y sus archivos asociados en Firebase Storage.
+   * @param {string} idDoc - El ID del documento de Firestore a eliminar.
+   * @param {string} mediaPath - La ruta del archivo principal en Storage.
+   * @param {string} thumbnailPath - La ruta del archivo de thumbnail en Storage.
+   * @returns {Promise<void>}
+   */
+  async function deleteReel(idDoc, mediaPath, thumbnailPath) {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      // 1. Eliminar los archivos de Storage usando useStorage.deleteFile
+      if (mediaPath) {
+        await deleteFile(mediaPath);
+      }
+      if (thumbnailPath) {
+        await deleteFile(thumbnailPath);
+      }
+
+      // 2. Eliminar el documento de Firestore
+      const reelDocRef = doc(db, 'reels', idDoc);
+      await deleteDoc(reelDocRef);
+      console.log('Reel y archivos eliminados exitosamente.');
+    } catch (err) {
+      console.error('Error al eliminar el reel:', err);
+      error.value = 'Error al eliminar el reel.';
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -55,11 +187,8 @@ export function useReels() {
    */
   function subscribeToIncomingReels(callback) {
     try {
-      // const q = query(reelsRef, orderBy('createdAt', 'desc'));
-      // Calcular la marca de tiempo de hace 24 horas
       const twentyFourHoursAgo = Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
 
-      // Crear la consulta con el filtro de createdAt >= hace 24 horas
       const q = query(
         reelsRef,
         where('createdAt', '>=', twentyFourHoursAgo),
@@ -76,6 +205,7 @@ export function useReels() {
             thumbnailUrl: reel.thumbnailUrl,
             mediaType: reel.mediaType,
             mediaPath: reel.mediaPath,
+            thumbnailPath: reel.thumbnailPath,
             createdAt: reel.createdAt,
             user: reel.user,
             likes: reel.likes || [],
@@ -94,16 +224,54 @@ export function useReels() {
   }
 
   /**
-   * Elimina un reel por su ID de documento.
-   * @param {string} idDoc - ID del documento en Firestore
-   * @returns {Promise<void>}
+   * Escucha los reels en tiempo real creados por un usuario específico.
+   * @param {string} userId - El UID del usuario para filtrar los reels.
+   * @param {function(Array<Object>): void} callback - Función que recibe un array de reels del usuario.
+   * @returns {function(): void} - Función para cancelar la suscripción.
    */
-  async function deleteReel(idDoc) {
+  function subscribeToUserReels(userId, callback) {
+    if (!userId) {
+      console.warn('subscribeToUserReels: userId es nulo o indefinido. No se establecerá la suscripción.');
+      callback([]);
+      return () => {};
+    }
+
     try {
-      const docRef = doc(db, 'reels', idDoc);
-      await deleteDoc(docRef);
+      const q = query(
+        reelsRef,
+        where('user.uid', '==', userId),
+        // where('createdAt', '>=', twentyFourHoursAgo),
+        orderBy('createdAt', 'desc')
+      );
+
+      return onSnapshot(q, (snapshot) => {
+        const userReels = snapshot.docs.map((doc) => {
+          const reel = doc.data();
+          return {
+            idDoc: doc.id,
+            id: reel.id,
+            title: reel.title,
+            mediaUrl: reel.mediaUrl,
+            thumbnailUrl: reel.thumbnailUrl,
+            mediaType: reel.mediaType,
+            mediaPath: reel.mediaPath,
+            thumbnailPath: reel.thumbnailPath,
+            createdAt: reel.createdAt,
+            user: reel.user,
+            likes: reel.likes || [],
+            views: reel.views || 0,
+            viewDetails: reel.viewDetails || {},
+            isPublic: reel.isPublic,
+            status: reel.status,
+          };
+        });
+        callback(userReels);
+      }, (err) => {
+        console.error(`Error en onSnapshot para reels del usuario ${userId}:`, err);
+        throw err;
+      });
     } catch (err) {
-      console.error('Error al eliminar reel:', err);
+      console.error('Error al configurar la suscripción de reels del usuario:', err);
       throw err;
     }
   }
@@ -189,6 +357,7 @@ export function useReels() {
         thumbnailUrl: reelData.thumbnailUrl,
         mediaType: reelData.mediaType,
         mediaPath: reelData.mediaPath,
+        thumbnailPath: reelData.thumbnailPath,
         createdAt: reelData.createdAt,
         user: reelData.user,
         likes: reelData.likes || [],
@@ -209,12 +378,55 @@ export function useReels() {
     }
   }
 
+  /**
+   * Obtiene un reel individual por su idDoc.
+   * @param {string} idDoc - El ID del documento del reel a buscar.
+   * @returns {Promise<Object|null>} El objeto reel si se encuentra, o null si no.
+   */
+  async function getReelByIdDoc(idDoc) {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const docRef = doc(db, 'reels', idDoc);
+      const reelSnap = await getDoc(docRef);
+
+      if (reelSnap.exists()) {
+        const reel = reelSnap.data();
+        return reel;
+        // return {
+        //   idDoc: postId,
+        //   id: reel.id,
+        //   title: reel.title,
+        //   body: reel.body,
+        //   user: reel.user,
+        //   categories: reel.categories,
+        //   createdAt: reel.createdAt,
+        //   likes: reel.likes || [],
+        //   media: reel.media ?? null,
+        // };
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.error('Error al obtener reel por ID:', err);
+      error.value = 'Error al obtener el reel.';
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   return {
     saveReel,
+    updateReelData,
     subscribeToIncomingReels,
+    subscribeToUserReels,
     deleteReel,
     addLike,
     removeLike,
     incrementView,
+    getReelByIdDoc,
+    error,
+    isLoading,
   };
 }

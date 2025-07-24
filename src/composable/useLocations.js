@@ -40,7 +40,6 @@ export function useLocations() {
         pending = true,
         user,
       } = locationData;
-
       // Si faltan coords, intentamos geocodificar a partir de address.street
       let lat = address.coordinates?.lat ?? null;
       let lng = address.coordinates?.lng ?? null;
@@ -188,6 +187,7 @@ export function useLocations() {
             user: L.user,
           };
         });
+
         callback(locations);
       }, (err) => {
         console.error('Error en onSnapshot locations:', err);
@@ -195,6 +195,60 @@ export function useLocations() {
       });
     } catch (err) {
       console.error('Error setting up location subscription:', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Se suscribe en tiempo real a los locations creados por un usuario específico.
+   * y mapea cada doc a la estructura que espera tu UI/store.
+   * @param {string} userId - El ID del usuario (user.uid o user.id) para filtrar las locations.
+   * @param {function(Array<Object>): void} callback - La función que se llamará con las locations del usuario.
+   * @returns {function(): void} Una función para cancelar la suscripción.
+   */
+  function subscribeToUserLocations(userId, callback) {
+    if (!userId) {
+      console.warn('subscribeToUserLocations: userId es nulo o indefinido. No se establecerá la suscripción.');
+      // Podrías llamar al callback con un array vacío o manejarlo como prefieras
+      callback([]);
+      return () => {}; // Retorna una función vacía para cancelar
+    }
+
+    try {
+      // Construye la consulta: filtra por 'user.id' y ordena por 'timestamp'
+      const q = firebaseQuery(
+        locationsRef,
+        where('user.id', '==', userId), // Filtra por el ID del usuario
+        orderBy('timestamp', 'desc')
+      );
+
+      // Establece la suscripción en tiempo real
+      return onSnapshot(q, (snapshot) => {
+        const userLocations = snapshot.docs.map((d) => {
+          const L = d.data();
+          return {
+            idDoc: d.id, // ID del documento en Firestore
+            id: L.id, // ID interno de la ubicación (si lo tienes)
+            title: L.title,
+            description: L.description,
+            address: L.address,
+            type: L.type,
+            contact: L.contact,
+            media: L.media,
+            timestamp: L.timestamp, // Firebase Timestamp
+            pending: L.pending,
+            user: L.user, // Información del usuario que creó la ubicación
+          };
+        });
+
+        callback(userLocations);
+      }, (err) => {
+        console.error('Error en onSnapshot para locations del usuario:', err);
+        // Puedes manejar el error aquí o dejar que se propague
+        throw err;
+      });
+    } catch (err) {
+      console.error('Error al configurar la suscripción de locations del usuario:', err);
       throw err;
     }
   }
@@ -258,5 +312,6 @@ export function useLocations() {
     updateLocation,
     deleteLocation,
     changeStateLocation,
+    subscribeToUserLocations,
   };
 }

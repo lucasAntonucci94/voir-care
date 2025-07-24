@@ -134,6 +134,7 @@ import InputPassword from '../atoms/InputPassword.vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useFormField } from '../../composable/useFormField';
 import { useSnackbarStore } from '../../stores/snackbar';
+import { useGroupsStore } from '../../stores/groups';
 
 const { doRegister, error } = useAuth();
 const router = useRouter();
@@ -141,6 +142,7 @@ const isLoading = ref(false);
 
 // Stores
 const snackbarStore = useSnackbarStore();
+const groupsStore = useGroupsStore();
 
 // Stepper state
 const steps = ['Usuario y Correo', 'Contraseña'];
@@ -211,11 +213,12 @@ const handleSubmit = async () => {
     return;
   }
   const result = await doRegister(displayName.field.value.value, email.field.value.value, password.field.value.value);
-  if (result !== true && error.value?.code) {
+  if (result.status !== true && error.value?.code) {
     setErrorFromFirebase(error.value.code, error.value.message);
   } else {
     router.push('/');
     snackbarStore.show('Bienvenido!', 'success');
+    groupsStore.joinDefautGroups(result.id);
   }
 
   isLoading.value = false;

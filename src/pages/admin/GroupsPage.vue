@@ -39,6 +39,7 @@
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
             <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
+              <th class="py-3 px-6 text-left">Id</th>
               <th class="py-3 px-6 text-left">Título</th>
               <th class="py-3 px-6 text-left">Descripción</th>
               <th class="py-3 px-6 text-center">Miembros</th>
@@ -52,6 +53,8 @@
               :key="group.idDoc"
               class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
+              <td class="py-3 px-6 text-left">{{ group.idDoc || 'N/A' }}</td>
+              
               <td class="py-3 px-6 text-left whitespace-nowrap">
                 <div class="flex items-center">
                   <img

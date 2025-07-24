@@ -1,33 +1,34 @@
-MainLayout.vue
 <template>
-    <div class="flex flex-col min-h-screen">
-      <Header />
-      <div class="flex flex-1 relative">
-        <Sidebar
-          v-if="permitedRoutes"
-          :show="sidebarStore.showSidebar"
-           @toggle="sidebarStore.toggleSidebar"
-         />
-        <SidebarAdmin
-          v-if="permitedAdminRoutes"
-          :show="sidebarStore.showSidebar"
-           @toggle="sidebarStore.toggleSidebar"
-         />
-        <main class="flex-grow bg-gray-50 dark:bg-gray-900 font-poppins overflow-y-auto flex-1">
-          <router-view />
-        </main>
-        <!-- Snackbar global -->
-        <SnackBar />
-        
-        <!-- Chat de mensajes privados -->
-        <UserChatBox v-if="shouldShowChatBox" />
-      </div>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+    <div class="flex flex-1 relative">
+      <!-- Sidebar principal (para usuarios normales) -->
+      <Sidebar
+        v-if="permitedRoutes"
+        :show="sidebarStore.showSidebar"
+        @toggle="sidebarStore.toggleSidebar"
+      />
+      <!-- Sidebar de administración (para rutas /admin) -->
+      <SidebarAdmin
+        v-if="permitedAdminRoutes"
+        :show="sidebarStore.showSidebar"
+        @toggle="sidebarStore.toggleSidebar"
+      />
+      <main class="flex-grow bg-gray-50 dark:bg-gray-900 overflow-y-auto flex-1">
+        <router-view />
+      </main>
+      <!-- Snackbar global -->
+      <SnackBar />
+      
+      <!-- Chat de mensajes privados -->
+      <UserChatBox v-if="shouldShowChatBox" />
+    </div>
     <Footer />
   </div>
 </template>
 
 <script setup>
-import { onUnmounted, watch, computed } from 'vue';
+import { ref, onUnmounted, watch, computed, onMounted } from 'vue'; // Importar onMounted
 import Header from '../../components/organisms/Header.vue';
 import Footer from '../../components/organisms/Footer.vue';
 import Sidebar from '../../components/organisms/Sidebar.vue';
@@ -45,6 +46,12 @@ const { user, isAuthenticated } = useAuth();
 const sidebarStore = useSidebarStore();
 const privateChatsStore = usePrivateChatsStore();
 const { loadCategories } = useCategories();
+const isMobile = ref(false); // Estado reactivo para la detección móvil
+
+// Función para actualizar el estado de isMobile
+const checkMobile = () => {
+  isMobile.value = window.matchMedia('(max-width: 767px)').matches;
+};
 
 // Watch para manejar la suscripción cuando el usuario cambia
 watch(
@@ -61,32 +68,52 @@ watch(
   },
   { immediate: true }
 );
+
 // Cancelar suscripción al desmontar el componente
 onUnmounted(() => {
-  // console.log('MainLayout.vue desmontado, cancelando suscripción a chats...');
   privateChatsStore.initializeUnsubscribe();
+  // Limpiar el event listener de resize al desmontar
+  window.removeEventListener('resize', checkMobile);
 });
 
+// Inicializar y escuchar cambios de tamaño de ventana al montar el componente
+onMounted(() => {
+  checkMobile(); // Establece el estado inicial de isMobile
+  window.addEventListener('resize', checkMobile); // Escucha cambios de tamaño
+});
+
+
 const permitedRoutes = computed(() => {
-  const blockedExactPaths = ['/', '/login', '/register', '/explorar', '/chats']
-  // const blockedExactPaths = ['/', '/login', '/register', '/explorar', '/chats', '/faqs']
-  const isBlockedPath = blockedExactPaths.includes($route.path) //rutas donde no quiero que muestre el side.
-  const isAdminPath = $route.path.startsWith('/admin') //si la ruta empieza con /admin oculto sidebar general.
-  return !isBlockedPath && !isAdminPath && isAuthenticated.value
-})
+  const defaultBlockedPaths = ['/', '/login', '/register']; // Rutas donde nunca se muestra el sidebar
+  const desktopSpecificBlockedPaths = ['/explorar', '/chats']; // Rutas bloqueadas solo en desktop/tablet
+  const isAdminPath = $route.path.startsWith('/admin'); // Rutas de administración
+
+  // Condición para rutas bloqueadas por defecto (siempre bloqueadas)
+  const isDefaultBlocked = defaultBlockedPaths.includes($route.path);
+
+  // Condición para rutas bloqueadas solo en desktop/tablet
+  // Si NO es móvil
+  const isDesktopSpecificBlocked = !isMobile.value && desktopSpecificBlockedPaths.includes($route.path);
+
+  // El sidebar principal se muestra si:
+  // 1. El usuario está autenticado.
+  // 2. NO es una ruta bloqueada por defecto.
+  // 3. NO es una ruta de administración.
+  // 4. NO es una ruta bloqueada específicamente para desktop/tablet.
+  return isAuthenticated.value && !isDefaultBlocked && !isAdminPath && !isDesktopSpecificBlocked;
+});
 
 const permitedAdminRoutes = computed(() => {
-  const isAdminPath = $route.path.includes('admin') //si la ruta empieza con /admin oculto sidebar general.
-  return isAdminPath && isAuthenticated.value
-})
+  const isAdminPath = $route.path.startsWith('/admin'); // Verifica si la ruta empieza con /admin
+  return isAdminPath && isAuthenticated.value;
+});
 
 const shouldShowChatBox = computed(() => {
-  return isAuthenticated.value && $route.path !== '/faqs'  && $route.path !== '/chats'   && !$route.path.includes('/admin')  
-})
+  return isAuthenticated.value && $route.path !== '/faqs' && $route.path !== '/chats' && !$route.path.includes('/admin');
+});
 </script>
 
 <style scoped>
-.font-poppins { font-family: 'Poppins', sans-serif; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 </style>

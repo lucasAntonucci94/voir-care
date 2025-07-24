@@ -73,7 +73,14 @@
               :aria-invalid="!acceptedTerms"
             />
             <label for="terms" class="text-sm text-gray-600 dark:text-gray-400">
-              He leído y acepto los <a href="/terms" target="_blank" class="underline text-primary dark:text-secondary hover:text-primary-darker dark:hover:text-secondary-darker">términos y condiciones</a> y la <a href="/privacy" target="_blank" class="underline text-primary dark:text-secondary hover:text-primary-darker dark:hover:text-secondary-darker">política de privacidad</a>.
+              He leído y acepto los 
+              <router-link to="/termsandconditions" target="_blank" rel="noopener noreferrer" class="underline text-primary dark:text-secondary hover:text-primary-darker dark:hover:text-secondary-darker">
+                términos y condiciones
+              </router-link> 
+              y la 
+              <router-link to="/privacypolicy" target="_blank" rel="noopener noreferrer" class="underline text-primary dark:text-secondary hover:text-primary-darker dark:hover:text-secondary-darker">
+                política de privacidad.
+              </router-link>
             </label>
           </div>
           <p v-if="!acceptedTerms && showValidationError" class="text-red-500 text-sm">
@@ -81,10 +88,10 @@
           </p>
         </div>
 
-        <!-- Paso 2: Seleccionar plan -->
+        <!-- Paso 2: Seleccionar plan (MEJORADO) -->
         <div v-if="currentStep === 2">
           <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Elige tu plan de facturación para Voir Premium y desbloquea todas las funciones exclusivas.
+            Elige tu plan de suscripción a Voir Premium. Una vez que confirmes, enviaremos tu solicitud a nuestro equipo.
           </p>
           <div class="flex justify-center items-center gap-4 mb-4">
             <button
@@ -97,22 +104,31 @@
             </button>
             <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
               {{ isAnnual ? '$5999/año' : '$599/mes' }}
-              <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $599/mes, ahorra 16%</span>
+              <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $500/mes, ahorra 16%</span>
             </p>
           </div>
           <p class="text-gray-600 dark:text-gray-400 text-sm text-center">
-            Total a pagar: <span class="font-semibold">{{ isAnnual ? '$5999' : '$599' }}</span>
+            Monto a solicitar: <span class="font-semibold text-lg">{{ isAnnual ? '$5999' : '$599' }}</span>
+          </p>
+          <p class="text-gray-600 dark:text-gray-400 text-sm text-center mt-2">
+            Este monto será el total a pagar por el período seleccionado.
           </p>
         </div>
 
-        <!-- Paso 3: Confirmación -->
+        <!-- Paso 3: Confirmación (MEJORADO) -->
         <div v-if="currentStep === 3" class="text-center">
-          <i class="fa-solid fa-check-circle text-4xl text-green-500 mb-4"></i>
+          <i class="fa-solid fa-paper-plane text-4xl text-primary dark:text-secondary mb-4 animate-bounce-once"></i>
           <p class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-            ¡Suscripción confirmada!
+            ¡Solicitud de Suscripción Enviada!
           </p>
-          <p class="text-gray-600 dark:text-gray-400">
-            Has seleccionado el plan {{ isAnnual ? 'anual ($5999)' : 'mensual ($599)' }}. El modal se cerrará en breve.
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Hemos recibido tu solicitud para el plan {{ isAnnual ? 'anual' : 'mensual' }} (Total: <span class="font-semibold">{{ isAnnual ? '$5999' : '$599' }}</span>).
+          </p>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Serás notificado/a por correo electrónico a la brevedad con los detalles de los métodos de pago y los próximos pasos para activar tu suscripción Premium.
+          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Gracias por tu interés en Voir Premium. ¡Pronto disfrutarás de todos los beneficios!
           </p>
         </div>
       </div>
@@ -157,6 +173,9 @@
 
 <script setup>
 import { ref, onMounted, nextTick, computed, watch } from 'vue';
+import { useSubscriptionRequests } from '../../composable/useSubscriptionRequest';
+import { useAuth } from '../../api/auth/useAuth';
+import { useSnackbarStore } from '../../stores/snackbar';
 
 const props = defineProps({
   visible: {
@@ -170,28 +189,37 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'confirm']);
-
+const { user } = useAuth();
+const snackbarStore = useSnackbarStore();
 const modalRef = ref(null);
 const currentStep = ref(1);
 const acceptedTerms = ref(false);
 const isAnnual = ref(props.initialPlan === 'annual');
 const showValidationError = ref(false);
+const plan = computed(() => (isAnnual.value ? 'annual' : 'monthly'));
 const steps = ref([
   { label: 'Términos' },
   { label: 'Plan' },
   { label: 'Confirmación' },
 ]);
 
-// Auto-close modal after 1 second on confirmation step
-watch(currentStep, (newStep) => {
-  if (newStep === 3) {
-    setTimeout(() => {
-      emit('confirm', isAnnual.value ? 'annual' : 'monthly');
-      currentStep.value = 1; // Reset step for next use
-      acceptedTerms.value = false; // Reset terms acceptance
-      isAnnual.value = true; // Reset plan selection
-      emit('close');
-    }, 1000);
+watch(currentStep, async (newStep) => {
+  try {
+    if (newStep === 3) {
+      const { createSubscriptionRequest } = useSubscriptionRequests();
+      await createSubscriptionRequest(user.value.uid, user.value.email, plan.value);
+      setTimeout(() => {
+        emit('confirm', isAnnual.value ? 'annual' : 'monthly');
+        currentStep.value = 1;
+        acceptedTerms.value = false;
+        isAnnual.value = true;
+        emit('close');
+        snackbarStore.show('Solicitud de suscripción enviada con éxito.', 'success'); // Revisa tu correo.
+      }, 10000);
+    }
+  } catch (error) {
+    console.error('Error al crear la solicitud de suscripción:', error);
+    snackbarStore.show('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
   }
 });
 
@@ -209,6 +237,7 @@ function nextStep() {
     showValidationError.value = true;
     return;
   }
+  showValidationError.value = false; // Resetear el error de validación al avanzar
   if (currentStep.value < steps.value.length) {
     currentStep.value += 1;
   }
@@ -250,6 +279,29 @@ onMounted(() => {
 
 .animate-pulse-step {
   animation: pulseStep 1s infinite;
+}
+
+/* Nueva animación para el icono de envío */
+@keyframes bounce-once {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-10px);
+  }
+  40% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+  80% {
+    transform: translateY(0);
+  }
+}
+
+.animate-bounce-once {
+  animation: bounce-once 1s ease-in-out;
 }
 
 /* Custom scrollbar */

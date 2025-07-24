@@ -52,7 +52,7 @@
               v-model="editForm.title" 
               type="text" 
               placeholder="Título de tu publicación" 
-              class="w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
+              class="mb-2 w-full p-3 border hover:bg-gray-100 border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
               :disabled="isLoading"
               :maxlength="50"
               :minlength="1"
@@ -61,7 +61,7 @@
               :aria-label="`Título de la publicación, máximo 50 caracteres`"
               required 
             />
-            <p v-if="formErrors.title" class="text-red-500 text-sm mt-1">{{ formErrors.title }}</p>
+            <p v-if="formErrors.title" class="text-red-500 text-sm mb-2 mt-1">{{ formErrors.title }}</p>
           </div>
           <!-- Descripción -->
           <div>
@@ -71,7 +71,7 @@
               name="body"
               v-model="editForm.body" 
               placeholder="¿Qué quieres compartir?" 
-              class="w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
+              class="mb-2 w-full p-3 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400 resize-y min-h-[100px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300" 
               :disabled="isLoading"
               :maxlength="250"
               :minlength="1"
@@ -80,7 +80,7 @@
               :aria-label="`Descripción de la publicación, máximo 250 caracteres`"
               required 
             ></textarea>
-            <p v-if="formErrors.body" class="text-red-500 text-sm mt-1">{{ formErrors.body }}</p>
+            <p v-if="formErrors.body" class="mb-2 text-red-500 text-sm mt-1">{{ formErrors.body }}</p>
           </div>
         </div>
 
@@ -91,7 +91,7 @@
             v-model="editForm.categories"
             :options="categories"
             :multiple="true"
-            :class="{ 'dark': isDark }"
+            :class="{ 'dark': isDark }, 'mb-2'"
             placeholder="Seleccionar categorías"
             label="name"
             track-by="id"
@@ -109,7 +109,7 @@
             :searchable="true"
             :loading="isLoading"
           ></multiselect>
-          <p v-if="formErrors.categories" class="text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
+          <p v-if="formErrors.categories" class="mb-2 text-sm text-red-500 mt-1">{{ formErrors.categories }}</p>
         </div>
 
         <!-- Paso 3: Multimedia -->
@@ -123,7 +123,7 @@
               accept="image/*,video/*" 
               @change="handleMediaUpload" 
               :class="[
-                'w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
+                'mb-2 w-full p-2 border dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg text-gray-600 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-opacity-90 transition-colors duration-200',
                 errorFileMessage ? 'border-red-500' : 'border-gray-300 dark:border-gray-800'
               ]"
               aria-label="Subir imagen o video"
@@ -135,7 +135,7 @@
               class="cursor-pointer"
               :disabled="isLoading"
             />
-            <p v-if="errorFileMessage" class="text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
+            <p v-if="errorFileMessage" class="mb-2 text-red-500 text-sm mt-1">{{ errorFileMessage }}</p>
           </div>
           <!-- Previsualización -->
           <div v-if="editForm?.media.imageBase64 || editForm.media.url" class="mt-2">
@@ -143,7 +143,7 @@
               v-if="editForm?.media.type === 'image'" 
               :src="editForm.media.imageBase64 ?? editForm.media.url ?? ''" 
               alt="Preview" 
-              class="w-full h-48 object-cover rounded-lg shadow-sm" 
+              class="mb-2 w-full h-48 object-cover rounded-lg shadow-sm" 
               :aria-label="`Vista previa de la imagen`"
               :aria-describedby="editForm.media.imageBase64 ? 'media-preview' : null"
               :aria-invalid="!editForm.media.imageBase64"
@@ -169,7 +169,7 @@
               loop
               muted
               alt="Preview" 
-              class="w-full h-48 object-cover rounded-lg shadow-sm" 
+              class="mb-2 w-full h-48 object-cover rounded-lg shadow-sm" 
               :aria-label="`Vista previa de la imagen`"
               :aria-describedby="editForm.media.imageBase64 ? 'media-preview' : null"
               :aria-invalid="!editForm.media.imageBase64"

@@ -6,44 +6,49 @@
       <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Detalles</h2>
         <ul class="space-y-4 text-gray-600 dark:text-gray-300">
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-edit text-primary dark:text-secondary text-xl"></i>
             <span><strong>Descripción:</strong> {{ event.description || 'Sin descripción' }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
             <span><strong>Inicio:</strong> {{ formatTimestamp(event.startTime, { includeTime: true }) }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
             <span><strong>Fin:</strong> {{ formatTimestamp(event.endTime, { includeTime: true }) }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li v-if="event.modality === 0" class="flex items-start gap-3">
             <i class="fas fa-map-marker-alt text-primary dark:text-secondary text-xl"></i>
             <span><strong>Ubicación:</strong> {{ event.location?.address || 'No definida' }}</span>
           </li>
-          <li v-if="event.price" class="flex items-center gap-3">
+          <li v-if="event.price" class="flex items-start gap-3">
             <i class="fas fa-dollar-sign text-primary dark:text-secondary text-xl"></i>
             <span><strong>Precio:</strong> ${{ event.price }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-users text-primary dark:text-secondary text-xl"></i>
             <!-- <span><strong>Capacidad:</strong> {{ event.capacity - (event?.attendees?.going?.length || 0) || 'Ilimitada' }}</span> -->
             <span><strong>Capacidad:</strong> {{ event.capacity - (event?.attendees?.going && event?.attendees?.going?.length ? event.attendees.going.length - 1 : 0) || 0 }}</span>
           </li>
-          <li class="flex items-center gap-3">
+          <li class="flex items-start gap-3">
             <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
             <span><strong>Privacidad:</strong> {{ event.privacy ??  event.privacy === 'public' ? 'Público' : 'Privado'  }}</span>
           </li>
-          <li class="flex items-center gap-3" v-if="event.modality === 0 || event.modality === 1">
-            <i class="fas fa-lock text-primary dark:text-secondary text-xl"></i>
+          <li class="flex items-start gap-3" v-if="event.modality === 0 || event.modality === 1">
+            <i :class="event.modality === 0 ? 'fa-solid fa-location-dot' : 'fa-solid fa-video'" class="fas fa-modality text-primary dark:text-secondary text-xl"></i>
             <span><strong>Modalidad:</strong> {{ event.modality === 0 ? 'Presencial' : 'Virtual' }}</span>
+          </li>
+          <li class="flex items-start gap-3" v-if="event.modality === 1 && event.meetLink">
+            <i class="fas fa-link text-primary dark:text-secondary text-xl"></i>
+            <strong>Link:</strong>
+            <a class="hover:text-primary dark:hover:text-secondary" :href="event.meetLink" target="_blank" > {{ event.meetLink }}</a>
           </li>
         </ul>
       </div>
 
       <!-- Mapa -->
-      <div v-if="event.location?.address" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div v-if="event.modality === 0 && event.location?.address" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Ubicación</h2>
         <div class="w-full h-50 sm:h-90 rounded-lg overflow-hidden">
           <iframe
@@ -68,7 +73,7 @@
           <button
             v-if="user"
             @click="handleAttendance"
-            class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2"
+            class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
             :class="isGoing ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
           >
             <i
@@ -81,22 +86,21 @@
       </section>
 
       <!-- Card de Boletos -->
-      <div v-if="isSuscribed" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+      <div v-if="isSuscribed && event.sellTicketLink" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
         <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100 flex items-center gap-2">
           <i class="fas fa-ticket-alt text-primary dark:text-secondary"></i> Boletos
         </h2>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 italic">
-          ¡Show agotado! Nueva función a pedido del público. ¡Asegura tu entrada ahora!
+          {{ event.sellTicketText || '¡Show agotado! Nueva función a pedido del público. ¡Asegura tu entrada ahora!' }}
         </p>
         <a
-          :href="event.ticketLink"
+          :href="event.sellTicketLink"
           target="_blank"
-          rel="nofollow noreferrer"
-          class="inline-flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-300"
-          :disabled="!event.ticketLink"
+          class="inline-flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-all duration-300 cursor-pointer"
+          :disabled="!event.sellTicketLink"
         >
           <i class="fas fa-ticket"></i>
-          <span>Boletos</span>
+          <span>Comprar</span>
         </a>
       </div>
 
@@ -127,7 +131,7 @@
           <button
             v-if="ownerDetails?.email !== user?.email"
             @click="SendMessage(ownerDetails?.email)"
-            class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200"
+            class="flex items-center gap-2 px-4 py-2 text-sm bg-primary dark:bg-secondary text-white rounded-lg shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 cursor-pointer"
             :disabled="!ownerDetails?.email"
             aria-label="Enviar mensaje al organizador"
           >
@@ -144,7 +148,7 @@
             <i class="fas fa-users"></i> Invitados
           </h2>
           <button
-            class="w-auto px-4 py-2 bg-primary dark:bg-secondary text-white rounded-md shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 flex items-center gap-2"
+            class="w-auto px-4 py-2 bg-primary dark:bg-secondary text-white rounded-md shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 flex items-center gap-2 cursor-pointer"
             @click="openInviteFriendsModal"
           >
             <i class="fas fa-user-plus"></i> <span class="hidden md:block">Invitar</span>
@@ -161,7 +165,7 @@
           </div>
           <button
             @click="switchToParticipants"
-            class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1"
+            class="text-sm text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md flex items-center gap-1 cursor-pointer"
           >
             <span class="flex items-center justify-center w-6 h-6 bg-gray-200 dark:bg-gray-600 rounded-full opacity-80 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
               <i class="fas fa-eye text-primary dark:text-secondary"></i>
@@ -228,7 +232,6 @@ const props = defineProps({
   isGoing: { type: Boolean, required: true },
   handleAttendance: { type: Function, required: true },
 });
-
 const router = useRouter();
 const { user } = useAuth();
 const { getChatIdByReference } = usePrivateChats();

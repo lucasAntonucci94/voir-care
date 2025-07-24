@@ -1,4 +1,3 @@
-<!-- ViewPostModal.vue -->
 <template>
   <div
     v-if="showMediaModal"
@@ -73,6 +72,7 @@
 </template>
 
 <script setup>
+import { watch, onUnmounted } from 'vue';
 import CommentList from '../molecules/CommentList.vue';
 import CommentForm from '../molecules/CommentForm.vue';
 import { useAuth } from '../../api/auth/useAuth';
@@ -99,6 +99,27 @@ function closeModal() {
 const handleToggleLike = () => {
   emit('toggle-like');
 };
+
+// Función para manejar la tecla Escape
+const handleKeydown = (event) => {
+  if (event.key === 'Escape') {
+    closeModal();
+  }
+};
+
+// Observa el cambio en showMediaModal para añadir/quitar el event listener
+watch(() => props.showMediaModal, (newVal) => {
+  if (newVal) {
+    document.addEventListener('keydown', handleKeydown);
+  } else {
+    document.removeEventListener('keydown', handleKeydown);
+  }
+});
+
+// Asegúrate de limpiar el event listener cuando el componente se desmonte
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown);
+});
 </script>
 
 <style scoped>

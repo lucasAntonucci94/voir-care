@@ -28,6 +28,7 @@ import {
   
       return unsubscribe
     }
+    
     function subscribeToUnreadUserNotifications(uid, callback) {
         const notifRef = collection(db, `users/${uid}/notifications`)
         const q = query(

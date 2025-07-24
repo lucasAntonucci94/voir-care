@@ -1,38 +1,85 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useLocations } from '../composable/useLocations';
-
+import { useAuth } from '../api/auth/useAuth';
 export const useLocationsStore = defineStore('locations', {
   state: () => ({
-    locations: ref([]),
-    isLoading: ref(true),
-    unsubscribeFn: null,
+    locations: ref([]), // locations globales
+    userLocations: ref([]), // locations del usuario autenticado
+    isLoadingAll: ref(true), // Estado de carga para todas las locations
+    isLoadingUser: ref(true), // Estado de carga para las locations del usuario
+    unsubscribeAllFn: null, // Función para cancelar la suscripción global
+    unsubscribeUserFn: null, // Nueva función para cancelar la suscripción del usuario
   }),
   actions: {
-    // Suscribirse a los locations en tiempo real
-    subscribe() {
-      // console.log('Iniciando suscripción a locations...');
+    // Suscribirse a TODAS las locations en tiempo real
+    subscribeTolocations() {
+      // console.log('Iniciando suscripción a TODAS las locations...');
       const { subscribeToIncomingLocations } = useLocations();
       try {
-        this.unsubscribeFn = subscribeToIncomingLocations((updatedLocations) => {
-          // console.log('Locations recibidos desde Firebase:', updatedLocations);
+        this.unsubscribeAllFn = subscribeToIncomingLocations((updatedLocations) => {
+          // console.log('Locations globales recibidas desde Firebase:', updatedLocations);
           this.locations.value = updatedLocations;
-          this.isLoading = false;
-          // console.log('Locations actualizados en el store:', this.locations.value);
+          this.isLoadingAll = false;
+          // console.log('Locations globales actualizadas en el store:', this.locations.value);
         });
       } catch (error) {
-        console.error('Error al suscribirse a locations:', error);
-        this.isLoading = false;
+        console.error('Error al suscribirse a TODAS las locations:', error);
+        this.isLoadingAll = false;
       }
     },
-    // Cancelar la suscripción
-    unsubscribe() {
-      if (typeof this.unsubscribeFn === 'function') {
-        // console.log('Cancelando suscripción a locations...');
-        this.unsubscribeFn();
-        this.unsubscribeFn = null;
+
+    // Suscribirse a las locations del USUARIO logueado en tiempo real
+    subscribeToCurrentUserLocations() {
+      const { user } = useAuth();
+      const { subscribeToUserLocations } = useLocations();
+
+      if (!user.value || !user.value.uid) {
+        console.warn('Usuario no autenticado o UID no disponible. No se suscribirá a locations del usuario.');
+        this.userLocations.value = [];
+        this.isLoadingUser = false;
+        return;
+      }
+
+      // Cancelar suscripción anterior si existe
+      if (typeof this.unsubscribeUserFn === 'function') {
+        this.unsubscribeUserFn();
+        this.unsubscribeUserFn = null;
+      }
+
+      // console.log(`Iniciando suscripción a locations del usuario: ${user.value.uid}`);
+      try {
+        this.isLoadingUser = true;
+        this.unsubscribeUserFn = subscribeToUserLocations(user.value.uid, (updatedUserLocations) => {
+          // console.log('Locations del usuario recibidas desde Firebase:', updatedUserLocations);
+          this.userLocations.value = updatedUserLocations;
+          this.isLoadingUser = false;
+          // console.log('Locations del usuario actualizadas en el store:', this.userLocations.value);
+        });
+      } catch (error) {
+        console.error('Error al suscribirse a locations del usuario:', error);
+        this.isLoadingUser = false;
       }
     },
+
+    // Cancelar la suscripción global
+    unsubscribeAll() {
+      if (typeof this.unsubscribeAllFn === 'function') {
+        // console.log('Cancelando suscripción a TODAS las locations...');
+        this.unsubscribeAllFn();
+        this.unsubscribeAllFn = null;
+      }
+    },
+
+    // Cancelar la suscripción de las locations del usuario
+    unsubscribeUser() {
+      if (typeof this.unsubscribeUserFn === 'function') {
+        // console.log('Cancelando suscripción a locations del usuario...');
+        this.unsubscribeUserFn();
+        this.unsubscribeUserFn = null;
+      }
+    },
+
     // Agregar un nuevo location
     async addLocation(locationData) {
       // console.log('Añadiendo nuevo location:', locationData);
@@ -45,6 +92,7 @@ export const useLocationsStore = defineStore('locations', {
         throw error;
       }
     },
+
     // Actualizar un location
     async updateLocation(locationIdDoc, updatedLocationData) {
       // console.log('Actualizando location:', locationIdDoc, updatedLocationData);
@@ -57,6 +105,7 @@ export const useLocationsStore = defineStore('locations', {
         throw error;
       }
     },
+
     // Eliminar un location
     async deleteLocation(locationIdDoc) {
       // console.log('Eliminando location con idDoc:', locationIdDoc);
@@ -69,6 +118,7 @@ export const useLocationsStore = defineStore('locations', {
         throw error;
       }
     },
+
     // Cambiar estado pending
     async togglePending(location) {
       // console.log('Cambiando estado pending de location:', location.idDoc);
