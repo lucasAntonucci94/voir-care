@@ -572,6 +572,20 @@ function closeModal() {
   emits('close');
 }
 
+// Función para normalizar URLs
+function normalizeUrl(url) {
+  if (!url) return '';
+  // Eliminar espacios en blanco y convertir a minúsculas
+  let normalized = url.trim().toLowerCase();
+  // Remover barra final si existe
+  normalized = normalized.replace(/\/+$/, '');
+  // Añadir https:// si no tiene protocolo
+  if (!/^https?:\/\//i.test(normalized)) {
+    normalized = `https://${normalized}`;
+  }
+  return normalized;
+}
+
 function resetForm() {
   newEvent.value = {
     title: '',
@@ -745,9 +759,9 @@ async function handleCreateEvent() {
         notInterested: [],
       },
       location: newEvent.value.modality === 0 ? newEvent.value.location : null,
-      meetLink: newEvent.value.modality === 1 ? newEvent.value.meetLink : null,
+      meetLink: newEvent.value.modality === 1 ? normalizeUrl(newEvent.value.meetLink) : null,
       hasOnlineSale: newEvent.value.hasOnlineSale,
-      sellTicketLink: newEvent.value.hasOnlineSale ? newEvent.value.sellTicketLink : null,
+      sellTicketLink: newEvent.value.hasOnlineSale ? normalizeUrl(newEvent.value.sellTicketLink) : null,
       sellTicketText: newEvent.value.hasOnlineSale ? newEvent.value.sellTicketText : null,
     };
 

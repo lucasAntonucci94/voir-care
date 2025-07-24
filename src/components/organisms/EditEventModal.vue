@@ -764,6 +764,7 @@ async function handleSubmit() {
       // Condicionalmente incluye location o meetLink
       location: editForm.value.modality === 0 ? editForm.value.location : null,
       meetLink: editForm.value.modality === 1 ? normalizeUrl(editForm.value.meetLink) : null,
+      hasOnlineSale: editForm.value.hasOnlineSale,
       sellTicketLink: editForm.value.hasOnlineSale ? normalizeUrl(editForm.value.sellTicketLink) : null, // Include only if hasOnlineSale
       sellTicketText: editForm.value.hasOnlineSale ? editForm.value.sellTicketText : null, // Include only if hasOnlineSale
     };

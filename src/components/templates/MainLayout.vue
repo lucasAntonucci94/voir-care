@@ -14,7 +14,7 @@
         :show="sidebarStore.showSidebar"
         @toggle="sidebarStore.toggleSidebar"
       />
-      <main class="flex-grow bg-gray-50 dark:bg-gray-900 font-poppins overflow-y-auto flex-1">
+      <main class="flex-grow bg-gray-50 dark:bg-gray-900 overflow-y-auto flex-1">
         <router-view />
       </main>
       <!-- Snackbar global -->
@@ -71,7 +71,6 @@ watch(
 
 // Cancelar suscripción al desmontar el componente
 onUnmounted(() => {
-  // console.log('MainLayout.vue desmontado, cancelando suscripción a chats...');
   privateChatsStore.initializeUnsubscribe();
   // Limpiar el event listener de resize al desmontar
   window.removeEventListener('resize', checkMobile);
@@ -93,7 +92,7 @@ const permitedRoutes = computed(() => {
   const isDefaultBlocked = defaultBlockedPaths.includes($route.path);
 
   // Condición para rutas bloqueadas solo en desktop/tablet
-  // Si NO es móvil (es decir, es desktop/tablet) Y la ruta está en las bloqueadas específicas
+  // Si NO es móvil
   const isDesktopSpecificBlocked = !isMobile.value && desktopSpecificBlockedPaths.includes($route.path);
 
   // El sidebar principal se muestra si:
@@ -115,7 +114,6 @@ const shouldShowChatBox = computed(() => {
 </script>
 
 <style scoped>
-.font-poppins { font-family: 'Poppins', sans-serif; }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 </style>

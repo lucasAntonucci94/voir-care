@@ -570,7 +570,6 @@ export function useUsers() {
       await updateDoc(userRef, {
         isSuscribed: isSuscribed,
       });
-      // console.log(`Usuario con ID ${id} ${isSuscribed ? 'suscripto' : 'desuscripto'} exitosamente`);
     } catch (error) {
       console.error('Error al suscribir usuario:', error);
       throw error;

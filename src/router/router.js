@@ -16,6 +16,8 @@ import EventDetail from '../pages/EventDetail.vue';
 import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
 import PremiumPage from '../pages/PremiumPage.vue';
+import TermsAndConditionsPage from '../pages/ConditionsAndTermsPage.vue';
+import PrivacyPolicyPage from '../pages/PrivacyPolicyPage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
 import PostDetailPage from '../pages/PostDetailPage.vue';
@@ -30,6 +32,7 @@ import AdoptionPage from '../pages/AdoptionPage.vue';
 import AdmCategoriesPage from '../pages/admin/CategoriesPage.vue';
 import AdmBlogCategoriesPage from '../pages/admin/BlogCategoriesPage.vue';
 import AdmPostsPage from '../pages/admin/PostsPage.vue';
+import AdmSubscriptionsPage from '../pages/admin/SubscriptionsPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -178,6 +181,22 @@ const routes = [
         }
       },
       {
+        path: '/termsandconditions',
+        name: 'TermsAndConditions',
+        component: TermsAndConditionsPage,
+        meta: {
+            requiresAuth: false,
+        }
+      },
+      {
+        path: '/privacypolicy',
+        name: 'PrivacyPolicy',
+        component: PrivacyPolicyPage,
+        meta: {
+            requiresAuth: false,
+        }
+      },
+      {
         path:  '/admin/dashboard',
         name: 'dashboard',
         component: AdminDashboardPage,
@@ -253,6 +272,14 @@ const routes = [
         path:  '/admin/categories/blogs',
         name: 'BlogcategoriesAdm',
         component: AdmBlogCategoriesPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/subscriptions',
+        name: 'SubscriptionsAdm',
+        component: AdmSubscriptionsPage,
         meta: {
             requiresAuth: true,
         }

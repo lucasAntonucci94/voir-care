@@ -105,12 +105,17 @@
       </p>
       <button
         @click="openSubscriptionModal"
-        class="inline-flex items-center gap-2 bg-primary hover:bg-primary-darker dark:bg-secondary dark:hover:bg-secondary-darker text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary"
+        class="inline-flex items-center gap-2 bg-primary hover:bg-primary-darker dark:bg-secondary dark:hover:bg-secondary-darker text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary"
+        :disabled="hasPendingSubscription"
+        :class="{ 'opacity-50 cursor-not-allowed': hasPendingSubscription, 'hover:transform hover:-translate-y-1' : !hasPendingSubscription }"
         aria-label="Suscribirse al plan Premium"
       >
         <i class="fa-solid fa-crown text-yellow-200"></i>
         Suscribirse a Premium
       </button>
+      <p v-if="hasPendingSubscription" class="text-sm text-primary dark:text-secondary mt-4">
+        Tu solicitud de suscripción está en proceso.
+      </p>
     </section>
 
     <!-- Community Benefits -->
@@ -134,11 +139,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../api/auth/useAuth';
 import { useThemeStore } from '../stores/theme';
 import SubscriptionModal from '../components/molecules/SubcriptionModal.vue';
+import { useSubscriptionRequests } from '../composable/useSubscriptionRequest';
 
 // Ensure user is authenticated and not subscribed
 const { isAuthenticated, user } = useAuth();
@@ -146,7 +152,7 @@ const router = useRouter();
 const themeStore = useThemeStore();
 const isAnnual = ref(false);
 const showSubscriptionModal = ref(false);
-
+const hasPendingSubscription = ref(false);
 // Redirect to login if not authenticated, or to feed if already subscribed
 if (!isAuthenticated.value) {
   router.push('/login');
@@ -158,9 +164,14 @@ function openSubscriptionModal() {
   showSubscriptionModal.value = true;
 }
 
-function handleSubscriptionConfirm(plan) {
+async function handleSubscriptionConfirm(plan) {
   showSubscriptionModal.value = false;
+  hasPendingSubscription.value = true;
 }
+onMounted(async () => {
+  const { hasPendingRequest } = useSubscriptionRequests();
+  hasPendingSubscription.value = await hasPendingRequest(user.value?.uid);
+});
 </script>
 
 <style scoped>

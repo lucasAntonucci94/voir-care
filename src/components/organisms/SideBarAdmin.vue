@@ -71,6 +71,7 @@ const navItems = [
   { label: 'Educación', route: '/admin/education', icon: 'fas fa-graduation-cap' },
   { label: 'Publicaciones', route: '/admin/posts', icon: 'fas fa-book' },
   { label: 'Reportes', route: '/admin/reports', icon: 'fas fa-exclamation-triangle' },
+  { label: 'Subscripciones', route: '/admin/subscriptions', icon: 'fas fa-user-plus' },
 ];
 
 const openDropdowns = ref([]);

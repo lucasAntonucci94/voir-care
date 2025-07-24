@@ -26,20 +26,14 @@
       <p class="text-sm mb-2">VOIR - 2025. Todos los derechos reservados.</p>
       <ul class="flex justify-center space-x-4 text-sm">
         <li>
-          <a
-            href="/terms-of-use"
-            class="text-white hover:text-gray-200 transition-colors duration-300"
-          >
+           <router-link to="/termsandconditions" target="_blank" rel="noopener noreferrer" class="text-white hover:text-gray-200 transition-colors duration-300">
             Términos de servicio
-          </a>
+          </router-link> 
         </li>
         <li>
-          <a
-            href="/privacy-policy"
-            class="text-white hover:text-gray-200 transition-colors duration-300"
-          >
+           <router-link to="/privacypolicy" target="_blank" rel="noopener noreferrer" class="text-white hover:text-gray-200 transition-colors duration-300">
             Política de privacidad
-          </a>
+          </router-link>
         </li>
       </ul>
     </div>
