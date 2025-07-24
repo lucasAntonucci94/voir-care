@@ -2,11 +2,11 @@
   <main class="flex-grow max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
     <!-- Hero Section -->
     <section class="text-center mb-12">
-      <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
-        ¡Únete a la Comunidad Premium!
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
+        ¡Haz la Diferencia para las Mascotas con Premium!
       </h1>
       <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6 transition-colors duration-300">
-        Potencia tu experiencia en Voir con funciones exclusivas, mayor libertad creativa y acceso a contenido premium. ¡Conecta, crea y comparte como nunca antes!
+        Únete a la comunidad Premium de Voir y accede a herramientas exclusivas y conocimiento para cuidar mejor a tus mascotas, promover adopciones responsables y ayudar a todos los animales a encontrar un hogar lleno de amor.
       </p>
       <!-- Pricing Display -->
       <div class="flex justify-center items-center gap-4 mb-8">
@@ -98,10 +98,10 @@
     <!-- Call to Action -->
     <section class="text-center mb-12">
       <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
-        ¡Da el salto a Premium hoy!
+        ¡Empodera el Bienestar Animal con Premium!
       </h3>
       <p class="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-6 transition-colors duration-300">
-        Desbloquea todo el potencial de nuestra comunidad por solo {{ isAnnual ? '$59999/año (~$5999/mes)' : '$5999/mes' }}. ¡Crea sin límites y accede a contenido exclusivo!
+        Por solo {{ isAnnual ? '$59999/año (~$5999/mes)' : '$5999/mes' }}, obtén herramientas exclusivas para educarte, conectar con otros amantes de las mascotas y promover adopciones responsables. ¡Haz una diferencia para todas las mascotas!
       </p>
       <button
         @click="openSubscriptionModal"
@@ -121,11 +121,31 @@
     <!-- Community Benefits -->
     <section class="text-center">
       <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
-        Únete a una Comunidad Activa y Consciente
+        Sé Parte de la Comunidad que Cuida a las Mascotas
       </h3>
       <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto transition-colors duration-300">
-        Voir está diseñado para conectar personas con ideas afines, fomentar la creatividad y promover interacciones significativas. Con Premium, obtienes herramientas para liderar y participar activamente en nuestra comunidad.
+        Con Voir Premium, liderarás una comunidad dedicada al bienestar animal. Crea grupos y eventos ilimitados, comparte conocimiento a través de blogs premium y ayuda a que más mascotas encuentren un hogar amoroso.
       </p>
+    </section>
+
+    <!-- Donation Section -->
+    <section class="mt-8 md:mt-16 p-6 sm:p-8 bg-gradient-to-r from-primary to-primary/80 dark:from-secondary dark:to-secondary/80 text-white rounded-2xl flex flex-col md:flex-row items-center justify-between shadow-2xl" aria-labelledby="donation-promo-title">
+      <div class="text-center md:text-left mb-6 md:mb-0 max-w-xl">
+        <h2 id="donation-promo-title" class="text-2xl md:text-3xl font-bold font-dosis flex items-center justify-center md:justify-start">
+          <i class="fas fa-heart text-2xl mr-2" aria-hidden="true"></i>
+          ¡Apoya a nuestra comunidad!
+        </h2>
+        <p class="mt-2 text-lg text-white/90 dark:text-white/80">
+          Tu donación mantiene viva la misión de Voir: conectar mascotas con familias, promover adopciones responsables y crear un espacio para los amantes de los animales. ¡Cada aporte hace la diferencia!
+        </p>
+      </div>
+      <router-link
+        to="/donate"
+        class="px-6 py-3 bg-white text-primary dark:text-secondary font-bold rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors duration-200 transition-transform transform hover:scale-105 shrink-0"
+        aria-label="Dona para apoyar a la comunidad de Voir"
+      >
+        Dona Ahora
+      </router-link>
     </section>
 
     <!-- Subscription Modal -->

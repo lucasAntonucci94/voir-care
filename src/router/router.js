@@ -18,6 +18,7 @@ import EducationPage from '../pages/EducationPage.vue';
 import PremiumPage from '../pages/PremiumPage.vue';
 import TermsAndConditionsPage from '../pages/ConditionsAndTermsPage.vue';
 import PrivacyPolicyPage from '../pages/PrivacyPolicyPage.vue';
+import DonatePage from '../pages/DonatePage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
 import PostDetailPage from '../pages/PostDetailPage.vue';
@@ -192,6 +193,14 @@ const routes = [
         path: '/privacypolicy',
         name: 'PrivacyPolicy',
         component: PrivacyPolicyPage,
+        meta: {
+            requiresAuth: false,
+        }
+      },
+      {
+        path: '/donate',
+        name: 'Donate',
+        component: DonatePage,
         meta: {
             requiresAuth: false,
         }

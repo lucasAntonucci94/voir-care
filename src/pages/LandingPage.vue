@@ -91,7 +91,7 @@
 
   <!-- Educación y Adopción -->
   <section class="py-10 md:py-16 px-4 bg-gray-100/50 dark:bg-gray-800 josefin-font">
-    <div class="container px-4 flex flex-col items-left mx-auto">
+    <div class="container px-4 flex flex-col items-left sm:items-center mx-auto">
       <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6 sm:mb-12 dosis-font text-left sm:text-center">Aprendé y adoptá</h2>
       <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-left sm:text-center">Conocé más consejos de adopción responsable y cuidado animal.</p>
       <p class="text-base text-gray-600 dark:text-gray-300 max-w-2xl text-left sm:text-center">Aprendé sobre razas, salud y bienestar para que tu mascota sea feliz y saludable.</p>

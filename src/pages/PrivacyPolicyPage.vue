@@ -3,7 +3,7 @@
     <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
       <!-- Sticky Header -->
       <header class="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-        <h1 class="text-4xl font-bold mb-6 text-gray-800 dark:text-gray-100">Política de Privacidad de Voir</h1>
+        <h1 class="text-4xl font-bold mb-6 text-gray-800 dark:text-gray-100">Política de Privacidad</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
           <strong>Fecha de última actualización:</strong> 23 de julio de 2025
         </p>
