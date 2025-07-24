@@ -218,9 +218,8 @@ import { useSnackbarStore } from '../../stores/snackbar';
 import { useThemeStore } from '../../stores/theme';
 import { defineAsyncComponent } from 'vue';
 import 'vue-multiselect/dist/vue-multiselect.css';
-import { useMediaUpload } from '../../composable/useMediaUpload'; // Import useMediaUpload
+import { useMediaUpload } from '../../composable/useMediaUpload';
 
-// Import vue-multiselect
 const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
 
 // Theme store for dark mode
@@ -234,7 +233,7 @@ const { categories } = useCategories();
 const { user } = useAuth();
 const groupPostsStore = useGroupPostsStore();
 const snackbarStore = useSnackbarStore();
-const { uploadMedia } = useMediaUpload(); // Destructure uploadMedia
+const { uploadMedia } = useMediaUpload();
 
 const isLoading = ref(false);
 const errorFileMessage = ref('');
@@ -272,18 +271,18 @@ watch(() => props.groupId, (val) => {
 });
 
 function handleMediaUpload(event) {
-  errorFileMessage.value = ''; // Clear previous error
+  errorFileMessage.value = '';
   const file = event.target.files[0];
   if (!file) {
-    newPost.value.media.imageBase64 = ''; // Clear preview if no file selected
+    newPost.value.media.imageBase64 = '';
     newPost.value.media.type = '';
     return;
   }
 
   if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
     errorFileMessage.value = 'Selecciona una imagen o video válido.';
-    event.target.value = ''; // Clear the file input
-    newPost.value.media.imageBase64 = ''; // Clear preview
+    event.target.value = ''
+    newPost.value.media.imageBase64 = '';
     return;
   }
 
@@ -323,12 +322,12 @@ function validateStep(step) {
     if (!newPost.value.categories || newPost.value.categories.length === 0) {
       errors.categories = 'Selecciona al menos una categoría';
       isValid = false;
-    } else if (newPost.value.categories.length > 3) { // Assuming a max of 3 categories
+    } else if (newPost.value.categories.length > 3) {
       errors.categories = 'Puedes seleccionar un máximo de 3 categorías';
       isValid = false;
     }
   }
-  // Step 3 (Multimedia) is optional, and handleMediaUpload validates new file selection.
+  // Step 3 (Multimedia) is optional
 
   formErrors.value = errors;
   return isValid;
@@ -342,16 +341,15 @@ function nextStep() {
 
 function previousStep() {
   currentStep.value -= 1;
-  formErrors.value = {}; // Clear errors when going back
-  errorFileMessage.value = ''; // Clear file error when going back
+  formErrors.value = {};
+  errorFileMessage.value = '';
 }
 
 async function createPost() {
-  // Validate all steps before final submission
   let allStepsValid = true;
   for (let i = 1; i <= steps.value.length; i++) {
     if (!validateStep(i)) {
-      currentStep.value = i; // Go back to the first invalid step
+      currentStep.value = i;
       snackbarStore.show('Por favor, completa todos los campos requeridos.', 'error');
       allStepsValid = false;
       break;

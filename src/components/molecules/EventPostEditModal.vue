@@ -214,7 +214,7 @@ import { useMediaUpload } from '../../composable/useMediaUpload';
 import { useThemeStore } from '../../stores/theme';
 import { defineAsyncComponent } from 'vue';
 import 'vue-multiselect/dist/vue-multiselect.css';
-import { useSnackbarStore } from '../../stores/snackbar'; // Importar snackbar
+import { useSnackbarStore } from '../../stores/snackbar';
 
 // Import vue-multiselect
 const Multiselect = defineAsyncComponent(() => import('vue-multiselect'));
@@ -225,15 +225,15 @@ const isDark = computed(() => themeStore.isDarkMode);
 
 const props = defineProps({
   post: { type: Object, required: true },
-  visible: { type: Boolean, required: true }, // Asegúrate de que sea Boolean
+  visible: { type: Boolean, required: true },
 });
 
 const emit = defineEmits(['update-post', 'close']);
 
 const eventPostsStore = useEventPostsStore();
 const { categories } = useCategories();
-const { uploadMedia } = useMediaUpload(); // isUploading no se utiliza directamente aquí, se gestiona con isLoading
-const snackbarStore = useSnackbarStore(); // Instancia del snackbar
+const { uploadMedia } = useMediaUpload();
+const snackbarStore = useSnackbarStore();
 
 const editForm = ref({
   id: null,
@@ -244,7 +244,7 @@ const editForm = ref({
     url: '',
     path: '',
     type: '',
-    imageBase64: null, // Para la nueva imagen/video seleccionada
+    imageBase64: null,
   },
 });
 const isLoading = ref(false);
@@ -271,15 +271,14 @@ watch(() => props.post, (newPost) => {
         url: newPost.media?.url || '',
         path: newPost.media?.path || '',
         type: newPost.media?.type || '',
-        imageBase64: null, // Reset imageBase64 on new post load
+        imageBase64: null,
       },
     };
-    // Reset validation errors and step when a new post is loaded
     formErrors.value = {};
     errorFileMessage.value = '';
     currentStep.value = 1;
   }
-}, { immediate: true }); // Run immediately when component is mounted
+}, { immediate: true });
 
 // Control body scroll when modal visibility changes
 watch(() => props.visible, (newValue) => {
@@ -288,22 +287,20 @@ watch(() => props.visible, (newValue) => {
   } else {
     document.body.classList.remove('overflow-hidden');
   }
-}, { immediate: true }); // Run immediately to set initial state
+}, { immediate: true });
 
 function handleMediaUpload(event) {
-  errorFileMessage.value = ''; // Clear previous error
+  errorFileMessage.value = '';
   const file = event.target.files[0];
   if (!file) {
-    // If no file is selected, clear the preview but keep existing media if any
     editForm.value.media.imageBase64 = null;
     return;
   }
 
-  // Basic file type validation
   if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
     errorFileMessage.value = 'Selecciona una imagen o video válido.';
-    event.target.value = ''; // Clear the file input
-    editForm.value.media.imageBase64 = null; // Clear preview
+    event.target.value = '';
+    editForm.value.media.imageBase64 = null;
     return;
   }
 
@@ -343,14 +340,12 @@ function validateStep(step) {
     if (!editForm.value.categories || editForm.value.categories.length === 0) {
       errors.categories = 'Selecciona al menos una categoría';
       isValid = false;
-    } else if (editForm.value.categories.length > 3) { // Asumiendo un máximo de 3 categorías
+    } else if (editForm.value.categories.length > 3) {
       errors.categories = 'Puedes seleccionar un máximo de 3 categorías';
       isValid = false;
     }
   }
-  // Step 3 (Multimedia) doesn't have mandatory validation for existing media,
-  // but handleMediaUpload validates new file selection.
-
+  // Step 3 (Multimedia) optional
   formErrors.value = errors;
   return isValid;
 }
@@ -363,16 +358,15 @@ function nextStep() {
 
 function previousStep() {
   currentStep.value -= 1;
-  formErrors.value = {}; // Clear errors when going back
-  errorFileMessage.value = ''; // Clear file error when going back
+  formErrors.value = {};
+  errorFileMessage.value = '';
 }
 
 async function editPost() {
-  // Validate all steps before final submission
   let allStepsValid = true;
   for (let i = 1; i <= steps.value.length; i++) {
     if (!validateStep(i)) {
-      currentStep.value = i; // Go back to the first invalid step
+      currentStep.value = i;
       snackbarStore.show('Por favor, completa todos los campos requeridos.', 'error');
       allStepsValid = false;
       break;
@@ -389,28 +383,26 @@ async function editPost() {
     let mediaPath = editForm.value.media.path;
     let mediaType = editForm.value.media.type;
 
-    // If a new file was selected (imageBase64 is not null)
     if (editForm.value.media.imageBase64) {
       const dynamicPath = `events/${props.post.event.id}/posts/${props.post.user.email}/${editForm.value.id}`;
       const uploadResult = await uploadMedia({
-        currentUrl: editForm.value.media.url, // Pass existing URL for potential deletion
-        currentPath: editForm.value.media.path, // Pass existing path for potential deletion
+        currentUrl: editForm.value.media.url,
+        currentPath: editForm.value.media.path,
         newMediaBase64: editForm.value.media.imageBase64,
         mediaType: editForm.value.media.type,
         dynamicPath,
       });
       mediaUrl = uploadResult.url;
       mediaPath = uploadResult.path;
-      mediaType = editForm.value.media.type; // Ensure type is updated based on new file
+      mediaType = editForm.value.media.type;
     } else if (!editForm.value.media.url && !editForm.value.media.imageBase64) {
-      // If media was removed (url is empty and no new file)
       mediaUrl = null;
       mediaPath = null;
       mediaType = null;
     }
 
     const updatedPost = {
-      ...props.post, // Keep existing post data
+      ...props.post,
       title: editForm.value.title,
       body: editForm.value.body,
       categories: editForm.value.categories,
@@ -424,8 +416,8 @@ async function editPost() {
     await eventPostsStore.updatePostEvent(updatedPost.event.id, updatedPost.idDoc, updatedPost);
 
     snackbarStore.show('Publicación actualizada exitosamente.', 'success');
-    emit('update-post', updatedPost); // Emit the updated post data
-    handleCloseModal(); // Close the modal and reset state
+    emit('update-post', updatedPost);
+    handleCloseModal();
   } catch (error) {
     console.error('Error al actualizar el post:', error);
     snackbarStore.show(`Error al actualizar la publicación: ${error.message}`, 'error');
@@ -436,7 +428,6 @@ async function editPost() {
 
 function handleCloseModal() {
   document.body.classList.remove('overflow-hidden');
-  // Reset form to initial state based on props.post
   editForm.value = {
     id: props.post?.id || null,
     title: props.post?.title || '',

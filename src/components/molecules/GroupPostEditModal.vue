@@ -297,7 +297,7 @@ watch(() => props.visible, (newValue) => {
   } else {
     document.body.classList.remove('overflow-hidden');
   }
-}, { immediate: true }); // Run immediately to set initial state
+}, { immediate: true });
 
 function handleMediaUpload(event) {
   errorFileMessage.value = ''; // Clear previous error
@@ -329,7 +329,7 @@ function handleMediaUpload(event) {
   reader.readAsDataURL(file);
 }
 
-// Nueva función para limpiar el media previsualizado/existente
+// función para limpiar el media previsualizado/existente
 function clearMedia() {
   editForm.value.media = {
     url: '',
@@ -387,12 +387,11 @@ function nextStep() {
 
 function previousStep() {
   currentStep.value -= 1;
-  formErrors.value = {}; // Clear errors when going back
-  errorFileMessage.value = ''; // Clear file error when going back
+  formErrors.value = {};
+  errorFileMessage.value = '';
 }
 
 async function editPost() {
-  // Validate all steps before final submission
   let allStepsValid = true;
   for (let i = 1; i <= steps.value.length; i++) {
     if (!validateStep(i)) {
@@ -413,23 +412,21 @@ async function editPost() {
     let mediaPath = editForm.value.media.path;
     let mediaType = editForm.value.media.type;
 
-    // If a new file was selected (imageBase64 is not null)
     if (editForm.value.media.imageBase64) {
       const dynamicPath = `groups/${props.post.group.id}/posts/${props.post.user.email}/${editForm.value.id}`;
       const uploadResult = await uploadMedia({
-        currentUrl: editForm.value.media.url, // Pass existing URL for potential deletion
-        currentPath: editForm.value.media.path, // Pass existing path for potential deletion
+        currentUrl: editForm.value.media.url,
+        currentPath: editForm.value.media.path,
         newMediaBase64: editForm.value.media.imageBase64,
         mediaType: editForm.value.media.type,
         dynamicPath,
       });
       mediaUrl = uploadResult.url;
       mediaPath = uploadResult.path;
-      mediaType = editForm.value.media.type; // Ensure type is updated based on new file
+      mediaType = editForm.value.media.type;
     } else if (!editForm.value.media.url && !editForm.value.media.imageBase64) {
-      // If media was removed (url is empty and no new file)
       if (editForm.value.media.path) {
-        await deleteMedia(editForm.value.media.path); // Delete from storage
+        await deleteMedia(editForm.value.media.path);
       }
       mediaUrl = null;
       mediaPath = null;
@@ -437,7 +434,7 @@ async function editPost() {
     }
 
     const updatedPost = {
-      ...props.post, // Keep existing post data
+      ...props.post,
       title: editForm.value.title,
       body: editForm.value.body,
       categories: editForm.value.categories,
@@ -451,8 +448,8 @@ async function editPost() {
     await groupPostsStore.updatePostGroup(updatedPost.group.id, updatedPost.idDoc, updatedPost);
 
     snackbarStore.show('Publicación actualizada exitosamente.', 'success');
-    emit('update-post', updatedPost); // Emit the updated post data
-    handleCloseModal(); // Close the modal and reset state
+    emit('update-post', updatedPost);
+    handleCloseModal();
   } catch (error) {
     console.error('Error al actualizar el post:', error);
     snackbarStore.show(`Error al actualizar la publicación: ${error.message}`, 'error');
@@ -463,7 +460,6 @@ async function editPost() {
 
 function handleCloseModal() {
   document.body.classList.remove('overflow-hidden');
-  // Reset form to initial state based on props.post
   editForm.value = {
     id: props.post?.id || null,
     title: props.post?.title || '',
