@@ -212,6 +212,7 @@ const setGenericModalConfig = (action, request) => {
         cancelButtonText: 'Cancelar',
         confirmMethod: async () => {
           try {
+            debugger
             await declineSubscriptionRequest(request.id);
             snackbarStore.show('Solicitud rechazada exitosamente', 'success');
           } catch (error) {

@@ -5,11 +5,33 @@
     @click="navigateTo"
   >
     <div>
-      <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1 group-hover:text-primary dark:group-hover:text-secondary">
-        {{ title }}
-      </h3>
-      <p class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-secondary">
+      <div class="flex items-center gap-2 mb-1">
+        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-secondary font-dosis">
+          {{ title }}
+        </h3>
+        <span
+          v-if="tooltip"
+          class="text-gray-400 dark:text-gray-500 hover:text-primary dark:hover:text-secondary cursor-help"
+          :title="tooltip"
+          :aria-label="tooltip"
+        >
+          <i class="fas fa-info-circle"></i>
+        </span>
+      </div>
+      <p class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-secondary font-dosis">
         {{ value }}
+        <span
+          v-if="badge === 'warning'"
+          class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium text-white bg-red-500 rounded-full"
+        >
+          ¡Atención!
+        </span>
+        <span
+          v-if="badge === 'success'"
+          class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium text-white bg-green-500 rounded-full"
+        >
+          Estable
+        </span>
       </p>
     </div>
     <i
@@ -40,17 +62,24 @@ const props = defineProps({
   routeTo: {
     type: String,
     default: null,
-    required: false,
+  },
+  tooltip: {
+    type: String,
+    default: null,
+  },
+  badge: {
+    type: String,
+    default: null,
   },
 });
 
 function navigateTo() {
   if (props.routeTo) {
-    router.push(props.  routeTo);
+    router.push(props.routeTo);
   }
 }
 </script>
 
 <style scoped>
-/* No se necesitan estilos adicionales, todas las clases están en el template */
+/* No additional styles needed, all classes are in the template */
 </style>

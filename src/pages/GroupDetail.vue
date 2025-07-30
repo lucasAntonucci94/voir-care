@@ -267,6 +267,7 @@
               <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
                 <button
+                  v-if="isMember"
                   class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
                   @click="openInviteFriendsModal"
                 >

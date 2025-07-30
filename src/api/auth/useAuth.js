@@ -21,7 +21,7 @@ import { AppError } from '../../api/Exceptions/AppError';
 const auth = getAuth(firebaseApp);
 const { createUser, loadProfileInfo, getEmailByDisplayName } = useUsers();
 const userStatusComposable = useUserStatus();
-// const groupsComposable = useGroups();
+
 // Mensajes de error para autenticación
 const AUTH_ERRORS_MESSAGES = {
   'auth/invalid-email': 'El email no tiene un formato correcto.',

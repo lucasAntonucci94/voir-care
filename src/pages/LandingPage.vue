@@ -1,7 +1,8 @@
 <template>
   <section class="relative h-[80vh] text-gray-700 dark:text-white flex items-center overflow-hidden">
     <video 
-      class="absolute inset-0 w-full h-full object-cover z-0" 
+      class="absolute inset-0 w-full h-full object-cover z-0"
+      title="Banner de Voir"
       :src="currentHero"
       autoplay
       loop
@@ -30,7 +31,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
         <div v-for="feature in coreFeatures" :key="feature.title" class="p-4">
           <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow animate-fade-in">
-            <i :class="feature.icon" class="text-4xl text-primary/70 dark:text-secondary/70 mb-4"></i>
+            <i :class="feature.icon" class="text-4xl text-primary/70 dark:text-secondary/70 mb-4" aria-hidden="true"></i>
             <h3 class="text-lg font-semibold text-gray-600 dark:text-white mb-2 dosis-font">{{ feature.title }}</h3>
             <p class="text-sm text-gray-600 dark:text-gray-300">{{ feature.description }}</p>
           </div>
@@ -43,7 +44,7 @@
   <section class="py-10 md:py-16 bg-gray-100/50 dark:bg-gray-900 josefin-font">
     <div class="container mx-auto max-w-290 px-4 flex flex-col md:flex-row gap-10">
       <div class="md:w-1/2 px-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Un mundo mejor para los animales</h2>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-700 dark:text-white mb-6 dosis-font">Un mundo mejor para los animales</h2>
         <p class="text-base text-gray-700 dark:text-gray-300 mb-4">En Voir, creamos una comunidad unida por el amor a los animales, donde podés educarte, colaborar y hacer una diferencia en el bienestar de las mascotas.</p>
         <p class="text-base text-gray-700 dark:text-gray-300 mb-6">Nuestra misión es fomentar la adopción responsable y el cuidado consciente, conectando a personas apasionadas por los animales en Buenos Aires y más allá.</p>
       </div>
@@ -51,7 +52,7 @@
         <div class="relative h-40 xs:h-90 sm:h-80 md:h-70 rounded-lg overflow-hidden">
          <video
             src="../assets/videos/VideoAnimalsLight.mp4"
-            alt="Gato jugando en la comunidad de Voir"
+            title="Gato jugando en la comunidad de Voir"
             autoplay
             loop
             muted
@@ -67,9 +68,9 @@
     <div class="container mx-auto px-4">
       <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 dosis-font">Explorá nuestra comunidad</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto md:flex md:flex-wrap md:justify-center">
-        <div v-for="service in coreServices" :key="service.name" class="bg-white dark:bg-gray-700 text-[#333333] dark:text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full max-w-[320px] mx-auto">
+        <div v-for="service in coreServices" :key="service.name" class="bg-white dark:bg-gray-700 text-gray-700 dark:text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full max-w-[320px] mx-auto">
           <img :src="service.image" :alt="service.name" class="w-full h-40 object-cover rounded-lg mb-4" loading="lazy" />
-          <h4 class="text-xl font-bold mb-2 dosis-font">{{ service.name }}</h4>
+          <h3 class="text-xl font-bold mb-2 dosis-font">{{ service.name }}</h3>
           <p class="text-sm text-[#666666] dark:text-gray-300 mb-6">{{ service.description }}</p>
           <router-link :to="service.link" class="dosis-font px-6 py-3 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-colors" :aria-label="`Ver más sobre ${service.name}`">Ver más</router-link>
         </div>
@@ -81,7 +82,7 @@
   <section class="py-10 md:py-16 bg-[#F9FAFB] dark:bg-gray-900 josefin-font">
     <div class="container mx-auto px-4 text-center">
       <img :src="chatPrivadoImage" alt="Gato Chateando" class="w-45 h-45 sm:w-55 sm:h-55 mx-auto mb-4" loading="lazy">
-      <h2 class="text-2xl md:text-4xl font-bold text-[#333333] dark:text-white mb-6 dosis-font">Comunicación privada y segura</h2>
+      <h2 class="text-2xl md:text-4xl font-bold text-gray-700 dark:text-white mb-6 dosis-font">Comunicación privada y segura</h2>
       <p class="text-base text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8">Conectá con otros amantes de los animales a través de chats privados. Por ejemplo, coordiná un rescate por tu zona o pedí consejos a un veterinario de confianza.</p>
       <router-link to="/chats" class="inline-block dosis-font px-8 py-4 bg-primary dark:bg-secondary-md text-white font-semibold rounded-lg hover:bg-primary-md hover:dark:bg-secondary-darker transition-transform transform hover:scale-105" aria-label="Iniciar un chat privado en Voir">
         Empezá a chatear
@@ -108,6 +109,7 @@
           @loadedmetadata="setVideoDuration"
           @ended="resetProgressBar"
           @error="handleVideoError"
+          title="Consejos de adopción responsable"
         ></video>
 
         <div class="absolute bottom-4 left-0 w-full px-4">

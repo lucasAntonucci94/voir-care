@@ -21,6 +21,7 @@ async function loadCategories() {
       ...doc.data(),
       idDoc: doc.id
     }));
+    return categories.value;
   } catch (err) {
     console.error('Error al cargar categorías:', err);
     throw err;

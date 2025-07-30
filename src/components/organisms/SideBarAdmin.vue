@@ -8,7 +8,7 @@
           <div v-if="item.subItems" class="flex flex-col">
             <button
               @click="toggleDropdown(item.label)"
-              class="flex items-center justify-between w-full text-gray-700 dark:text-gray-300 hover:text-primary py-2 px-2"
+              class="flex items-center justify-between w-full text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-secondary py-2 px-2"
             >
               <div class="flex items-center gap-2">
                 <i :class="item.icon" class="w-5 h-5"></i>
@@ -24,7 +24,7 @@
                 <li v-for="subItem in item.subItems" :key="subItem.label">
                   <RouterLink
                     :to="subItem.route"
-                    class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary text-sm py-1 px-2"
+                    class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary text-sm py-1 px-2"
                   >
                     <i :class="subItem.icon" class="w-4 h-4"></i>
                     <span>{{ subItem.label }}</span>
@@ -37,7 +37,7 @@
           <RouterLink
             v-else
             :to="item.route"
-            class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary py-2 px-2"
+            class="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-secondary py-2 px-2"
           >
             <i :class="item.icon" class="w-5 h-5"></i>
             <span>{{ item.label }}</span>
@@ -55,6 +55,13 @@ import { RouterLink } from 'vue-router';
 const navItems = [
   { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-tachometer-alt' },
   { label: 'Usuarios', route: '/admin/users', icon: 'fas fa-users' },
+  { label: 'Eventos', route: '/admin/events', icon: 'fas fa-calendar-alt' },
+  { label: 'Grupos', route: '/admin/groups', icon: 'fas fa-users-cog' },
+  { label: 'Educación', route: '/admin/education', icon: 'fas fa-graduation-cap' },
+  { label: 'Publicaciones', route: '/admin/posts', icon: 'fas fa-book' },
+  { label: 'Reels por defecto', route: '/admin/defaultReels', icon: 'fas fa-video' },
+  { label: 'Reportes', route: '/admin/reports', icon: 'fas fa-exclamation-triangle' },
+  { label: 'Subscripciones', route: '/admin/subscriptions', icon: 'fas fa-user-plus' },
   {
     label: 'Categorias',
     icon: 'fas fa-tags',
@@ -65,13 +72,6 @@ const navItems = [
       // { label: 'Eventos', route: '/admin/categories/events', icon: 'fas fa-calendar-alt' },
     ],
   },
-  { label: 'Default Reels', route: '/admin/defaultReels', icon: 'fas fa-book' },
-  { label: 'Eventos', route: '/admin/events', icon: 'fas fa-calendar-alt' },
-  { label: 'Grupos', route: '/admin/groups', icon: 'fas fa-users-cog' },
-  { label: 'Educación', route: '/admin/education', icon: 'fas fa-graduation-cap' },
-  { label: 'Publicaciones', route: '/admin/posts', icon: 'fas fa-book' },
-  { label: 'Reportes', route: '/admin/reports', icon: 'fas fa-exclamation-triangle' },
-  { label: 'Subscripciones', route: '/admin/subscriptions', icon: 'fas fa-user-plus' },
 ];
 
 const openDropdowns = ref([]);

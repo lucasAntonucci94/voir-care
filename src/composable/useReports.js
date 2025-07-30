@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, getDocs, updateDoc, collection, onSnapshot,deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, getDocs, updateDoc, collection, onSnapshot,deleteDoc,serverTimestamp, addDoc } from 'firebase/firestore';
 import { newGuid } from '../utils/newGuid';
 
 // Inicializamos Firestore
@@ -51,7 +51,7 @@ export function useReports() {
         created_at: serverTimestamp(),
         status: 'pending',
       };
-
+      debugger
       const docRef = await addDoc(reportRef, reportData);
       return docRef.id;
     } catch (err) {

@@ -39,7 +39,7 @@
             <i :class="event.modality === 0 ? 'fa-solid fa-location-dot' : 'fa-solid fa-video'" class="fas fa-modality text-primary dark:text-secondary text-xl"></i>
             <span><strong>Modalidad:</strong> {{ event.modality === 0 ? 'Presencial' : 'Virtual' }}</span>
           </li>
-          <li class="flex items-start gap-3" v-if="event.modality === 1 && event.meetLink">
+          <li class="flex items-start gap-3" v-if="event.modality === 1 && event.meetLink && isGoing">
             <i class="fas fa-link text-primary dark:text-secondary text-xl"></i>
             <strong>Link:</strong>
             <a class="hover:text-primary dark:hover:text-secondary" :href="event.meetLink" target="_blank" > {{ event.meetLink }}</a>
@@ -142,12 +142,13 @@
       </div>
 
      <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-        <!-- Header with Title and Invite Button -->
+        <!-- Header con title e invite button -->
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-            <i class="fas fa-users"></i> Invitados
+            <i class="fas fa-users"></i> Participantes
           </h2>
           <button
+            v-if="isAdmin || isGoing"
             class="w-auto px-4 py-2 bg-primary dark:bg-secondary text-white rounded-md shadow-sm hover:bg-primary-md dark:hover:bg-secondary-md transition-colors duration-200 flex items-center gap-2 cursor-pointer"
             @click="openInviteFriendsModal"
           >
@@ -155,7 +156,7 @@
           </button>
         </div>
 
-       <!-- Combined Count and View All Section -->
+       <!-- Participantes -->
         <div class="flex items-center justify-between mb-6 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
           <div class="flex items-center gap-2">
             <span class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center">
@@ -221,8 +222,6 @@ import { useRouter } from 'vue-router';
 import InviteFriendsModal from '../molecules/InviteFriendsModal.vue';
 import { useUsers } from '../../composable/useUsers';
 
-
-
 const props = defineProps({
   event: { type: Object, required: true },
   ownerDetails: { type: Object, required: true },
@@ -232,6 +231,7 @@ const props = defineProps({
   isGoing: { type: Boolean, required: true },
   handleAttendance: { type: Function, required: true },
 });
+
 const router = useRouter();
 const { user } = useAuth();
 const { getChatIdByReference } = usePrivateChats();
