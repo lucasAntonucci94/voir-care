@@ -211,5 +211,15 @@ export const useReelsStore = defineStore('reels', {
           throw error;
       }
     },
+    async getDefaultCount() {
+      try {
+          const { getAllCount } = useDefaultReels();
+          return await getAllCount();
+      } catch (error) {
+          console.error('Error al obtener la cantidad de grupos en el store:', error);
+          this.error = error.message || 'Error al obtener la cantidad de grupos en el store';
+          throw error;
+      }
+    },
 },
 });

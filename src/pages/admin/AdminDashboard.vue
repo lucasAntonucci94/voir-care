@@ -9,7 +9,8 @@
         </p>
       </div>
 
-      <!-- Header -->
+      <!-- Header + Buscador + Filtros + Accion Rápida -->
+      <!-- Integrar mas adelante el buscador, por search, temporalidad, y boton de accion rapida -->
       <!-- <header class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
         <div class="flex items-center gap-4 w-full sm:w-auto">
           <input
@@ -59,6 +60,40 @@
 
       <!-- Stats Sections -->
       <template v-else>
+        <!-- Moderation Section -->
+        <section class="mb-8">
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center justify-between font-dosis bg-primary/5 dark:bg-secondary/10 p-3 rounded-lg">
+            Moderación
+            <button
+              class="text-sm text-primary dark:text-secondary hover:underline"
+              @click="toggleSection('moderation')"
+              aria-label="Alternar visibilidad de la sección de moderación"
+            >
+              {{ sections.moderation ? 'Ocultar' : 'Mostrar' }}
+            </button>
+          </h2>
+          <transition name="fade">
+            <div v-if="sections.moderation" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+              <DashboardCard
+                title="Reportes"
+                :value="stats.reports"
+                icon="fas fa-exclamation-triangle"
+                routeTo="/admin/reports"
+                :badge="stats.reports > 10 ? 'warning' : 'info'"
+                tooltip="Reportes pendientes de revisión"
+              />
+              <DashboardCard
+                title="Suscripciones pendientes"
+                :value="stats.subscriptionRequests"
+                icon="fas fa-envelope"
+                routeTo="/admin/subscriptions"
+                :badge="stats.subscriptionRequests > 0 ? 'warning' : 'info'"
+                tooltip="Solicitudes de suscripción pendientes de aprobación"
+              />
+            </div>
+          </transition>
+          
+        </section>
         <!-- User Activity Section -->
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center justify-between font-dosis bg-primary/5 dark:bg-secondary/10 p-3 rounded-lg">
@@ -105,12 +140,28 @@
                 tooltip="Publicaciones creadas por usuarios"
                 :badge="stats.posts > 100 ? 'success' : null"
               />
+              <DashboardCard
+                title="Reels"
+                :value="stats.reels"
+                icon="fas fa-video"
+                routeTo="/admin/posts"
+                tooltip="Publicaciones creadas por voir"
+                :badge="stats.reels > 100 ? 'success' : null"
+              />
+              <DashboardCard
+                title="Marcadores de Mapa"
+                :value="stats?.mapMarkers ?? 0"
+                icon="fas fa-map-marker-alt"
+                routeTo="/admin/posts"
+                tooltip="Marcadores creados por usuarios"
+              />
+                <!-- :badge="stats.mapMarkers > 100 ? 'success' : null" -->
             </div>
           </transition>
         </section>
 
         <!-- Admin Content Section -->
-        <section class="mb-8">
+        <section>
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center justify-between font-dosis bg-primary/5 dark:bg-secondary/10 p-3 rounded-lg">
             Contenido Administrativo
             <button
@@ -124,7 +175,7 @@
           <transition name="fade">
             <div v-if="sections.adminContent" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <DashboardCard
-                title="Educación"
+                title="Blogs de Educación"
                 :value="stats.educations"
                 icon="fas fa-graduation-cap"
                 routeTo="/admin/education"
@@ -139,9 +190,16 @@
                 tooltip="Reels informativos creados por el equipo"
                 badge="info"
               />
+              <DashboardCard
+                title="Categorías"
+                icon="fas fa-tags"
+                routeTo="/admin/categories"
+                tooltip="Categorías de la plataforma"
+                badge="info"
+              />
             </div>
           </transition>
-          <div class="mt-4 flex justify-end">
+          <!-- <div class="mt-4 flex justify-end">
             <button
               class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary/10 dark:hover:bg-secondary/10 transition-all font-dosis"
               @click="router.push('/admin/categories')"
@@ -149,41 +207,7 @@
             >
               <i class="fas fa-tags mr-2"></i> Gestionar Categorías
             </button>
-          </div>
-        </section>
-
-        <!-- Moderation Section -->
-        <section>
-          <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center justify-between font-dosis bg-primary/5 dark:bg-secondary/10 p-3 rounded-lg">
-            Moderación
-            <button
-              class="text-sm text-primary dark:text-secondary hover:underline"
-              @click="toggleSection('moderation')"
-              aria-label="Alternar visibilidad de la sección de moderación"
-            >
-              {{ sections.moderation ? 'Ocultar' : 'Mostrar' }}
-            </button>
-          </h2>
-          <transition name="fade">
-            <div v-if="sections.moderation" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-              <DashboardCard
-                title="Reportes"
-                :value="stats.reports"
-                icon="fas fa-exclamation-triangle"
-                routeTo="/admin/reports"
-                :badge="stats.reports > 10 ? 'warning' : 'info'"
-                tooltip="Reportes pendientes de revisión"
-              />
-              <DashboardCard
-                title="Suscripciones pendientes"
-                :value="stats.subscriptionRequests"
-                icon="fas fa-envelope"
-                routeTo="/admin/subscriptions"
-                :badge="stats.subscriptionRequests > 0 ? 'warning' : 'info'"
-                tooltip="Solicitudes de suscripción pendientes de aprobación"
-              />
-            </div>
-          </transition>
+          </div> -->
         </section>
       </template>
     </div>
@@ -229,6 +253,7 @@ const stats = ref({
   groups: 0,
   educations: 0,
   reels: 0,
+  reelsDefault: 0,
   reports: 0,
   subscriptionRequests: 0,
 });
@@ -249,6 +274,7 @@ async function fetchStats() {
       postsCount,
       educationsCount,
       reelsCount,
+      reelsDefaultCount,
       subscriptionRequestsCount,
     ] = await Promise.all([
       usersStore.getCount(timeFilter.value).catch(() => 0),
@@ -258,6 +284,7 @@ async function fetchStats() {
       postsStore.getCount(timeFilter.value).catch(() => 0),
       educationBlogsStore.getCount().catch(() => 0),
       reelsStore.getCount().catch(() => 0),
+      reelsStore.getDefaultCount().catch(() => 0),
       getPendingSubscriptionRequestsCount().catch(() => 0),
     ]);
     debugger
@@ -269,6 +296,7 @@ async function fetchStats() {
       posts: postsCount,
       educations: educationsCount,
       reels: reelsCount,
+      reelsDefault: reelsDefaultCount,
       subscriptionRequests: subscriptionRequestsCount,
     };
   } catch (error) {

@@ -194,7 +194,7 @@ import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
 import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
 import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
 import TherapyIcon from '../../assets/icons/locations/rehab1.png';
-
+import VaccineIcon from '../../assets/icons/locations/vacuna.png';
 
 const props = defineProps({
   visible: {
@@ -230,6 +230,7 @@ const locationTypes = ref([
   { id: 'refugio', label: 'Refugios y Adopción', icon: ShelterIcon, color: 'bg-rose-600' },
   { id: 'emergencias', label: 'Emergencias', icon: EmergencyIcon, color: 'bg-red-700' },
   { id: 'rehabilitacion', label: 'Rehabilitación y Terapia', icon: TherapyIcon, color: 'bg-violet-600' },
+  { id: 'vacunacion', label: 'Vacunación', icon: VaccineIcon, color: 'bg-sky-600' },
   // { id: 'eventos', label: 'Eventos Pet-Friendly', icon: EventIcon, color: 'bg-amber-600' },
   // { id: 'alojamiento', label: 'Alojamientos Pet-Friendly', icon: AccommodationIcon, color: 'bg-sky-600' },
   // { id: 'suministros', label: 'Entrega de Suministros', icon: DeliveryIcon, color: 'bg-lime-600' },

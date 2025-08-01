@@ -44,7 +44,7 @@
       <div v-if="filteredReels.length" class="overflow-x-auto rounded-lg">
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
-            <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
+            <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
               <th class="py-3 px-6 text-left">Título</th>
               <th class="py-3 px-6 text-left">Tipo</th>
               <th class="py-3 px-6 text-center">Activo</th>
@@ -53,7 +53,7 @@
               <th class="py-3 px-6 text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light">
+          <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light josefin-font">
             <tr
               v-for="reel in filteredReels"
               :key="reel.idDoc"

@@ -244,6 +244,7 @@ import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
 import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
 import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
 import TherapyIcon from '../../assets/icons/locations/rehab1.png';
+import VaccineIcon from '../../assets/icons/locations/vacuna.png';
 
 const emits = defineEmits(['close', 'locationCreated', 'locationUpdated']);
 const props = defineProps({
@@ -289,6 +290,7 @@ const locationTypes = ref([
   { id: 'refugio', label: 'Refugios y Adopción', icon: ShelterIcon },
   { id: 'emergencias', label: 'Emergencias', icon: EmergencyIcon },
   { id: 'rehabilitacion', label: 'Rehabilitación y Terapia', icon: TherapyIcon },
+  { id: 'vacunacion', label: 'Vacunación', icon: VaccineIcon },
 ]);
 
 // Función para inicializar o resetear los datos del formulario

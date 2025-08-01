@@ -48,6 +48,7 @@ import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
 import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
 import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
 import TherapyIcon from '../../assets/icons/locations/rehab1.png';
+import VaccineIcon from '../../assets/icons/locations/vacuna.png';
 
 const props = defineProps({
   locations: Array,
@@ -184,9 +185,7 @@ function getMarkerIcon(type) {
     refugio: ShelterIcon,
     emergencias: EmergencyIcon,
     rehabilitacion: TherapyIcon,
-    // eventos: EventIcon, // Uncomment when filter is added
-    // alojamiento: AccommodationIcon, // Uncomment when filter is added
-    // suministros: DeliveryIcon, // Uncomment when filter is added
+    vacunacion: VaccineIcon,
   };
   return {
     url: iconMap[type] || CatIcon,
