@@ -224,46 +224,4 @@ const deleteCategory = async (docId) => {
 </script>
 
 <style scoped>
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  border-right: 1px solid #e5e7eb;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
-}
-
-button i {
-  font-size: 1.25rem;
-}
-
-.bg-primary {
-  background-color: #3b82f6;
-}
-
-.bg-primary:hover {
-  background-color: #2563eb;
-}
-
-.bg-primary-dark {
-  background-color: #2563eb;
-}
-
-.dark .bg-primary {
-  background-color: #60a5fa;
-}
-
-.dark .bg-primary:hover {
-  background-color: #3b82f6;
-}
-
-.dark .bg-primary-dark {
-  background-color: #3b82f6;
-}
 </style>

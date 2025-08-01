@@ -53,7 +53,7 @@
     </div>
 
     <!-- Componente de Chat en Vivo -->
-    <SupportChatBot :isOpen="openChat" />
+    <!-- <SupportChatBot :isOpen="openChat" /> -->
     <!-- <SupportChatBotDialogFlow /> -->
   </section>
 </template>

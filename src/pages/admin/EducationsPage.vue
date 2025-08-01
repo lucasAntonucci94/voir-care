@@ -429,39 +429,4 @@ onUnmounted(() => {
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
 }
-
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  border-right: 1px solid #e5e7eb;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
-}
-
-button i {
-  font-size: 1.25rem;
-}
-
-.bg-primary {
-  background-color: #3b82f6;
-}
-
-.bg-primary:hover {
-  background-color: #2563eb;
-}
-
-.bg-secondary {
-  background-color: #60a5fa;
-}
-
-.bg-secondary:hover {
-  background-color: #3b82f6;
-}
 </style>

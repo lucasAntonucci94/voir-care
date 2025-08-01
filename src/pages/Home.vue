@@ -103,7 +103,7 @@ const filterOptions = ref([
     { label: 'Eventos', value: 'events' },
     { label: 'Blogs Educativos', value: 'blogs' },
     { label: 'Marcadores de Mapa', value: 'locations' },
-    { label: 'Entretenimiento', value: 'entertainment' },
+    { label: 'Recreativo', value: 'entertainment' },
 ]);
 const selectedFilters = ref(['users','groups', 'events', 'blogs', 'locations', 'entertainment']);
 
@@ -221,7 +221,7 @@ const baseFilteredReels = computed(() => {
     return reelsStore.reels ?? [];
 });
 
-// Computed para combinar y formatear posts y reels para la sección de entretenimiento
+// Computed para combinar y formatear posts y reels para la sección de recreativo
 const baseFilteredEntertainmentItems = computed(() => {
     const combinedItems = [];
 

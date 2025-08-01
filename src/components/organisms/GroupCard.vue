@@ -123,7 +123,7 @@
             "
           >
             <i :class="isMember ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-            <p class="hidden lg:block">{{ isMember ? 'Salir' : 'Unirme' }}</p>
+            <span class="hidden lg:block">{{ isMember ? 'Salir' : 'Unirme' }}</span>
           </button>
         </div>
       </div>

@@ -279,22 +279,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Estilos personalizados para la tabla */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  border-right: 1px solid #e5e7eb;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
-}
-
 /* Estilos para el shadow-lg en la tabla */
 .shadow-lg {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);

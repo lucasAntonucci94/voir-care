@@ -143,7 +143,7 @@
                         <button 
                           @click="setGenericModalConfig('suscribe', user)"
                           class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                          :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
+                          :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-secondary-md hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
                           :disabled="user.isDeleted"
                         >
                           <i :class="!user.isSuscribed ? 'fa fa-check-circle mr-2' : 'fa fa-times-circle mr-2'"></i>
@@ -398,49 +398,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Custom styles for table and buttons */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  border-right: 1px solid #e5e7eb;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
-}
-
-button i {
-  font-size: 1.25rem;
-}
-
-/* Primary color for buttons */
-.bg-primary {
-  background-color: #3b82f6;
-}
-
-.bg-primary:hover {
-  background-color: #2563eb;
-}
-
-.bg-primary-dark {
-  background-color: #2563eb;
-}
-
-/* Dark mode adjustments */
-.dark .bg-primary {
-  background-color: #60a5fa;
-}
-
-.dark .bg-primary:hover {
-  background-color: #3b82f6;
-}
-
-.dark .bg-primary-dark {
-  background-color: #3b82f6;
-}
 </style>

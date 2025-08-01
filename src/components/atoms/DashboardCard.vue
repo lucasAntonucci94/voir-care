@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md w-full flex items-center justify-between transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+    class="group bg-gray-100/40 dark:bg-gray-800 rounded-2xl p-6 shadow-md w-full flex items-center justify-between transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
     :class="{ 'cursor-pointer': routeTo, 'cursor-default': !routeTo }"
     @click="navigateTo"
   >

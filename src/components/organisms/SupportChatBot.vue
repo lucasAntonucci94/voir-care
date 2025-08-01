@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <div
@@ -25,6 +24,7 @@
       </div>
 
       <div
+        ref="messagesContainer"
         class="flex-1 bg-gray-50 dark:bg-gray-700 rounded-lg p-3 sm:p-4 overflow-y-auto text-gray-700 text-sm border border-gray-200 dark:border-gray-600"
       >
         <div
@@ -38,6 +38,11 @@
             {{ msg.text }}
           </div>
         </div>
+        <div v-if="isTyping" class="text-left">
+          <div class="bg-green-100 text-green-900 dark:bg-orange-100 dark:text-orange-900 p-2 rounded mb-1 inline-block animate-pulse">
+            ...
+          </div>
+        </div>
       </div>
 
       <div class="mt-3 sm:mt-4 flex gap-2 sm:gap-3">
@@ -47,12 +52,15 @@
           placeholder="Escribe tu mensaje..."
           class="flex-1 p-2 sm:p-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-300 placeholder-gray-400 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm sm:text-base"
           @keyup.enter="sendMessage"
+          :disabled="isTyping"
         />
         <button
           @click="sendMessage"
           class="px-4 py-2 sm:px-5 sm:py-2 bg-primary dark:bg-secondary text-white font-medium rounded-lg hover:bg-primary-md dark:hover:bg-secondary-md transition-all duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
+          :disabled="isTyping"
         >
-          Enviar
+          <i class="fas fa-paper-plane" v-if="!isTyping"></i>
+          <i class="fas fa-spinner fa-spin" v-else></i>
         </button>
       </div>
     </div>
@@ -60,91 +68,160 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import RiveScript from 'rivescript'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
 
-const messages = ref([])
-const userInput = ref('')
-const isChatOpen = ref(false)
+// Define el estado del componente
+const messages = ref([]);
+const userInput = ref('');
+const isChatOpen = ref(false);
+const isTyping = ref(false); // Nuevo estado para mostrar el indicador de 'escribiendo'
+const messagesContainer = ref(null); // Referencia al contenedor de mensajes
+
+// Modelo de lenguaje que utilizaremos
+const modelName = 'gemini-2.5-flash-preview-05-20';
 
 const toggleChat = () => {
-  isChatOpen.value = !isChatOpen.value
-}
+  isChatOpen.value = !isChatOpen.value;
+};
 
 const closeChat = () => {
-  isChatOpen.value = false
-}
+  isChatOpen.value = false;
+};
 
 // Cerrar con ESC
 const handleEscape = (e) => {
   if (e.key === 'Escape' && isChatOpen.value) {
-    closeChat()
+    closeChat();
   }
-}
+};
 
 // Cerrar al hacer clic fuera del chat
 const handleClickOutside = (e) => {
-  const chatEl = document.getElementById('chatWindow')
-  const buttonEl = document.getElementById('chatToggleButton')
+  const chatEl = document.getElementById('chatWindow');
+  const buttonEl = document.getElementById('chatToggleButton');
 
   if (chatEl && !chatEl.contains(e.target) && buttonEl && !buttonEl.contains(e.target)) {
-    closeChat()
+    closeChat();
   }
-}
+};
 
-onMounted(async () => {
-  window.addEventListener('keydown', handleEscape)
-  window.addEventListener('click', handleClickOutside)
+// Función para hacer scroll automático al final del chat
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    }
+  });
+};
 
-  try {
-    const response = await fetch("/bot.rive")
-    const text = await response.text()
-    bot.stream(text)
-    bot.sortReplies()
-  } catch (error) {
-    console.error("Error al cargar los scripts de RiveScript:", error)
-  }
-})
+// Observa los cambios en los mensajes para hacer scroll
+watch(messages, () => {
+  scrollToBottom();
+}, { deep: true });
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscape);
+  window.addEventListener('click', handleClickOutside);
+});
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleEscape)
-  window.removeEventListener('click', handleClickOutside)
-})
+  window.removeEventListener('keydown', handleEscape);
+  window.removeEventListener('click', handleClickOutside);
+});
 
-// Intancio el bot de RiveScript
-// const bot = new RiveScript()
-const bot = new RiveScript({
-  utf8: true,
-  forceCase: true,
-  debug: false,
-  errors: {
-    replyNotMatched: "Ups, no tengo información sobre eso aún.",
-    replyNotFound: "No estoy segur@ de cómo responderte.",
-    objectNotFound: "[Error interno]",
-    deepRecursion: "Parece que entramos en un bucle, ¿podés intentar reformular?"
+// Función para enviar un mensaje al bot de Gemini
+async function sendMessage() {
+  const userMessage = userInput.value.trim();
+  if (!userMessage) return;
+
+  // Agrega el mensaje del usuario al chat
+  messages.value.push({ sender: 'user', text: userMessage });
+  userInput.value = '';
+  isTyping.value = true; // Muestra el indicador de 'escribiendo'
+
+  try {
+    // Configura el historial del chat para la API
+    const chatHistory = messages.value.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.text }]
+    }));
+    
+    // Agrega un "System Instruction" para guiar al bot
+    const prompt = `Eres un asistente de soporte para una plataforma llamada "Voir" dedicada a la comunidad de amantes de las mascotas.
+    Tu función es brindar información y ayuda sobre adopción, eventos, cuidado de animales, grupos y publicaciones.
+    Responde de manera amigable y útil. Manten las respuestas concisas y directas.
+    Si te preguntan algo fuera de este tema, responde educadamente que tu conocimiento se limita a mascotas y la plataforma.
+
+    El usuario dice: ${userMessage}`;
+
+    // Agrega el prompt al historial
+    chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
+    
+    const payload = {
+        contents: chatHistory,
+    };
+    
+    const apiKey = "";
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
+    const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error de la API: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const botReply = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (botReply) {
+      messages.value.push({ sender: 'bot', text: botReply });
+    } else {
+      messages.value.push({ sender: 'bot', text: "Lo siento, no pude generar una respuesta. Por favor, intenta de nuevo." });
+    }
+
+  } catch (error) {
+    console.error('Error al comunicarse con la API de Gemini:', error);
+    messages.value.push({ sender: 'bot', text: "Hubo un error al procesar tu solicitud. Por favor, intenta más tarde." });
+  } finally {
+    isTyping.value = false; // Oculta el indicador de 'escribiendo'
   }
-})
-bot.unicodePunctuation = new RegExp(/[.,!?;:¿¡]/g)
-
-function sendMessage() {
-  const rawText = userInput.value.trim()
-  const cleaned = cleanInput(rawText)
-  if (!cleaned) return
-
-  messages.value.push({ sender: 'user', text: rawText })
-
-  bot.reply("localuser", cleaned).then(reply => {
-    messages.value.push({ sender: 'bot', text: reply })
-  })
-
-  userInput.value = ''
-}
-
-function cleanInput(text) {
-  return text
-    .toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // sin tildes
-    .replace(/[.,!?;:¿¡]/g, '') // sin puntuación
 }
 </script>
 
+<style scoped>
+/* Estilos de tu componente original */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #02bcae transparent;
+}
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: #02bcae;
+  border-radius: 3px;
+}
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-md);
+}
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.dark .overflow-y-auto::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+/* Transiciones para el chat */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

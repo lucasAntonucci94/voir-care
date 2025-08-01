@@ -26,7 +26,6 @@
       <table class="min-w-full bg-white dark:bg-gray-800">
         <thead>
           <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
-            <th class="py-3 px-6 text-left">#</th>
             <th class="py-3 px-6 text-left">ID Reporte</th>
             <th class="py-3 px-6 text-left">Tipo</th>
             <th class="py-3 px-6 text-left">ID Entidad</th>
@@ -43,7 +42,6 @@
             :key="report.id" 
             class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100/80 dark:hover:bg-gray-600/80"
           >
-            <td class="py-3 px-6 text-left">{{ index + 1 }}</td>
             <td class="py-3 px-6 text-left whitespace-nowrap">
               <span class="truncate max-w-[120px] block">{{ report.reportId }}</span>
             </td>
@@ -300,32 +298,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Estilos personalizados para la tabla */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  /* Elimina los bordes individuales de celda para usar solo el borde de fila */
-  border-right: none; 
-}
-
-/* Aplica el borde solo a las filas */
-tbody tr {
-  border-bottom: 1px solid #e5e7eb; /* Color de borde de fila */
-}
-
-/* Asegura que la última fila no tenga borde inferior */
-tbody tr:last-child {
-  border-bottom: none;
-}
-
-/* Estilos para el shadow-lg en la tabla */
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
 
 /* Estilos para el modal de detalles */
 .fixed {

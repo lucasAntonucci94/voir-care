@@ -13,11 +13,11 @@
       <i class="fa-solid fa-user text-xl" aria-hidden="true"></i>
       <span class="text-xs lg:text-sm mt-1 font-bold hidden sm:block">{{ user?.displayName ?? (user?.email || 'Cuenta') }}</span>
       <!-- Tooltip (oculto en mobile) -->
-      <p
+      <span
         class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden sm:group-hover:block bg-primary-md dark:bg-secondary-md text-white text-xs font-medium py-1 px-3 rounded-lg shadow-md pointer-events-none transition-opacity duration-200 opacity-0 group-hover:opacity-100"
       >
         Menú de usuario
-      </p>
+      </span>
     </button>
 
     <!-- Menú desplegable -->

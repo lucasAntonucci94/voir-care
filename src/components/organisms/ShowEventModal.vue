@@ -127,7 +127,7 @@
                 :disabled="!user"
               >
                 <i :class="isGoing ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-                <p class="hidden md:block">{{ attendanceLabel }}</p>
+                <span class="hidden md:block">{{ attendanceLabel }}</span>
               </button>
               <router-link
                 :to="`/event/${event.idDoc}`"

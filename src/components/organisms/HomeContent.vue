@@ -98,11 +98,11 @@
             <section aria-labelledby="entertainment-title">
                 <div class="flex justify-between items-center mb-4">
                     <h2 id="entertainment-title" class="text-2xl font-bold font-dosis">Recreativo</h2>
-                    <RouterLink to="/social" class="text-sm font-semibold text-primary dark:text-secondary hover:underline" aria-label="Explorar entretenimiento">Ver más</RouterLink>
+                    <RouterLink to="/social" class="text-sm font-semibold text-primary dark:text-secondary hover:underline" aria-label="Explorar recreativo">Ver más</RouterLink>
                 </div>
                 <div class="flex overflow-x-auto space-x-6 pb-4 horizontal-scrollbar" role="region" aria-label="Carrusel de Historias y Publicaciones">
                     <template v-if="filteredEntertainmentItems?.length > 0">
-                        <ul class="flex space-x-6"> <!-- Usar ul/li para la lista de items de entretenimiento -->
+                        <ul class="flex space-x-6"> <!-- Usar ul/li para la lista de items de recreativo -->
                             <li v-for="item in filteredEntertainmentItems" :key="item.id" 
                                 @click="item.type === 'post' ? router.push(`/post/${item.id}`) : router.push(`/reel/${item.id}`)"
                                 :class="{'flex-none w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden relative': item.type === 'reel', 'flex-none w-72 bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden': item.type === 'post'}"
@@ -134,7 +134,7 @@
                         </ul>
                     </template>
                     <template v-else>
-                        <p class="text-center text-gray-500 w-full">No hay contenido de entretenimiento disponible.</p>
+                        <p class="text-center text-gray-500 w-full">No hay contenido de recreativo disponible.</p>
                     </template>
                 </div>
             </section>

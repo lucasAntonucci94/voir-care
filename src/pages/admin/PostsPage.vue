@@ -289,20 +289,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Custom styles for table and buttons */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  border-right: 1px solid #e5e7eb;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
-}
-
 </style>

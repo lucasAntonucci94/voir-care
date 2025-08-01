@@ -9,10 +9,15 @@
     <p class="text-lg text-red-500 dark:text-red-400">Ubicación no encontrada.</p>
   </div>
 
-  <!-- Contenido principal una vez que los datos están cargados -->
-  <div v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-    <!-- Banner -->
-    <div @click="openMediaModal(location.media.url, location.media.type)" class="relative w-full h-64 md:h-96 overflow-hidden cursor-pointer">
+  <!-- Contenido principal -->
+  <article v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    <div
+      @click="openMediaModal(location.media.url, location.media.type)"
+      class="relative w-full h-64 md:h-96 overflow-hidden cursor-pointer"
+      role="button"
+      tabindex="0"
+      aria-label="Ver medios del marcador"
+    >
       <template v-if="location.media?.type === 'image' && location.media?.url">
         <img
           :src="location.media.url"
@@ -44,19 +49,21 @@
         </h1>
       </div>
     </div>
+
     <!-- Media Modal -->
     <MediaModalViewer
         :visible="showMediaModal"
         :media="selectedMedia"
         @close="closeMediaModal"
     />
+
     <!-- Contenedor principal de detalles -->
     <div class="container mx-auto px-4 md:px-8 py-6 h-full">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
 
         <!-- Columna izquierda: Información detallada del marcador -->
         <div class="lg:col-span-2 flex flex-col space-y-6">
-          <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+          <section class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
             <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Información</h2>
             <ul class="space-y-4 text-gray-600 dark:text-gray-300">
               <li class="flex items-start gap-3">
@@ -67,7 +74,7 @@
                 <i class="fas fa-tag text-primary dark:text-secondary text-xl"></i>
                 <span><strong>Tipo:</strong> {{ location.type || 'No especificado' }}</span>
               </li>
-              <li v-if="location.value?.timestamp" class="flex items-start gap-3">
+              <li v-if="location.timestamp" class="flex items-start gap-3">
                 <i class="fas fa-calendar-alt text-primary dark:text-secondary text-xl"></i>
                 <span><strong>Creado:</strong> {{ formattedTimestamp }}</span>
               </li>
@@ -76,10 +83,10 @@
                 <span><strong>Dirección:</strong> {{ location.address?.street || 'No definida' }}</span>
               </li>
             </ul>
-          </div>
+          </section>
 
           <!-- Card de Contacto -->
-          <div v-if="location.contact" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700 flex-grow">
+          <section v-if="location.contact" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700 flex-grow">
             <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Contacto</h2>
             <ul class="space-y-4 text-gray-600 dark:text-gray-300">
               <li v-if="location.contact.phone" class="flex items-start gap-3">
@@ -101,9 +108,10 @@
                 </span>
               </li>
             </ul>
-          </div>
+          </section>
+
           <!-- Card de Creador -->
-          <div v-if="location.user" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+          <section v-if="location.user" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
               <div class="flex justify-between items-center mb-4">
                   <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">Creado por</h2>
                   <button
@@ -116,23 +124,22 @@
                       <span class="hidden md:inline">Enviar mensaje</span>
                   </button>
               </div>
-             <router-link :to="`/profile/${location.user.email}`" class="flex items-center gap-4">
+              <router-link :to="`/profile/${location.user.email}`" class="flex items-center gap-4">
                   <img
                       v-if="location.user.photoURLFile"
                       :src="location.user.photoURLFile"
-                      alt="Foto de perfil del creador"
+                      :alt="`Foto de perfil de ${location.user.displayName || 'Usuario anónimo'}`"
                       class="w-12 h-12 rounded-full object-cover border-2 border-primary-light"
                   />
                   <i v-else class="fas fa-user-circle text-6xl text-primary-light"></i>
                   <span class="text-lg font-medium">{{ location.user.displayName || 'Usuario anónimo' }}</span>
               </router-link>
-              
-          </div>
+          </section>
         </div>
 
         <!-- Columna derecha: Mapa de ubicación -->
         <div class="lg:col-span-1 space-y-6 h-full">
-          <div v-if="location.address?.street" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700 h-full flex flex-col">
+          <section v-if="location.address?.street" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700 h-full flex flex-col">
             <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Ubicación</h2>
             <div class="w-full h-full rounded-lg overflow-hidden flex-grow">
               <iframe
@@ -142,11 +149,11 @@
                 loading="lazy"
               ></iframe>
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup>
@@ -159,6 +166,7 @@ import { useAuth } from '../api/auth/useAuth';
 import MediaModalViewer from '../components/molecules/MediaViewerModal.vue';
 import defaultBanner from '../assets/default-banner.jpg';
 import { useStorage } from '../composable/useStorage';
+
 const route = useRoute();
 const router = useRouter();
 const locationsStore = useLocationsStore();
@@ -172,9 +180,7 @@ const selectedMedia = ref({ src: '', type: 'image' });
 const showMediaModal = ref(false);
 
 const formattedTimestamp = computed(() => {
-    debugger
     if (location.value && location.value.timestamp) {
-      debugger
     // Si location.value.timestamp es un objeto Timestamp de Firebase
     const date = location.value.timestamp.toDate();
     // Formato de fecha dd/mm/yyyy hh:mm
@@ -197,10 +203,10 @@ const loadLocationData = async (id) => {
   try {
     loading.value = true;
     location.value = await locationsStore.fetchLocationByIdDoc(id);
-    
-    if (location.value?.media) {
-        const { getFileUrl } = useStorage();
-        location.value.user.photoURLFile = await getFileUrl(`profile/${location.value.user.email}.jpg`);
+
+    if (location.value?.user?.email) {
+      const { getFileUrl } = useStorage();
+      location.value.user.photoURLFile = await getFileUrl(`profile/${location.value.user.email}.jpg`);
     }
   } catch (error) {
     console.error('Error al cargar ubicación:', error);
@@ -211,7 +217,7 @@ const loadLocationData = async (id) => {
 };
 
 // Modal functions
-const openMediaModal = (url,type) => {
+const openMediaModal = (url, type) => {
   if (!url) return;
   selectedMedia.value = { src: url, type: type };
   showMediaModal.value = true;
@@ -240,7 +246,6 @@ const sendMessageToCreator = async () => {
     console.error('Error al crear/abrir el chat:', error);
   }
 };
-
 
 watch(
   () => route.params.idLocation,

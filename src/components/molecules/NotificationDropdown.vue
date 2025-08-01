@@ -12,7 +12,7 @@
       id="notification-button"
     >
       <i class="fa-solid fa-bell text-xl" aria-hidden="true"></i>
-      <p class="text-xs lg:text-sm mt-1 font-bold hidden sm:block">Notificaciones</p>
+      <span class="text-xs lg:text-sm mt-1 font-bold hidden sm:block">Notificaciones</span>
       <span
         v-if="unreadCount > 0"      
         role="status"

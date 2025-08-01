@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
+  <div class="min-h-screen bg-white dark:bg-gray-900 p-6">
     <div class="max-w-7xl mx-auto">
       <!-- Welcome Banner -->
       <div class="bg-gradient-to-r from-primary/10 to-primary/70 dark:from-secondary/70 dark:to-secondary/20 rounded-2xl p-6 mb-8 shadow-md">
