@@ -158,6 +158,35 @@
                 </button>
               </div>
             </div>
+            <!-- Paso 4: Marcador enviado para revisión -->
+            <div v-if="currentStep === 4">
+              <div class="flex flex-col items-center text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                <!-- Icono de advertencia -->
+                <i class="fa-solid fa-triangle-exclamation text-5xl text-yellow-500 mb-4"></i>
+                
+                <!-- Título principal de advertencia -->
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">¡Marcador en revisión!</h3>
+                
+                <!-- Mensaje principal sobre el estado de revisión -->
+                <p class="text-gray-600 dark:text-gray-300 text-lg mb-4">
+                  Tu marcador ha sido enviado correctamente. No estará visible en el mapa de forma inmediata.
+                </p>
+
+                <!-- Explicación detallada del proceso -->
+                <div class="bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-400 dark:border-blue-500 p-4 rounded-r-lg w-full">
+                  <div class="flex items-start">
+                    <i class="fa-solid fa-info-circle text-blue-400 dark:text-blue-300 mr-3 mt-1 text-xl flex-shrink-0"></i>
+                    <div>
+                      <p class="font-semibold text-blue-800 dark:text-blue-100 mb-1">¿Por qué este proceso?</p>
+                      <p class="text-sm text-blue-700 dark:text-blue-200">
+                        Revisamos todos los marcadores para asegurar que cumplan con nuestras directrices. Esto ayuda a mantener un entorno seguro y útil para toda la comunidad. Te notificaremos cuando tu marcador haya sido aprobado.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
 
             <!-- Botones de navegación -->
             <div class="flex justify-between gap-3 mt-6">
@@ -185,7 +214,7 @@
               </button>
 
               <button
-                v-if="currentStep < 3"
+                v-if="currentStep < 4"
                 type="button"
                 @click="nextStep"
                 :disabled="isSubmitting"
@@ -197,7 +226,7 @@
               </button>
 
               <button
-                v-if="currentStep === 3"
+                v-if="currentStep === 4"
                 type="submit"
                 :disabled="isSubmitting"
                 class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
@@ -274,6 +303,7 @@ const steps = ref([
   { label: 'Información' },
   { label: 'Ubicación' },
   { label: 'Multimedia' },
+  { label: 'Confirmación' },
 ]);
 
 const locationTypes = ref([

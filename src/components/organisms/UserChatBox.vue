@@ -106,7 +106,11 @@
                     {{ chat.unreadCount[userEmail] }}
                   </span>
                 </div>
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                <p 
+                  class="text-xs text-gray-500 dark:text-gray-400 truncate"
+                  :class="chat.message?.user?.email !== userEmail ? 'text-primary dark:text-secondary' : ''"
+                  >
+                  {{ chat.message?.user?.email === userEmail ? 'Vos:' : '' }}
                   {{ chat.message?.message || 'Sin mensajes aún' }}
                 </p>
               </div>
@@ -251,13 +255,8 @@ async function loadAvatarForChat(chat) {
 
 function getLastMessagePreview(chat) {
   const message = chat.message?.message || '';
-  const sender = chat.message?.user?.email;
-  const isOwn = sender === userEmail.value;
   const otherUserEmail = getOtherUserEmail(chat.users);
 
-  if (chat.message?.mediaType === 'image') {
-    return isOwn ? 'Tú: 📷 Foto' : `${otherUserEmail.split('@')[0]}: 📷 Foto`;
-  }
   if (!message && chat.unreadCount?.[userEmail.value] > 0) {
     return 'Mensajes nuevos';
   }
@@ -265,7 +264,7 @@ function getLastMessagePreview(chat) {
     return 'Sin mensajes aún';
   }
 
-  const prefix = isOwn ? 'Tú ' : `${otherUserEmail.split('@')[0]} `;
+  const prefix = `${otherUserEmail.split('@')[0]} `;
   return `${prefix}`;
 }
 
