@@ -113,18 +113,19 @@ import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router'
 import { useAuth } from '../api/auth/useAuth';
 import { usePostsStore } from '../stores/posts';
-import PostCard from '../components/organisms/PostCard.vue';
 import { useUsers } from '../composable/useUsers';
-import ProfileHeader from '../components/molecules/ProfileHeader.vue';
+import PostCard from '../components/organisms/PostCard.vue';
+import MapTab from '../components/molecules/ProfileUserMapTab.vue';
 import ProfileInfo from '../components/molecules/ProfileInfoTab.vue';
-import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
+import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
+import ProfileHeader from '../components/molecules/ProfileHeader.vue';
 import GalleryTab from '../components/organisms/ProfileGalleryTab.vue';
+import ReelsTab from '../components/molecules/ProfileUserReelsTab.vue';
+import HiddenPostsTab from '../components/molecules/HiddenPostsTab.vue';
+import ConnectionsTab from '../components/organisms/ConnectionsTab.vue';
 import UserEventsTab from '../components/molecules/ProfileUserEventsTab.vue';
 import UserGroupsTab from '../components/molecules/ProfileUserGroupsTab.vue';
-import SavedPostTab from '../components/molecules/SavedPostsTab.vue';
-import HiddenPostsTab from '../components/molecules/HiddenPostsTab.vue';
-import MapTab from '../components/molecules/ProfileUserMapTab.vue';
-import ReelsTab from '../components/molecules/ProfileUserReelsTab.vue';
+
 // Instancias
 const route = useRoute();
 const { user: authUser } = useAuth();

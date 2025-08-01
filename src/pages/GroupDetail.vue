@@ -352,7 +352,7 @@ import { formatTimestamp } from '../utils/formatTimestamp';
 import { useGroupsStore } from '../stores/groups';
 import { useUsersStore } from '../stores/users';
 import defaultAvatar from '../assets/avatar1.jpg';
-import defaultGroupBanner from '../assets/wallwhite.jpg';
+import defaultGroupBanner from '../assets/default-banner.jpg';
 import { useAuth } from '../api/auth/useAuth';
 import ConversationGroupTab from '../components/organisms/ConversationGroupTab.vue';
 import GroupMembersTab from '../components/organisms/GroupMembersTab.vue';
