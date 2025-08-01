@@ -1,13 +1,11 @@
 <template>
   <div class="chat-box-container">
-    <!-- Botón flotante -->
-    <div
+    <button
       class="fixed bottom-4 right-4 z-50 w-14 h-14 bg-primary-md dark:bg-secondary-md rounded-full flex items-center justify-center shadow-lg hover:bg-primary-darker dark:hover:bg-secondary-darker cursor-pointer group"
-      role="button"
-      tabindex="0"
+      :aria-label="isChatOpen ? 'Cerrar mensajes' : 'Abrir mensajes'"
+      :aria-expanded="isChatOpen"
+      aria-controls="chat-panel"
       @click="toggleChat"
-      @keydown.enter.space.esc="toggleChat"
-      aria-label="Abrir mensajes"
     >
       <i class="fa-solid fa-comment-dots text-white text-xl"></i>
       <!-- Badge de mensajes pendientes -->
@@ -24,21 +22,24 @@
       >
         Mensajes
       </span>
-    </div>
+    </button>
 
-    <!-- Caja de mini messenger -->
     <transition name="fade-slide">
       <div
         v-if="isChatOpen"
+        id="chat-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Ventana de chat"
         class="fixed bottom-20 right-4 sm:w-[24rem] w-[90vw] max-h-[80vh] bg-white dark:bg-gray-900 rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden"
         tabindex="-1"
-        @keydown="onChatBoxKeydown"
+        @keydown.esc="toggleChat"
       >
         <!-- Header -->
         <div class="flex items-center justify-between px-4 py-3 border-b bg-gray-50 dark:bg-gray-700">
           <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Mensajes</h2>
           <div class="flex items-center gap-2">
-            <button @click="toggleSearch" aria-label="Buscar mensajes">
+            <button @click="toggleSearch" aria-label="Buscar conversaciones">
               <i class="fas fa-search text-gray-500 dark:text-white"></i>
             </button>
             <button @click="toggleChat" aria-label="Cerrar ventana de chat">
@@ -60,7 +61,7 @@
                 class="w-full px-4 pr-10 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-white"
                 aria-label="Buscar conversaciones"
               />
-              <button @click="toggleSearch"class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500">
+              <button @click="toggleSearch" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500" aria-label="Cerrar búsqueda">
                 <i class="fas fa-times"></i>
               </button>
             </div>
@@ -75,7 +76,7 @@
               :key="chat.idDoc"
               :id="'chat-' + index"
               role="option"
-              aria-selected="false"
+              :aria-selected="false"
               tabindex="0"
               @click="goToChat(chat)"
               @keydown="onChatKeydown(index, $event)"
@@ -84,7 +85,7 @@
               <div class="relative">
                 <img
                   :src="avatars.get(getOtherUserEmail(chat.users)) || AvatarFallback"
-                  alt="avatar"
+                  :alt="'Avatar de ' + getOtherUserEmail(chat.users)"
                   class="w-10 h-10 rounded-full object-cover border border-gray-300"
                 />
                 <!-- Círculo de estado -->
@@ -109,7 +110,7 @@
                 <p 
                   class="text-xs text-gray-500 dark:text-gray-400 truncate"
                   :class="chat.message?.user?.email !== userEmail ? 'text-primary dark:text-secondary' : ''"
-                  >
+                >
                   {{ chat.message?.user?.email === userEmail ? 'Vos:' : '' }}
                   {{ chat.message?.message || 'Sin mensajes aún' }}
                 </p>
@@ -118,7 +119,10 @@
               <div class="relative z-40">
                 <button
                   @click.stop="toggleChatActions(chat.idDoc, $event)"
-                  class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                  class="w-3 h-7 rounded-xl bg-gray-200 dark:bg-gray-900 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                  :aria-label="'Opciones de chat con ' + getOtherUserEmail(chat.users)"
+                  :aria-expanded="activeMenuId === chat.idDoc"
+                  :aria-controls="'dropdown-' + chat.idDoc"
                 >
                   <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
@@ -127,6 +131,8 @@
                   <transition name="fade">
                     <ul
                       v-if="activeMenuId === chat.idDoc"
+                      :id="'dropdown-' + chat.idDoc"
+                      role="menu"
                       class="chat-dropdown fixed w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[1000] text-sm"
                       :style="dropdownPositions[chat.idDoc] ? {
                         top: `${dropdownPositions[chat.idDoc].top}px`,
@@ -136,12 +142,16 @@
                       <li
                         @click.stop="markAsUnread(chat.idDoc)"
                         class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-700 dark:text-gray-300 cursor-pointer"
+                        role="menuitem"
+                        tabindex="0"
                       >
                         Marcar como no leído
                       </li>
                       <li
                         @click.stop="deleteChat(chat.idDoc)"
                         class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-red-500"
+                        role="menuitem"
+                        tabindex="0"
                       >
                         Eliminar conversación
                       </li>
