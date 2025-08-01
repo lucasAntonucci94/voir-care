@@ -68,12 +68,10 @@ function centerOnUserLocation() {
 
 const filteredLocations = computed(() => {
   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
-  debugger
   if (activeFilters.value.length === 0) return filtered; // Devolver lista vacía cuando no hay filtros
   var locationsss = filtered.filter((location) =>
     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
   );
-  debugger
   return locationsss
 });
 

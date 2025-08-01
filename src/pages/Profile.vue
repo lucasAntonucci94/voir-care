@@ -133,7 +133,7 @@ const { getUserProfileByEmail } = useUsers();
 
 // Estados
 const activeUser = ref(null);
-const activeTab = ref('publicaciones');
+const activeTab = ref('grupos');
 const tabsContainer = ref(null);
 const showArrows = ref(false);
 const canScrollLeft = ref(false);

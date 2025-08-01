@@ -65,7 +65,7 @@
     <div class="space-y-6">
       <!-- Card de Acciones -->
       <section
-        v-if="!isAdmin && !isGoing && event?.attendees?.going && (event.capacity - (event?.attendees?.going && event?.attendees?.going?.length ? event.attendees.going.length - 1 : 0) || 0)"
+        v-if="!isGoing && event?.attendees?.going && (event.capacity - (event?.attendees?.going && event?.attendees?.going?.length ? event.attendees.going.length - 1 : 0) || 0)"
         class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
       >
         <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100 sr-only">Acciones</h2>

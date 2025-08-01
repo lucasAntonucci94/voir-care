@@ -545,7 +545,7 @@ async function handleSubmit() {
       if (props.locationToEdit.media?.path) {
         // await deleteMedia(props.locationToEdit.media.path); // Eliminar el media de Storage
       }
-      finalMediaData = { url: null, path: null, type: null }; // Limpiar media en la base de datos
+      finalMediaData = { url: null, path: null, type: null }; 
     }
 
 
@@ -567,9 +567,9 @@ async function handleSubmit() {
         socialNetworkLink: newLocation.value.contact.socialNetworkLink || null,
       },
       media: finalMediaData,
-      timestamp: isEditMode.value ? newLocation.value.timestamp : new Date(), // Preserva en edición, crea en nuevo
-      pending: isEditMode.value ? newLocation.value.pending : true, // Preserva en edición, pendiente en nuevo
-      user: isEditMode.value ? newLocation.value.user : { // Preserva en edición, crea en nuevo
+      timestamp: isEditMode.value ? newLocation.value.timestamp : new Date(),
+      pending: isEditMode.value ? newLocation.value.pending : true,
+      user: isEditMode.value ? newLocation.value.user : {
         id: ownerId,
         displayName: user.value?.displayName,
         email: user.value?.email,
@@ -578,14 +578,14 @@ async function handleSubmit() {
     };
     if (isEditMode.value) {
       // Actualizar ubicación existente
-      await locationsStore.updateLocation(props.locationToEdit.idDoc, locationData); // Usa idDoc para actualizar
+      await locationsStore.updateLocation(props.locationToEdit.idDoc, locationData);
       snackbarStore.show('Lugar actualizado exitosamente', 'success');
-      emits('locationUpdated', locationData); // Emitir evento de actualización
+      emits('locationUpdated', locationData);
     } else {
       // Añadir nueva ubicación
       await locationsStore.addLocation(locationData);
       snackbarStore.show('Lugar creado exitosamente', 'success');
-      emits('locationCreated', locationData); // Emitir evento de creación
+      emits('locationCreated', locationData);
     }
 
     closeModal();

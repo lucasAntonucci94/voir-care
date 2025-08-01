@@ -1,4 +1,4 @@
-import { getFirestore, addDoc, setDoc, doc, getDocs, updateDoc, deleteDoc, collection, onSnapshot, orderBy, query as firebaseQuery, serverTimestamp, where, limit } from "firebase/firestore";
+import { getFirestore, addDoc, setDoc, doc, getDocs, getDoc, updateDoc, deleteDoc, collection, onSnapshot, orderBy, query as firebaseQuery, serverTimestamp, where, limit } from "firebase/firestore";
 import { newGuid } from '../utils/newGuid';
 import { useGoogleMaps } from './useGoogleMaps';
 import { useStorage } from '../composable/useStorage';
@@ -85,14 +85,7 @@ export function useLocations() {
   }
 
   /**
-   * Actualiza un location completo usando merge,
-   * respetando la estructura anidada:
-   *   { title, description,
-   *     address: { street, coordinates:{lat,lng} },
-   *     type,
-   *     contact: { phone, socialNetworkLink },
-   *     media: { url, path, type },
-   *     pending }
+   * Actualiza un location
    */
   async function updateLocation(idDoc, locationData) {
     try {
@@ -282,6 +275,41 @@ export function useLocations() {
     }
   }
 
+  /**
+   * Devuelve un único location por su ID de documento de Firestore (`idDoc`).
+   * @param {string} idDoc - El ID del documento en Firestore.
+   * @returns {Promise<Object>} La data del location o null si no existe.
+   */
+  async function getLocationByIdDoc(idDoc) {
+    try {
+      const docRef = doc(locationsRef, idDoc);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        console.warn('No se encontró el documento con idDoc:', idDoc);
+        return null;
+      }
+
+      const L = docSnap.data();
+      return {
+        idDoc: docSnap.id,
+        id: L.id,
+        title: L.title,
+        description: L.description,
+        address: L.address,
+        type: L.type,
+        contact: L.contact,
+        media: L.media,
+        timestamp: L.timestamp,
+        pending: L.pending,
+        user: L.user,
+      };
+    } catch (err) {
+      console.error('Error al obtener location por idDoc:', err);
+      throw err;
+    }
+  }
+
   async function deleteLocation(idDoc) {
     try {
       const docRef = doc(db, 'locations', idDoc);
@@ -291,7 +319,7 @@ export function useLocations() {
       throw err;
     }
   }
-
+  
   async function changeStateLocation(location) {
     try {
       const docRef = doc(db, 'locations', location.idDoc);
@@ -309,6 +337,7 @@ export function useLocations() {
     saveLocation,
     subscribeToIncomingLocations,
     getLocationById,
+    getLocationByIdDoc,
     updateLocation,
     deleteLocation,
     changeStateLocation,

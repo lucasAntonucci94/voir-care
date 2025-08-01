@@ -118,7 +118,21 @@ export const useLocationsStore = defineStore('locations', {
         throw error;
       }
     },
-
+    /**
+     * @param {string} idDoc El ID del documento de Firestore a buscar.
+     * @returns {Promise<Object|null>} El objeto del location, o null si no se encuentra.
+     */
+    async fetchLocationByIdDoc(idDoc) {
+      // console.log('Buscando location por idDoc:', idDoc);
+      const { getLocationByIdDoc } = useLocations();
+      try {
+        const location = await getLocationByIdDoc(idDoc);
+        return location;
+      } catch (error) {
+        console.error('Error al buscar location por idDoc:', error);
+        throw error;
+      }
+    },
     // Cambiar estado pending
     async togglePending(location) {
       // console.log('Cambiando estado pending de location:', location.idDoc);

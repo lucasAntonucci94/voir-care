@@ -13,6 +13,7 @@ import Groups from '../pages/GroupsPage.vue';
 import GroupDetail from '../pages/GroupDetail.vue';
 import Events from '../pages/EventsPage.vue';
 import EventDetail from '../pages/EventDetail.vue';
+import LocationDetail from '../pages/LocationDetail.vue';
 import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
 import PremiumPage from '../pages/PremiumPage.vue';
@@ -129,6 +130,14 @@ const routes = [
         path:  '/event/:idEvent?',
         name: 'eventDetail',
         component: EventDetail,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/location/:idLocation?',
+        name: 'locationDetail',
+        component: LocationDetail,
         meta: {
             requiresAuth: true,
         }

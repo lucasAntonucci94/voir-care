@@ -153,10 +153,10 @@ import { usePrivateChatsStore } from '../../stores/privateChats';
 import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateStoryModal from '../organisms/CreateStoryModal.vue';
-import BannerDefault from '../../assets/darkwallpaper.jpg'
+import BannerDefault from '../../assets/default-banner.jpg'
 import { useSnackbarStore } from '../../stores/snackbar'
 import MediaModalViewer from '../../components/molecules/MediaViewerModal.vue';
-import avatarDefault from '../../assets/darkwallpaper.jpg';
+import avatarDefault from '../../assets/avatar1.jpg';
 import { useNotifications } from '../../composable/useNotifications';
 
 // Props
