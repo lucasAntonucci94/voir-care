@@ -1,4 +1,3 @@
-// stores/sidebar.js
 import { defineStore } from 'pinia';
 
 export const useSidebarStore = defineStore('sidebar', {

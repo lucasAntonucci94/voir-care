@@ -55,7 +55,7 @@
       </div>
 
       <!-- Contenido de la pestaña activa -->
-      <div class="container mx-auto px-4 md:px-8 lg:px-16 mt-4">
+      <div class="container mx-auto px-4 md:px-8 lg:px-16">
         <!-- Tab: GroupsFeed -->
         <div
           v-if="activeTab === 'feed'"

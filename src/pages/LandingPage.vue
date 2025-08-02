@@ -191,13 +191,13 @@ const videoDuration = ref(0);
 
 // Core Features with Font Awesome icons
 const coreFeatures = [
-  { title: 'Feed Interactivo', description: 'Mirá reels y posteos de la comunidad, historias de rescate, adopción y cuidado responsable.', icon: 'fas fa-home' },
   { title: 'Grupos', description: 'Unite a grupos como “Adoptantes en Buenos Aires” para colaborar.', icon: 'fas fa-users' },
   { title: 'Eventos', description: 'Participá en jornadas de adopción o caminatas cerca de tu casa.', icon: 'fas fa-calendar-alt' },
   { title: 'Mapa Interactivo', description: 'Encontrá veterinarias o paseadores cerca de tu casa.', icon: 'fas fa-map-marked-alt' },
+  { title: 'Educación', description: 'Aprendé con blogs sobre cuidado y bienestar animal.', icon: 'fas fa-book' },
+  { title: 'Recreativo', description: 'Mirá reels y posteos de la comunidad, historias de rescate, adopción y cuidado.', icon: 'fas fa-video' },
   { title: 'Chats Privados', description: 'Hablá en privado para coordinar ayuda o pedir consejos.', icon: 'fas fa-comments' },
   { title: 'Perfil Personal', description: 'Mostrá tus mascotas y compartí tus experiencias.', icon: 'fas fa-user' },
-  { title: 'Educación', description: 'Aprendé con blogs sobre cuidado y bienestar animal.', icon: 'fas fa-book' },
   { title: 'Adopción', description: 'Encontrá un nuevo amigo peludo para tu familia.', icon: 'fas fa-heart' },
 ];
 
