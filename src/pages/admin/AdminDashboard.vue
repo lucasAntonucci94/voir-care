@@ -60,20 +60,20 @@
 
       <!-- Stats Sections -->
       <template v-else>
-        <!-- Moderation Section -->
+        <!-- Gestión Section -->
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center justify-between font-dosis bg-primary/5 dark:bg-secondary/10 p-3 rounded-lg">
-            Moderación
+            Gestión
             <button
               class="text-sm text-primary dark:text-secondary hover:underline"
-              @click="toggleSection('moderation')"
-              aria-label="Alternar visibilidad de la sección de moderación"
+              @click="toggleSection('gestion')"
+              aria-label="Alternar visibilidad de la sección de gestión"
             >
-              {{ sections.moderation ? 'Ocultar' : 'Mostrar' }}
+              {{ sections.gestion ? 'Ocultar' : 'Mostrar' }}
             </button>
           </h2>
           <transition name="fade">
-            <div v-if="sections.moderation" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div v-if="sections.gestion" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
               <DashboardCard
                 title="Reportes"
                 :value="stats.reports"
@@ -260,7 +260,7 @@ const stats = ref({
 const sections = ref({
   userActivity: true,
   adminContent: true,
-  moderation: true,
+  gestion: true,
 });
 
 async function fetchStats() {

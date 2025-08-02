@@ -19,7 +19,7 @@ const navItems = [
   { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-tachometer-alt' },
   
   {
-    label: 'Moderación',
+    label: 'Gestión',
     icon: 'fas fa-user-shield',
     subItems: [
       { label: 'Reportes', route: '/admin/reports', icon: 'fas fa-exclamation-triangle' },

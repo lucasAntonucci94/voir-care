@@ -1,27 +1,23 @@
-<!-- locations-management.vue (versión corregida) -->
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
-    <!-- Header with Back Button -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
-        Administración de Ubicaciones
+        Administración de Ubicaciones (marcadores del mapa).
       </h1>
-      <!-- Se puede añadir un botón de "Añadir Nueva Ubicación" aquí si es necesario -->
     </div>
 
-    <!-- Loading and Error States -->
     <div
       v-if="locationsStore.isLoading"
       class="text-center text-gray-600 dark:text-gray-300"
     >
       <i class="fas fa-spinner fa-spin mr-2"></i> Cargando ubicaciones...
     </div>
-    <div
+    <!-- <div
       v-else-if="locationsStore.error"
       class="text-center text-red-500 dark:text-red-400"
     >
       Error: {{ locationsStore.error }}
-    </div>
+    </div> -->
     <div v-else>
       <!-- Search and Filters -->
       <div class="mb-6 flex flex-col sm:flex-row gap-4">
@@ -44,7 +40,7 @@
       </div>
 
       <!-- Locations Table -->
-      <div v-if="filteredLocations.length" class="overflow-x-auto rounded-lg">
+      <div v-if="filteredLocations.length" class=" rounded-lg">
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
             <tr
@@ -54,6 +50,7 @@
               <th class="py-3 px-6 text-left">Descripción</th>
               <th class="py-3 px-6 text-left">Creador</th>
               <th class="py-3 px-6 text-left">Coordenadas</th>
+              <th class="py-3 px-6 text-left">Dirección</th>
               <th class="py-3 px-6 text-center">Estado</th>
               <th class="py-3 px-6 text-center">Acciones</th>
             </tr>
@@ -74,7 +71,10 @@
                 {{ location.user?.displayName || 'Anónimo' }}
               </td>
               <td class="py-3 px-6 text-left">
-                ({{ location.address?.coordinates.lat.toFixed(4) }}, {{ location.address?.coordinates.lng.toFixed(4) }})
+                ({{ location.address?.coordinates.lat?.toFixed(4) }}, {{ location.address?.coordinates.lng?.toFixed(4) }})
+              </td>
+              <td class="py-3 px-6 text-left">
+                {{ location.address?.street }}
               </td>
               <td class="py-3 px-6 text-center">
                 <span
@@ -117,17 +117,6 @@
                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
                       <li>
                         <button
-                          @click="setGenericModalConfig('delete', location)"
-                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                          :disabled="isActionLoading[location.id]"
-                          :class="isActionLoading[location.id] ? 'opacity-50 cursor-not-allowed' : ''"
-                        >
-                          <i class="fas fa-trash-can mr-2 text-red-500"></i>
-                          Eliminar
-                        </button>
-                      </li>
-                      <li>
-                        <button
                           @click="setGenericModalConfig('confirm', location)"
                           class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                           :disabled="!location.pending || isActionLoading[location.id]"
@@ -142,7 +131,18 @@
                           Confirmar
                         </button>
                       </li>
-                      <!-- Se podría añadir un botón para editar que abra un modal de edición -->
+                      <li>
+                        <button
+                          @click="setGenericModalConfig('delete', location)"
+                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                          :disabled="isActionLoading[location.id]"
+                          :class="isActionLoading[location.id] ? 'opacity-50 cursor-not-allowed' : ''"
+                        >
+                          <i class="fas fa-trash-can mr-2 text-red-500"></i>
+                          Eliminar
+                        </button>
+                      </li>
+                      <!-- TODO: Se podría agregar un botón para editar-->
                     </ul>
                   </div>
                 </div>
@@ -162,6 +162,8 @@
       :visible="showLocationDetailModal"
       :location="selectedLocation"
       @close="closeLocationDetailModal"
+      @delete="deleteLocation"
+      @confirm="confirmLocation"
     />
 
     <!-- Modal de confirmación genérico -->
@@ -194,7 +196,7 @@ const showLocationDetailModal = ref(false);
 const showConfirmModal = ref(false);
 const selectedLocation = ref(null);
 const activeDropdown = ref(null);
-const isActionLoading = ref({}); // Estado de carga para cada ubicación
+const isActionLoading = ref({});
 const actionsDropdownRefs = ref({}); // Referencia a todos los menús desplegables
 
 const genericModalConfig = ref({
@@ -273,6 +275,8 @@ const deleteLocation = async (id) => {
     snackbarStore.show(`Error al eliminar la ubicación: ${error.message}`, 'error');
   } finally {
     isActionLoading.value[id] = false;
+    showLocationDetailModal.value = false;
+    document.body.style.overflow = '';
   }
 };
 
@@ -287,6 +291,8 @@ const confirmLocation = async (location) => {
     snackbarStore.show(`Error al confirmar la ubicación: ${error.message}`, 'error');
   } finally {
     isActionLoading.value[location.id] = false;
+    showLocationDetailModal.value = false;
+    document.body.style.overflow = '';
   }
 };
 
@@ -374,7 +380,7 @@ const setGenericModalConfig = (action, location) => {
       };
   }
   showConfirmModal.value = true;
-  document.body.style.overflow = 'hidden';
+  showLocationDetailModal.value = false;
 };
 
 // Gestionar el ciclo de vida

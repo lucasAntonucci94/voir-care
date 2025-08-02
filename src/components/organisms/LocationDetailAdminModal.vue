@@ -71,7 +71,7 @@
         <div class="space-y-3 mb-4 text-gray-600 dark:text-gray-300">
           <p class="flex items-center gap-2">
             <i class="fa-solid fa-map-location-dot"></i>
-            <span>Coordenadas: ({{ location.lat }}, {{ location.lng }})</span>
+            <span>Coordenadas: ({{ location.address?.coordinates?.lat?.toFixed(4) }}, {{ location.address?.coordinates?.lng?.toFixed(4) }})</span>
           </p>
           <p v-if="location.address?.street" class="flex items-center gap-2">
             <i class="fa-solid fa-location-dot"></i>
@@ -105,15 +105,16 @@
         <!-- Acciones de Administración -->
         <div class="flex flex-col sm:flex-row gap-3">
           <button
-            @click="emit('confirm')"
+            v-if="location.pending"
+            @click="emit('confirm',location)"
             :disabled="location.status === 'confirmed'"
             class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <i class="fa-solid fa-check text-base"></i>
-            Aprobar Ubicación
+            Aprobar Marcador
           </button>
           <button
-            @click="emit('softDelete')"
+            @click="emit('delete', location.id)"
             :disabled="location.status === 'deleted'"
             class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -140,32 +141,22 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close', 'confirm', 'softDelete']);
+const emit = defineEmits(['close', 'confirm', 'delete']);
 const showDetails = ref(false);
 
 const statusChipStyle = computed(() => {
-  switch (props.location.status) {
-    case 'confirmed':
-      return 'bg-green-600';
-    case 'pending':
-      return 'bg-yellow-500';
-    case 'deleted':
-      return 'bg-red-600';
-    default:
-      return 'bg-gray-600';
+  if (!props.location.pending) {
+    return 'bg-green-600';
+  } else {
+    return 'bg-yellow-500';
   }
 });
 
 const statusLabel = computed(() => {
-  switch (props.location.status) {
-    case 'confirmed':
-      return 'Confirmado';
-    case 'pending':
-      return 'Pendiente';
-    case 'deleted':
-      return 'Eliminado';
-    default:
-      return 'Estado desconocido';
+   if (!props.location.pending) {
+    return 'Confirmado';
+  } else {
+    return 'Pendiente';
   }
 });
 
