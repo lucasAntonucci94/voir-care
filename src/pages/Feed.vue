@@ -72,10 +72,10 @@ const { user } = useAuth();
 const postsStore = usePostsStore();
 const { categories } = useCategories();
 
-// Estado para el multiselect de filtros y referencia al elemento del DOM
+// Estado para el multiselect 
 const showFilters = ref(false);
 const selectedCategoryIds = ref([]);
-const filtersDropdownRef = ref(null); // <-- Nuevo ref para el contenedor del dropdown
+const filtersDropdownRef = ref(null);
 
 // Observador para inicializar selectedCategoryIds cuando las categorías estén disponibles
 watch(categories, (newCategories) => {
@@ -86,7 +86,7 @@ watch(categories, (newCategories) => {
     }
 }, { immediate: true });
 
-// Propiedad computada que determina si todas las categorías individuales están seleccionadas.
+// Determina si todas las categorías individuales están seleccionadas.
 const isAllSelected = computed(() => {
     return selectedCategoryIds.value.length === categories.value.length;
 });
@@ -110,7 +110,6 @@ const applyFilters = () => {
 
 // Función para cerrar el dropdown al hacer clic fuera
 const closeFiltersDropdown = (event) => {
-    // Si el dropdown está abierto y el clic no fue dentro de su contenedor, lo cerramos
     if (showFilters.value && filtersDropdownRef.value && !filtersDropdownRef.value.contains(event.target)) {
         showFilters.value = false;
     }
