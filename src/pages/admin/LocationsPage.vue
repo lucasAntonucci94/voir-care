@@ -117,7 +117,7 @@
                     <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
                       <li>
                         <button
-                          @click="setGenericModalConfig('softDelete', location)"
+                          @click="setGenericModalConfig('delete', location)"
                           class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                           :disabled="isActionLoading[location.id]"
                           :class="isActionLoading[location.id] ? 'opacity-50 cursor-not-allowed' : ''"
@@ -250,9 +250,23 @@ const closeLocationDetailModal = () => {
 
 // Eliminar ubicación (eliminación suave)
 const softDeleteLocation = async (id) => {
+  //TODO: Implementar lógica de eliminación suave
+  // isActionLoading.value[id] = true;
+  // try {
+  //   await locationsStore.softDelete(id);
+  //   snackbarStore.show(`Ubicación eliminada exitosamente`, 'success');
+  //   activeDropdown.value = null;
+  // } catch (error) {
+  //   snackbarStore.show(`Error al eliminar la ubicación: ${error.message}`, 'error');
+  // } finally {
+  //   isActionLoading.value[id] = false;
+  // }
+};
+// Eliminar ubicación (eliminación suave)
+const deleteLocation = async (id) => {
   isActionLoading.value[id] = true;
   try {
-    await locationsStore.softDelete(id);
+    await locationsStore.deleteLocation(id);
     snackbarStore.show(`Ubicación eliminada exitosamente`, 'success');
     activeDropdown.value = null;
   } catch (error) {
@@ -263,16 +277,16 @@ const softDeleteLocation = async (id) => {
 };
 
 // Confirmar ubicación
-const confirmLocation = async (id) => {
-  isActionLoading.value[id] = true;
+const confirmLocation = async (location) => {
+  isActionLoading.value[location.id] = true;
   try {
-    await locationsStore.confirmLocation(id);
+    await locationsStore.togglePending(location);
     snackbarStore.show(`Ubicación confirmada exitosamente`, 'success');
     activeDropdown.value = null;
   } catch (error) {
     snackbarStore.show(`Error al confirmar la ubicación: ${error.message}`, 'error');
   } finally {
-    isActionLoading.value[id] = false;
+    isActionLoading.value[location.id] = false;
   }
 };
 
@@ -301,7 +315,7 @@ const setGenericModalConfig = (action, location) => {
         confirmButtonText: 'Confirmar',
         cancelButtonText: 'Cancelar',
         confirmMethod: () => {
-          confirmLocation(location.id);
+          confirmLocation(location);
           showConfirmModal.value = false;
           document.body.style.overflow = '';
         },
@@ -319,6 +333,23 @@ const setGenericModalConfig = (action, location) => {
         cancelButtonText: 'Cancelar',
         confirmMethod: () => {
           softDeleteLocation(location.id);
+          showConfirmModal.value = false;
+          document.body.style.overflow = '';
+        },
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = '';
+        }
+      };
+      break;
+    case 'delete':
+      genericModalConfig.value = {
+        title: 'Eliminar Ubicación Permanentemente',
+        message: `¿Estás seguro de que deseas eliminar la ubicación: ${location.title}?`,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar',
+        confirmMethod: () => {
+          deleteLocation(location.id);
           showConfirmModal.value = false;
           document.body.style.overflow = '';
         },

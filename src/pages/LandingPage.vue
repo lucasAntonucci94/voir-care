@@ -46,7 +46,7 @@
       <div class="md:w-1/2 px-4">
         <h2 class="text-3xl md:text-4xl font-bold text-gray-700 dark:text-white mb-6 dosis-font">Un mundo mejor para los animales</h2>
         <p class="text-base text-gray-700 dark:text-gray-300 mb-4">En Voir, creamos una comunidad unida por el amor a los animales, donde podés educarte, colaborar y hacer una diferencia en el bienestar de las mascotas.</p>
-        <p class="text-base text-gray-700 dark:text-gray-300 mb-6">Nuestra misión es fomentar la adopción responsable y el cuidado consciente, conectando a personas apasionadas por los animales en Buenos Aires y más allá.</p>
+        <p class="text-base text-gray-700 dark:text-gray-300 mb-6">Nuestra misión es fomentar la adopción responsable y el cuidado consciente, conectando a personas apasionadas por los animales en Buenos Aires y toda la Argentina.</p>
       </div>
       <div class="md:w-1/2 px-4">
         <div class="relative h-40 xs:h-90 sm:h-80 md:h-70 rounded-lg overflow-hidden">
@@ -160,9 +160,9 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import ServiceImage1 from '../assets/1.png';
-import ServiceImage2 from '../assets/2.png';
-import ServiceImage3 from '../assets/3.png';
+import ServiceImage1 from '../assets/map.png';
+import ServiceImage2 from '../assets/group.png';
+import ServiceImage3 from '../assets/event.png';
 import { useThemeStore } from '../stores/theme';
 import HeroLight from '../assets/hero/heroLadingPageLight.mp4';
 import HeroDark from '../assets/hero/heroLadingPageDark.mp4';
@@ -211,7 +211,7 @@ const coreServices = [
   },
   { 
     name: 'Grupos', 
-    description: 'Conectá con comunidades apasionadas: adopción, rescate, razas específicas y más. ¡Tu tribu te espera!', 
+    description: 'Conectá con comunidades apasionadas: adopción, rescate, consejos y más. ¡Tu tribu te espera!', 
     image: ServiceImage2, 
     link: '/explorar' 
   },
