@@ -333,6 +333,20 @@ export function useLocations() {
     }
   }
 
+  /**
+   * Obtiene la cantidad total de reels en la colección reels.
+   * @returns {Promise<number>} - La cantidad de reels.
+   */
+  async function getAllCount() {
+    try {
+      const querySnapshot = await getDocs(locationsRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al contar todas las locations:', error);
+      throw error;
+    }
+  }
+
   return {
     saveLocation,
     subscribeToIncomingLocations,
@@ -342,5 +356,6 @@ export function useLocations() {
     deleteLocation,
     changeStateLocation,
     subscribeToUserLocations,
+    getAllCount,
   };
 }

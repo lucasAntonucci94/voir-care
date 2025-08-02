@@ -540,8 +540,8 @@ const steps = ref([
   { label: 'Información' },
   { label: 'Multimedia' },
   { label: 'Fechas' },
-  { label: 'Ubicación/Link' }, // Nuevo label para el paso 4
-  { label: 'Configuración' }, // Nuevo label para el paso 5
+  { label: 'Ubicación/Link' },
+  { label: 'Configuración' },
 ]);
 
 const categories = ref([
@@ -570,7 +570,7 @@ const editForm = ref({
     lat: null,
     lng: null,
   },
-  meetLink: '', // Agregado para el link del meet
+  meetLink: '',
   capacity: null,
   idDoc: '',
   ownerId: '',
@@ -580,10 +580,10 @@ const editForm = ref({
     interested: [],
     notInterested: [],
   },
-  modality: 0, // Default to Presencial (0) or from props.event.modality
-  hasOnlineSale: false, // New property for checkbox
-  sellTicketLink: '', // New property for ticket sale link
-  sellTicketText: '', // New property for ticket sale description
+  modality: 0,
+  hasOnlineSale: false,
+  sellTicketLink: '',
+  sellTicketText: '',
 });
 
 watch(() => props.visible, (newVal) => {
@@ -601,12 +601,12 @@ watch(
       ...newVal,
       startTime: formatFirebaseTimestamp(newVal.startTime),
       endTime: formatFirebaseTimestamp(newVal.endTime),
-      modality: newVal.modality !== undefined ? newVal.modality : 0, // Set modality from event or default to 0
-      meetLink: newVal.meetLink || '', // Inicializa meetLink
-      location: newVal.location || { address: '', lat: null, lng: null }, // Asegura que location no sea null
-      hasOnlineSale: newVal.hasOnlineSale || false, // Initialize from event or default to false
-      sellTicketLink: newVal.sellTicketLink || '', // Initialize from event or default to empty
-      sellTicketText: newVal.sellTicketText || '', // Initialize from event or default to empty
+      modality: newVal.modality !== undefined ? newVal.modality : 0,
+      meetLink: newVal.meetLink || '',
+      location: newVal.location || { address: '', lat: null, lng: null },
+      hasOnlineSale: newVal.hasOnlineSale || false,
+      sellTicketLink: newVal.sellTicketLink || '',
+      sellTicketText: newVal.sellTicketText || '',
     };
     newMediaBase64.value = null;
   },
@@ -619,7 +619,7 @@ function closeModal() {
   emit('cancel');
 }
 
-// Función para normalizar URLs
+// Función para normalizar URLs V1
 function normalizeUrl(url) {
   if (!url) return '';
   // Eliminar espacios en blanco y convertir a minúsculas
@@ -636,7 +636,7 @@ function normalizeUrl(url) {
 function validateStep(step) {
   let isValid = true;
   const errors = {};
-  // Regex para validar URLs
+  // Regex para validar URLs V2
   // Acepta los siguientes formatos:
   // - http://dominio.com
   // - https://dominio.com
@@ -700,7 +700,7 @@ function validateStep(step) {
     if (!editForm.value.capacity || editForm.value.capacity <= 0) {
       errors.capacity = 'La capacidad debe ser un número positivo';
       isValid = false;
-    } else if (editForm.value.capacity > 99999) { // Límite de 5 dígitos como en el pattern
+    } else if (editForm.value.capacity > 99999) { // Límite de 5 dígitos
       errors.capacity = 'La capacidad máxima es 99999';
       isValid = false;
     }

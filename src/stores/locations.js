@@ -145,5 +145,25 @@ export const useLocationsStore = defineStore('locations', {
         throw error;
       }
     },
+    async getCount() {
+      try {
+          const { getAllCount } = useLocations();
+          return await getAllCount();
+      } catch (error) {
+          console.error('Error al obtener la cantidad de grupos en el store:', error);
+          this.error = error.message || 'Error al obtener la cantidad de grupos en el store';
+          throw error;
+      }
+    },
+    async getCountPendings() {
+      // try {
+      //     const { getAllReelsCount } = useReels();
+      //     return await getAllReelsCount();
+      // } catch (error) {
+      //     console.error('Error al obtener la cantidad de grupos en el store:', error);
+      //     this.error = error.message || 'Error al obtener la cantidad de grupos en el store';
+      //     throw error;
+      // }
+    },
   },
 });

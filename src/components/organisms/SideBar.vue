@@ -112,7 +112,7 @@ const otherNavItems = computed(() => [
   // { to: '/contact', icon: 'fa-envelope', label: 'Contacto' },
 ]);
 
-// Filtrar elementos ocultos para evitar v-for y v-if en el mismo elemento
+// Filtrar elementos ocultos
 const filteredOtherNavItems = computed(() => otherNavItems.value.filter(item => !item.hidden));
 
 function pathLocation(isAuthenticated) {

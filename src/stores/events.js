@@ -94,7 +94,6 @@ export const useEventsStore = defineStore('events', {
     },
     // Crear un nuevo evento
     async editEvent(idDoc, eventData) {
-        debugger
         const { updateEvent } = useEvents()
         this.isCreating = true
         try {

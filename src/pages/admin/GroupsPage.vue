@@ -39,7 +39,6 @@
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
             <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
-              <th class="py-3 px-6 text-left">Id</th>
               <th class="py-3 px-6 text-left">Título</th>
               <th class="py-3 px-6 text-left">Descripción</th>
               <th class="py-3 px-6 text-center">Miembros</th>
@@ -53,8 +52,6 @@
               :key="group.idDoc"
               class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <td class="py-3 px-6 text-left">{{ group.idDoc || 'N/A' }}</td>
-              
               <td class="py-3 px-6 text-left whitespace-nowrap">
                 <div class="flex items-center">
                   <img
@@ -82,7 +79,7 @@
                     <i class="fas fa-edit"></i>
                   </button>
                   <button
-                    @click="deleteGroup(group.idDoc)"
+                    @click="handleDelete(group)"
                     class="text-red-500 hover:text-red-700"
                     title="Eliminar"
                     aria-label="Eliminar grupo"
@@ -99,71 +96,36 @@
         No se encontraron grupos con los filtros aplicados.
       </div>
     </div>
+    
+    <!-- Modal de confirmación de eliminación -->
+    <GenericConfirmModal
+      :visible="showDeleteModal"
+      title="¿Eliminar grupo?"
+      message="Esta acción no se puede deshacer. ¿Querés continuar?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteModal"
+      @confirmed="confirmDelete"
+    />
 
-    <!-- Edit Modal -->
-    <div
-      v-if="showEditModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Editar Grupo</h2>
-        <form @submit.prevent="saveGroup">
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="title">Título</label>
-            <input
-              id="title"
-              v-model="editGroup.title"
-              type="text"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              aria-required="true"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="description">Descripción</label>
-            <textarea
-              id="description"
-              v-model="editGroup.description"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-            ></textarea>
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1">Miembros</label>
-            <input
-              :value="editGroup.members?.length || 0"
-              type="text"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              disabled
-            />
-          </div>
-          <div class="flex justify-end gap-2">
-            <button
-              type="button"
-              @click="showEditModal = false"
-              class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md"
-              aria-label="Cancelar"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-primary text-white rounded-md"
-              aria-label="Guardar cambios"
-            >
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <!-- Modal de edición de grupo -->
+    <EditGroupModal
+      v-if="selectedGroup && showEditModal"
+      :visible="showEditModal"
+      :group="selectedGroup"
+      @close="closeEditModal"
+      @groupUpdated="submitEdit"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { RouterLink } from 'vue-router';
 import { useGroups } from '../../composable/useGroups';
 import { useGroupsStore } from '../../stores/groups';
 import { useSnackbarStore } from '../../stores/snackbar';
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
+import EditGroupModal from '../../components/organisms/EditGroupModal.vue';
 
 const groupsStore = useGroupsStore();
 const { updateGroup } = useGroups();
@@ -171,8 +133,10 @@ const snackbarStore = useSnackbarStore();
 
 const searchQuery = ref('');
 const filterMembers = ref('');
+
+const showDeleteModal = ref(false);
 const showEditModal = ref(false);
-const editGroup = ref(null);
+const selectedGroup = ref(null);
 
 // Computed property for filtered groups
 const filteredGroups = computed(() => {
@@ -213,37 +177,46 @@ const formatDate = (timestamp) => {
   });
 };
 
-// Open edit modal
-const openEditModal = (group) => {
-  editGroup.value = { ...group };
+//Edit functions
+function openEditModal(group) {
+  selectedGroup.value = { ...group };
   showEditModal.value = true;
-};
+  document.body.style.overflow = 'hidden';
+}
 
-// Save group changes
-const saveGroup = async () => {
-  try {
-    await updateGroup(editGroup.value.idDoc, {
-      title: editGroup.value.title,
-      description: editGroup.value.description,
-    });
-    snackbarStore.show('Grupo actualizado exitosamente', 'success');
-    showEditModal.value = false;
-  } catch (error) {
-    console.error('Error updating group:', error);
-    snackbarStore.show('Error al guardar los cambios', 'error');
-  }
-};
+function closeEditModal() {
+  showEditModal.value = false;
+  document.body.style.overflow = '';
+  selectedGroup.value = null;
+}
 
-// Delete group
-const deleteGroup = async (idDoc) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar este grupo?')) return;
+function submitEdit(updatedGroup) {
+  closeEditModal();
+}
+
+// Delete functions
+function handleDelete(group) {
+  showDeleteModal.value = true;
+  selectedGroup.value = group;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false;
+  document.body.style.overflow = '';
+  selectedGroup.value = null;
+}
+
+async function confirmDelete() {
   try {
-    await groupsStore.deleteGroup(idDoc);
-    snackbarStore.show('Grupo eliminado exitosamente', 'success');
+    await groupsStore.deleteGroup(selectedGroup.value.idDoc);
+    snackbarStore.show(`Grupo ${selectedGroup.value.title} eliminado exitosamente`, 'success');
   } catch (error) {
-    snackbarStore.show(`Error al eliminar el grupo: ${groupsStore.error || 'Intenta de nuevo.'}`, 'error');
+    console.error('Error al eliminar grupo:', error);
+    snackbarStore.show(`Error al eliminar grupo. IdDoc:${selectedGroup.value.idDoc}, Title: ${selectedGroup.value.title}.`, 'error');
   }
-};
+  closeDeleteModal();
+}
 
 // Manage subscription lifecycle
 onMounted(() => {

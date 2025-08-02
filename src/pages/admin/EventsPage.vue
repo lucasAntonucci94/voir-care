@@ -170,7 +170,7 @@ const filteredEvents = computed(() => {
 
 // Unique owners for filter dropdown
 const uniqueOwners = computed(() => {
-  const owners = new Set(eventsStore.allEvents.map((event) => event.ownerId).filter(Boolean));
+  const owners = new Set(eventsStore.allEvents?.value?.map((event) => event.ownerId).filter(Boolean));
   return [...owners].sort();
 });
 
@@ -225,7 +225,6 @@ function closeDeleteModal() {
 
 async function confirmDelete() {
   try {
-    debugger
     await eventsStore.deleteEvent(selectedEvent.value.idDoc);
     snackbarStore.show(`Evento ${selectedEvent.value.title} eliminado exitosamente`, 'success');
   } catch (error) {

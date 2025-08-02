@@ -27,7 +27,6 @@ export function useSubscriptionRequests() {
         createdAt: serverTimestamp()
     });
     } catch (err) {
-        debugger
       console.error('Error creating subscription request:', err);
       throw err;
     }
@@ -41,7 +40,6 @@ export function useSubscriptionRequests() {
   async function approveSubscriptionRequest(requestId, userId) {
     try {
       const { suscribeUser } = useUsers();
-      debugger
       await suscribeUser(userId, true);  
       const requestDocRef = doc(db, 'subscriptionRequests', requestId);
       await setDoc(requestDocRef, { status: 'approved' }, { merge: true });

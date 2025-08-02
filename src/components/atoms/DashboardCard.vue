@@ -24,13 +24,13 @@
           v-if="badge === 'warning'"
           class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium text-white bg-red-500 rounded-full"
         >
-          ¡Atención!
+          {{ badgeTitle ?? '¡Atención!' }}
         </span>
         <span
           v-if="badge === 'success'"
           class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium text-white bg-green-500 rounded-full"
         >
-          Estable
+          {{ badgeTitle ?? 'Estable' }}
         </span>
       </p>
     </div>
@@ -68,6 +68,10 @@ const props = defineProps({
     default: null,
   },
   badge: {
+    type: String,
+    default: null,
+  },
+  badgeTitle: {
     type: String,
     default: null,
   },

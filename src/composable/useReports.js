@@ -51,7 +51,6 @@ export function useReports() {
         created_at: serverTimestamp(),
         status: 'pending',
       };
-      debugger
       const docRef = await addDoc(reportRef, reportData);
       return docRef.id;
     } catch (err) {

@@ -249,10 +249,10 @@ function onKeydown(event, action) {
 }
 
 /* Efectos de hover y focus para botones */
-button:hover,
+/* button:hover,
 a:hover {
   transform: translateY(-1px);
-}
+} */
 
 button:focus,
 a:focus {

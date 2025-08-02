@@ -51,7 +51,6 @@ onMounted(async () => {
   const blogId = route.params.idBlog;
   try {
     const foundBlog = await educationBlogsStore.getBlogById(blogId);
-    debugger
     if (!foundBlog) {
       router.push('/blog'); // Fallback
     } else {

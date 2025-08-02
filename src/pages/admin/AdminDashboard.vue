@@ -150,9 +150,9 @@
               />
               <DashboardCard
                 title="Marcadores de Mapa"
-                :value="stats?.mapMarkers ?? 0"
+                :value="stats?.locations"
                 icon="fas fa-map-marker-alt"
-                routeTo="/admin/posts"
+                routeTo="/admin/locations"
                 tooltip="Marcadores creados por usuarios"
               />
                 <!-- :badge="stats.mapMarkers > 100 ? 'success' : null" -->
@@ -225,6 +225,7 @@ import { useReportsStore } from '../../stores/reports';
 import { usePostsStore } from '../../stores/posts';
 import { useEducationBlogsStore } from '../../stores/educationBlogs';
 import { useReelsStore } from '../../stores/reels';
+import { useLocationsStore } from '../../stores/locations';
 import { useSnackbarStore } from '../../stores/snackbar';
 import { useSubscriptionRequests } from '../../composable/useSubscriptionRequest';
 
@@ -237,6 +238,7 @@ const reportsStore = useReportsStore();
 const postsStore = usePostsStore();
 const educationBlogsStore = useEducationBlogsStore();
 const reelsStore = useReelsStore();
+const locationsStore = useLocationsStore();
 const { getPendingSubscriptionRequestsCount } = useSubscriptionRequests();
 
 const isLoading = ref(true);
@@ -256,6 +258,8 @@ const stats = ref({
   reelsDefault: 0,
   reports: 0,
   subscriptionRequests: 0,
+  locations: 0,
+  posts: 0,
 });
 const sections = ref({
   userActivity: true,
@@ -276,6 +280,7 @@ async function fetchStats() {
       reelsCount,
       reelsDefaultCount,
       subscriptionRequestsCount,
+      locationsCount
     ] = await Promise.all([
       usersStore.getCount(timeFilter.value).catch(() => 0),
       eventsStore.getCount(timeFilter.value).catch(() => 0),
@@ -286,8 +291,8 @@ async function fetchStats() {
       reelsStore.getCount().catch(() => 0),
       reelsStore.getDefaultCount().catch(() => 0),
       getPendingSubscriptionRequestsCount().catch(() => 0),
+      locationsStore.getCount().catch(() => 0),
     ]);
-    debugger
     stats.value = {
       users: usersCount,
       events: eventsCount,
@@ -298,6 +303,7 @@ async function fetchStats() {
       reels: reelsCount,
       reelsDefault: reelsDefaultCount,
       subscriptionRequests: subscriptionRequestsCount,
+      locations: locationsCount,
     };
   } catch (error) {
     console.error('Error fetching stats:', error);
