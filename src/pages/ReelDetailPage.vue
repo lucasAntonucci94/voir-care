@@ -52,7 +52,6 @@ const isLoading = ref(true);
 const error = ref(null);
 
 const reelId = computed(() => route.params.id);
-debugger
 onMounted(async () => {
   try {
     isLoading.value = true;

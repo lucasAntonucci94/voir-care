@@ -630,6 +630,10 @@ async function saveProfile() {
       updatedPhotoPath = path;
     }
 
+    //Normalizar URLs de redes sociales
+    editForm.value.socialNetwork.forEach(network => {
+      network.value = normalizeUrl(network.value);
+    });
     const profileToUpdate = {
       ...props.activeUser,
       ...editForm.value,
@@ -648,6 +652,7 @@ async function saveProfile() {
     isLoading.value = false;
   }
 }
+
 
 function validateForm() {
   const validationErrors = {};
@@ -715,11 +720,26 @@ function removeNetwork(index) {
   editForm.value?.socialNetwork?.splice(index, 1);
 }
 
+// Función para normalizar URLs
+function normalizeUrl(url) {
+  if (!url) return '';
+  // Eliminar espacios en blanco y convertir a minúsculas
+  let normalized = url.trim().toLowerCase();
+  // Remover barra final si existe
+  normalized = normalized.replace(/\/+$/, '');
+  // Añadir https:// si no tiene protocolo
+  if (!/^https?:\/\//i.test(normalized)) {
+    normalized = `https://${normalized}`;
+  }
+  return normalized;
+}
+
 function isValidUrl(string) {
   try {
-    new URL(string);
-    return true;
-  } catch (_) {
+    // Regex para validar URLs
+    const urlRegex = /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/;
+    return urlRegex.test(string);
+  } catch (error) {
     return false;
   }
 }

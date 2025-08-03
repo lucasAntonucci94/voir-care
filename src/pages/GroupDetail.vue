@@ -95,7 +95,7 @@
                 </button>
               </li>
               <!-- Report Group -->
-              <li v-if="group?.ownerId !== user?.uid && !isAdmin">
+              <li v-if="group?.ownerId !== user?.uid">
                 <button
                   @click="showReportGroupModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
@@ -113,7 +113,7 @@
                 </button>
               </li> -->
               <!-- Hide Group -->
-              <li v-if="group?.ownerId !== user?.uid && !isAdmin && isMember">
+              <li v-if="group?.ownerId !== user?.uid && isMember">
                 <button
                   @click="toggleMembership"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
@@ -239,13 +239,13 @@
           <div class="space-y-6">
             <!-- Card de Acciones -->
             <section
-              v-if="!isAdmin && !isMember"
+              v-if="!isMember"
               class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700"
             >
               <h2 class="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100 sr-only">Acciones</h2>
               <div class="flex flex-col gap-3">
+                <!-- v-if="!isAdmin" -->
                 <button
-                  v-if="!isAdmin"
                   @click="toggleMembership"
                   class="w-full px-4 py-2 text-white rounded-md shadow-sm focus:outline-none transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer"
                   :class="isMember ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'"
@@ -267,6 +267,7 @@
               <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Creador</h2>
                 <button
+                  v-if="isMember"
                   class="w-auto px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-md shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
                   @click="openInviteFriendsModal"
                 >
@@ -351,7 +352,7 @@ import { formatTimestamp } from '../utils/formatTimestamp';
 import { useGroupsStore } from '../stores/groups';
 import { useUsersStore } from '../stores/users';
 import defaultAvatar from '../assets/avatar1.jpg';
-import defaultGroupBanner from '../assets/wallwhite.jpg';
+import defaultGroupBanner from '../assets/default-banner.jpg';
 import { useAuth } from '../api/auth/useAuth';
 import ConversationGroupTab from '../components/organisms/ConversationGroupTab.vue';
 import GroupMembersTab from '../components/organisms/GroupMembersTab.vue';

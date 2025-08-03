@@ -118,7 +118,21 @@ export const useLocationsStore = defineStore('locations', {
         throw error;
       }
     },
-
+    /**
+     * @param {string} idDoc El ID del documento de Firestore a buscar.
+     * @returns {Promise<Object|null>} El objeto del location, o null si no se encuentra.
+     */
+    async fetchLocationByIdDoc(idDoc) {
+      // console.log('Buscando location por idDoc:', idDoc);
+      const { getLocationByIdDoc } = useLocations();
+      try {
+        const location = await getLocationByIdDoc(idDoc);
+        return location;
+      } catch (error) {
+        console.error('Error al buscar location por idDoc:', error);
+        throw error;
+      }
+    },
     // Cambiar estado pending
     async togglePending(location) {
       // console.log('Cambiando estado pending de location:', location.idDoc);
@@ -130,6 +144,26 @@ export const useLocationsStore = defineStore('locations', {
         console.error('Error al cambiar estado pending:', error);
         throw error;
       }
+    },
+    async getCount() {
+      try {
+          const { getAllCount } = useLocations();
+          return await getAllCount();
+      } catch (error) {
+          console.error('Error al obtener la cantidad de grupos en el store:', error);
+          this.error = error.message || 'Error al obtener la cantidad de grupos en el store';
+          throw error;
+      }
+    },
+    async getCountPendings() {
+      // try {
+      //     const { getAllReelsCount } = useReels();
+      //     return await getAllReelsCount();
+      // } catch (error) {
+      //     console.error('Error al obtener la cantidad de grupos en el store:', error);
+      //     this.error = error.message || 'Error al obtener la cantidad de grupos en el store';
+      //     throw error;
+      // }
     },
   },
 });

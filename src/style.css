@@ -157,7 +157,33 @@
   z-index: 1000;
   white-space: nowrap;
 }
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+/* Aplica el borde solo a las filas */
+tbody tr {
+  border-bottom: 1px solid #e5e7eb; /* Color de borde de fila */
+}
 
+/* Asegura que la última fila no tenga borde inferior */
+tbody tr:last-child {
+  border-bottom: none;
+}
+
+th,
+td {
+  border-right: 1px solid #e5e7eb !important;
+}
+.dark th,
+.dark td {
+  border-right: 1px solid #3a393f !important;
+}
+
+th:last-child,
+td:last-child {
+  border-right: none;
+}
 
 
 #app {

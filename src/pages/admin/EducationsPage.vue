@@ -65,7 +65,7 @@
       <div v-if="filteredBlogs.length" class="overflow-x-auto rounded-lg">
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
-            <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
+            <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
               <th class="py-3 px-6 text-left">ID</th>
               <th class="py-3 px-6 text-left">Título</th>
               <th class="py-3 px-6 text-left">Fecha</th>
@@ -74,7 +74,7 @@
               <th class="py-3 px-6 text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light">
+          <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light josefin-font">
             <tr
               v-for="blog in filteredBlogs"
               :key="blog.id"
@@ -428,40 +428,5 @@ onUnmounted(() => {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   }
-}
-
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  border-right: 1px solid #e5e7eb;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
-}
-
-button i {
-  font-size: 1.25rem;
-}
-
-.bg-primary {
-  background-color: #3b82f6;
-}
-
-.bg-primary:hover {
-  background-color: #2563eb;
-}
-
-.bg-secondary {
-  background-color: #60a5fa;
-}
-
-.bg-secondary:hover {
-  background-color: #3b82f6;
 }
 </style>

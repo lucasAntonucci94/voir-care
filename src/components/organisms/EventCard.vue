@@ -141,9 +141,9 @@
             :disabled="!user"
           >
             <i :class="isGoing ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-            <p class="hidden lg:block">
+            <span class="hidden lg:block">
               {{ attendanceLabel }}
-            </p>
+            </span>
           </button>
         </div>
       </div>

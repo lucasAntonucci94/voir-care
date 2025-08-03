@@ -69,9 +69,10 @@ function centerOnUserLocation() {
 const filteredLocations = computed(() => {
   const filtered = locationsStore?.locations?.value?.filter((location) => !location.pending) || [];
   if (activeFilters.value.length === 0) return filtered; // Devolver lista vacía cuando no hay filtros
-  return filtered.filter((location) =>
+  var locationsss = filtered.filter((location) =>
     activeFilters.value.some((filter) => filter.toLowerCase() === location.type.toLowerCase())
   );
+  return locationsss
 });
 
 function goBack() {

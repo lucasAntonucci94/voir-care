@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, getDocs, updateDoc, collection, onSnapshot,deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, getDocs, updateDoc, collection, onSnapshot,deleteDoc,serverTimestamp, addDoc } from 'firebase/firestore';
 import { newGuid } from '../utils/newGuid';
 
 // Inicializamos Firestore
@@ -30,6 +30,7 @@ export function useReports() {
    * @throws {Error} If entityType or entityId is missing or invalid
    */
   async function saveReport({ entityType, entityId, userId, reason = 'No especificado', description, metadata = {} }) {
+    debugger
     // Validation
     if (!entityType || !entityId || !userId) {
       throw new Error('entityType, entityId, and userId are required');
@@ -51,7 +52,6 @@ export function useReports() {
         created_at: serverTimestamp(),
         status: 'pending',
       };
-
       const docRef = await addDoc(reportRef, reportData);
       return docRef.id;
     } catch (err) {
@@ -172,6 +172,27 @@ export function useReports() {
     }
   }
 
+  /**
+   * Actualiza el campo 'status' de un reporte específico.
+   * @param {string} docId - ID del documento del reporte a actualizar
+   * @param {string} newStatus - El nuevo estado a establecer
+   * @returns {Promise<void>}
+   * @throws {Error} Si docId o newStatus no son proporcionados o si hay un error al actualizar
+   */
+  async function updateReportStatus(docId, newStatus) {
+    if (!docId || !newStatus) {
+      throw new Error('docId and newStatus are required');
+    }
+
+    try {
+      const reportDoc = doc(reportRef, docId);
+      await updateDoc(reportDoc, { status: newStatus });
+    } catch (error) {
+      console.error('Error al actualizar el estado del reporte:', error);
+      throw error;
+    }
+  }
+
   return {
     saveReport,
     getReportsCount,
@@ -180,5 +201,6 @@ export function useReports() {
     getAllReports,
     softDeleteReport,
     subscribeToReports,
+    updateReportStatus,
   };
 }

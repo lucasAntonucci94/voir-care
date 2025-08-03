@@ -1,4 +1,3 @@
-// stores/userStatus.js
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useUserStatus } from '../composable/useUserStatus';

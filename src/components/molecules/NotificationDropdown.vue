@@ -3,15 +3,16 @@
     <!-- Botón de notificaciones -->
     <button
       @click="toggle"
-      class="relative flex flex-col items-center  gap-1 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition"
+      class="relative flex flex-col items-center gap-1 text-white hover:text-primary-lighter dark:hover:text-secondary-lighter transition"
       title="Notificaciones"
       aria-haspopup="true"
       :aria-expanded="props.isOpen.toString()"
       aria-controls="notificationsDropdown"
       aria-label="Abrir menú de notificaciones"
+      id="notification-button"
     >
       <i class="fa-solid fa-bell text-xl" aria-hidden="true"></i>
-      <p class="text-xs lg:text-sm mt-1 font-bold hidden sm:block">Notificaciones</p>
+      <span class="text-xs lg:text-sm mt-1 font-bold hidden sm:block">Notificaciones</span>
       <span
         v-if="unreadCount > 0"      
         role="status"
@@ -39,15 +40,20 @@
         <button
           @click="toggle"
           class="sm:hidden absolute top-4 right-2 w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700"
-          title="Notificaciones"
+          title="Cerrar notificaciones"
           aria-label="Cerrar menú de notificaciones"
         >
-          <i class="fa-solid fa-times text-xl"></i>
+          <i class="fa-solid fa-times text-xl" aria-hidden="true"></i>
         </button>
 
         <!-- Tabs -->
-        <div class="flex justify-around border-b border-gray-200 dark:border-gray-700 text-sm font-medium">
+        <div role="tablist" class="flex justify-around border-b border-gray-200 dark:border-gray-700 text-sm font-medium">
           <button
+            role="tab"
+            :id="activeTab === 'unread' ? 'tab-unread' : 'tab-read'"
+            :aria-selected="activeTab === 'unread' ? 'true' : 'false'"
+            :aria-controls="activeTab === 'unread' ? 'panel-unread' : 'panel-read'"
+            tabindex="0"
             class="w-1/2 py-2 transition"
             :class="activeTab === 'unread' ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary' : 'text-gray-500 dark:text-gray-400'"
             @click="activeTab = 'unread'"
@@ -55,6 +61,11 @@
             No leídas
           </button>
           <button
+            role="tab"
+            :id="activeTab === 'read' ? 'tab-read' : 'tab-unread'"
+            :aria-selected="activeTab === 'read' ? 'true' : 'false'"
+            :aria-controls="activeTab === 'read' ? 'panel-read' : 'panel-unread'"
+            tabindex="-1"
             class="w-1/2 py-2 transition"
             :class="activeTab === 'read' ? 'text-primary dark:text-secondary border-b-2 border-primary dark:border-secondary' : 'text-gray-500 dark:text-gray-400'"
             @click="activeTab = 'read'"
@@ -83,6 +94,7 @@
           <button
             v-else-if="activeTab === 'read'"
             @click="deleteAllRead"
+            aria-label="Borrar todas las notificaciones leídas"
             :class="[
               'text-xs',
               {
@@ -96,70 +108,85 @@
           </button>
         </div>
 
-        <!-- Lista -->
-        <ul
-          v-if="filteredNotifications.length > 0"
-          role="listbox"
-          aria-label="Lista de notificaciones"
-        >
-          <li
-            v-for="notification in filteredNotifications"
-            :key="notification.id"
-            role="option"
-            tabindex="0"
-            @click="handleClick(notification)"
-            @keydown="onKeydown(notification, $event)"
-            :class="[
-              'group px-4 py-3 flex justify-between items-start gap-2 relative cursor-pointer transition-colors',
-              'hover:bg-gray-100 dark:hover:bg-gray-700'
-            ]"
-          >
-            <!-- Cuerpo de la notificación -->
-            <div
-              class="flex-1"
-              :class="notification.read ? 'text-gray-400 dark:text-gray-500' : 'text-black dark:text-gray-200 font-semibold'"
+        <!-- Contenedor de paneles para las pestañas -->
+        <div :id="activeTab === 'unread' ? 'panel-unread' : 'panel-read'" role="tabpanel" :aria-labelledby="activeTab === 'unread' ? 'tab-unread' : 'tab-read'" class="flex-grow">
+            <!-- Lista -->
+            <ul
+              v-if="filteredNotifications.length > 0"
+              role="listbox"
+              aria-label="Lista de notificaciones"
             >
-              {{ notification.message }}
-            </div>
-
-            <!-- Botón de acciones -->
-            <div class="relative">
-              <button
-                @click.stop="toggleActionsMenu(notification.id, $event)"
-                class="p-1 text-gray-600 dark:text-gray-300 bg-gray-300/50 dark:bg-gray-900/50 rounded-full hover:bg-gray-300/90 dark:hover:bg-gray-900/90 transition-colors"
-                aria-label="Opciones de notificación"
+              <li
+                v-for="notification in filteredNotifications"
+                :key="notification.id"
+                role="option"
+                :id="`notification-${notification.id}`"
+                tabindex="0"
+                @click="handleClick(notification)"
+                @keydown="onKeydown(notification, $event)"
+                :class="[
+                  'group px-4 py-3 flex justify-between items-start gap-2 relative cursor-pointer transition-colors',
+                  'hover:bg-gray-100 dark:hover:bg-gray-700'
+                ]"
               >
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
-              <!-- Dropdown de acciones -->
-              <Teleport to="body">
-                <transition name="fade">
-                  <ul
-                    v-if="activeActionsMenuId === notification.id"
-                    class="notification-actions fixed w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[1000] text-sm"
-                    :style="dropdownPositions[notification.id] || {}"
-                  >
-                    <li
-                      @click.stop="toggleRead(notification)"
-                      class="px-4 py-2 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
-                    >
-                      {{ notification.read ? 'Marcar como no leída' : 'Marcar como leída' }}
-                    </li>
-                    <li
-                      @click.stop="deleteNotification(notification)"
-                      class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-red-500"
-                    >
-                      Eliminar
-                    </li>
-                  </ul>
-                </transition>
-              </Teleport>
-            </div>
-          </li>
-        </ul>
+                <!-- Cuerpo de la notificación -->
+                <div
+                  class="flex-1"
+                  :class="notification.read ? 'text-gray-400 dark:text-gray-500' : 'text-black dark:text-gray-200 font-semibold'"
+                >
+                  {{ notification.message }}
+                </div>
 
-        <div v-else class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
-          No hay notificaciones {{ activeTab === 'read' ? 'leídas' : 'no leídas' }}.
+                <!-- Botón de acciones -->
+                <div class="relative">
+                  <button
+                    @click.stop="toggleActionsMenu(notification.id, $event)"
+                    class="p-1 text-gray-600 dark:text-gray-300 bg-gray-300/50 dark:bg-gray-900/50 rounded-full hover:bg-gray-300/90 dark:hover:bg-gray-900/90 transition-colors"
+                    :aria-label="`Opciones para la notificación: ${notification.message.substring(0, 30)}...`"
+                    :aria-expanded="activeActionsMenuId === notification.id ? 'true' : 'false'"
+                    :aria-controls="`actions-menu-${notification.id}`"
+                    :id="`actions-button-${notification.id}`"
+                  >
+                    <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                  </button>
+                  <!-- Dropdown de acciones -->
+                  <Teleport to="body">
+                    <transition name="fade">
+                      <ul
+                        v-if="activeActionsMenuId === notification.id"
+                        :id="`actions-menu-${notification.id}`"
+                        role="menu"
+                        :aria-labelledby="`actions-button-${notification.id}`"
+                        tabindex="-1"
+                        class="notification-actions fixed w-40 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-[1000] text-sm"
+                        :style="dropdownPositions[notification.id] || {}"
+                      >
+                        <li
+                          role="menuitem"
+                          tabindex="0"
+                          @click.stop="toggleRead(notification)"
+                          class="px-4 py-2 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                        >
+                          {{ notification.read ? 'Marcar como no leída' : 'Marcar como leída' }}
+                        </li>
+                        <li
+                          role="menuitem"
+                          tabindex="0"
+                          @click.stop="deleteNotification(notification)"
+                          class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-red-500"
+                        >
+                          Eliminar
+                        </li>
+                      </ul>
+                    </transition>
+                  </Teleport>
+                </div>
+              </li>
+            </ul>
+
+            <div v-else class="px-4 py-4 text-center text-gray-500 dark:text-gray-400">
+              No hay notificaciones {{ activeTab === 'read' ? 'leídas' : 'no leídas' }}.
+            </div>
         </div>
       </div>
     </transition>
@@ -167,7 +194,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted, onBeforeUnmount, nextTick  } from 'vue';
+import { ref, watch, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '../../stores/notifications';
@@ -194,15 +221,21 @@ watch(() => props.isOpen, (val) => {
   if (val) {
     notificationsStore.markAllAsViewed(user.value.uid);
     nextTick(() => {
-      const firstItem = document.querySelector('[role="listbox"] [role="option"]');
+      // Enfocar el primer elemento de la lista de notificaciones si existe,
+      // de lo contrario, enfocar el contenedor del dropdown.
+      const firstItem = dropdownRef.value?.querySelector('[role="listbox"] [role="option"]');
       if (firstItem) {
         firstItem.focus();
       } else {
         dropdownRef.value?.focus();
       }
     });
+  } else {
+    // Cuando el dropdown se cierra, asegúrate de cerrar también cualquier menú de acciones
+    activeActionsMenuId.value = null;
   }
 });
+
 function toggle() {
   emit('toggle');
 }
@@ -241,11 +274,15 @@ async function deleteAllRead() {
 }
 
 async function handleClick(notification) {
-  await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id);
+  // Solo marcar como leída si no lo está
+  if (!notification.read) {
+    await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id);
+  }
+  
+  // Navegar según el tipo de notificación
   if (notification.type === 'message') {
     await privateChatsStore.markChatAsReaded(user.value.email, notification.entityId);
     privateChatsStore.setSelectedChatId(notification.entityId);
-    toggle();
     router.push('/chats');
   } else if (notification.type === 'newFollower') {
     router.push(`/profile/${notification.fromUid ?? notification.extra.senderEmail}`);
@@ -256,7 +293,7 @@ async function handleClick(notification) {
   } else if (notification.entityType === 'post' &&(notification.type === 'comment' || notification.type === 'like')) {
     router.push(`/post/${notification.entityId}`);
   }
-  toggle();
+  toggle(); // Cerrar el dropdown después de la acción
 }
 
 async function toggleRead(notification) {
@@ -268,6 +305,7 @@ async function toggleRead(notification) {
       await notificationsStore.markNotificationAsRead(notification.recipientId, notification.id);
       snackbarStore.show('Notificación marcada como leída', 'success');
     }
+    activeActionsMenuId.value = null; // Cerrar el menú de acciones después de la acción
   } catch (error) {
     snackbarStore.show('Error al actualizar la notificación', 'error');
     console.error('Error toggling read status:', error);
@@ -275,19 +313,30 @@ async function toggleRead(notification) {
 }
 
 function toggleActionsMenu(id, event) {
+  // Si ya está abierto y se hace clic en el mismo botón, cerrarlo
   if (activeActionsMenuId.value === id) {
     activeActionsMenuId.value = null;
   } else {
-    activeActionsMenuId.value = null;
-    const button = event.currentTarget.getBoundingClientRect();
-    dropdownPositions.value = {
-      [id]: {
-        position: 'absolute',
-        top: `${button.bottom + window.scrollY}px`,
-        left: `${button.right - 160 + window.scrollX}px`
-      }
-    };
-    activeActionsMenuId.value = id;
+    // Cerrar cualquier otro menú de acciones abierto
+    activeActionsMenuId.value = null; 
+    nextTick(() => { // Esperar al DOM para obtener las posiciones correctas
+        const button = event.currentTarget.getBoundingClientRect();
+        dropdownPositions.value = {
+            [id]: {
+                position: 'fixed', // Usar 'fixed' para Teleport a 'body'
+                top: `${button.bottom}px`,
+                left: `${button.right - 160}px` // Ajustar para que el menú se alinee a la derecha del botón
+            }
+        };
+        activeActionsMenuId.value = id;
+        // Enfocar el primer elemento del menú de acciones para accesibilidad
+        nextTick(() => {
+            const firstMenuItem = document.querySelector(`#actions-menu-${id} [role="menuitem"]`);
+            if (firstMenuItem) {
+                firstMenuItem.focus();
+            }
+        });
+    });
   }
 }
 
@@ -295,6 +344,7 @@ async function deleteNotification(notification) {
   try {
     await notificationsStore.deleteNotification(user.value.uid, notification.id);
     snackbarStore.show('Notificación eliminada', 'success');
+    activeActionsMenuId.value = null; // Cerrar el menú de acciones después de la acción
   } catch (error) {
     snackbarStore.show('Error al eliminar la notificación', 'error');
     console.error('Error deleting notification:', error);
@@ -302,42 +352,70 @@ async function deleteNotification(notification) {
 }
 
 function closeMenuOnClickOutside(e) {
-  if (!e.target.closest('.notification-actions') && !e.target.closest('.fa-ellipsis-v')) {
+  // Asegurarse de que el clic no fue en el botón del menú de acciones ni en el propio menú
+  if (activeActionsMenuId.value && 
+      !e.target.closest('.notification-actions') && 
+      !e.target.closest(`button[id="actions-button-${activeActionsMenuId.value}"]`)) {
     activeActionsMenuId.value = null;
   }
 }
 
 function onKeydown(notification, event) {
   const current = event.target;
+  const isActionsMenuOpen = activeActionsMenuId.value === notification.id;
+  const menuItems = isActionsMenuOpen ? Array.from(document.querySelectorAll(`#actions-menu-${notification.id} [role="menuitem"]`)) : [];
+  let currentIndex = menuItems.indexOf(document.activeElement);
+
   switch (event.key) {
     case 'ArrowDown':
       event.preventDefault();
-      const next = current.nextElementSibling;
-      if (next) next.focus();
+      if (isActionsMenuOpen) {
+        const nextIndex = (currentIndex + 1) % menuItems.length;
+        menuItems[nextIndex].focus();
+      } else {
+        const next = current.nextElementSibling;
+        if (next) next.focus();
+      }
       break;
     case 'ArrowUp':
       event.preventDefault();
-      const prev = current.previousElementSibling;
-      if (prev) prev.focus();
+      if (isActionsMenuOpen) {
+        const prevIndex = (currentIndex - 1 + menuItems.length) % menuItems.length;
+        menuItems[prevIndex].focus();
+      } else {
+        const prev = current.previousElementSibling;
+        if (prev) prev.focus();
+      }
       break;
     case 'Enter':
     case ' ':
       event.preventDefault();
-      handleClick(notification);
+      // Si el menú de acciones está abierto, ejecutar la acción del item enfocado
+      if (isActionsMenuOpen && currentIndex !== -1) {
+          menuItems[currentIndex].click(); // Simular clic en el item del menú
+      } else {
+          handleClick(notification); // Ejecutar la acción principal de la notificación
+      }
       break;
     case 'Escape':
-      activeActionsMenuId.value = null; // Cerrar el menú de acciones
+      event.preventDefault(); // Prevenir que el escape cierre todo el modal si solo se quiere cerrar el submenú
+      if (isActionsMenuOpen) {
+        activeActionsMenuId.value = null; // Cerrar el menú de acciones
+        document.getElementById(`actions-button-${notification.id}`).focus(); // Volver el foco al botón de acciones
+      } else {
+        toggle(); // Cerrar el dropdown principal
+      }
       break;
-  }
-  if (event.key === 'Escape') {
-    activeActionsMenuId.value = null; // Cerrar el menú de acciones
   }
 }
 
 function onDropdownKeydown(event) {
-  if (event.key === 'Escape') {
-    toggle(); // cerrar dropdown con Escape si no hay items
+  if (event.key === 'Escape' && activeActionsMenuId.value === null) {
+    // Solo cerrar el dropdown principal si ningún submenú de acciones está abierto
+    toggle();
   }
+  // Implementar navegación con flechas para las pestañas si aplica
+  // Implementar navegación con flechas para los items de notificación si no hay submenú abierto
 }
 
 onMounted(() => {
@@ -392,10 +470,11 @@ onBeforeUnmount(() => {
 }
 
 /* Efectos de hover y focus para botones */
-button:hover,
+/* NOTA: Estas reglas pueden ser redundantes si ya usas clases de Tailwind como hover:scale-105 */
+/* button:hover,
 a:hover {
   transform: translateY(-1px);
-}
+} */
 
 button:focus,
 a:focus {

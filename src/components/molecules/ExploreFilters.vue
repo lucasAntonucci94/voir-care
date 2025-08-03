@@ -112,6 +112,7 @@ import PetSitterIcon from '../../assets/icons/locations/guarderia3.png';
 import ShelterIcon from '../../assets/icons/locations/animal-shelter.png';
 import EmergencyIcon from '../../assets/icons/locations/first-aid-kit.png';
 import TherapyIcon from '../../assets/icons/locations/rehab1.png';
+import VaccineIcon from '../../assets/icons/locations/vacuna.png';
 
 const { user } = useAuth();
 
@@ -143,6 +144,7 @@ const filters = ref([
   // { id: 'alojamiento', label: 'Alojamientos Pet-Friendly', icon: AccommodationIcon },
   // { id: 'suministros', label: 'Entrega de Suministros', icon: DeliveryIcon },
   { id: 'rehabilitacion', label: 'Rehabilitación y Terapia', icon: TherapyIcon },
+  { id: 'vacunacion', label: 'Vacunación', icon: VaccineIcon },
 ]);
 
 const emit = defineEmits(['update:modelValue', 'center-location']);

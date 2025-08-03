@@ -257,7 +257,7 @@ async function handleReport() {
   isLoading.value = true;
   const response = await saveReport({
       entityType: 'eventPost',
-      entityId: props.post.id,
+      entityId: props.post.idDoc,
       userId: user.value.uid,
       reason: selectedReportReason.value,
       description: reportDescription.value,

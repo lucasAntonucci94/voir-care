@@ -13,11 +13,13 @@ import Groups from '../pages/GroupsPage.vue';
 import GroupDetail from '../pages/GroupDetail.vue';
 import Events from '../pages/EventsPage.vue';
 import EventDetail from '../pages/EventDetail.vue';
+import LocationDetail from '../pages/LocationDetail.vue';
 import NotFound from '../pages/NotFound.vue';
 import EducationPage from '../pages/EducationPage.vue';
 import PremiumPage from '../pages/PremiumPage.vue';
 import TermsAndConditionsPage from '../pages/ConditionsAndTermsPage.vue';
 import PrivacyPolicyPage from '../pages/PrivacyPolicyPage.vue';
+import DonatePage from '../pages/DonatePage.vue';
 import AdminDashboardPage from '../pages/admin/AdminDashboard.vue';
 import ReportsPage from '../pages/admin/ReportsPage.vue';
 import PostDetailPage from '../pages/PostDetailPage.vue';
@@ -33,6 +35,7 @@ import AdmCategoriesPage from '../pages/admin/CategoriesPage.vue';
 import AdmBlogCategoriesPage from '../pages/admin/BlogCategoriesPage.vue';
 import AdmPostsPage from '../pages/admin/PostsPage.vue';
 import AdmSubscriptionsPage from '../pages/admin/SubscriptionsPage.vue';
+import AdmLocationsPage from '../pages/admin/LocationsPage.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -133,6 +136,14 @@ const routes = [
         }
       },
       {
+        path:  '/location/:idLocation?',
+        name: 'locationDetail',
+        component: LocationDetail,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
         path:  '/education',
         name: 'education',
         component: EducationPage,
@@ -192,6 +203,14 @@ const routes = [
         path: '/privacypolicy',
         name: 'PrivacyPolicy',
         component: PrivacyPolicyPage,
+        meta: {
+            requiresAuth: false,
+        }
+      },
+      {
+        path: '/donate',
+        name: 'Donate',
+        component: DonatePage,
         meta: {
             requiresAuth: false,
         }
@@ -280,6 +299,14 @@ const routes = [
         path:  '/admin/subscriptions',
         name: 'SubscriptionsAdm',
         component: AdmSubscriptionsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/locations',
+        name: 'LocationsAdm',
+        component: AdmLocationsPage,
         meta: {
             requiresAuth: true,
         }

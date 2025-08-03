@@ -139,9 +139,10 @@ const filteredBlogs = computed(() => {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       (blog) =>
-        blog.title?.toLowerCase().includes(query) ||
-        blog.intro?.toLowerCase().includes(query) ||
-        blog.summary?.toLowerCase().includes(query)
+        blog.title?.toLowerCase().includes(query) || //busca x title
+        blog.intro?.toLowerCase().includes(query) || //busca x intro
+        blog.sections?.some(section => section.title?.toLowerCase().includes(query)) || //busca en los titles del las distintas secciones del documento
+        blog.summary?.toLowerCase().includes(query) //busca x summary
     );
   }
 

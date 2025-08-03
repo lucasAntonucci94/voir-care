@@ -211,8 +211,8 @@ function redirectToGroup(groupId) {
     router.push({ name: 'groupDetail', params: { idGroup: groupId } });
 }
 
-function redirectToLocation(groupId) {
-    router.push({ name: 'groupDetail', params: { idGroup: groupId } });
+function redirectToLocation(locationId) {
+    router.push({ name: 'locationDetail', params: { idLocation: locationId } });
 }
 
 function redirectToUser(userEmail) {

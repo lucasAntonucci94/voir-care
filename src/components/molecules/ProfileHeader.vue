@@ -153,10 +153,10 @@ import { usePrivateChatsStore } from '../../stores/privateChats';
 import { usePrivateChats } from '../../composable/usePrivateChats';
 import { useAuth } from '../../api/auth/useAuth';
 import CreateStoryModal from '../organisms/CreateStoryModal.vue';
-import BannerDefault from '../../assets/darkwallpaper.jpg'
 import { useSnackbarStore } from '../../stores/snackbar'
 import MediaModalViewer from '../../components/molecules/MediaViewerModal.vue';
-import avatarDefault from '../../assets/darkwallpaper.jpg';
+import BannerDefault from '../../assets/default-banner.jpg'
+import avatarDefault from '../../assets/avatar1.jpg';
 import { useNotifications } from '../../composable/useNotifications';
 
 // Props
@@ -215,7 +215,7 @@ function closeBannerModal() {
 
 // Abrir Modal ver media
 const openMediaModal = () => {
-  selectedMedia.value.src = props.activeUser?.bannerUrlFile || avatarDefault;
+  selectedMedia.value.src = props.activeUser?.bannerUrlFile || BannerDefault;
   showModalMedia.value = true;
   document.body.style.overflow = 'hidden';
 };

@@ -2,8 +2,11 @@
   <header class="dosis-font text-white bg-primary dark:bg-secondary p-4 relative shadow-md transition-all duration-300" ref="headerRef">
     <div class="container mx-auto flex flex-wrap justify-between items-center md:py-4 px-2 md:px-8 lg:px-16">
       <div class="flex items-center mb-2 md:mb-0">
-        <!-- Botón hamburguesa solo visible en móvil y en la ruta /feed -->
-        <button v-if="isAuthenticated" class="md:hidden mr-6 text-lg hover:text-primary transition-colors duration-200" @click="sidebarStore.toggleSidebar">
+        <!-- Botón hamburguesa solo visible en móvil -->
+        <button v-if="!isAdminRoute" class="md:hidden mr-6 text-lg hover:text-gray-200 transition-colors duration-200" @click="sidebarStore.toggleSidebar">
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </button>
+        <button v-else class="md:hidden mr-6 text-lg hover:text-gray-200 transition-colors duration-200" @click="sidebarStore.toggleAdminSidebar">
           <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
         </button>
         <span class="sr-only" role="heading" aria-level="1">Voir</span>
@@ -51,6 +54,13 @@ const { isAuthenticated } = useAuth();
 const navbarStore = useNavbarStore();
 const sidebarStore = useSidebarStore();
 const headerRef = ref(null);
+
+const props = defineProps({
+  isAdminRoute: {
+    type: Boolean,
+    default: false
+  }
+});
 
 function handleClickOutside(event) {
   if (headerRef.value && !headerRef.value.contains(event.target)) {

@@ -158,6 +158,7 @@ export const useGroupPostsStore = defineStore('groupPosts', {
     },
     // Eliminar un post en un grupo
     async deletePostGroup(idGroup, postId) {
+      debugger
       const { deletePostGroup } = useGroupPosts();
       this.isLoading = true;
       try {

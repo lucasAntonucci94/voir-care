@@ -17,7 +17,6 @@
       <span
         v-if="blog.type === 1"
         class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-primary dark:bg-secondary text-white font-medium shadow-sm z-10"
-        aria-label="Blog premium"
       >
         Premium
       </span>
@@ -27,14 +26,12 @@
       <span
         v-if="blog.type === 0"
         class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 shadow-sm z-10"
-        aria-label="Blog gratuito"
       >
         Free
       </span>
       <span
         v-else-if="blog.type === 1"
         class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full bg-yellow-400 dark:bg-yellow-500 text-gray-900 dark:text-gray-900 font-medium shadow-sm z-10"
-        aria-label="Blog premium"
       >
         Premium
       </span>

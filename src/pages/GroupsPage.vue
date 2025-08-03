@@ -1,31 +1,36 @@
 <template>
+  <!-- Contenedor principal -->
   <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="flex-1 overflow-y-auto">
-      <!-- Encabezado interno de la sección Grupos -->
-      <div class="bg-white dark:bg-gray-800 shadow-sm">
+      <!-- Encabezado de la página de Grupos -->
+      <header class="bg-white dark:bg-gray-800 shadow-sm">
         <div class="container mx-auto px-4 md:px-8 lg:px-16 py-4">
           <div class="flex items-center justify-between">
             <h1 class="text-xl font-bold text-[#2c3e50] dark:text-white">
               <i class="fa-solid fa-users mr-2 text-primary dark:text-secondary"></i>
               Grupos
             </h1>
+            <!-- Botón para crear grupo (visible en pantallas grandes) -->
             <button
-            @click="handleModalCreate"
+              @click="handleModalCreate"
               class="hidden sm:inline-flex px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors"
             >
               + Crear Grupo
             </button>
           </div>
         </div>
-      </div>
-      <!-- Tabs para grupos -->
+      </header>
+      
+      <!-- Contenedor de las pestañas de navegación -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16">
         <div
+          role="tablist"
           class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto scrollbar-hide whitespace-nowrap"
         >
           <button
             v-for="tab in tabs"
             :key="tab.id"
+            :id="`tab-${tab.id}`"
             @click="activeTab = tab.id"
             :class="[
               'relative px-4 py-3 text-sm font-medium transition-all duration-300 flex items-center space-x-2',
@@ -34,6 +39,8 @@
                 : 'text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
             ]"
             :aria-selected="activeTab === tab.id"
+            :aria-controls="`tab-panel-${tab.id}`"
+            :tabindex="activeTab === tab.id ? 0 : -1"
             role="tab"
           >
             <i :class="tab.icon" aria-hidden="true"></i>
@@ -46,14 +53,44 @@
           </button>
         </div>
       </div>
-      <!-- Contenido de tab -->
+
+      <!-- Contenido de la pestaña activa -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16">
         <!-- Tab: GroupsFeed -->
-        <GroupFeedTab v-if="activeTab === 'feed'" />
+        <div
+          v-if="activeTab === 'feed'"
+          id="tab-panel-feed"
+          role="tabpanel"
+          tabindex="0"
+          aria-labelledby="tab-feed"
+          class="focus:outline-none"
+        >
+          <GroupFeedTab />
+        </div>
+        
         <!-- Tab: Descubrir -->
-        <DiscoverGroupsTab v-else-if="activeTab === 'discover'" />
+        <div
+          v-else-if="activeTab === 'discover'"
+          id="tab-panel-discover"
+          role="tabpanel"
+          tabindex="0"
+          aria-labelledby="tab-discover"
+          class="focus:outline-none"
+        >
+          <DiscoverGroupsTab />
+        </div>
+        
         <!-- Tab: Tus Grupos -->
-        <UserGroupsTab v-else-if="activeTab === 'yourGroups'" @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
+        <div
+          v-else-if="activeTab === 'yourGroups'"
+          id="tab-panel-yourGroups"
+          role="tabpanel"
+          tabindex="0"
+          aria-labelledby="tab-yourGroups"
+          class="focus:outline-none"
+        >
+          <UserGroupsTab @open-create-modal="handleModalCreate" @open-discover-tab="setDiscoverTab" />
+        </div>
       </div>
     </div>
 
@@ -63,7 +100,6 @@
       @close="closeModalCreate"
       @groupCreated="handleGroupCreated"
     />
-
   </div>
 </template>
 

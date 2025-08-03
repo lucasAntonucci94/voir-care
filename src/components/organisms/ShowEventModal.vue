@@ -44,10 +44,10 @@
             </button>
             <!-- Fecha de inicio superpuesta -->
             <div class="absolute bottom-4 left-8 z-20">
-              <div class="w-16 h-16 bg-red-500 text-white flex items-center justify-center rounded-lg font-bold text-2xl shadow-md">
+              <div class="w-16 h-16 bg-primary dark:bg-secondary text-white flex items-center justify-center rounded-lg font-bold text-2xl shadow-md">
                 {{ formatEventDate(event.startTime).dayBox }}
               </div>
-              <span class="text-xs mt-1 text-white text-center font-bold block bg-red-700 p-1 rounded-lg">{{ formatEventDate(event.startTime).label.split(' a las ')[0] }}</span>
+              <span class="text-xs mt-1 text-white text-center font-bold block bg-primary-md dark:bg-secondary-md p-1 rounded-lg">{{ formatEventDate(event.startTime).label.split(' a las ')[0] }}</span>
             </div>
           </div>
           <div
@@ -71,47 +71,40 @@
             <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 tracking-wide">{{ event.title }}</h2>
 
             <!-- Descripción -->
-            <!-- <p class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-line line-clamp-4 leading-relaxed">
+            <p class="text-sm text-gray-500 dark:text-gray-400 whitespace-pre-line line-clamp-4 leading-relaxed">
               {{ event.description || 'Sin descripción disponible.' }}
-            </p> -->
+            </p>
+            <router-link
+              v-if="event.description && event.description.length > 150"
+              :to="`/event/${event.idDoc}`"
+              class="text-primary dark:text-secondary hover:underline text-sm font-medium mt-2 block"
+              @click="emit('close')"
+            >
+              Ver descripción completa
+            </router-link>
 
             <!-- Info principal -->
-            <div class="text-sm space-y-2 text-gray-700 dark:text-gray-200">
-              <div>
-                <strong class="sr-only">Ubicación:</strong>
-                {{ event.location?.address || 'No definida' }}
+            <div class="text-sm space-y-3 text-gray-700 dark:text-gray-200">
+              <div class="flex items-center gap-3">
+                <i class="fas fa-map-marker-alt text-primary dark:text-secondary text-lg"></i>
+                <span><strong>Ubicación:</strong> {{ event.location?.address || 'No definida' }}</span>
               </div>
-              <div v-if="event.price">
-                <strong>Precio:</strong> ${{ event.price }}
+              <div v-if="event.price" class="flex items-center gap-3">
+                <i class="fas fa-dollar-sign text-primary dark:text-secondary text-lg"></i>
+                <span><strong>Precio:</strong> ${{ event.price }}</span>
               </div>
-              <div>
-                <strong>Capacidad:</strong>
-                {{ event.capacity - (event.attendees?.going?.length ?? 0) + 1 || 'Ilimitada' }}
+              <div class="flex items-center gap-3">
+                <i class="fas fa-users text-primary dark:text-secondary text-lg"></i>
+                <span><strong>Participantes:</strong> {{ internalEvent?.attendees?.going?.length || 0 }} de {{ event.capacity || 'Ilimitada' }}</span>
               </div>
-              <div class="flex gap-2">
-                <span
-                  class="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300"
-                >
-                  <i class="fas fa-users text-primary dark:text-secondary"></i>
-                  {{ internalEvent?.attendees?.going?.length || 0 }}
-                  {{ internalEvent?.attendees?.going?.length === 1 ? 'participante' : 'participantes' }}
-                </span>
-                <span
-                  v-if="event.modality"
-                  class="px-2 py-1 text-xs font-medium rounded-full"
-                  :class="
-                    event.modality === '1'
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-600 dark:text-blue-200'
-                      : 'bg-purple-100 text-purple-700 dark:bg-purple-600 dark:text-purple-200'
-                  "
-                >
-                  {{ event.modality === '1' ? 'Presencial' : 'Virtual' }}
-                </span>
+              <div class="flex items-center gap-3">
+                <i :class="event.modality === 0 ? 'fa-solid fa-location-dot' : 'fa-solid fa-video'" class="text-primary dark:text-secondary text-lg"></i>
+                <span><strong>Modalidad:</strong> {{ event.modality === 0 ? 'Presencial' : 'Virtual' }}</span>
               </div>
             </div>
 
             <!-- Categorías -->
-            <div v-if="event.categories?.length" class="flex flex-wrap gap-2 mt-2">
+            <div v-if="event.categories?.length" class="flex flex-wrap gap-2 mt-4 pt-2 border-t border-gray-200 dark:border-gray-700">
               <span
                 v-for="cat in event.categories"
                 :key="cat.id"
@@ -134,14 +127,14 @@
                 :disabled="!user"
               >
                 <i :class="isGoing ? 'fas fa-user-minus' : 'fas fa-user-plus'"></i>
-                <p class="hidden md:block">{{ attendanceLabel }}</p>
+                <span class="hidden md:block">{{ attendanceLabel }}</span>
               </button>
               <router-link
                 :to="`/event/${event.idDoc}`"
-                class="px-4 py-2 text-sm text-primary rounded-lg border border-primary hover:bg-primary hover:text-white transition-colors duration-200 shadow-md"
+                class="px-4 py-2 text-sm text-primary dark:text-secondary rounded-lg border border-primary dark:border-secondary hover:bg-primary hover:text-white dark:hover:bg-secondary dark:hover:text-white transition-colors duration-200 shadow-md"
                 @click="emit('close')"
               >
-                Ver evento
+                Ver evento completo
               </router-link>
             </div>
           </div>
@@ -156,9 +149,11 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import { useAuth } from '../../api/auth/useAuth';
 import { useEventsStore } from '../../stores/events';
+import { useRouter } from 'vue-router'; // Importar useRouter
 
 const { user } = useAuth();
 const eventsStore = useEventsStore();
+const router = useRouter(); // Instanciar router
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -181,7 +176,7 @@ const isGoing = computed(() => {
   return internalEvent.value?.attendees?.going?.includes(user.value?.uid);
 });
 
-const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar' : 'Asistiré'));
+const attendanceLabel = computed(() => (isGoing.value ? 'Cancelar asistencia' : 'Asistiré'));
 
 async function handleAttendance() {
   if (!user.value) {
@@ -203,7 +198,9 @@ async function handleAttendance() {
       if (!internalEvent.value.attendees.going.includes(user.value.uid)) {
         internalEvent.value.attendees.going.push(user.value.uid);
       }
-    } else {
+    }
+    // Remove user if they were going and now cancel
+    else if (internalEvent.value.attendees.going.includes(user.value.uid)) {
       internalEvent.value.attendees.going = internalEvent.value.attendees.going.filter(
         (id) => id !== user.value.uid,
       );

@@ -3,10 +3,11 @@
         <header class="mb-8 md:mb-12">
             <h1 class="text-3xl md:text-4xl font-bold dosis-font mb-2">¡Hola, {{ user?.displayName }}!</h1>
             <p class="text-base md:text-lg text-gray-600 dark:text-gray-400">¿Qué te gustaría descubrir hoy en Voir?</p>
-            <div class="relative mt-6 flex items-center">
-                <input type="text" 
-                    placeholder="Buscar eventos, grupos, usuarios, lugares..." 
-                    class="w-full pl-12 pr-28 py-3 bg-white dark:bg-gray-800 border-2 border-transparent rounded-full shadow-sm focus:outline-none focus:border-secondary dark:focus:border-secondary transition-colors" 
+            <div class="searchContainer relative mt-6 flex items-center">
+                <label for="search-input" class="sr-only">Buscar en Voir</label>
+                <input type="text" id="search-input"
+                    placeholder="Buscar eventos, grupos, usuarios, lugares..."
+                    class="w-full pl-12 pr-28 py-3 bg-white dark:bg-gray-800 border-2 border-transparent rounded-full shadow-sm focus:outline-none focus:border-secondary dark:focus:border-secondary transition-colors"
                     aria-label="Buscar en Voir"
                     v-model="searchQuery"
                 >
@@ -21,7 +22,7 @@
                 
                 <div class="absolute right-3 top-1/2 -translate-y-1/2">
                     <button @click="toggleFiltersDropdown" 
-                            class="flex items-center px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-full text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-secondary/50 transition-colors"
+                            class="filtersButton flex items-center px-4 py-2 bg-primary hover:bg-primary-md dark:bg-secondary dark:hover:bg-secondary-md text-white rounded-full text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 dark:focus:ring-secondary/50 transition-colors"
                             aria-haspopup="true" 
                             :aria-expanded="showFilters.toString()">
                         <i class="fas fa-filter mr-2" aria-hidden="true"></i>
@@ -29,7 +30,7 @@
                     </button>
                     
                     <div v-if="showFilters" 
-                        class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-xl py-2 z-10"
+                        class="filtersDropdown absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-xl py-2 z-10"
                         @click.stop>
                         <label v-for="option in filterOptions" :key="option.value" class="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
                             <input type="checkbox" 
@@ -102,7 +103,7 @@ const filterOptions = ref([
     { label: 'Eventos', value: 'events' },
     { label: 'Blogs Educativos', value: 'blogs' },
     { label: 'Marcadores de Mapa', value: 'locations' },
-    { label: 'Entretenimiento', value: 'entertainment' },
+    { label: 'Recreativo', value: 'entertainment' },
 ]);
 const selectedFilters = ref(['users','groups', 'events', 'blogs', 'locations', 'entertainment']);
 
@@ -116,14 +117,22 @@ const toggleFiltersDropdown = () => {
 const applyFilters = () => {
     showFilters.value = false;
 };
-
+//v1
+// const closeFiltersDropdown = (event) => {
+//     // Verifica si el clic fue fuera del botón y del dropdown
+//     if (showFilters.value && !event.target.closest('.searchContainer')) {
+//         showFilters.value = false;
+//     }
+// };
 const closeFiltersDropdown = (event) => {
     // Verifica si el clic fue fuera del botón y del dropdown
-    if (showFilters.value && !event.target.closest('.relative.mt-6.flex.items-center')) {
+    const filterButton = event.target.closest('.filtersButton');
+    const filterDropdown = event.target.closest('.filtersDropdown'); // O una clase más específica si la tenés
+
+    if (showFilters.value && !filterButton && !filterDropdown) {
         showFilters.value = false;
     }
 };
-
 // Computed properties para los datos filtrados (basados en searchQuery)
 const baseFilteredUsers = computed(() => {
     if (searchQuery.value) {
@@ -212,7 +221,7 @@ const baseFilteredReels = computed(() => {
     return reelsStore.reels ?? [];
 });
 
-// Computed para combinar y formatear posts y reels para la sección de entretenimiento
+// Computed para combinar y formatear posts y reels para la sección de recreativo
 const baseFilteredEntertainmentItems = computed(() => {
     const combinedItems = [];
 

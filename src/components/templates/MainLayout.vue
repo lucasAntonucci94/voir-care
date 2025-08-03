@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col min-h-screen">
-    <Header />
+    <Header :isAdminRoute="permitedAdminRoutes" />
     <div class="flex flex-1 relative">
       <!-- Sidebar principal (para usuarios normales) -->
       <Sidebar
@@ -11,8 +11,8 @@
       <!-- Sidebar de administración (para rutas /admin) -->
       <SidebarAdmin
         v-if="permitedAdminRoutes"
-        :show="sidebarStore.showSidebar"
-        @toggle="sidebarStore.toggleSidebar"
+        :show="sidebarStore.showAdminSidebar"
+        @toggle="sidebarStore.toggleAdminSidebar"
       />
       <main class="flex-grow bg-gray-50 dark:bg-gray-900 overflow-y-auto flex-1">
         <router-view />

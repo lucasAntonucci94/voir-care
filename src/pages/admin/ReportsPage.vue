@@ -25,8 +25,7 @@
     <div v-else-if="filteredReports.length" class="overflow-x-auto rounded-lg shadow-lg">
       <table class="min-w-full bg-white dark:bg-gray-800">
         <thead>
-          <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
-            <th class="py-3 px-6 text-left">#</th>
+          <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
             <th class="py-3 px-6 text-left">ID Reporte</th>
             <th class="py-3 px-6 text-left">Tipo</th>
             <th class="py-3 px-6 text-left">ID Entidad</th>
@@ -37,13 +36,12 @@
             <th class="py-3 px-6 text-center">Acciones</th>
           </tr>
         </thead>
-        <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light">
-          <tr 
-            v-for="(report, index) in filteredReports" 
-            :key="report.id" 
+        <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light josefin-font">
+          <tr
+            v-for="report in filteredReports"
+            :key="report.id"
             class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100/80 dark:hover:bg-gray-600/80"
           >
-            <td class="py-3 px-6 text-left">{{ index + 1 }}</td>
             <td class="py-3 px-6 text-left whitespace-nowrap">
               <span class="truncate max-w-[120px] block">{{ report.reportId }}</span>
             </td>
@@ -56,25 +54,40 @@
             <td class="py-3 px-6 text-left">{{ getMetadataInfo(report.metadata) }}</td>
             <td class="py-3 px-6 text-center">
               <span class="py-1 px-3 rounded-full text-xs font-semibold" :class="statusColor(report.status)">
-                {{ report.status === 'pending' ? 'Pendiente' : report.status === 'completed' ? 'Completado' : 'Rechazado' }}
+                {{ statusText(report.status) }}
               </span>
             </td>
             <td class="py-3 px-6 text-center">
               <div class="flex items-center justify-center gap-2">
-                <button 
-                  @click="openModal(report)"
-                  class="px-3 py-1 rounded-md bg-primary/10 dark:bg-secondary/10 text-primary dark:text-secondary hover:bg-primary/20 dark:hover:bg-secondary/20 transition-colors duration-200 text-xs"
-                  aria-label="Ver detalles del reporte"
+                <!-- Botón de Ver Detalles (siempre visible) -->
+                <button
+                  @click="openDetailsModal(report)"
+                  class="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                  aria-label="Ver detalles y acciones del reporte"
                 >
-                  Ver
+                  <i class="fas fa-eye"></i>
                 </button>
-                <button 
-                  @click="setGenericModalConfig('delete', report)"
-                  class="px-3 py-1 rounded-md bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/30 transition-colors duration-200 text-xs"
-                  aria-label="Eliminar reporte"
-                >
-                  Eliminar
-                </button>
+                
+                <!-- Acciones directas (solo si el reporte está pendiente) -->
+                <template v-if="report.status === 'pending'">
+                  <!-- Botón para Rechazar Reporte -->
+                  <button
+                    @click="setGenericModalConfig('rejectReport', report)"
+                    class="p-2 rounded-full text-yellow-600 dark:text-yellow-400 hover:bg-yellow-200/50 dark:hover:bg-yellow-700/50 transition-colors duration-200"
+                    aria-label="Rechazar reporte"
+                  >
+                    <i class="fas fa-ban"></i>
+                  </button>
+
+                  <!-- Botón para Eliminar Reporte -->
+                  <button
+                    @click="setGenericModalConfig('deleteReport', report)"
+                    class="p-2 rounded-full text-red-600 dark:text-red-400 hover:bg-red-200/50 dark:hover:bg-red-700/50 transition-colors duration-200"
+                    aria-label="Eliminar reporte"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </template>
               </div>
             </td>
           </tr>
@@ -85,35 +98,25 @@
       No se encontraron reportes con los filtros aplicados.
     </div>
 
-    <!-- Modal para detalles del reporte -->
-    <GenericConfirmModal
-      :visible="showConfirmModal"
-      :title="genericModalConfig.title"
-      :message="genericModalConfig.message"
-      :confirmButtonText="genericModalConfig.confirmButtonText"
-      :cancelButtonText="genericModalConfig.cancelButtonText"
-      @cancel="genericModalConfig.cancelMethod"
-      @confirmed="genericModalConfig.confirmMethod"
-    />
-
+    <!-- Detalles y Acciones -->
     <div
-      v-if="showDetailModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      @click.self="closeDetailModal"
+      v-if="showDetailsModal"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 p-4"
+      @click.self="closeDetailsModal"
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Detalles del Reporte</h2>
         <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
-          <li><strong>ID Reporte:</strong> {{ selectedReport?.reportId }}</li>
+          <li><strong>ID Reporte:</strong> {{ selectedReport?.id }}</li>
           <li><strong>Tipo:</strong> {{ formatEntityType(selectedReport?.entityType) }}</li>
           <li><strong>ID Entidad:</strong> {{ selectedReport?.entityId }}</li>
           <li><strong>Usuario Reportador:</strong> {{ selectedReport?.userId }}</li>
           <li><strong>Motivo:</strong> {{ selectedReport?.reason }}</li>
           <li><strong>Descripción:</strong> {{ selectedReport?.description || 'Sin descripción' }}</li>
           <li><strong>Fecha:</strong> {{ formatDate(selectedReport?.created_at) }}</li>
-          <li><strong>Estado:</strong> 
+          <li><strong>Estado:</strong>
             <span class="py-1 px-3 rounded-full text-xs font-semibold" :class="statusColor(selectedReport?.status)">
-              {{ selectedReport?.status === 'pending' ? 'Pendiente' : selectedReport?.status === 'completed' ? 'Completado' : 'Rechazado' }}
+              {{ statusText(selectedReport?.status) }}
             </span>
           </li>
           <li v-if="Object.keys(selectedReport?.metadata || {}).length" class="mt-4">
@@ -125,16 +128,39 @@
             </ul>
           </li>
         </ul>
+
+        <!-- Acciones del Reporte - Solo visible si el estado es 'pending' -->
+        <div v-if="selectedReport?.status === 'pending'" class="mt-6 border-t pt-4 border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-end gap-2">
+          <!-- Botón para eliminar la entidad reportada -->
+          <button
+            @click="setGenericModalConfig('deleteEntity', selectedReport)"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 text-sm"
+          >
+            Eliminar {{ formatEntityType(selectedReport?.entityType) }}
+          </button>
+        </div>
+
         <div class="mt-6 flex justify-end">
           <button
             class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
-            @click="closeDetailModal"
+            @click="closeDetailsModal"
           >
             Cerrar
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Modal Genérico para Confirmaciones -->
+    <GenericConfirmModal
+      :visible="showGenericModal"
+      :title="genericModalConfig.title"
+      :message="genericModalConfig.message"
+      :confirmButtonText="genericModalConfig.confirmButtonText"
+      :cancelButtonText="genericModalConfig.cancelButtonText"
+      @cancel="genericModalConfig.cancelMethod"
+      @confirmed="genericModalConfig.confirmMethod"
+    />
   </div>
 </template>
 
@@ -142,16 +168,33 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useReportsStore } from '../../stores/reports';
 import { useSnackbarStore } from '../../stores/snackbar';
-import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue'; // Importa el modal genérico
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
+
+import { usePostsStore } from '../../stores/posts';
+import { useReelsStore } from '../../stores/reels';
+import { useGroupsStore } from '../../stores/groups';
+import { useEventsStore } from '../../stores/events';
+import { useUsersStore } from '../../stores/users';
+import { useGroupPostsStore } from '../../stores/groupPosts';
+import { useEventPostsStore } from '../../stores/eventPosts';
+
 
 const snackbarStore = useSnackbarStore();
 const reportsStore = useReportsStore();
+const postsStore = usePostsStore();
+const reelsStore = useReelsStore();
+const groupsStore = useGroupsStore();
+const eventsStore = useEventsStore();
+const usersStore = useUsersStore();
+const groupPostsStore = useGroupPostsStore();
+const eventPostsStore = useEventPostsStore();
+
 const selectedEntityType = ref('');
-const showDetailModal = ref(false); // Cambiado de showModal para evitar conflictos
+const showDetailsModal = ref(false);
 const selectedReport = ref(null);
 
-const showConfirmModal = ref(false); // Para el modal de confirmación de eliminar
-const genericModalConfig = ref({}); // Configuración para el modal genérico
+const showGenericModal = ref(false);
+const genericModalConfig = ref({});
 
 // Tipos de entidades disponibles
 const entityTypes = [
@@ -166,6 +209,7 @@ const entityTypes = [
 
 // Filtra los reportes según el tipo seleccionado
 const filteredReports = computed(() => {
+  if (!reportsStore.getReports) return [];
   if (!selectedEntityType.value) {
     return reportsStore.getReports;
   }
@@ -228,61 +272,133 @@ function statusColor(status) {
   }
 }
 
+// Texto para los estados
+function statusText(status) {
+  switch (status) {
+    case 'pending':
+      return 'Pendiente';
+    case 'completed':
+      return 'Completado';
+    case 'rejected':
+      return 'Rechazado';
+    default:
+      return 'Desconocido';
+  }
+}
+
 // Abrir el modal con los detalles del reporte
-function openModal(report) {
+function openDetailsModal(report) {
   selectedReport.value = report;
-  showDetailModal.value = true; // Usa el nuevo nombre de ref
+  showDetailsModal.value = true;
   document.body.style.overflow = 'hidden'; // Evita el scroll del body
 }
 
 // Cerrar el modal de detalles
-function closeDetailModal() {
-  showDetailModal.value = false; // Usa el nuevo nombre de ref
+function closeDetailsModal() {
+  showDetailsModal.value = false;
   selectedReport.value = null;
   document.body.style.overflow = ''; // Restaura el scroll del body
 }
 
-// Configurar y mostrar el modal genérico para eliminar
+// Función centralizada para tomar acción sobre el reporte
+async function takeActionOnReport(report, actionType) {
+  try {
+    if (!report || !report.id || !report.entityType || !report.entityId) {
+      throw new Error('Datos de reporte incompletos.');
+    }
+
+    if (actionType === 'deleteEntity') {
+      // Lógica para eliminar la entidad según su tipo
+      switch (report.entityType) {
+        case 'post':
+          await postsStore.deletePost(report.entityId);
+          break;
+        case 'groupPost':
+          await groupPostsStore.deletePostGroup(report.metadata?.groupId, report.entityId);
+          break;
+          case 'eventPost':
+          await eventPostsStore.deletePostEvent(report.metadata?.eventId, report.entityId);
+          break;
+        case 'reel':
+          //necesito obtener el reel entero, para pasarle tambien los path de las imágenes
+          // const reel = await reelsStore.getReelById(report.entityId);
+          await reelsStore.deleteReel(report.entityId);
+          break;
+        case 'group':
+          await groupsStore.deleteGroup(report.entityId);
+          break;
+        case 'event':
+          await eventsStore.deleteEvent(report.entityId);
+          break;
+        case 'user':
+          // await usersStore.banUser(report.entityId); // TO DO: Pensar como sansocionar a un usuario, tengo metodo de blockeo.
+          break;
+        default:
+          throw new Error(`Tipo de entidad no soportado: ${report.entityType}`);
+      }
+      // Actualiza el estado del reporte a 'completed'
+      await reportsStore.updateStatus(report.id, 'completed');
+      snackbarStore.show('Entidad eliminada y reporte completado exitosamente', 'success');
+    } else if (actionType === 'rejectReport') {
+      // Lógica para rechazar el reporte
+      await reportsStore.updateStatus(report.id, 'rejected');
+      snackbarStore.show('Reporte rechazado exitosamente', 'success');
+    } else if (actionType === 'deleteReport') {
+      // Lógica para eliminar solo el reporte (opcional, para limpieza)
+      await reportsStore.deleteReport(report.id);
+      snackbarStore.show('Reporte eliminado exitosamente', 'success');
+    }
+
+    // Cerramos los modales al finalizar
+    showGenericModal.value = false;
+    closeDetailsModal();
+  } catch (error) {
+    snackbarStore.show(`Error al realizar la acción: ${error.message}`, 'error');
+  } finally {
+    document.body.style.overflow = '';
+  }
+}
+
+// Configurar y mostrar el modal genérico para confirmaciones
 const setGenericModalConfig = (action, report) => {
+  let title, message, confirmButtonText, confirmMethod;
+
   switch (action) {
-    case 'delete':
-      genericModalConfig.value = {
-        title: 'Eliminar Reporte',
-        message: `¿Estás seguro de que deseas eliminar el reporte de "${formatEntityType(report.entityType)}" con ID "${report.entityId}"?`,
-        confirmButtonText: 'Eliminar',
-        cancelButtonText: 'Cancelar',
-        confirmMethod: async () => {
-          try {
-            await reportsStore.deleteReport(report.id);
-            snackbarStore.show('Reporte eliminado exitosamente', 'success');
-          } catch (error) {
-            snackbarStore.show(`Error al eliminar el reporte: ${error.message}`, 'error');
-          } finally {
-            showConfirmModal.value = false;
-            document.body.style.overflow = ''; // Restaura el scroll del body
-          }
-        },
-        cancelMethod: () => {
-          showConfirmModal.value = false;
-          document.body.style.overflow = ''; // Restaura el scroll del body
-        },
-      };
+    case 'deleteEntity':
+      title = `Eliminar ${formatEntityType(report.entityType)}`;
+      message = `¿Estás seguro de que deseas **eliminar permanentemente** este ${formatEntityType(report.entityType)}? Esta acción no se puede deshacer.`;
+      confirmButtonText = `Sí, Eliminar ${formatEntityType(report.entityType)}`;
+      confirmMethod = () => takeActionOnReport(report, 'deleteEntity');
+      break;
+    case 'rejectReport':
+      title = 'Rechazar Reporte';
+      message = '¿Estás seguro de que deseas rechazar este reporte? No se tomará ninguna acción sobre la entidad.';
+      confirmButtonText = 'Sí, Rechazar';
+      confirmMethod = () => takeActionOnReport(report, 'rejectReport');
+      break;
+    case 'deleteReport':
+      title = 'Eliminar Reporte';
+      message = `¿Estás seguro de que deseas eliminar el reporte con ID "${report.reportId}"?`;
+      confirmButtonText = 'Sí, Eliminar';
+      confirmMethod = () => takeActionOnReport(report, 'deleteReport');
       break;
     default:
-      // Fallback si la acción no está definida
-      genericModalConfig.value = {
-        title: 'Acción no definida',
-        message: 'No se ha definido una acción para esta operación.',
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cerrar',
-        confirmMethod: () => { showConfirmModal.value = false; document.body.style.overflow = ''; },
-        cancelMethod: () => { showConfirmModal.value = false; document.body.style.overflow = ''; },
-      };
+      return;
   }
-  showConfirmModal.value = true;
-  document.body.style.overflow = 'hidden'; // Evita el scroll del body
-};
 
+  genericModalConfig.value = {
+    title,
+    message,
+    confirmButtonText,
+    cancelButtonText: 'Cancelar',
+    confirmMethod,
+    cancelMethod: () => {
+      showGenericModal.value = false;
+    },
+  };
+
+  showGenericModal.value = true;
+};
 
 // Suscripción a reportes en tiempo real
 onMounted(async () => {
@@ -300,33 +416,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Estilos personalizados para la tabla */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  /* Elimina los bordes individuales de celda para usar solo el borde de fila */
-  border-right: none; 
-}
-
-/* Aplica el borde solo a las filas */
-tbody tr {
-  border-bottom: 1px solid #e5e7eb; /* Color de borde de fila */
-}
-
-/* Asegura que la última fila no tenga borde inferior */
-tbody tr:last-child {
-  border-bottom: none;
-}
-
-/* Estilos para el shadow-lg en la tabla */
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
 /* Estilos para el modal de detalles */
 .fixed {
   transition: opacity 0.3s ease-in-out;

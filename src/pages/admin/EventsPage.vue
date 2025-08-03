@@ -45,7 +45,7 @@
       <div v-if="filteredEvents?.length" class="overflow-x-auto rounded-lg">
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
-            <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal">
+            <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
               <th class="py-3 px-6 text-left">Título</th>
               <th class="py-3 px-6 text-left">Descripción</th>
               <th class="py-3 px-6 text-left">Fecha de Inicio</th>
@@ -54,7 +54,7 @@
               <th class="py-3 px-6 text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light">
+          <tbody class="text-gray-600 dark:text-gray-300 text-sm font-light josefin-font">
             <tr
               v-for="event in filteredEvents"
               :key="event.idDoc"
@@ -84,7 +84,7 @@
                     <i class="fas fa-edit"></i>
                   </button>
                   <button
-                    @click="deleteEvent(event.idDoc)"
+                    @click="handleDelete(event)"
                     class="text-red-500 hover:text-red-700"
                     title="Eliminar"
                     aria-label="Eliminar evento"
@@ -102,92 +102,45 @@
       </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div
-      v-if="showEditModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Editar Evento</h2>
-        <form @submit.prevent="saveEvent">
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="title">Título</label>
-            <input
-              id="title"
-              v-model="editEvent.title"
-              type="text"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              aria-required="true"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="description">Descripción</label>
-            <textarea
-              id="description"
-              v-model="editEvent.description"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-            ></textarea>
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="startTime">Fecha de Inicio</label>
-            <input
-              id="startTime"
-              v-model="editEvent.startTime"
-              type="datetime-local"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              aria-required="true"
-            />
-          </div>
-          <div class="mb-4">
-            <label class="block text-gray-700 dark:text-gray-300 mb-1" for="ownerId">Propietario (UID)</label>
-            <input
-              id="ownerId"
-              v-model="editEvent.ownerId"
-              type="text"
-              class="w-full p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-              disabled
-            />
-          </div>
-          <div class="flex justify-end gap-2">
-            <button
-              type="button"
-              @click="showEditModal = false"
-              class="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md"
-              aria-label="Cancelar"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-primary text-white rounded-md"
-              aria-label="Guardar cambios"
-            >
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <!-- Modal de confirmación de eliminación -->
+    <GenericConfirmModal
+      :visible="showDeleteModal"
+      title="¿Eliminar evento?"
+      message="Esta acción no se puede deshacer. ¿Querés continuar?"
+      confirmButtonText="Eliminar"
+      cancelButtonText="Cancelar"
+      @cancel="closeDeleteModal"
+      @confirmed="confirmDelete"
+    />
+
+    <!-- Modal de edición de evento -->
+    <EditEventModal
+      v-if="selectedEvent && showEditModal"
+      :visible="showEditModal"
+      :event="selectedEvent"
+      @cancel="closeEditModal"
+      @submit="submitEdit"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { RouterLink } from 'vue-router';
-import { useEvents } from '../../composable/useEvents';
 import { useEventsStore } from '../../stores/events';
 import { useSnackbarStore } from '../../stores/snackbar';
+import EditEventModal from '../../components/organisms/EditEventModal.vue';
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 
 const eventsStore = useEventsStore();
-const { updateEvent } = useEvents();
 const snackbarStore = useSnackbarStore();
 
 const searchQuery = ref('');
 const filterOwner = ref('');
 const filterStatus = ref('');
-const showEditModal = ref(false);
-const editEvent = ref(null);
 
+const showDeleteModal = ref(false);
+const showEditModal = ref(false);
+const selectedEvent = ref(null);
 // Computed property for filtered events
 const filteredEvents = computed(() => {
   let filtered = eventsStore.allEvents.value;
@@ -217,17 +170,17 @@ const filteredEvents = computed(() => {
 
 // Unique owners for filter dropdown
 const uniqueOwners = computed(() => {
-  const owners = new Set(eventsStore.allEvents.map((event) => event.ownerId).filter(Boolean));
+  const owners = new Set(eventsStore.allEvents?.value?.map((event) => event.ownerId).filter(Boolean));
   return [...owners].sort();
 });
 
-// Helper to check if event is upcoming
+// Helper para saber si es evento próximo
 const isUpcoming = (startTime) => {
   const now = new Date();
   return startTime && new Date(startTime.toDate ? startTime.toDate() : startTime) > now;
 };
 
-// Format date for display
+// Format date
 const formatDate = (timestamp) => {
   if (!timestamp) return 'N/A';
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -240,48 +193,47 @@ const formatDate = (timestamp) => {
   });
 };
 
-// Open edit modal
-const openEditModal = (event) => {
-  editEvent.value = {
-    ...event,
-    startTime: event.startTime
-      ? new Date(event.startTime.toDate ? event.startTime.toDate() : event.startTime)
-          .toISOString()
-          .slice(0, 16)
-      : '',
-  };
+//Edit functions
+function openEditModal(event) {
+  selectedEvent.value = { ...event };
   showEditModal.value = true;
-};
+  document.body.style.overflow = 'hidden';
+}
 
-// Save event changes
-const saveEvent = async () => {
+function closeEditModal() {
+  showEditModal.value = false;
+  document.body.style.overflow = '';
+  selectedEvent.value = null;
+}
+
+function submitEdit(updatedEvent) {
+  closeEditModal();
+}
+
+// Delete functions
+function handleDelete(event) {
+  showDeleteModal.value = true;
+  selectedEvent.value = event;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false;
+  document.body.style.overflow = '';
+  selectedEvent.value = null;
+}
+
+async function confirmDelete() {
   try {
-    await updateEvent(editEvent.value.idDoc, {
-      title: editEvent.value.title,
-      description: editEvent.value.description,
-      startTime: new Date(editEvent.value.startTime),
-      ownerId: editEvent.value.ownerId,
-    });
-    snackbarStore.show('Evento actualizado exitosamente', 'success');
-    showEditModal.value = false;
+    await eventsStore.deleteEvent(selectedEvent.value.idDoc);
+    snackbarStore.show(`Evento ${selectedEvent.value.title} eliminado exitosamente`, 'success');
   } catch (error) {
-    console.error('Error updating event:', error);
-    snackbarStore.show('Error al guardar los cambios', 'error');
+    console.error('Error al eliminar evento:', error);
+    snackbarStore.show(`Error al eliminar evento. IdDoc:${selectedEvent.value.idDoc}, Title: ${selectedEvent.value.title}.`, 'error');
   }
-};
+  closeDeleteModal();
+}
 
-// Delete event
-const deleteEvent = async (idDoc) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar este evento?')) return;
-  try {
-    await eventsStore.deleteEvent(idDoc);
-    snackbarStore.show('Evento eliminado exitosamente', 'success');
-  } catch (error) {
-    snackbarStore.show(`Error al eliminar el evento: ${eventsStore.error || 'Intenta de nuevo.'}`, 'error');
-  }
-};
-
-// Manage subscription lifecycle
 onMounted(() => {
   eventsStore.subscribeAllEvents();
 });
@@ -292,49 +244,4 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Custom styles for table and buttons */
-table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-th,
-td {
-  border-right: 1px solid #e5e7eb;
-}
-
-th:last-child,
-td:last-child {
-  border-right: none;
-}
-
-button i {
-  font-size: 1.25rem;
-}
-
-/* Primary color for buttons */
-.bg-primary {
-  background-color: #3b82f6;
-}
-
-.bg-primary:hover {
-  background-color: #2563eb;
-}
-
-.bg-primary-dark {
-  background-color: #2563eb;
-}
-
-/* Dark mode adjustments */
-.dark .bg-primary {
-  background-color: #60a5fa;
-}
-
-.dark .bg-primary:hover {
-  background-color: #3b82f6;
-}
-
-.dark .bg-primary-dark {
-  background-color: #3b82f6;
-}
 </style>

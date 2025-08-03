@@ -97,7 +97,7 @@
                 </button>
               </li>
               <!-- Report Event (Non-owner, non-admin) -->
-              <li v-if="event?.ownerId !== user?.uid && !isAdmin">
+              <li v-if="event?.ownerId !== user?.uid">
                 <button
                   @click="showReportEventModal"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
@@ -106,7 +106,7 @@
                 </button>
               </li>
               <!-- Hide Event (Non-owner, non-admin) -->
-              <li v-if="event?.ownerId !== user?.uid && !isAdmin && isGoing">
+              <li v-if="event?.ownerId !== user?.uid && isGoing">
                 <button
                   @click="handleAttendance"
                   class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"

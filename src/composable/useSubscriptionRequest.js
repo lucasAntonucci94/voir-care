@@ -27,7 +27,6 @@ export function useSubscriptionRequests() {
         createdAt: serverTimestamp()
     });
     } catch (err) {
-        debugger
       console.error('Error creating subscription request:', err);
       throw err;
     }
@@ -41,7 +40,6 @@ export function useSubscriptionRequests() {
   async function approveSubscriptionRequest(requestId, userId) {
     try {
       const { suscribeUser } = useUsers();
-      debugger
       await suscribeUser(userId, true);  
       const requestDocRef = doc(db, 'subscriptionRequests', requestId);
       await setDoc(requestDocRef, { status: 'approved' }, { merge: true });
@@ -56,7 +54,7 @@ export function useSubscriptionRequests() {
    * @param {string} requestId - ID de la solicitud de suscripción
    * @returns {Promise<void>}
    */
-  async function declineSubscriptionRequest(requestI) {
+  async function declineSubscriptionRequest(requestId) {
     try {
       const requestDocRef = doc(db, 'subscriptionRequests', requestId);
       await setDoc(requestDocRef, { status: 'declined' }, { merge: true });
@@ -123,6 +121,34 @@ export function useSubscriptionRequests() {
     }
   }
 
+  /**
+   * Retorna la cantidad de peticiones de suscripcion.
+   * @returns {Promise<number>} - Cantidad de peticiones de suscripcion
+   */
+  async function getSubscriptionRequestsCount() {
+    try {
+      const querySnapshot = await getDocs(subscriptionRequestsRef);
+      return querySnapshot.size; 
+    } catch (error) {
+      console.error('Error al obtener la cantidad de peticiones de suscripción:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Retorna la cantidad de peticiones de suscripción en estado 'pending'.
+   * @returns {Promise<number>} - Cantidad de peticiones de suscripción en estado 'pending'
+   */
+  async function getPendingSubscriptionRequestsCount() {
+    try {
+      const q = query(subscriptionRequestsRef, where('status', '==', 'pending'));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al obtener la cantidad de peticiones de suscripción pendientes:', error);
+      throw error;
+    }
+  }
   return {
     createSubscriptionRequest,
     approveSubscriptionRequest,
@@ -130,5 +156,7 @@ export function useSubscriptionRequests() {
     fetchSubscriptionRequests,
     hasPendingRequest,
     subscribeToSubscriptionRequests,
+    getSubscriptionRequestsCount,
+    getPendingSubscriptionRequestsCount
   }
 }

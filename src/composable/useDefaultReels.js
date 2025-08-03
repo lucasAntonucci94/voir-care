@@ -1,4 +1,4 @@
-import { getFirestore, doc, collection, setDoc, onSnapshot, query, orderBy, serverTimestamp, updateDoc, getDoc, deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, collection, setDoc, onSnapshot, query, orderBy, serverTimestamp, updateDoc, getDoc, getDocs, deleteDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage';
 import { useMediaUpload } from './useMediaUpload';
 import { newGuid } from '../utils/newGuid';
@@ -197,10 +197,26 @@ export function useDefaultReels() {
     }
   }
 
+  
+  /**
+   * Obtiene la cantidad total de reels en la colección reels.
+   * @returns {Promise<number>} - La cantidad de reels.
+   */
+  async function getAllCount() {
+    try {
+      const querySnapshot = await getDocs(defaultReelsRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al contar todos los reels:', error);
+      throw error;
+    }
+  }
+
   return {
     saveDefaultReel,
     subscribeToDefaultReels,
     updateDefaultReel,
     deleteDefaultReel,
+    getAllCount,
   };
 }

@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import { getFirestore, addDoc, doc, updateDoc, deleteDoc, collection, onSnapshot, query, orderBy, serverTimestamp, Timestamp, where, arrayUnion, arrayRemove, increment, getDoc } from 'firebase/firestore';
+import { getFirestore, addDoc, doc, updateDoc, deleteDoc, getDocs, collection, onSnapshot, query, orderBy, serverTimestamp, Timestamp, where, arrayUnion, arrayRemove, increment, getDoc } from 'firebase/firestore';
 import { useStorage } from './useStorage'; // Importamos el composable useStorage
 import { newGuid } from '../utils/newGuid';
 
@@ -416,6 +416,20 @@ export function useReels() {
     }
   }
 
+  /**
+   * Obtiene la cantidad total de reels en la colección reels.
+   * @returns {Promise<number>} - La cantidad de reels.
+   */
+  async function getAllReelsCount() {
+    try {
+      const querySnapshot = await getDocs(reelsRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al contar todos los reels:', error);
+      throw error;
+    }
+  }
+
   return {
     saveReel,
     updateReelData,
@@ -426,6 +440,7 @@ export function useReels() {
     removeLike,
     incrementView,
     getReelByIdDoc,
+    getAllReelsCount,
     error,
     isLoading,
   };
