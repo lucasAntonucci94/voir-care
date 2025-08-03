@@ -114,6 +114,22 @@ export const useReportsStore = defineStore('reports', {
         throw error;
       }
     },
+    
+    /**
+     * Actualiza el estado de un reporte.
+     * @param {string} docId - ID del documento del reporte a actualizar
+     * @param {string} newStatus - El nuevo estado a establecer
+     * @returns {Promise<void>}
+     */
+    async updateStatus(docId, newStatus) {
+      const { updateReportStatus } = useReports();
+      try {
+        await updateReportStatus(docId, newStatus);
+      } catch (error) {
+        console.error('Error en el store al actualizar el estado del reporte:', error);
+        throw error;
+      }
+    },
 
     /**
      * Cancela la suscripción a los reportes en tiempo real.
@@ -142,3 +158,4 @@ export const useReportsStore = defineStore('reports', {
     getReports: (state) => state.reports,
   },
 });
+         
