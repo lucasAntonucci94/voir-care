@@ -634,7 +634,6 @@ async function saveProfile() {
     editForm.value.socialNetwork.forEach(network => {
       network.value = normalizeUrl(network.value);
     });
-    debugger
     const profileToUpdate = {
       ...props.activeUser,
       ...editForm.value,

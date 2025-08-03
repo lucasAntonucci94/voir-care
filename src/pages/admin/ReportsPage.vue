@@ -96,7 +96,7 @@
 
     <div
       v-if="showDetailModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 p-4"
       @click.self="closeDetailModal"
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -140,16 +140,16 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useReportsStore } from '../../stores/reports';
 import { useSnackbarStore } from '../../stores/snackbar';
-import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue'; // Importa el modal genérico
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 
 const snackbarStore = useSnackbarStore();
 const reportsStore = useReportsStore();
 const selectedEntityType = ref('');
-const showDetailModal = ref(false); // Cambiado de showModal para evitar conflictos
+const showDetailModal = ref(false);
 const selectedReport = ref(null);
 
-const showConfirmModal = ref(false); // Para el modal de confirmación de eliminar
-const genericModalConfig = ref({}); // Configuración para el modal genérico
+const showConfirmModal = ref(false);
+const genericModalConfig = ref({});
 
 // Tipos de entidades disponibles
 const entityTypes = [
