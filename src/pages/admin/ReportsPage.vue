@@ -4,7 +4,7 @@
 
     <!-- Selectbox para filtrar por tipo de reporte -->
     <div class="mb-6 flex items-center gap-2">
-      <label for="entityTypeFilter" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+      <label for="entityTypeFilter" class="sr-only text-sm text-gray-700 dark:text-gray-200">
         Filtrar por tipo:
       </label>
       <select
@@ -13,8 +13,20 @@
         class="px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-colors duration-200 shadow-sm"
         aria-label="Filtrar por tipo de entidad"
       >
-        <option value="">Todos</option>
+        <option value="">Todos los tipos</option>
         <option v-for="type in entityTypes" :key="type" :value="type">{{ formatEntityType(type) }}</option>
+      </select>
+      <label for="entityStatusFilter" class="sr-only text-sm text-gray-700 dark:text-gray-200">
+        Filtrar por Estado:
+      </label>
+      <select
+        id="entityStatusFilter"
+        v-model="selectedStatus"
+        class="px-4 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary transition-colors duration-200 shadow-sm"
+        aria-label="Filtrar por estado de entidad"
+      >
+        <option value="">Todos los estados</option>
+        <option v-for="status in statusTypes" :key="status" :value="status">{{ formatEntityStatus(status) }}</option>
       </select>
     </div>
 
@@ -190,6 +202,7 @@ const groupPostsStore = useGroupPostsStore();
 const eventPostsStore = useEventPostsStore();
 
 const selectedEntityType = ref('');
+const selectedStatus = ref('');
 const showDetailsModal = ref(false);
 const selectedReport = ref(null);
 
@@ -206,14 +219,21 @@ const entityTypes = [
   'eventPost',
   'user',
 ];
+const statusTypes = [
+  'pending',
+  'completed',
+  'rejected',
+];
 
 // Filtra los reportes según el tipo seleccionado
 const filteredReports = computed(() => {
   if (!reportsStore.getReports) return [];
-  if (!selectedEntityType.value) {
-    return reportsStore.getReports;
-  }
-  return reportsStore.getReports.filter((report) => report.entityType === selectedEntityType.value);
+  return reportsStore.getReports.filter((report) => {
+    const matchesType = !selectedEntityType.value || report.entityType === selectedEntityType.value;
+    const matchesStatus = !selectedStatus.value || report.status === selectedStatus.value;
+    return matchesType && matchesStatus;
+  });
+  
 });
 
 // Formatea la fecha de Firestore Timestamp a una cadena legible
@@ -238,6 +258,14 @@ function formatEntityType(type) {
     event: 'Evento',
     eventPost: 'Post de Evento',
     user: 'Usuario',
+  };
+  return typeMap[type] || type;
+}
+function formatEntityStatus(type) {
+  const typeMap = {
+    pending: 'Pendiente',
+    completed: 'Completado',
+    rejected: 'Rechazado',
   };
   return typeMap[type] || type;
 }
