@@ -236,7 +236,7 @@ export function useGroups() {
         groupsRef,
         where('categories', 'array-contains', { id: 'adopcion', name: 'Adopción' }),
         orderBy('createdAt', 'desc'),
-        limit(3)
+        limit(4)
       )
       return onSnapshot(q, (snapshot) => {
         const groups = snapshot.docs.map((docSnap) => ({

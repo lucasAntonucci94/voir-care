@@ -13,7 +13,6 @@
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Eventos</h2>
         <button
-          v-if="events.length > 3"  
           class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
           @click="viewMoreEvents"
         >
@@ -23,7 +22,7 @@
       <div v-if="events.length === 0" class="text-center text-gray-500 dark:text-gray-400 italic">
         No hay eventos disponibles en este momento.
       </div>
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <EventCard
           v-for="event in events"
           :key="event.idDoc"
@@ -37,7 +36,6 @@
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Grupos</h2>
         <button
-          v-if="groups.length > 3" 
           class="px-4 py-2 bg-primary text-white rounded-full text-sm font-semibold hover:bg-opacity-90 transition"
           @click="viewMoreGroups"
         >
@@ -47,7 +45,7 @@
       <div v-if="groups.length === 0" class="text-center text-gray-500 dark:text-gray-400 italic">
         No hay grupos disponibles en este momento.
       </div>
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <GroupCard
           v-for="group in groups"
           :key="group.idDoc"
@@ -80,7 +78,7 @@
           No hay blogs disponibles en este momento.
         </div>
         <div v-else>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             <BlogPostCard
               v-for="blog in displayedBlogs"
               :key="blog.id"
@@ -120,7 +118,7 @@ const filteredBlogs = computed(() => {
 
 // Limitar a los primeros 5 blogs
 const displayedBlogs = computed(() => {
-  return filteredBlogs.value.slice(0, 5);
+  return filteredBlogs.value.slice(0, 4);
 });
 
 // Método para redirigir a la pantalla de educación

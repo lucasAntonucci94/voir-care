@@ -74,7 +74,7 @@
                 <!-- Botón de Ver Detalles (siempre visible) -->
                 <button
                   @click="openDetailsModal(report)"
-                  class="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                  class="p-2 rounded-full text-gray-600 dark:text-gray-400 bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
                   aria-label="Ver detalles y acciones del reporte"
                 >
                   <i class="fas fa-eye"></i>
@@ -85,7 +85,7 @@
                   <!-- Botón para Rechazar Reporte -->
                   <button
                     @click="setGenericModalConfig('rejectReport', report)"
-                    class="p-2 rounded-full text-yellow-600 dark:text-yellow-400 hover:bg-yellow-200/50 dark:hover:bg-yellow-700/50 transition-colors duration-200"
+                    class="p-2 rounded-full text-yellow-600 dark:text-yellow-400 bg-yellow-100/50 hover:bg-yellow-200/50 dark:hover:bg-yellow-700/50 transition-colors duration-200"
                     aria-label="Rechazar reporte"
                   >
                     <i class="fas fa-ban"></i>
@@ -94,7 +94,7 @@
                   <!-- Botón para Eliminar Reporte -->
                   <button
                     @click="setGenericModalConfig('deleteReport', report)"
-                    class="p-2 rounded-full text-red-600 dark:text-red-400 hover:bg-red-200/50 dark:hover:bg-red-700/50 transition-colors duration-200"
+                    class="p-2 rounded-full text-red-600 dark:text-red-400 bg-red-100/50 hover:bg-red-200/50 dark:hover:bg-red-700/50 transition-colors duration-200"
                     aria-label="Eliminar reporte"
                   >
                     <i class="fas fa-trash"></i>
@@ -236,7 +236,7 @@ const filteredReports = computed(() => {
   
 });
 
-// Formatea la fecha de Firestore Timestamp a una cadena legible
+// Formatea la fecha
 function formatDate(timestamp) {
   if (!timestamp || !timestamp.toDate) return 'N/A';
   return timestamp.toDate().toLocaleString('es-ES', {
@@ -261,6 +261,7 @@ function formatEntityType(type) {
   };
   return typeMap[type] || type;
 }
+// Formatea texto del estado para mostrarlo
 function formatEntityStatus(type) {
   const typeMap = {
     pending: 'Pendiente',
@@ -278,7 +279,7 @@ function formatKey(key) {
     .trim();
 }
 
-// Extrae información relevante del metadata para la tabla
+// Extrae información relevante del metadata para la tabla / ver como automatizar
 function getMetadataInfo(metadata) {
   if (!metadata) return 'N/A';
   if (metadata.reelTitle) return `Título: ${metadata.reelTitle}`;

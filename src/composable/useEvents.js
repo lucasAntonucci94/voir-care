@@ -186,7 +186,7 @@ export function useEvents() {
         eventsRef,
         where('categories', 'array-contains', { id: 'adopcion', name: 'Adopción' }),
         orderBy('createdAt', 'desc'),
-        limit(3)
+        limit(4)
       )
       return onSnapshot(q, (snapshot) => {
         const events = snapshot.docs.map((docSnap) => ({
