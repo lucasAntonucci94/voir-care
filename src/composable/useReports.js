@@ -30,7 +30,6 @@ export function useReports() {
    * @throws {Error} If entityType or entityId is missing or invalid
    */
   async function saveReport({ entityType, entityId, userId, reason = 'No especificado', description, metadata = {} }) {
-    debugger
     // Validation
     if (!entityType || !entityId || !userId) {
       throw new Error('entityType, entityId, and userId are required');

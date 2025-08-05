@@ -180,7 +180,6 @@ export function useGroupPosts() {
    */
   async function deletePostGroup(idGroup, postId) {
     try {
-      debugger
       isLoading.value = true;
       const postDocRef = doc(db, 'groups', idGroup, 'posts', postId);
       await deleteDoc(postDocRef);

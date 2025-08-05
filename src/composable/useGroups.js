@@ -302,7 +302,6 @@ export function useGroups() {
    */
   async function getLastGroupByOwnerId(userId) {
     try {
-      debugger
       // Creamos un query para buscar el último grupo del usuario
       const q = query(
         groupsRef,
