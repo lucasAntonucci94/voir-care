@@ -34,7 +34,7 @@
     <div v-if="reportsStore.isLoading" class="text-center text-gray-600 dark:text-gray-300 py-8">
       <i class="fas fa-spinner fa-spin mr-2"></i> Cargando reportes...
     </div>
-    <div v-else-if="filteredReports.length" class="overflow-x-auto rounded-lg shadow-lg">
+    <div v-else-if="filteredReports.length" class="rounded-lg shadow-lg">
       <table class="min-w-full bg-white dark:bg-gray-800">
         <thead>
           <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
@@ -52,7 +52,7 @@
           <tr
             v-for="report in filteredReports"
             :key="report.id"
-            class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100/80 dark:hover:bg-gray-600/80"
+            class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100/80 dark:hover:bg-gray-700/20"
           >
             <td class="py-3 px-6 text-left whitespace-nowrap">
               <span class="truncate max-w-[120px] block">{{ report.reportId }}</span>
@@ -69,36 +69,50 @@
                 {{ statusText(report.status) }}
               </span>
             </td>
-            <td class="py-3 px-6 text-center">
+            <td class="py-3 px-6">
               <div class="flex items-center justify-center gap-2">
-                <!-- Botón de Ver Detalles (siempre visible) -->
-                <button
-                  @click="openDetailsModal(report)"
-                  class="p-2 rounded-full text-gray-600 dark:text-gray-400 bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-                  aria-label="Ver detalles y acciones del reporte"
-                >
-                  <i class="fas fa-eye"></i>
-                </button>
+                <div class="relative group">
+                  <button
+                    @click="openDetailsModal(report)"
+                    class="p-2 rounded-full text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                    aria-label="Ver detalles y acciones del reporte"
+                    title="Ver detalles del reporte"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <!-- Tooltip -->
+                  <span class="tooltip-text">Ver detalles</span>
+                </div>
                 
                 <!-- Acciones directas (solo si el reporte está pendiente) -->
                 <template v-if="report.status === 'pending'">
                   <!-- Botón para Rechazar Reporte -->
-                  <button
-                    @click="setGenericModalConfig('rejectReport', report)"
-                    class="p-2 rounded-full text-yellow-600 dark:text-yellow-400 bg-yellow-100/50 hover:bg-yellow-200/50 dark:hover:bg-yellow-700/50 transition-colors duration-200"
-                    aria-label="Rechazar reporte"
-                  >
-                    <i class="fas fa-ban"></i>
-                  </button>
+                  <div class="relative group">
+                    <button
+                      @click="setGenericModalConfig('rejectReport', report)"
+                      class="p-2 rounded-full text-yellow-600 dark:text-yellow-400 bg-yellow-100/50 dark:bg-yellow-600/50 hover:bg-yellow-200/50 dark:hover:bg-yellow-700/50 transition-colors duration-200"
+                      aria-label="Rechazar reporte"
+                      title="Rechazar reporte"
+                    >
+                      <i class="fas fa-ban"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Rechazar reporte</span>
+                  </div>
 
                   <!-- Botón para Eliminar Reporte -->
-                  <button
-                    @click="setGenericModalConfig('deleteReport', report)"
-                    class="p-2 rounded-full text-red-600 dark:text-red-400 bg-red-100/50 hover:bg-red-200/50 dark:hover:bg-red-700/50 transition-colors duration-200"
-                    aria-label="Eliminar reporte"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
+                  <div class="relative group">
+                    <button
+                      @click="setGenericModalConfig('deleteReport', report)"
+                      class="p-2 rounded-full text-red-600 dark:text-red-400 bg-red-100/50 dark:bg-red-600/50 hover:bg-red-200/50 dark:hover:bg-red-700/50 transition-colors duration-200"
+                      aria-label="Eliminar reporte"
+                      title="Eliminar reporte"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Eliminar reporte</span>
+                  </div>
                 </template>
               </div>
             </td>
@@ -113,7 +127,7 @@
     <!-- Detalles y Acciones -->
     <div
       v-if="showDetailsModal"
-      class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 p-4"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 p-4 animate-fade-in"
       @click.self="closeDetailsModal"
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -209,6 +223,8 @@ const selectedReport = ref(null);
 const showGenericModal = ref(false);
 const genericModalConfig = ref({});
 
+// TODO : Todavia falta obtener las entities a auditar. (Reels, post, grupo, evento, etc).
+
 // Tipos de entidades disponibles
 const entityTypes = [
   'post',
@@ -279,7 +295,6 @@ function formatKey(key) {
     .trim();
 }
 
-// Extrae información relevante del metadata para la tabla / ver como automatizar
 function getMetadataInfo(metadata) {
   if (!metadata) return 'N/A';
   if (metadata.reelTitle) return `Título: ${metadata.reelTitle}`;
@@ -301,7 +316,7 @@ function statusColor(status) {
   }
 }
 
-// Texto para los estados
+// Texto formateado para los estados
 function statusText(status) {
   switch (status) {
     case 'pending':

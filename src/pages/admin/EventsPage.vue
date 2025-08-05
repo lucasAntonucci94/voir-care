@@ -42,7 +42,7 @@
       </div>
 
       <!-- Events Table -->
-      <div v-if="filteredEvents?.length" class="overflow-x-auto rounded-lg">
+      <div v-if="filteredEvents?.length" class="rounded-lg">
         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow">
           <thead>
             <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-sm leading-normal dosis-font">
@@ -73,24 +73,32 @@
                   {{ isUpcoming(event.startTime) ? 'Próximo' : 'Pasado' }}
                 </span>
               </td>
-              <td class="py-3 px-6 text-center">
-                <div class="flex item-center justify-center gap-2">
-                  <button
-                    @click="openEditModal(event)"
-                    class="text-blue-500 hover:text-blue-700"
-                    title="Editar"
-                    aria-label="Editar evento"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button
-                    @click="handleDelete(event)"
-                    class="text-red-500 hover:text-red-700"
-                    title="Eliminar"
-                    aria-label="Eliminar evento"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
+              <td class="py-3 px-6">
+                <div class="flex items-center justify-center gap-2">
+                  <div class="relative group">
+                    <button
+                      @click="openEditModal(event)"
+                      class="p-2 rounded-full text-blue-500 dark:text-blue-200 bg-blue-100 dark:bg-blue-700/50 hover:bg-blue-200 dark:hover:bg-blue-600 transition-colors duration-200"
+                      aria-label="Ver detalles y acciones del reporte"
+                      title="Ver detalles del reporte"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Ver detalles</span>
+                  </div>
+                  <div class="relative group">
+                    <button
+                      @click="handleDelete(event)"
+                      class="p-2 rounded-full text-red-500 dark:text-red-200 bg-red-100 dark:bg-red-700/50 hover:bg-red-200 dark:hover:bg-red-600 transition-colors duration-200"
+                      aria-label="Eliminar evento"
+                      title="Eliminar evento"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Eliminar evento</span>
+                  </div>
                 </div>
               </td>
             </tr>

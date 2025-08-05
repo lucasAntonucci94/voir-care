@@ -36,6 +36,7 @@ import AdmBlogCategoriesPage from '../pages/admin/BlogCategoriesPage.vue';
 import AdmPostsPage from '../pages/admin/PostsPage.vue';
 import AdmSubscriptionsPage from '../pages/admin/SubscriptionsPage.vue';
 import AdmLocationsPage from '../pages/admin/LocationsPage.vue';
+import CategoriesDashboard from '../pages/admin/CategoriesDashboard.vue';
 import { useAuth } from '../api/auth/useAuth';
 
 const routes = [
@@ -307,6 +308,14 @@ const routes = [
         path:  '/admin/locations',
         name: 'LocationsAdm',
         component: AdmLocationsPage,
+        meta: {
+            requiresAuth: true,
+        }
+      },
+      {
+        path:  '/admin/categories',
+        name: 'CategoriesDashboard',
+        component: CategoriesDashboard,
         meta: {
             requiresAuth: true,
         }

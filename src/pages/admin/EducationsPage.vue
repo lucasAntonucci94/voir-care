@@ -78,7 +78,7 @@
             <tr
               v-for="blog in filteredBlogs"
               :key="blog.id"
-              class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/30"
             >
               <td class="py-3 px-6 text-left whitespace-nowrap">{{ blog.id }}</td>
               <td class="py-3 px-6 text-left whitespace-nowrap">
@@ -100,7 +100,7 @@
                 <div class="flex item-center justify-center gap-2">
                   <button
                     @click="openPreviewModal(blog)"
-                    class="text-green-500 hover:text-green-700"
+                    class="p-2 rounded-full text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
                     title="Vista previa"
                     aria-label="Vista previa del blog"
                   >
@@ -108,15 +108,15 @@
                   </button>
                   <button
                     @click="openEditModal(blog)"
-                    class="text-blue-500 hover:text-blue-700"
+                    class="p-2 rounded-full text-blue-600 dark:text-blue-300 bg-blue-100 dark:bg-blue-700/30 hover:bg-blue-200 dark:hover:bg-blue-600 transition-colors duration-200"
                     title="Editar"
                     aria-label="Editar blog"
                   >
                     <i class="fas fa-edit"></i>
                   </button>
                   <button
-                    @click="deleteBlog(blog.id)"
-                    class="text-red-500 hover:text-red-700"
+                    @click="setGenericModalConfig('delete', blog)"
+                    class="p-2 rounded-full text-red-600 dark:text-red-300 bg-red-100 dark:bg-red-700/30 hover:bg-red-200 dark:hover:bg-red-600 transition-colors duration-200"
                     title="Eliminar"
                     aria-label="Eliminar blog"
                   >
@@ -152,6 +152,17 @@
       :visible="showMigrationModal"
       @close="toggleMigrationModal"
     />
+    <!-- Modal de confirmación genérico -->
+    <GenericConfirmModal
+      v-if="showConfirmModal"
+      :visible="showConfirmModal"
+      :title="genericModalConfig.title"
+      :message="genericModalConfig.message"
+      :confirmButtonText="genericModalConfig.confirmButtonText"
+      :cancelButtonText="genericModalConfig.cancelButtonText"
+      @cancel="genericModalConfig.cancelMethod"
+      @confirmed="genericModalConfig.confirmMethod"
+    />
   </div>
 </template>
 
@@ -168,6 +179,7 @@ import EducationBlogMigrationModal from '../../components/organisms/EducationBlo
 import { formatTimestamp } from '../../utils/formatTimestamp';
 import 'vue-multiselect/dist/vue-multiselect.css';
 import { useThemeStore } from '../../stores/theme'; // Adjust path as needed
+import GenericConfirmModal from '../../components/molecules/GenericConfirmModal.vue';
 
 const themeStore = useThemeStore();
 const isDark = computed(() => themeStore.isDarkMode); // Sync with store
@@ -186,6 +198,7 @@ const categoriesInput = ref('');
 const showPreviewModal = ref(false);
 const previewBlog = ref({});
 const showMigrationModal = ref(false);
+const showConfirmModal = ref(false);
 const categories = ref([]);
 const categoriesName = ref([]);
 
@@ -222,6 +235,21 @@ const newBlog = ref({
   type: 0, // Default to FREE
   summary: '',
   sections: [],
+});
+
+const genericModalConfig = ref({
+  title: "",
+  message: "",
+  confirmButtonText: "Confirmar",
+  cancelButtonText: "Cancelar",
+  cancelMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = "";
+  },
+  confirmMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = "";
+  },
 });
 
 // Computed properties
@@ -368,7 +396,6 @@ const handleSaveBlog = ({ blog, error }) => {
 
 // Delete blog
 const deleteBlog = async (id) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar este blog?')) return;
   try {
     await blogsStore.deleteBlog(id);
     snackbarStore.show('Blog eliminado exitosamente', 'success');
@@ -376,6 +403,43 @@ const deleteBlog = async (id) => {
     console.error('Error al eliminar blog:', error);
     snackbarStore.show('Error al eliminar blog: ' + error.message, 'error');
   }
+};
+
+// Configurar modal genérico
+const setGenericModalConfig = (action, blog) => {
+  switch (action) {
+    case "delete":
+      genericModalConfig.value = {
+        title: "Eliminar Blog Permanentemente",
+        message: `¿Estás seguro de que deseas eliminar el blog: ${blog.title}?`,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        confirmMethod: () => {
+          deleteBlog(blog.id);
+          showConfirmModal.value = false;
+          document.body.style.overflow = "";
+        },
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = "";
+        },
+      };
+      break;
+    default:
+      // Fallback
+      genericModalConfig.value = {
+        title: "Acción no definida",
+        message: "No se ha definido una acción para esta operación.",
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        confirmMethod: () => {},
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = "";
+        },
+      };
+  }
+  showConfirmModal.value = true;
 };
 
 // Lifecycle hooks

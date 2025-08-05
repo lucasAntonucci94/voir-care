@@ -1,7 +1,7 @@
 <template>
   <Teleport v-if="visible" to="body">
     <div
-      class="fixed inset-0 z-20 flex items-center justify-center bg-black/90"
+      class="fixed inset-0 z-101 flex items-center justify-center bg-black/60"
       @click.self="emit('close')"
     >
       <div

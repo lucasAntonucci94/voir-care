@@ -49,24 +49,32 @@
               <td class="py-3 px-6 text-left whitespace-nowrap">
                 <span>{{ category.name || 'Sin nombre' }}</span>
               </td>
-              <td class="py-3 px-6 text-center">
-                <div class="flex item-center justify-center gap-2">
-                  <button
-                    @click="openEditModal(category)"
-                    class="text-blue-500 hover:text-blue-700"
-                    title="Editar"
-                    aria-label="Editar categoría"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button
-                    @click="deleteCategory(category.idDoc)"
-                    class="text-red-500 hover:text-red-700"
-                    title="Eliminar"
-                    aria-label="Eliminar categoría"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
+              <td class="py-3 px-6">
+                <div class="flex items-center justify-center gap-2">
+                  <div class="relative group">
+                    <button
+                      @click="openEditModal(category)"
+                      class="p-2 rounded-full text-blue-500 dark:text-blue-200 bg-blue-100 dark:bg-blue-700/50 hover:bg-blue-200 dark:hover:bg-blue-600 transition-colors duration-200"
+                      aria-label="Ver detalles y acciones del reporte"
+                      title="Ver detalles del reporte"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Ver detalles</span>
+                  </div>
+                  <div class="relative group">
+                    <button
+                      @click="setGenericModalConfig('delete', category)"
+                      class="p-2 rounded-full text-red-500 dark:text-red-200 bg-red-100 dark:bg-red-700/50 hover:bg-red-200 dark:hover:bg-red-600 transition-colors duration-200"
+                      aria-label="Eliminar evento"
+                      title="Eliminar evento"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Eliminar evento</span>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -81,7 +89,8 @@
     <!-- Create/Edit Modal -->
     <div
       v-if="showModal"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 z-101 flex items-center justify-center bg-black/60"
+      @click.self="showModal = false"
     >
       <div class="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md">
         <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">
@@ -120,7 +129,7 @@
             </button>
             <button
               type="submit"
-              class="px-4 py-2 bg-primary text-white rounded-md"
+              class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-md"
               aria-label="Guardar categoría"
             >
               Guardar
@@ -129,6 +138,17 @@
         </form>
       </div>
     </div>
+    <!-- Modal de confirmación genérico -->
+    <GenericConfirmModal
+      v-if="showConfirmModal"
+      :visible="showConfirmModal"
+      :title="genericModalConfig.title"
+      :message="genericModalConfig.message"
+      :confirmButtonText="genericModalConfig.confirmButtonText"
+      :cancelButtonText="genericModalConfig.cancelButtonText"
+      @cancel="genericModalConfig.cancelMethod"
+      @confirmed="genericModalConfig.confirmMethod"
+    />
   </div>
 </template>
 
@@ -136,6 +156,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useCategories } from '../../composable/useCategories';
 import { useSnackbarStore } from '../../stores/snackbar';
+import GenericConfirmModal from "../../components/molecules/GenericConfirmModal.vue";
 
 const { blogCategories, loadBlogCategories, saveBlogCategorie, updateBlogCategorie, deleteBlogCategorie } = useCategories();
 const snackbarStore = useSnackbarStore();
@@ -146,6 +167,22 @@ const error = ref(null);
 const showModal = ref(false);
 const isEditing = ref(false);
 const editCategory = ref({ name: '', slug: '', idDoc: null });
+const showConfirmModal = ref(false);
+
+const genericModalConfig = ref({
+  title: "",
+  message: "",
+  confirmButtonText: "Confirmar",
+  cancelButtonText: "Cancelar",
+  cancelMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = "";
+  },
+  confirmMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = "";
+  },
+});
 
 // Load blog categories on mount
 onMounted(async () => {
@@ -212,7 +249,6 @@ const saveCategory = async () => {
 
 // Delete category
 const deleteCategory = async (docId) => {
-  if (!confirm('¿Estás seguro de que deseas eliminar esta categoría?')) return;
   try {
     await deleteBlogCategorie(docId);
     snackbarStore.show('Categoría eliminada exitosamente', 'success');
@@ -221,6 +257,44 @@ const deleteCategory = async (docId) => {
   }
   await loadBlogCategories();
 };
+
+// Configurar modal genérico
+const setGenericModalConfig = (action, category) => {
+  switch (action) {
+    case "delete":
+      genericModalConfig.value = {
+        title: "Eliminar Categoría Permanentemente",
+        message: `¿Estás seguro de que deseas eliminar la categoría: ${category.name}?`,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        confirmMethod: () => {
+          deleteCategory(category.idDoc);
+          showConfirmModal.value = false;
+          document.body.style.overflow = "";
+        },
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = "";
+        },
+      };
+      break;
+    default:
+      // Fallback
+      genericModalConfig.value = {
+        title: "Acción no definida",
+        message: "No se ha definido una acción para esta operación.",
+        confirmButtonText: "Aceptar",
+        cancelButtonText: "Cancelar",
+        confirmMethod: () => {},
+        cancelMethod: () => {
+          showConfirmModal.value = false;
+          document.body.style.overflow = "";
+        },
+      };
+  }
+  showConfirmModal.value = true;
+};
+
 </script>
 
 <style scoped>

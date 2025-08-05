@@ -1,12 +1,19 @@
 <template>
   <div
-    class="group bg-gray-100/40 dark:bg-gray-800 rounded-2xl p-6 shadow-md w-full flex items-center justify-between transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
-    :class="{ 'cursor-pointer': routeTo, 'cursor-default': !routeTo }"
-    @click="navigateTo"
+    class="group bg-gray-100/40 dark:bg-gray-800 rounded-2xl p-6 shadow-md w-full flex items-center justify-between transition-all duration-300 transform"
+    :class="{
+      'cursor-pointer': routeTo,
+      'cursor-default': !routeTo,
+      'opacity-50': disabled,
+      ' hover:-translate-y-1 hover:shadow-lg': !disabled,
+    }"
+    @click.stop="!disabled && navigateTo()"
   >
     <div>
       <div class="flex items-center gap-2 mb-1">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-secondary font-dosis">
+        <h3
+          class="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-secondary font-dosis"
+        >
           {{ title }}
         </h3>
         <span
@@ -18,19 +25,21 @@
           <i class="fas fa-info-circle"></i>
         </span>
       </div>
-      <p class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-secondary font-dosis">
+      <p
+        class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-secondary font-dosis"
+      >
         {{ value }}
         <span
           v-if="badge === 'warning'"
           class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium text-white bg-red-500 rounded-full"
         >
-          {{ badgeTitle ?? '¡Atención!' }}
+          {{ badgeTitle ?? "¡Atención!" }}
         </span>
         <span
           v-if="badge === 'success'"
           class="inline-flex items-center px-2 py-1 ml-2 text-xs font-medium text-white bg-green-500 rounded-full"
         >
-          {{ badgeTitle ?? 'Estable' }}
+          {{ badgeTitle ?? "Estable" }}
         </span>
       </p>
     </div>
@@ -42,7 +51,7 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
@@ -75,6 +84,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 function navigateTo() {
@@ -84,6 +97,4 @@ function navigateTo() {
 }
 </script>
 
-<style scoped>
-/* No additional styles needed, all classes are in the template */
-</style>
+<style scoped></style>

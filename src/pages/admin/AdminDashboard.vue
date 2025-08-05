@@ -1,53 +1,13 @@
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-900 p-6">
     <div class="max-w-7xl mx-auto">
-      <!-- Welcome Banner -->
+      <!-- Banner -->
       <div class="bg-gradient-to-r from-primary/10 to-primary/70 dark:from-secondary/70 dark:to-secondary/20 rounded-2xl p-6 mb-8 shadow-md">
         <h1 class="text-3xl font-bold text-gray-800 dark:text-white font-dosis">Bienvenido al Dashboard</h1>
         <p class="text-gray-700 dark:text-gray-300 mt-2 font-dosis">
           Gestiona la comunidad de amantes de las mascotas. {{ isLoading ? 'Cargando...' : `${stats.users} usuarios activos y ${stats.events} eventos programados.` }}
         </p>
       </div>
-
-      <!-- Header + Buscador + Filtros + Accion Rápida -->
-      <!-- Integrar mas adelante el buscador, por search, temporalidad, y boton de accion rapida -->
-      <!-- <header class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-        <div class="flex items-center gap-4 w-full sm:w-auto">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Buscar usuarios, eventos, publicaciones..."
-            class="p-2 w-full sm:w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary font-dosis"
-            aria-label="Buscar en el dashboard"
-            @input="handleSearch"
-          />
-        </div>
-        <div class="flex items-center gap-4">
-          <div class="flex gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-lg p-1">
-            <button
-              v-for="filter in timeFilters"
-              :key="filter.value"
-              class="px-3 py-1 rounded-lg text-sm font-dosis"
-              :class="{
-                'bg-primary dark:bg-secondary text-white': timeFilter.value === filter.value,
-                'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700': timeFilter.value !== filter.value,
-              }"
-              @click="timeFilter.value = filter.value; fetchStats()"
-              :aria-label="`Filtrar por ${filter.label}`"
-            >
-              {{ filter.label }}
-            </button>
-          </div>
-          <button
-            class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-all font-dosis"
-            @click="openQuickActions"
-            aria-label="Abrir acciones rápidas"
-          >
-            <i class="fas fa-plus mr-2"></i> Acciones
-          </button>
-        </div>
-      </header> -->
-
       <!-- Loader -->
       <template v-if="isLoading">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -94,7 +54,7 @@
           </transition>
           
         </section>
-        <!-- User Activity Section -->
+        <!-- Activity Section -->
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center justify-between font-dosis bg-primary/5 dark:bg-secondary/10 p-3 rounded-lg">
             Actividad de Usuarios
@@ -122,7 +82,7 @@
                 icon="fas fa-calendar-alt"
                 routeTo="/admin/events"
                 tooltip="Eventos creados por usuarios"
-                :badge="stats.events > 50 ? 'success' : null"
+                :badge="stats.events > 500 ? 'success' : null"
               />
               <DashboardCard
                 title="Grupos"
@@ -130,7 +90,7 @@
                 icon="fas fa-users-cog"
                 routeTo="/admin/groups"
                 tooltip="Grupos creados por usuarios"
-                :badge="stats.groups > 20 ? 'success' : null"
+                :badge="stats.groups > 500 ? 'success' : null"
               />
               <DashboardCard
                 title="Publicaciones"
@@ -147,6 +107,7 @@
                 routeTo="/admin/posts"
                 tooltip="Publicaciones creadas por voir"
                 :badge="stats.reels > 100 ? 'success' : null"
+                :disabled="true"
               />
               <DashboardCard
                 title="Marcadores de Mapa"
@@ -154,8 +115,8 @@
                 icon="fas fa-map-marker-alt"
                 routeTo="/admin/locations"
                 tooltip="Marcadores creados por usuarios"
+                :badge="stats.mapMarkers > 100 ? 'success' : null"
               />
-                <!-- :badge="stats.mapMarkers > 100 ? 'success' : null" -->
             </div>
           </transition>
         </section>
@@ -243,12 +204,7 @@ const { getPendingSubscriptionRequestsCount } = useSubscriptionRequests();
 
 const isLoading = ref(true);
 const timeFilter = ref('month');
-const searchQuery = ref('');
-const timeFilters = [
-  { value: 'today', label: 'Hoy' },
-  { value: 'week', label: '7 días' },
-  { value: 'month', label: '30 días' },
-];
+
 const stats = ref({
   users: 0,
   events: 0,
@@ -315,15 +271,6 @@ async function fetchStats() {
 
 function toggleSection(section) {
   sections.value[section] = !sections.value[section];
-}
-
-function openQuickActions() {
-  router.push('/admin/quick-actions');
-}
-
-function handleSearch() {
-  // Implement search logic (e.g., filter users, events, posts)
-  console.log('Searching:', searchQuery.value);
 }
 
 onMounted(() => {

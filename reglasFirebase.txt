@@ -1,0 +1,239 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /profile/{imageId} {
+      allow read: if true; // Permite leer imágenes de perfil a todos
+      allow write: if request.auth != null; // Solo usuarios autenticados pueden escribir
+    }
+  }
+}
+service cloud.firestore {
+  match /databases/{database}/documents {
+		//Se encarga de verificar que el usuario este autenticado
+    function isAuthenticated(){
+    	return request.auth != null;
+    }
+    //Se encarga de verificar que el usuario tenga rol ADMIN
+    function isAdmin(){
+      return isAuthenticated() &&
+      	get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+    //Se encarga de verificar que el usuario exista en el sistema
+    function isKnownUser(){
+      return isAuthenticated() &&
+      	exist(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    //Match de lectura 
+    match /categories/{document=**} {
+    		//permite lectura a todos los usuarios autenticados
+      	allow  read, write, delete: if
+         isAuthenticated();
+    }   
+    //Match de lectura 
+    match /blogCategories/{document=**} {
+    		//permite lectura a todos los usuarios autenticados
+      	allow  read, write, delete: if
+         isAuthenticated();
+    }   
+    //Match de publicaciones
+    match /posts/{document=**} {
+    	//permite lectura y escritura a usuarios autenticados
+      allow read, write: if
+          isAuthenticated();
+    }  
+    //Match de comentarios    
+    match /comments/{document=**} {
+      allow read, write, delete: if
+          isAuthenticated();
+    }   
+    //Match de comentarios    
+    match /groupComments/{document=**} {
+      allow read, write, delete: if
+          isAuthenticated();
+    }   
+    //Match de comentarios    
+    match /eventComments/{document=**} {
+      allow read, write, delete: if
+          isAuthenticated();
+    }   
+    //Match de chats privados
+    match /chats-private/{chat}  {
+    	allow read, write: if
+       isAuthenticated();
+       //no me funcionaba de la siguiente manera asi que de momento lo dejo para usuarios autenticados
+          //request.auth.token.email in resource.data.users;
+    	match /messages/{message}{
+      	allow read, write: if
+        //no me funcionaba de la siguiente manera asi que de momento lo dejo para usuarios autenticados
+         isAuthenticated();
+          //request.auth.token.email in get(/databases/$(database)/documents/chats-private/$(chat)).data.users;
+      }
+    }   
+    //Match de usuarios
+    match /users/{user} {
+      allow write: if true;
+      allow read: if true;
+      allow update: if (request.auth.token.email == resource.data.email) || (isAdmin() && isAuthenticated());
+    }
+    //Match chats global
+    match /chat-global/{document=**} {
+      allow read, write: if
+          isAuthenticated();
+    }  
+    match /userStatus/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if request.auth.uid == userId;
+    }
+  	match /chat/{document=**} {
+      allow read, write: if
+          isAuthenticated();
+    }  
+    //Match Lugares de Interes   
+    match /locations/{location} {
+    	// Permitimos leer a cualquier usuario autenticado.
+    	allow create, read: if
+      	isAuthenticated();
+    	// Permite crear, actualizar o eliminar si el usuario es administrador.
+    	allow update, delete: if
+        isAdmin() || (isAuthenticated() && resource.data.user.id == request.auth.uid);
+				//isAdmin() && request.resource.data.user.id == request.auth.uid;
+    }    
+    //Match Reels   
+    match /reels/{reelId} {
+    	// Permitimos leer a cualquier usuario autenticado.
+    	allow update, delete, create, read: if
+      	isAuthenticated();
+    }    
+    match /defaultReels/{reelId} {
+      allow read: if true;
+      allow create: if request.auth != null && isAdmin();
+      allow update: if request.auth != null && isAdmin();
+      allow delete: if request.auth != null && isAdmin();
+    }
+    //Match Reportes  
+    match /reports/{reportId} {
+       // Permite la creación de reportes solo a usuarios autenticados
+      allow create: if isAuthenticated();
+      // Permite leer, actualizar y eliminar reportes solo a usuarios con el rol de Admin
+      allow read, update, delete: if isAuthenticated() && isAdmin();
+    }
+    match /users/{userId}/hiddenPosts/{hiddenPostId} {
+      allow get, read, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId}/hiddenGroupPosts/{hiddenGroupPostId} {
+      allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId}/hiddenEventPosts/{hiddenEventPostId} {
+      allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    match /groups/{document=**} {
+      allow read, write, update, delete: if
+          isAuthenticated();
+    }  
+    match /events/{document=**} {
+      allow read, write, update, delete: if
+          isAuthenticated();
+    }  
+    match /events/{eventId} {
+
+      // Permitir lectura a cualquier usuario autenticado
+      allow read: if request.auth != null;
+
+      // Permitir creación solo si sos el usuario autenticado
+      allow create: if request.auth != null && request.resource.data.ownerId == request.auth.uid;
+
+      // Permitir eliminar solo si sos el owner o un admin (opcional admin flag)
+      allow delete: if request.auth != null &&
+        (resource.data.ownerId == request.auth.uid || request.auth.token.admin == true);
+
+      // Permitir actualización del campo "attendees" si solo se modifica ese campo
+      allow update: if request.auth != null && isAttendingOnly();
+
+      function isAttendingOnly() {
+        // Solo se permite modificar el campo "attendees"
+        return request.resource.data.keys().hasOnly(['attendees']) &&
+          request.resource.data.attendees is map &&
+          request.resource.data.attendees.going is list &&
+          request.resource.data.attendees.interested is list &&
+          request.resource.data.attendees.notInterested is list;
+      }
+    }
+    match /groups/{groupId} {
+      // Permitir lectura y escritura del documento del grupo según tus condiciones
+      allow read, write: if request.auth != null;
+
+      // Subcolección de posts dentro del grupo
+      match /posts/{postId} {
+        allow create: if request.auth != null && 
+                      request.resource.data.authorId == request.auth.uid &&
+                      exists(/databases/$(database)/documents/groups/$(groupId)) &&
+                      request.resource.data.content is string &&
+                      request.resource.data.createdAt == request.resource.data.updatedAt;
+
+        allow read: if true;
+        allow update, delete: if false; // Restringir si no lo necesitás
+      }
+    }
+   	// Permitir acceso completo a las notificaciones del usuario autenticado
+    match /users/{userId}/notifications/{notifId} {
+      allow create: if request.auth != null &&
+                    request.resource.data.recipientId == userId;
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    //match /savedPosts/{savedPostId} {
+     // allow read, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+     //allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    //}
+    match /savedPosts/{savedPostId} {
+      allow get: if request.auth != null;
+      
+      // Permitir eliminar si el userId del documento coincide
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      
+      // Permitir crear o actualizar si el userId del documento coincide
+      allow create, update: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      
+      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    match /savedGroupPosts/{savedGroupPostId} {
+      // Permitir leer un documento específico si el ID comienza con el uid del usuario
+      //allow get: if request.auth != null && savedGroupPostId.hasPrefix(request.auth.uid + '_');
+      allow get: if request.auth != null;
+      
+      // Permitir consultas de colección si filtran por userId igual al uid del usuario
+      allow list: if request.auth != null && request.query.userId == request.auth.uid;
+      
+      // Permitir eliminar si el userId del documento coincide
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      
+      // Permitir crear o actualizar si el userId del documento coincide
+      allow create, update: if request.auth != null && request.resource.data.userId == request.auth.uid;
+    }
+    match /educationBlogs/{blogId} {
+      allow read: if true;
+      allow write: if isAdmin(); // Only admins can write
+    }
+    // Reglas para la colección 'subscriptionRequests' para las subscripciones premium de la plataforma
+    match /subscriptionRequests/{requestId} {
+
+      // Permitir la creación de una solicitud de suscripción a cualquier usuario autenticado.
+      allow create: if request.auth != null;
+
+      // Permitir la lectura de solicitudes de suscripción.
+      // Un usuario puede leer su propia solicitud (resource.data.userId == request.auth.uid).
+      // Un administrador puede leer cualquier solicitud.
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.userId ||
+        isAdmin()
+      );
+
+      // Permitir la actualización de solicitudes de suscripción (ej. cambiar estado a 'approved'/'declined').
+      // Solo los administradores pueden actualizar las solicitudes.
+      allow update: if request.auth != null && isAdmin();
+
+      // Permitir la eliminación de solicitudes de suscripción.
+      // Solo los administradores pueden eliminar las solicitudes.
+      allow delete: if request.auth != null && isAdmin();
+    }
+  }
+}

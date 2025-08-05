@@ -1,14 +1,14 @@
 <template>
   <div
     v-if="visible"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 animate-fade-in"
+    class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 p-4 animate-fade-in"
     role="dialog"
     aria-labelledby="user-admin-modal-title"
     aria-modal="true"
     @click.self="$emit('close')"
   >
     <div
-      class="bg-white p-4 rounded-lg shadow-md w-full max-w-lg mx-4 border border-gray-100 relative hover:shadow-lg dark:bg-gray-800 dark:border-gray-800 text-[#2c3e50] dark:text-white"
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
     >
       <!-- Encabezado -->
       <div class="flex items-center justify-between pb-3 mb-4">
@@ -354,18 +354,4 @@ const viewReports = () => {
 </script>
 
 <style scoped>
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 </style>

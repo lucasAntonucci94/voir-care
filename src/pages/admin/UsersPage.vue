@@ -95,62 +95,71 @@
                   {{ user.isDeleted ? 'Sí' : 'No' }}
                 </span>
               </td>
-              <td class="flex items-center justify-between gap-2  py-3 px-6 text-center">
-                <button 
-                  @click="openUserDetailModal(user)" 
-                  class="w-full text-left px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                >
-                  <i class="fas fa-eye mr-2 text-primary dark:text-secondary"></i> Ver
-                </button>
-                <div class="relative" :ref="`dropdown-${user.uid}`">
-                  <button 
-                    @click="toggleActionsMenu(user.uid)" 
-                    class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-secondary focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-800 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
-                    :disabled="user.isDeleted"
-                    :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
-                    aria-label="Más acciones"
-                    :aria-disabled="user.isDeleted"
-                  >
-                    <i class="fas fa-ellipsis-h"></i>
-                  </button>
-                  <div 
-                    v-if="activeDropdown === user.uid"
-                    class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
-                  >
-                    <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
-                      <li>
-                        <button 
-                          @click="setGenericModalConfig('softDelete', user)" 
-                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                          :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
-                          :disabled="user.isDeleted"
-                        >
-                          <i class="fas fa-trash-can mr-2 text-red-500"></i> Eliminar
-                        </button>
-                      </li>
-                      <li>
-                        <button 
-                          @click="setGenericModalConfig('block', user)"
-                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                          :class="[user.isBlocked ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
-                          :disabled="user.isDeleted"
-                        >
-                          <i :class="user.isBlocked ? 'fas fa-unlock mr-2' : 'fas fa-ban mr-2'"></i>
-                          {{ user.isBlocked ? 'Desbloquear' : 'Bloquear' }}
-                        </button>
-                      </li>
-                      <li>
-                        <button 
-                          @click="setGenericModalConfig('suscribe', user)"
-                          class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                          :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-secondary-md hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
-                          :disabled="user.isDeleted"
-                        >
-                          <i :class="!user.isSuscribed ? 'fa fa-check-circle mr-2' : 'fa fa-times-circle mr-2'"></i>
-                          {{ !user.isSuscribed ? 'Suscribir' : 'Desuscribir' }}
-                        </button>
-                      </li>
-                    </ul>
+              <td class="py-3 px-6">
+                <div class="flex items-center justify-center gap-2">
+                  <div class="relative group">
+                    <button
+                      @click="openUserDetailModal(user)"
+                      class="p-2 rounded-full text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                      aria-label="Ver detalles y acciones del reporte"
+                      title="Ver detalles del reporte"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Ver detalles</span>
+                  </div>
+              
+                  <div class="relative" :ref="`dropdown-${user.uid}`">
+                    <button 
+                      @click="toggleActionsMenu(user.uid)" 
+                      class="text-gray-600 hover:text-primary dark:text-white dark:hover:text-secondary focus:outline-none transition-colors duration-200 bg-gray-100/10 hover:bg-gray-100/40 dark:bg-gray-700 hover:dark:bg-gray-800 rounded-full p-1 w-8 h-8 shadow-sm hover:shadow-md"
+                      :disabled="user.isDeleted"
+                      :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
+                      aria-label="Más acciones"
+                      :aria-disabled="user.isDeleted"
+                    >
+                      <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div 
+                      v-if="activeDropdown === user.uid"
+                      class="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 dark:border-gray-800 border border-gray-200 rounded-lg shadow-lg z-10"
+                    >
+                      <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+                        <li>
+                          <button 
+                            @click="setGenericModalConfig('softDelete', user)" 
+                            class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                            :class="user.isDeleted ? 'opacity-50 cursor-not-allowed' : ''"
+                            :disabled="user.isDeleted"
+                          >
+                            <i class="fas fa-trash-can mr-2 text-red-500"></i> Eliminar
+                          </button>
+                        </li>
+                        <li>
+                          <button 
+                            @click="setGenericModalConfig('block', user)"
+                            class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                            :class="[user.isBlocked ? 'text-green-500 hover:text-green-700' : 'text-yellow-500 hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
+                            :disabled="user.isDeleted"
+                          >
+                            <i :class="user.isBlocked ? 'fas fa-unlock mr-2' : 'fas fa-ban mr-2'"></i>
+                            {{ user.isBlocked ? 'Desbloquear' : 'Bloquear' }}
+                          </button>
+                        </li>
+                        <li>
+                          <button 
+                            @click="setGenericModalConfig('suscribe', user)"
+                            class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
+                            :class="[!user.isSuscribed ? 'text-green-500 hover:text-green-700' : 'text-secondary-md hover:text-yellow-700', user.isDeleted ? 'opacity-50 cursor-not-allowed' : '']"
+                            :disabled="user.isDeleted"
+                          >
+                            <i :class="!user.isSuscribed ? 'fa fa-check-circle mr-2' : 'fa fa-times-circle mr-2'"></i>
+                            {{ !user.isSuscribed ? 'Suscribir' : 'Desuscribir' }}
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </td>

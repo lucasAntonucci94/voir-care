@@ -1,0 +1,22 @@
+Carrera: Diseño web y Programación
+Materia: Clientes Web 
+Cuatrimestre: 4to
+Año: 2022
+Turno: Noche
+Comisión: dwn4av
+Docente: Santiago Gallino
+Caracter: Final
+Alumno:[
+{
+	Apellido: Antonucci
+	Nombre: Lucas
+}
+]
+
+Repositorio: https://github.com/lucasAntonucci94/voir-care
+
+
+Acceso administrador
+usuario: voir o voir@yopmail.com
+contraseña: Ab1234
+

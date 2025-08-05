@@ -67,12 +67,19 @@
                 </span>
               </td>
               <td class="flex items-center justify-between gap-2 py-3 px-6 text-center">
-                <button
-                  @click="openPostDetailModal(post)"
-                  class="flex w-full text-left px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
-                >
-                  <i class="fas fa-eye mr-2 text-primary dark:text-secondary"></i> Ver
-                </button>
+                  <div class="flex items-center justify-center gap-2">
+                  <div class="relative group">
+                    <button
+                      @click="openPostDetailModal(post)"
+                      class="p-2 rounded-full text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                      aria-label="Ver detalles y acciones del reporte"
+                      title="Ver detalles del reporte"
+                    >
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="tooltip-text">Ver detalles</span>
+                  </div>
                 <div class="relative" :ref="`dropdown-${post.idDoc}`">
                   <button
                     @click="toggleActionsMenu(post.idDoc)"
@@ -97,7 +104,9 @@
                     </ul>
                   </div>
                 </div>
+                </div>
               </td>
+              
             </tr>
           </tbody>
         </table>
@@ -155,6 +164,22 @@ const showPostDetailModal = ref(false);
 const showConfirmModal = ref(false);
 const selectedPost = ref(null);
 const activeDropdown = ref(null);
+
+
+const genericModalConfig = ref({
+  title: "",
+  message: "",
+  confirmButtonText: "Confirmar",
+  cancelButtonText: "Cancelar",
+  cancelMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = "";
+  },
+  confirmMethod: () => {
+    showConfirmModal.value = false;
+    document.body.style.overflow = "";
+  },
+});
 
 // Cargar categorías al montar el componente
 onMounted(async () => {

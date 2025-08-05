@@ -135,22 +135,17 @@ const showModalCreate = ref(false)
 
 // Propiedad computada para determinar el permiso de creación
 const createPermission = computed(() => {
-  // Si no hay un usuario o no tiene uid, no hay permiso
+  // Si no hay un usuario o no tiene uid
   if (!user.value?.uid) return false;
-  
-  // Si el usuario está suscripto, SIEMPRE tiene permiso para crear
+  // Si el usuario está suscripto
   if (user.value.isSuscribed) return true;
-  
   // Si no está suscripto, buscamos el último grupo creado
   const lastGroup = groupsStore.userGroups?.value?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
-
   // Si no tiene grupos creados, tiene permiso
   if (!lastGroup) return true;
-  
   // Si tiene un grupo, el permiso es TRUE si el grupo NO es de este mes.
   return !isCurrentMonth(lastGroup.createdAt);
 });
-
 
 // Funciones para abrir y cerrar la modal
 const handleModalCreate = () => {

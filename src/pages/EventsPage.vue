@@ -103,21 +103,16 @@ const tabs = [
 const activeTab = ref('upcoming')
 
 // Propiedad computada para determinar el permiso de creación de eventos.
-// Esta propiedad es la que se usará para habilitar/deshabilitar el botón.
+// Esta propiedad es la que se usará para habilitar/deshabilitar el botón de creación.
 const createPermission = computed(() => {
-  // Si no hay un usuario o no tiene uid, no hay permiso.
+  // Si no hay un usuario o no tiene uid retorna false.
   if (!user.value?.uid) return false;
-  
-  // Si el usuario está suscripto, SIEMPRE tiene permiso para crear.
+  // Si el usuario está suscripto, retorna true.
   if (user.value.isSuscribed) return true;
-  
   // Si no está suscripto, buscamos el último evento creado.
-  // La reactividad se maneja automáticamente por Vue al acceder a eventsStore.events.
   const lastEvent = eventsStore.events?.value?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
-
   // Si no tiene eventos creados, tiene permiso.
   if (!lastEvent) return true;
-  
   // Si tiene un evento, el permiso es TRUE si el evento NO es de este mes.
   return !isCurrentMonth(lastEvent.createdAt);
 });

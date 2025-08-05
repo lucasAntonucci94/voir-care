@@ -223,6 +223,49 @@ td:last-child {
 }
 
 
+/* TOOLTIP BOTONES ADMIN */
+.group .tooltip-text {
+  /* Estilos por defecto para el tooltip */
+  visibility: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  background-color: #374151;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  /* Posicionamiento */
+  position: absolute;
+  z-index: 200;
+  bottom: 120%; /* Posiciona el tooltip encima del botón */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  /* Animación */
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.group:hover .tooltip-text {
+  /* El tooltip se hace visible al hacer hover sobre el contenedor 'group' */
+  visibility: visible;
+  opacity: 1;
+}
+
+.group .tooltip-text::after {
+  /* Flecha del tooltip */
+  content: '';
+  position: absolute;
+  top: 100%; /* Posiciona la flecha en la parte inferior del tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #374151 transparent transparent transparent;
+}
+
+
 @media (max-width: 640px) {
   .dp__overlay {
     position: fixed;
@@ -425,4 +468,18 @@ td:last-child {
 
 .dark .multiselect--disabled {
   background-color: #484f5a;
+}
+
+
+/* estilado para fadeIn de modales */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

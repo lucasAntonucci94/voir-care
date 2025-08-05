@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="visible"
-    class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4 transition-opacity duration-300"
+    class="fixed inset-0 bg-black/60 flex items-center justify-center z-101 p-4 transition-opacity duration-300"
     :class="{ 'opacity-0': !visible, 'opacity-100': visible }"
     @click.self="closeModal"
     role="dialog"
