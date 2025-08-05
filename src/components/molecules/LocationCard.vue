@@ -135,7 +135,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { defineProps, computed } from 'vue';
+import { computed } from 'vue';
 import { useAuth } from '../../api/auth/useAuth';
 import { useLocationsStore } from '../../stores/locations';
 import { useSnackbarStore } from '../../stores/snackbar';

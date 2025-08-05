@@ -6,17 +6,18 @@ Turno: Noche
 Comisión: dwn4av
 Docente: Santiago Gallino
 Caracter: Final
-Alumno:[
-{
-	Apellido: Antonucci
-	Nombre: Lucas
-}
-]
+Alumno: Antonucci Lucas
 
 Repositorio: https://github.com/lucasAntonucci94/voir-care
 
+Página Oficial: https://voir.codernomad.com/
 
 Acceso administrador
 usuario: voir o voir@yopmail.com
+contraseña: Ab1234
+
+
+Acceso usuario con suscripción
+usuario: homero.mero
 contraseña: Ab1234
 

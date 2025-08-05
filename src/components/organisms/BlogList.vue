@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4 md:p-6 lg:p-8 font-inter">
+  <div class="container mx-auto p-4 md:px-6 lg:px-8 md:py-2 lg:py-4 font-inter">
     <!-- Sección de Cabecera y Búsqueda -->
     <div class="mb-6">
       <!-- Título principal -->
@@ -87,12 +87,13 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useEducationBlogsStore } from '../../stores/educationBlogs';
 import { useCategories } from '../../composable/useCategories';
+import { useAuth } from '../../api/auth/useAuth';
 import BlogPostCard from './BlogCard.vue';
 
 // Store y composable
 const blogsStore = useEducationBlogsStore();
 const { fetchBlogCategories } = useCategories();
-
+const { user } = useAuth();
 // Estados
 const searchQuery = ref('');
 const selectedFilter = ref('');
@@ -131,6 +132,13 @@ const filteredBlogs = computed(() => {
   if (selectedFilter.value && selectedFilter.value !== '') {
     filtered = filtered.filter((blog) =>
       blog.categories?.some((cat) => cat.idDoc === selectedFilter.value)
+    );
+  }
+  
+  // Aplicar filtro por categoría (comparando idDoc)
+  if (!user.value?.isSuscribed) {
+    filtered = filtered.filter((blog) =>
+      blog.type === 0
     );
   }
 

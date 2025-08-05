@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 font-poppins relative">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 josefin-font relative">
     <!-- Loader -->
     <div v-if="!activeUser" class="flex-grow flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
       <div class="text-center">

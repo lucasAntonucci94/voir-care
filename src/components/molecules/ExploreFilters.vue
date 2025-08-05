@@ -1,7 +1,7 @@
 <template>
   <div class="relative p-6 md:p-3 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 max-h-[100vh]">
     <div v-if="user?.isSuscribed || user?.isAdmin" class="flex-col items-center mb-2">
-        <p class="text-sm text-gray-700 dark:text-gray-300 font-bold mb-2">Queres adherirte a nuestro mapa?</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300 font-bold mb-2">¿Querés adherirte a nuestro mapa?</p>
         <button class="px-4 py-2 mb-5 dark:bg-primary bg-secondary text-white rounded-lg shadow-lg hover:bg-primary-dark transition-all duration-300"
         @click="openCreateModal" aria-label="Agregar lugar">
         <i class="fa-solid fa-plus mr-2"></i> Agregar Lugar
