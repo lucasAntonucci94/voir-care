@@ -100,7 +100,7 @@
       <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
         ¡Empodera el Bienestar Animal con Premium!
       </h3>
-      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-6 transition-colors duration-300">
+      <p class="text-left text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-6 transition-colors duration-300">
         Por solo {{ isAnnual ? '$59999/año (~$5999/mes)' : '$5999/mes' }}, obtén herramientas exclusivas para educarte, conectar con otros amantes de las mascotas y promover adopciones responsables. ¡Haz una diferencia para todas las mascotas!
       </p>
       <button

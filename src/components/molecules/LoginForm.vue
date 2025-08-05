@@ -1,10 +1,10 @@
 <template>
   <div class="md:min-w-md w-sm md:w-lg p-8 mb-8 mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg">
     <h3 class="dosis-font font-heading tracking-tight text-4xl font-bold text-primary dark:text-secondary mb-3 text-left">
-      {{ showResetForm ? 'Restablecer Contraseña' : 'Iniciar Sesión' }}
+      {{ showResetForm ? 'Restablecer contraseña' : 'Iniciar sesión' }}
     </h3>
     <p class="josefin-font text-gray-500 dark:text-gray-300 mb-8 text-left">
-      {{ showResetForm ? 'Ingresa tu correo para recibir un enlace de restablecimiento.' : '¡Bienvenido! Por favor, ingresa tus datos.' }}
+      {{ showResetForm ? 'Ingresá tu correo para recibir un enlace de restablecimiento.' : '¡Bienvenido! Por favor, ingresá tus datos.' }}
     </p>
 
     <!-- Formulario de login -->
@@ -18,7 +18,7 @@
       </div>
       <button type="submit" :disabled="isLoading" class="relative flex items-center justify-center px-5 h-12 w-full font-bold text-gray-100 hover:text-white bg-primary-md dark:bg-secondary-md hover:bg-primary hover:dark:bg-secondary rounded-lg transition-all duration-300 border dark:border-gray-800">
         <span class="josefin-font" v-if="isLoading">Cargando...</span>
-        <span class="josefin-font" v-else>Iniciar Sesión</span>
+        <span class="josefin-font" v-else>Iniciar sesión</span>
       </button>
     </form>
 
@@ -38,8 +38,8 @@
 
     <!-- Link de registro (solo visible en login) -->
     <div v-if="!showResetForm" class="josefin-font text-center mt-6 text-gray-700 dark:text-gray-300">
-      ¿No tenes una cuenta?
-      <router-link to="/register" class="text-primary hover:text-primary-md dark:text-secondary dark:hover:text-secondary-md font-semibold ml-1">Regístrate</router-link>
+      ¿No tenés una cuenta?
+      <router-link to="/register" class="text-primary hover:text-primary-md dark:text-secondary dark:hover:text-secondary-md font-semibold ml-1">Registrate</router-link>
     </div>
   </div>
 </template>

@@ -52,7 +52,7 @@
             type="text"
             id="displayName"
             maxLength="30"
-            placeholder="Ingresa tu nombre de usuario"
+            placeholder="Ingresá tu nombre de usuario"
             :disabled="isLoading"
           />
           <p v-if="displayName.field.error" class="josefin-font text-red-500 text-sm mt-1">{{ displayName.field.error }}</p>
@@ -64,7 +64,7 @@
             type="email"
             id="email"
             maxLength="254"
-            placeholder="Ingresa tu correo electrónico"
+            placeholder="Ingresá tu correo electrónico"
             :disabled="isLoading"
           />
           <p v-if="email.field.error" class="josefin-font text-red-500 text-sm mt-1">{{ email.field.error }}</p>
@@ -119,7 +119,7 @@
     </form>
 
     <div v-if="currentStep === 0" class="josefin-font text-center mt-6 text-gray-700 dark:text-gray-300">
-      ¿Ya tienes una cuenta?
+      ¿Ya tenes una cuenta?
       <router-link to="/login" class="text-primary hover:text-primary-md dark:text-secondary dark:hover:text-secondary-md font-semibold ml-1">Iniciar Sesión</router-link>
     </div>
   </div>

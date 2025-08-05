@@ -144,7 +144,7 @@
             <!-- Sección Eventos Próximos -->
             <section aria-labelledby="events-title">
                 <div class="flex justify-between items-center mb-4">
-                        <h2 id="events-title" class="text-2xl font-bold font-dosis">Eventos Próximos</h2>
+                        <h2 id="events-title" class="text-2xl font-bold font-dosis">Próximos Eventos</h2>
                         <RouterLink to="/events" class="text-sm font-semibold text-primary dark:text-secondary hover:underline" aria-label="Ver todos los eventos">Ver todos</RouterLink>
                 </div>
                 <ul class="space-y-4" role="list">
