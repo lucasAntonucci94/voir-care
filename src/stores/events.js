@@ -167,5 +167,15 @@ export const useEventsStore = defineStore('events', {
             throw error;
         }
     },
+    async getCountByOwnerId(ownerId) {
+        try {
+            const { getEventCountByOwnerId } = useEvents();
+            return await getEventCountByOwnerId(ownerId);
+        } catch (error) {
+            console.error('Error al obtener la cantidad de eventos en el store:', error);
+            this.error = error.message || 'Error al obtener la cantidad de eventos en el store';
+            throw error;
+        }
+    },
   },
 })

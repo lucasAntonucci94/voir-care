@@ -203,5 +203,25 @@ export const useGroupsStore = defineStore('groups', {
           throw error;
       }
     },
+    async getCountByOwnerId(ownerId) {
+      try {
+          const { getGroupCountByOwnerId } = useGroups();
+          return await getGroupCountByOwnerId(ownerId);
+      } catch (error) {
+          console.error('Error al obtener la cantidad de grupos en el store:', error);
+          this.error = error.message || 'Error al obtener la cantidad de grupos en el store';
+          throw error;
+      }
+    },
+    async getLastGroupByOwnerId(ownerId) {
+      try {
+          const { getLastGroupByOwnerId } = useGroups();
+          return await getLastGroupByOwnerId(ownerId);
+      } catch (error) {
+          console.error('Error al obtener el último grupo en el store:', error);
+          this.error = error.message || 'Error al obtener el último grupo en el store';
+          throw error;
+      }
+    },
   },
 });

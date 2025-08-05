@@ -268,7 +268,7 @@ export function useGroups() {
   }
 
   /**
-   * Obtiene la cantidad total de grupos en la colección groups.
+   * Obtiene la cantidad total de grupos por usuario.
    * @returns {Promise<number>} - La cantidad de grupos.
    */
   async function getAllGroupsCount() {
@@ -278,6 +278,54 @@ export function useGroups() {
     } catch (error) {
       console.error('Error al contar todos los grupos:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Obtiene el ultimo grupo de un usuario
+   * @returns {Promise<number>} - La cantidad de grupos.
+   */
+  async function getAllGroupsCount() {
+    try {
+      const querySnapshot = await getDocs(groupsRef);
+      return querySnapshot.size;
+    } catch (error) {
+      console.error('Error al contar todos los grupos:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene el último grupo creado por un usuario específico.
+   * @param {string} userId - El ID del usuario (ownerId).
+   * @returns {Promise<object|null>} - El último grupo creado o null si no existe.
+   */
+  async function getLastGroupByOwnerId(userId) {
+    try {
+      debugger
+      // Creamos un query para buscar el último grupo del usuario
+      const q = query(
+        groupsRef,
+        where('ownerId', '==', userId),
+        orderBy('createdAt', 'desc'),
+        limit(1)
+      )
+      const querySnapshot = await getDocs(q)
+      
+      // Si el snapshot no está vacío, devolvemos el primer documento
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0]
+        return {
+          idDoc: docSnap.id,
+          ...docSnap.data(),
+        }
+      } else {
+        // Si no se encuentran documentos, retornamos null
+        return null
+      }
+    } catch (error) {
+      console.error('Error al obtener el último grupo creado por el usuario:', error)
+      throw error
     }
   }
 
@@ -296,5 +344,6 @@ export function useGroups() {
     subscribeToAdoptionGroups,
     getGroupCountByOwnerId,
     getAllGroupsCount,
+    getLastGroupByOwnerId,
   }
 }

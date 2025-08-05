@@ -12,10 +12,16 @@
             </h1>
             <!-- Botón para crear grupo (visible en pantallas grandes) -->
             <button
+              v-if="activeTab === 'yourGroups'"
               @click="handleModalCreate"
-              class="hidden sm:inline-flex px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors"
+              class="flex justify-center items-center px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors"
+              :class="{ 'opacity-50 cursor-not-allowed': !createPermission }"
+              :disabled="!createPermission"
             >
-              + Crear Grupo
+              <i class="fa-solid fa-plus"></i>
+              <span class="pl-2">
+                Crear
+              </span>
             </button>
           </div>
         </div>
@@ -104,11 +110,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import CreateGroupModal from '../components/organisms/CreateGroupModal.vue'
 import UserGroupsTab from '../components/molecules/UserGroupsTab.vue'
 import DiscoverGroupsTab from '../components/molecules/DiscoverGroupsTab.vue'
 import GroupFeedTab from '../components/organisms/GroupFeedTab.vue'
+import { useGroupsStore } from '../stores/groups'
+import { useAuth } from '../api/auth/useAuth'
+import { isCurrentMonth } from '../utils/isCurrentMonth'
+
+const groupsStore = useGroupsStore()
+const { user } = useAuth()
 
 // Control de tabs
 const tabs = [
@@ -120,6 +132,25 @@ const activeTab = ref('discover')
 
 // Control de la modal de creación de grupo
 const showModalCreate = ref(false)
+
+// Propiedad computada para determinar el permiso de creación
+const createPermission = computed(() => {
+  // Si no hay un usuario o no tiene uid, no hay permiso
+  if (!user.value?.uid) return false;
+  
+  // Si el usuario está suscripto, SIEMPRE tiene permiso para crear
+  if (user.value.isSuscribed) return true;
+  
+  // Si no está suscripto, buscamos el último grupo creado
+  const lastGroup = groupsStore.userGroups?.value?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
+
+  // Si no tiene grupos creados, tiene permiso
+  if (!lastGroup) return true;
+  
+  // Si tiene un grupo, el permiso es TRUE si el grupo NO es de este mes.
+  return !isCurrentMonth(lastGroup.createdAt);
+});
+
 
 // Funciones para abrir y cerrar la modal
 const handleModalCreate = () => {
@@ -137,8 +168,20 @@ const closeModalCreate = () => {
   document.body.style.overflow = ''
 }
 
-// Ejemplo de manejo del evento groupCreated (podrías actualizar la lista o mostrar una notificación)
 const handleGroupCreated = (groupData) => {
   // console.log('Grupo creado:', groupData)
+  // La propiedad computada se encargará de actualizar el permiso automáticamente.
 }
 </script>
+
+<style scoped>
+/* Estilos específicos del componente */
+/* scrollbar-hide Utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+</style>

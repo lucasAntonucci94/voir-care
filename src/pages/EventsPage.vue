@@ -8,19 +8,25 @@
             <i class="fa-solid fa-calendar mr-2 text-primary dark:text-secondary"></i>
             Eventos
           </h1>
-          <button
-            @click="handleModalCreate"
-            class="hidden sm:inline-flex px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors"
-          >
-            + Crear Evento
-          </button>
+           <button
+              v-if="activeTab === 'userEvents'"
+              @click="handleModalCreate"
+              class="flex justify-center items-center px-4 py-2 bg-primary dark:bg-secondary text-white rounded-full hover:bg-primary-md dark:hover:bg-secondary-md transition-colors"
+              :class="{ 'opacity-50 cursor-not-allowed': !createPermission }"
+              :disabled="!createPermission"
+            >
+              <i class="fa-solid fa-plus"></i>
+              <span class="pl-2">
+                Crear
+              </span>
+            </button>
         </div>
       </div>
 
       <!-- Tabs para eventos -->
       <div class="container mx-auto px-4 md:px-8 lg:px-16">
         <div
-          role=tablist
+          role="tablist"
           class="mt-4 flex gap-1 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide whitespace-nowrap rounded-lg"
         >
           <button
@@ -52,7 +58,7 @@
       <div class="container mx-auto px-4 md:px-8 lg:px-16 my-6">
         <!-- Próximos Eventos -->
         <UpcomingEventsTab v-if="activeTab === 'upcoming'" />
-        <!-- Próximos Eventos -->
+        <!-- Calendario de Eventos -->
         <CalendarEventsTab v-else-if="activeTab === 'calendar'" />
         <!-- Descubrir Eventos -->
         <DiscoverEventsTab v-else-if="activeTab === 'discover'" />
@@ -64,24 +70,31 @@
     <CreateEventModal
       :visible="showModalCreate"
       @close="closeModalCreate"
-      />
+    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import CreateEventModal from '../components/organisms/CreateEventModal.vue'
 import UpcomingEventsTab from '../components/molecules/UpcomingEventsTab.vue'
 import DiscoverEventsTab from '../components/molecules/DiscoverEventsTab.vue'
 import UserEventsTab from '../components/molecules/UserEventsTab.vue'
 import CalendarEventsTab from '../components/molecules/CalendarEventsTab.vue'
+import { useEventsStore } from '../stores/events'
+import { useAuth } from '../api/auth/useAuth'
+import { isCurrentMonth } from '../utils/isCurrentMonth'
+
+// Inicializa los stores
+const eventsStore = useEventsStore()
+const { user } = useAuth()
 
 // Estado
 const showModalCreate = ref(false);
 
 // Definición de las tabs
 const tabs = [
-  { id: 'upcoming', label: 'Proximamente', icon: 'fa-solid fa-clock', hidden: false },
+  { id: 'upcoming', label: 'Próximamente', icon: 'fa-solid fa-clock', hidden: false },
   { id: 'calendar', label: 'Calendario', icon: 'fa-solid fa-calendar-days', hidden: false },
   { id: 'discover', label: 'Descubrir', icon: 'fa-solid fa-magnifying-glass', hidden: false },
   { id: 'userEvents', label: 'Tus Eventos', icon: 'fa-solid fa-user-check', hidden: false },
@@ -89,6 +102,27 @@ const tabs = [
 
 const activeTab = ref('upcoming')
 
+// Propiedad computada para determinar el permiso de creación de eventos.
+// Esta propiedad es la que se usará para habilitar/deshabilitar el botón.
+const createPermission = computed(() => {
+  // Si no hay un usuario o no tiene uid, no hay permiso.
+  if (!user.value?.uid) return false;
+  
+  // Si el usuario está suscripto, SIEMPRE tiene permiso para crear.
+  if (user.value.isSuscribed) return true;
+  
+  // Si no está suscripto, buscamos el último evento creado.
+  // La reactividad se maneja automáticamente por Vue al acceder a eventsStore.events.
+  const lastEvent = eventsStore.events?.value?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
+
+  // Si no tiene eventos creados, tiene permiso.
+  if (!lastEvent) return true;
+  
+  // Si tiene un evento, el permiso es TRUE si el evento NO es de este mes.
+  return !isCurrentMonth(lastEvent.createdAt);
+});
+
+// Funciones para abrir y cerrar la modal
 const handleModalCreate = () => {
   showModalCreate.value = true
   document.body.style.overflow = 'hidden';
