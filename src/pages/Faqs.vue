@@ -1,9 +1,9 @@
 <template>
-  <section class="bg-white dark:bg-gray-800 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+  <section class="bg-white dark:bg-gray-900 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <!-- Encabezado -->
     <div class="max-w-4xl mx-auto mb-12 text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold text-gray-700 dark:text-gray-300 mb-4 font-abril">Preguntas Frecuentes</h1>
-      <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-poppins">
+      <h1 class="text-4xl sm:text-5xl font-bold text-gray-700 dark:text-gray-300 mb-4 dosis-font">Preguntas Frecuentes</h1>
+      <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 josefin-font">
         Encuentra respuestas a tus dudas sobre nuestra comunidad dedicada al cuidado y bienestar animal. ¿No ves lo que buscas? ¡Chatea con nosotros!
       </p>
     </div>
@@ -15,7 +15,7 @@
           v-for="(tab, index) in tabs"
           :key="index"
           @click="activeTab = index"
-          class="px-4 py-2 rounded-full font-semibold text-sm sm:text-base transition-colors font-poppins"
+          class="px-4 py-2 rounded-full font-semibold text-sm sm:text-base transition-colors josefin-font "
           :class="activeTab === index ? 'bg-primary dark:bg-secondary text-white hover:bg-primary-md dark:hover:bg-secondary-md' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 shadow-md hover:bg-gray-100 dark:hover:bg-gray-600'"
         >
           {{ tab.name }}
@@ -35,7 +35,7 @@
           class="w-full flex justify-between items-center p-5 text-left focus:outline-none"
           :class="{ 'bg-primary/20 dark:bg-secondary/20': openFaq === index }"
         >
-          <span class="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 font-poppins">{{ faq.question }}</span>
+          <span class="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-300 josefin-font">{{ faq.question }}</span>
           <i :class="[
             'fa-solid fa-chevron-down h-5 w-5 text-primary dark:text-secondary transition-transform duration-200',
             { 'rotate-180': openFaq === index }
@@ -45,7 +45,7 @@
         </button>
         <div
           v-show="openFaq === index"
-          class="p-5 text-sm sm:text-base text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-500 font-poppins"
+          class="p-5 text-sm sm:text-base text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-500 josefin-font"
         >
           {{ faq.answer }}
         </div>
@@ -206,16 +206,4 @@ const toggleFaq = (index) => {
 </script>
 
 <style scoped>
-
-
-.font-poppins {
-  font-family: 'Poppins', sans-serif;
-  line-height: 1.6;
-}
-
-.font-abril {
-  font-family: 'Abril Fatface', cursive;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
 </style>

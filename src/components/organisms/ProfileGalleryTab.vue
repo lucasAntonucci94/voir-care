@@ -300,10 +300,6 @@
   </script>
   
   <style scoped>
-  .font-poppins {
-    font-family: 'Poppins', sans-serif;
-  }
-  
   /* Ensure grid responsiveness */
   @media (max-width: 640px) {
     .max-w-4xl {

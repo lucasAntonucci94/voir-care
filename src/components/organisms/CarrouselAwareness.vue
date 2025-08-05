@@ -1,5 +1,5 @@
 <template>
-  <section class="py-10 bg-gray-200 dark:bg-gray-800 font-poppins">
+  <section class="py-10 bg-gray-200 dark:bg-gray-800 josefin-font">
     <div class="container mx-auto px-4">
       <h2 class="text-4xl font-bold text-gray-700 dark:text-gray-300 text-center mb-12 font-abril">{{ title }}</h2>
       <div class="relative">
@@ -26,7 +26,7 @@
               loading="lazy"
               @error="handleImageError($event)"
             />
-            <h3 class="text-base font-semibold text-gray-700 dark:text-gray-200 mb-2 text-center font-poppins line-clamp-2">{{ event.title }}</h3>
+            <h3 class="text-base font-semibold text-gray-700 dark:text-gray-200 mb-2 text-center josefin-font line-clamp-2">{{ event.title }}</h3>
             <p class="text-sm text-gray-600 dark:text-gray-300 text-center line-clamp-1">{{ event.date }}</p>
           </div>
         </div>

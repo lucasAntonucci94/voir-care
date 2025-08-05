@@ -1,6 +1,5 @@
-<!-- LoginForm.vue -->
 <template>
-  <div class="md:min-w-md p-8 mb-8 mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg">
+  <div class="md:min-w-md w-sm md:w-lg p-8 mb-8 mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg">
     <h3 class="dosis-font font-heading tracking-tight text-4xl font-bold text-primary dark:text-secondary mb-3 text-left">
       {{ showResetForm ? 'Restablecer Contraseña' : 'Iniciar Sesión' }}
     </h3>
@@ -39,7 +38,7 @@
 
     <!-- Link de registro (solo visible en login) -->
     <div v-if="!showResetForm" class="josefin-font text-center mt-6 text-gray-700 dark:text-gray-300">
-      ¿No tienes una cuenta?
+      ¿No tenes una cuenta?
       <router-link to="/register" class="text-primary hover:text-primary-md dark:text-secondary dark:hover:text-secondary-md font-semibold ml-1">Regístrate</router-link>
     </div>
   </div>

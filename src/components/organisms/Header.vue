@@ -3,11 +3,11 @@
     <div class="container mx-auto flex flex-wrap justify-between items-center md:py-4 px-2 md:px-8 lg:px-16">
       <div class="flex items-center mb-2 md:mb-0">
         <!-- Botón hamburguesa solo visible en móvil -->
-        <button v-if="!isAdminRoute" class="md:hidden mr-6 text-lg hover:text-gray-200 transition-colors duration-200" @click="sidebarStore.toggleSidebar">
-          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        <button v-if="!isAdminRoute && permitedRoutes" class="md:hidden mr-6 text-lg hover:text-gray-200 transition-colors duration-200" @click="sidebarStore.toggleSidebar">
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
         </button>
-        <button v-else class="md:hidden mr-6 text-lg hover:text-gray-200 transition-colors duration-200" @click="sidebarStore.toggleAdminSidebar">
-          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        <button v-if="isAdminRoute" class="md:hidden mr-6 text-lg hover:text-gray-200 transition-colors duration-200" @click="sidebarStore.toggleAdminSidebar">
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
         </button>
         <span class="sr-only" role="heading" aria-level="1">Voir</span>
         <router-link :to="isAuthenticated ? '/feed' : '/'" class="flex items-center">
@@ -57,6 +57,10 @@ const headerRef = ref(null);
 
 const props = defineProps({
   isAdminRoute: {
+    type: Boolean,
+    default: false
+  },
+  permitedRoutes: {
     type: Boolean,
     default: false
   }

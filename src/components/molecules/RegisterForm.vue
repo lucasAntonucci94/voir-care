@@ -1,5 +1,5 @@
 <template>
-  <div class="md:min-w-md p-8 my-8 mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg">
+  <div class="md:min-w-md w-sm md:w-lg p-8 mb-8 mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg">
     <h3 class="dosis-font font-heading tracking-tight text-4xl font-bold text-primary dark:text-secondary mb-3 text-left">Registro</h3>
     <p class="josefin-font text-gray-500 dark:text-gray-300 mb-8 text-left">¡Bienvenido! Por favor, completa los pasos para registrarte.</p>
 

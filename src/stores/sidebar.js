@@ -8,6 +8,12 @@ export const useSidebarStore = defineStore('sidebar', {
   actions: {
     toggleSidebar() {
       this.showSidebar = !this?.showSidebar;
+      if(this.showSidebar){
+        //bloquear scroll del body
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
     },
     openSidebar() {
       this.showSidebar = true;

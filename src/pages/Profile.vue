@@ -300,10 +300,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.font-poppins {
-  font-family: 'Poppins', sans-serif;
-}
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

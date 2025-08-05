@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col min-h-screen">
-    <Header :isAdminRoute="permitedAdminRoutes" />
+    <Header :isAdminRoute="permitedAdminRoutes" :permitedRoutes="permitedRoutes" />
     <div class="flex flex-1 relative">
       <!-- Sidebar principal (para usuarios normales) -->
       <Sidebar
