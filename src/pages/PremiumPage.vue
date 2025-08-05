@@ -1,12 +1,12 @@
 <template>
   <main class="flex-grow max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
     <!-- Hero Section -->
-    <section class="text-center mb-12">
-      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
-        ¡Haz la Diferencia para las Mascotas con Premium!
+    <section class="mb-12">
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300 text-center">
+        ¡Hacé la Diferencia para las Mascotas con Premium!
       </h1>
-      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-6 transition-colors duration-300">
-        Únete a la comunidad Premium de Voir y accede a herramientas exclusivas y conocimiento para cuidar mejor a tus mascotas, promover adopciones responsables y ayudar a todos los animales a encontrar un hogar lleno de amor.
+      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-4xl mx-auto mb-6 transition-colors duration-300 text-left">
+        Unite a la comunidad Premium de Voir y accedé a herramientas exclusivas y conocimiento para cuidar mejor a tus mascotas, promover adopciones responsables y ayudar a todos los animales a encontrar un hogar lleno de amor.
       </p>
       <!-- Pricing Display -->
       <div class="flex justify-center items-center gap-4 mb-8">
@@ -20,7 +20,7 @@
         </button>
         <p class="text-3xl font-bold text-primary dark:text-secondary">
           {{ isAnnual ? '$59999/año' : '$5999/mes' }}
-          <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $5999/mes, ahorra 16%</span>
+          <span v-if="isAnnual" class="text-sm font-normal text-gray-500 dark:text-gray-400">~ $5999/mes, ahorrá 16%</span>
         </p>
       </div>
     </section>
@@ -96,12 +96,12 @@
     </section>
 
     <!-- Call to Action -->
-    <section class="text-center mb-12">
-      <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
-        ¡Empodera el Bienestar Animal con Premium!
+    <section class="mb-12 flex flex-col items-center max-w-2xl mx-auto">
+      <h3 class="text-left text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
+        ¡Empoderá el Bienestar Animal con Premium!
       </h3>
-      <p class="text-left text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto mb-6 transition-colors duration-300">
-        Por solo {{ isAnnual ? '$59999/año (~$5999/mes)' : '$5999/mes' }}, obtén herramientas exclusivas para educarte, conectar con otros amantes de las mascotas y promover adopciones responsables. ¡Haz una diferencia para todas las mascotas!
+      <p class="text-left text-lg text-gray-600 dark:text-gray-400 mb-6 transition-colors duration-300">
+        Por solo {{ isAnnual ? '$59999/año (~$5999/mes)' : '$5999/mes' }}, obtené herramientas exclusivas para educarte, conectar con otros amantes de las mascotas y promover adopciones responsables. ¡Hacé una diferencia para todas las mascotas!
       </p>
       <button
         @click="openSubscriptionModal"
@@ -119,12 +119,12 @@
     </section>
 
     <!-- Community Benefits -->
-    <section class="text-center">
-      <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
+    <section class="mb-12 flex flex-col items-center max-w-2xl mx-auto">
+      <h3 class="text-left text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
         Sé Parte de la Comunidad que Cuida a las Mascotas
       </h3>
-      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto transition-colors duration-300">
-        Con Voir Premium, liderarás una comunidad dedicada al bienestar animal. Crea grupos y eventos ilimitados, comparte conocimiento a través de blogs premium y ayuda a que más mascotas encuentren un hogar amoroso.
+      <p class="text-left text-lg text-gray-600 dark:text-gray-400 transition-colors duration-300">
+        Con Voir Premium, liderarás una comunidad dedicada al bienestar animal. Creá grupos y eventos ilimitados, compartí conocimiento a través de blogs premium y ayudá a que más mascotas encuentren un hogar amoroso.
       </p>
     </section>
 
@@ -133,7 +133,7 @@
       <div class="text-center md:text-left mb-6 md:mb-0 max-w-xl">
         <h2 id="donation-promo-title" class="text-2xl md:text-3xl font-bold font-dosis flex items-center justify-center md:justify-start">
           <i class="fas fa-heart text-2xl mr-2" aria-hidden="true"></i>
-          ¡Apoya a nuestra comunidad!
+          ¡Apoyá a nuestra comunidad!
         </h2>
         <p class="mt-2 text-lg text-white/90 dark:text-white/80">
           Tu donación mantiene viva la misión de Voir: conectar mascotas con familias, promover adopciones responsables y crear un espacio para los amantes de los animales. ¡Cada aporte hace la diferencia!
@@ -142,9 +142,9 @@
       <router-link
         to="/donate"
         class="px-6 py-3 bg-white text-primary dark:text-secondary font-bold rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors duration-200 transition-transform transform hover:scale-105 shrink-0"
-        aria-label="Dona para apoyar a la comunidad de Voir"
+        aria-label="Doná para apoyar a la comunidad de Voir"
       >
-        Dona Ahora
+        Doná Ahora
       </router-link>
     </section>
 

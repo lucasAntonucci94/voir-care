@@ -2,17 +2,20 @@
   <div
     class="group bg-gray-100/40 dark:bg-gray-800 rounded-2xl p-6 shadow-md w-full flex items-center justify-between transition-all duration-300 transform"
     :class="{
-      'cursor-pointer': routeTo,
-      'cursor-default': !routeTo,
-      'opacity-50': disabled,
-      ' hover:-translate-y-1 hover:shadow-lg': !disabled,
+      'cursor-pointer': routeTo && !disabled,
+      'cursor-default': !routeTo && !disabled,
+      'opacity-50 cursor-not-allowed': disabled,
+      'hover:-translate-y-1 hover:shadow-lg': !disabled,
     }"
     @click.stop="!disabled && navigateTo()"
   >
     <div>
       <div class="flex items-center gap-2 mb-1">
         <h3
-          class="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-secondary font-dosis"
+          class="text-sm font-medium text-gray-500 dark:text-gray-400 font-dosis"
+          :class="{
+            'group-hover:text-primary dark:group-hover:text-secondary': !disabled,
+          }"
         >
           {{ title }}
         </h3>
@@ -26,7 +29,10 @@
         </span>
       </div>
       <p
-        class="text-3xl font-bold text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-secondary font-dosis"
+        class="text-3xl font-bold text-gray-900 dark:text-white font-dosis"
+        :class="{
+          'group-hover:text-primary dark:group-hover:text-secondary': !disabled,
+        }"
       >
         {{ value }}
         <span
@@ -44,8 +50,13 @@
       </p>
     </div>
     <i
-      class="text-gray-400 dark:text-gray-500 text-2xl group-hover:text-primary dark:group-hover:text-secondary"
-      :class="icon"
+      class="text-gray-400 dark:text-gray-500 text-2xl"
+      :class="[
+        icon,
+        {
+          'group-hover:text-primary dark:group-hover:text-secondary': !disabled,
+        }
+    ]"
     ></i>
   </div>
 </template>

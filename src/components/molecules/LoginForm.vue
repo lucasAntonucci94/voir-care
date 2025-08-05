@@ -9,8 +9,8 @@
 
     <!-- Formulario de login -->
     <form v-if="!showResetForm" @submit.prevent="handleSubmit">
-      <InputText v-model="email.field.value" label="Usuario" type="login" id="email" maxLength="254" placeholder="Ingresa tu usuario o email"/>
-      <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresa tu contraseña"/>
+      <InputText v-model="email.field.value" label="Usuario" type="login" id="email" maxLength="254" placeholder="Ingresá tu usuario o email"/>
+      <InputPassword v-model="password.field.value" label="Contraseña" type="password" id="password" placeholder="Ingresá tu contraseña"/>
       <div class="text-right mb-8">
         <button type="button" @click="showResetForm = true" class="josefin-font inline-block text-sm font-semibold text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md">
           ¿Olvidaste tu contraseña?

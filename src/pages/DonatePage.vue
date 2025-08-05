@@ -1,10 +1,10 @@
 <template>
-  <section class="mt-8 md:mt-16 p-6 sm:p-8 bg-gray-50 dark:bg-gray-900" aria-labelledby="donation-methods-title">
+  <section class="mt-2 md:mt-4 p-6 sm:px-8 bg-gray-50 dark:bg-gray-900" aria-labelledby="donation-methods-title">
     <div class="max-w-4xl mx-auto">
-      <h2 id="donation-methods-title" class="text-3xl md:text-4xl font-bold font-dosis text-gray-800 dark:text-gray-100 mb-6 text-center">
+      <h1 id="donation-methods-title" class="text-3xl md:text-4xl font-bold font-dosis text-gray-800 dark:text-gray-100 mb-6 text-center">
         <i class="fas fa-paw text-2xl mr-2" aria-hidden="true"></i>
         Formas de apoyar a Voir
-      </h2>
+      </h1>
       <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 text-center">
         ¡Ayúdanos a seguir conectando mascotas con sus familias! Elige un método de donación y copia el alias para transferir.
       </p>

@@ -101,6 +101,14 @@
                 :badge="stats.posts > 100 ? 'success' : null"
               />
               <DashboardCard
+              title="Marcadores de Mapa"
+              :value="stats?.locations"
+              icon="fas fa-map-marker-alt"
+              routeTo="/admin/locations"
+              tooltip="Marcadores creados por usuarios"
+              :badge="stats.mapMarkers > 100 ? 'success' : null"
+              />
+              <DashboardCard
                 title="Reels"
                 :value="stats.reels"
                 icon="fas fa-video"
@@ -108,14 +116,6 @@
                 tooltip="Publicaciones creadas por voir"
                 :badge="stats.reels > 100 ? 'success' : null"
                 :disabled="true"
-              />
-              <DashboardCard
-                title="Marcadores de Mapa"
-                :value="stats?.locations"
-                icon="fas fa-map-marker-alt"
-                routeTo="/admin/locations"
-                tooltip="Marcadores creados por usuarios"
-                :badge="stats.mapMarkers > 100 ? 'success' : null"
               />
             </div>
           </transition>
