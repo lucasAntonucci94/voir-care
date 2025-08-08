@@ -14,7 +14,8 @@
         <div class="p-6">
           <div class="flex justify-center mb-6">
             <div class="flex items-center space-x-2">
-              <div v-for="(step, index) in steps" :key="index" class="relative flex items-center">
+              <!-- Cambiado a 'visibleSteps' para mostrar dinámicamente 3 o 4 pasos -->
+              <div v-for="(step, index) in visibleSteps" :key="index" class="relative flex items-center">
                 <div
                   class="flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold transition-all duration-300"
                   :class="{
@@ -29,7 +30,7 @@
                   <i v-else class="fa-solid fa-check"></i>
                 </div>
                 <div
-                  v-if="index < steps.length - 1"
+                  v-if="index < visibleSteps.length - 1"
                   class="w-6 h-1 bg-gray-200 dark:bg-gray-600"
                 >
                   <div
@@ -42,6 +43,7 @@
           </div>
 
           <!-- Contenido del formulario -->
+          <!-- El formulario ahora maneja el submit al final del flujo, ya sea en el paso 3 o 4 -->
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Paso 1: Información básica -->
             <div v-if="currentStep === 1">
@@ -117,7 +119,7 @@
               </div>
             </div>
 
-            <!-- Paso 3: Multimedia y confirmación -->
+            <!-- Paso 3: Multimedia -->
             <div v-if="currentStep === 3">
               <!-- Imagen o Video -->
               <div>
@@ -128,7 +130,7 @@
                   accept="image/*,video/*"
                   @change="handleMediaUpload"
                   :disabled="isSubmitting"
-                  class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary-md dark:hover:file:bg-secondary-md transition-all duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
+                  class="w-full p-2.5 hover:bg-gray-100 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-secondary text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary dark:file:bg-secondary file:text-white hover:file:bg-primary/90 dark:hover:file:bg-secondary/90 transition-colors duration-200 cursor-pointer bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                 />
                 <p v-if="errorFileMessage" class="text-sm text-red-500 mt-2">{{ errorFileMessage }}</p>
               </div>
@@ -158,8 +160,10 @@
                 </button>
               </div>
             </div>
-            <!-- Paso 4: Marcador enviado para revisión -->
-            <div v-if="currentStep === 4">
+            
+            <!-- Paso 4: Marcador enviado para revisión (SOLO en modo creación) -->
+            <!-- La visibilidad de este paso ahora depende del modo de edición -->
+            <div v-if="currentStep === 4 && !isEditMode">
               <div class="flex flex-col items-center text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
                 <!-- Icono de advertencia -->
                 <i class="fa-solid fa-triangle-exclamation text-5xl text-yellow-500 mb-4"></i>
@@ -187,11 +191,11 @@
               </div>
             </div>
 
-
             <!-- Botones de navegación -->
             <div class="flex justify-between gap-3 mt-6">
+              <!-- Botón Atrás -->
               <button
-                v-if="currentStep > 1"
+                v-if="currentStep > 1 "
                 type="button"
                 @click="previousStep"
                 :disabled="isSubmitting"
@@ -201,6 +205,7 @@
                 <i class="fa-solid fa-arrow-left"></i>
                 <p class="hidden md:block">Atrás</p>
               </button>
+              <!-- Botón Cancelar (solo en el paso 1) -->
               <button
                 v-if="currentStep === 1"
                 type="button"
@@ -212,9 +217,10 @@
                 <i class="fa-solid fa-times"></i>
                 <p class="hidden md:block">Cancelar</p>
               </button>
-
+              
+              <!-- Botón Siguiente (solo hasta el paso 2) -->
               <button
-                v-if="currentStep < 4"
+                v-if="(currentStep < 3 && isEditMode) || (currentStep < 4 && !isEditMode)"
                 type="button"
                 @click="nextStep"
                 :disabled="isSubmitting"
@@ -224,9 +230,11 @@
                 <p class="hidden md:block">Siguiente</p>
                 <i class="fa-solid fa-arrow-right"></i>
               </button>
-
+              
+              <!-- Botón final de Guardar/Crear -->
+              <!-- Este botón ahora aparece en el Paso 3 (Edición) o Paso 4 (Creación) -->
               <button
-                v-if="currentStep === 4"
+                v-if="(currentStep === 3 && isEditMode) || (currentStep === 4 && !isEditMode)"
                 type="submit"
                 :disabled="isSubmitting"
                 class="px-4 py-2 bg-primary dark:bg-secondary text-white rounded-lg hover:bg-primary/90 dark:hover:bg-secondary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
@@ -376,6 +384,10 @@ const submitButtonText = computed(() => {
   return isEditMode.value ? 'Guardar Cambios' : 'Crear';
 });
 
+// Propiedad computada para mostrar dinámicamente los pasos
+const visibleSteps = computed(() => {
+    return isEditMode.value ? steps.value.slice(0, 3) : steps.value;
+});
 
 // Sincronizar locationInput con newLocation.address
 watch(locationInput, (newVal) => {
@@ -526,7 +538,13 @@ function validateStep(step) {
 
 function nextStep() {
   if (validateStep(currentStep.value)) {
-    currentStep.value += 1;
+    // Si estamos en el paso 3 y en modo de edición, enviamos el formulario
+    // De lo contrario, simplemente avanzamos
+    if (currentStep.value === 3 && isEditMode.value) {
+      handleSubmit();
+    } else {
+      currentStep.value += 1;
+    }
   }
 }
 
@@ -575,7 +593,7 @@ async function handleSubmit() {
       if (props.locationToEdit.media?.path) {
         // await deleteMedia(props.locationToEdit.media.path); // Eliminar el media de Storage
       }
-      finalMediaData = { url: null, path: null, type: null }; 
+      finalMediaData = { url: null, path: null, type: null };  
     }
 
 
