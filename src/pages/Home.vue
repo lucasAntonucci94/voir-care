@@ -148,18 +148,37 @@ const baseFilteredUsers = computed(() => {
 });
 
 const baseFilteredEvents = computed(() => {
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase();
-        return eventsStore.allEvents?.value?.filter(event => 
-            event.title.toLowerCase().includes(query) || 
-            event.location?.address?.street?.toLowerCase().includes(query) ||
-            event.description?.toLowerCase().includes(query) 
-        ) ?? [];
+  // Lógica de búsqueda, se mantiene intacta
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    return eventsStore.allEvents?.value?.filter(event => 
+      event.title.toLowerCase().includes(query) || 
+      event.location?.address?.street?.toLowerCase().includes(query) ||
+      event.description?.toLowerCase().includes(query) 
+    ) ?? [];
+  }
+  //Si no filtra, lo ordeno por temporalidad, y tomo los 3 más cercanos
+  const now = new Date().getTime();
+
+  const upcomingEvents = eventsStore.allEvents?.value?.filter(event => {
+    if (!event.startTime || !event.startTime?.seconds) {
+      return false; 
     }
-    return eventsStore.allEvents?.value?.slice(0, 3) ?? [];
+    const eventTime = event.startTime?.seconds * 1000;
+    return eventTime > now;
+  }) ?? [];
+
+  upcomingEvents.sort((a, b) => {
+    const timeA = a.startTime?.seconds * 1000;
+    const timeB = b.startTime?.seconds * 1000;
+    return timeA - timeB;
+  });
+
+  return upcomingEvents.slice(0, 3);
 });
 
 const baseFilteredGroups = computed(() => {
+    // Si hay una búsqueda activa, se mantiene la lógica de filtrado
     if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
         return groupsStore.allGroups?.value?.filter(group => 
@@ -167,7 +186,17 @@ const baseFilteredGroups = computed(() => {
             group.description.toLowerCase().includes(query)
         ) ?? [];
     }
-    return groupsStore.allGroups?.value?.slice(0, 3) ?? [];
+
+    // Ordenar por cantidad de miembros y tomar los 3 con más miembros
+    const allGroups = groupsStore.allGroups?.value ?? [];
+    
+    const sortedGroups = [...allGroups].sort((a, b) => {
+        const membersCountA = a.members?.length ?? 0;
+        const membersCountB = b.members?.length ?? 0;
+        return membersCountB - membersCountA; // Esto ordena de mayor a menor
+    });
+
+    return sortedGroups.slice(0, 3);
 });
 
 const baseFilteredLocations = computed(() => {

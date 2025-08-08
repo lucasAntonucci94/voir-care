@@ -32,8 +32,10 @@
         <div>
           <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ blog.title || 'Sin título' }}</h2>
           <div class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            <span>{{ blog.date || 'N/A' }}</span>
-            <span v-if="blog.categories?.length"> | {{ blog.categories.join(', ') }}</span>
+            <span>{{  formatTimestamp(blog.date) || 'N/A' }}</span>
+            <span v-if="blog.categories?.length">
+              | {{ blog.categories.map(category => category.name).join(', ') }}
+            </span>
             <span v-if="blog.type"> | {{ blog.type }}</span>
           </div>
         </div>
@@ -85,7 +87,7 @@
 
 <script setup>
 import { defineEmits } from 'vue';
-
+ import { formatTimestamp } from '../../utils/formatTimestamp';
 const props = defineProps({
   visible: {
     type: Boolean,
