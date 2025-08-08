@@ -365,11 +365,15 @@ const steps = ref([
 ]);
 
 const categories = ref([
-  { id: 'adopcion', name: 'Adopción' },
   { id: 'cuidado', name: 'Cuidado Animal' },
+  { id: 'nutricion', name: 'Nutrición y Salud' },
+  { id: 'razas', name: 'Razas y Especies' },
   { id: 'rescate', name: 'Rescate' },
+  { id: 'utilidad', name: 'Servicios y Utilidad' },
   { id: 'comunidad', name: 'Comunidad' },
   { id: 'educacion', name: 'Educación' },
+  { id: 'hobbies', name: 'Actividades y Hobbies' },
+  { id: 'duelo', name: 'Duelo y Apoyo' },
   { id: 'otros', name: 'Otros' },
 ]);
 

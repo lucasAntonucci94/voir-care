@@ -48,6 +48,7 @@
             >
               <th class="py-3 px-6 text-left">Título</th>
               <th class="py-3 px-6 text-left">Descripción</th>
+              <th class="py-3 px-6 text-left">Tipo</th>
               <th class="py-3 px-6 text-left">Creador</th>
               <th class="py-3 px-6 text-left">Coordenadas</th>
               <th class="py-3 px-6 text-left">Dirección</th>
@@ -68,6 +69,9 @@
               </td>
               <td class="py-3 px-6 text-left">
                 {{ location.description }}
+              </td>
+              <td class="py-3 px-6 text-left">
+                {{ location.type }}
               </td>
               <td class="py-3 px-6 text-left">
                 {{ location.user?.displayName || "Anónimo" }}
@@ -157,6 +161,25 @@
                         </li>
                         <li>
                           <button
+                            @click="openEditModal(location)"
+                            class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-blue-700 dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-blue-300 transition-all duration-200"
+                            :disabled="
+                              isActionLoading[location.id]
+                            "
+                            :class="
+                              isActionLoading[location.id]
+                                ? 'opacity-50 cursor-not-allowed'
+                                : ''
+                            "
+                          >
+                            <i
+                              class="fas fa-edit mr-2 text-blue-500"
+                            ></i>
+                            Editar
+                          </button>
+                        </li>
+                        <li>
+                          <button
                             @click="setGenericModalConfig('delete', location)"
                             class="w-full text-left px-4 py-2 hover:bg-gray-100 hover:text-primary dark:bg-gray-700 dark:hover:bg-gray-800 dark:hover:text-secondary transition-all duration-200"
                             :disabled="isActionLoading[location.id]"
@@ -194,7 +217,13 @@
       @delete="deleteLocation"
       @confirm="confirmLocation"
     />
-
+    <CreateLocationModal 
+      v-if="showEditModal"
+      :visible="showEditModal"
+      :locationToEdit="selectedLocation"
+      @close="closeEditModal"
+      @submit="submitEdit"
+    />
     <!-- Modal de confirmación genérico -->
     <GenericConfirmModal
       v-if="showConfirmModal"
@@ -215,6 +244,7 @@ import { useSnackbarStore } from "../../stores/snackbar";
 import LocationDetailModal from "../../components/organisms/LocationDetailAdminModal.vue";
 import GenericConfirmModal from "../../components/molecules/GenericConfirmModal.vue";
 import { useLocationsStore } from "../../stores/locations";
+import CreateLocationModal from "../../components/organisms/CreateLocationModal.vue";
 
 const locationsStore = useLocationsStore();
 const snackbarStore = useSnackbarStore();
@@ -223,6 +253,7 @@ const searchQuery = ref("");
 const filterStatus = ref("");
 const showLocationDetailModal = ref(false);
 const showConfirmModal = ref(false);
+const showEditModal = ref(false);
 const selectedLocation = ref(null);
 const activeDropdown = ref(null);
 const isActionLoading = ref({});
@@ -278,6 +309,25 @@ const closeLocationDetailModal = () => {
   showLocationDetailModal.value = false;
   document.body.style.overflow = "";
 };
+
+
+//Edit functions
+function openEditModal(location) {
+  selectedLocation.value = { ...location };
+  showEditModal.value = true;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditModal() {
+  showEditModal.value = false;
+  document.body.style.overflow = '';
+  selectedLocation.value = null;
+}
+
+function submitEdit(updatedLocation) {
+  closeEditModal();
+}
+
 
 // Eliminar ubicación (eliminación suave)
 const softDeleteLocation = async (id) => {

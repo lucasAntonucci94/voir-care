@@ -6,8 +6,8 @@
     <p class="text-lg text-red-500 dark:text-red-400">Grupo no encontrado.</p>
   </div>
   <div v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-    <!-- Banner -->
-    <div  @click="openMediaModal(group.media)" class="relative w-full h-64 md:h-96 overflow-hidden">
+    <div @click="openMediaModal(group.media)" class="relative w-full h-64 md:h-96 overflow-hidden cursor-pointer shadow-md">
+      <!-- Lógica condicional para mostrar imagen o video como fondo del banner. -->
       <template v-if="group.media?.type === 'image' && group.media?.url">
         <img
           :src="group.media.url"
@@ -24,24 +24,28 @@
           class="w-full h-full object-cover"
         ></video>
       </template>
+      <!-- Imagen por defecto si no hay medios cargados. -->
       <template v-else>
         <img
           :src="defaultGroupBanner"
-          alt="Banner por defecto"
+          alt="Banner por defecto del grupo"
           class="w-full h-full object-cover"
         />
       </template>
+
+      <!-- Overlay para oscurecer la imagen -->
       <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
-      <div class="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+
+      <!-- Contenedor del título y la información del grupo -->
+      <div class="absolute bottom-0 left-0 right-0 bg-primary-md dark:bg-secondary-md bg-opacity-70 p-4 z-10">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-left">
           {{ group.title }}
         </h1>
-        <p class="mt-2 text-sm sm:text-base text-gray-200">
+        <p class="mt-2 text-sm sm:text-base text-gray-200 text-left">
           Creado por {{ ownerDetails.displayName || group.ownerId }}
         </p>
       </div>
     </div>
-
     <!-- Navegación de Tabs -->
     <div class="container mx-auto px-4 md:px-8 py-6">
       <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 mb-6">

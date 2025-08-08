@@ -14,7 +14,8 @@
         <h3
           class="text-sm font-medium text-gray-500 dark:text-gray-400 font-dosis"
           :class="{
-            'group-hover:text-primary dark:group-hover:text-secondary': !disabled,
+            'group-hover:text-primary dark:group-hover:text-secondary':
+              !disabled,
           }"
         >
           {{ title }}
@@ -55,8 +56,8 @@
         icon,
         {
           'group-hover:text-primary dark:group-hover:text-secondary': !disabled,
-        }
-    ]"
+        },
+      ]"
     ></i>
   </div>
 </template>

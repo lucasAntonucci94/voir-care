@@ -51,12 +51,15 @@ const props = defineProps({
   showOwnership: { type: Boolean, default: false },
 });
 const categories = [
-  { id: 'educacion', name: 'Educación' },
-  { id: 'adopcion', name: 'Adopción' },
-  { id: 'ayuda', name: 'Ayuda y Asistencia' },
-  { id: 'interes', name: 'Intereses' },
   { id: 'cuidado', name: 'Cuidado Animal' },
-  { id: 'voluntariado', name: 'Voluntariado' },
+  { id: 'nutricion', name: 'Nutrición y Salud' },
+  { id: 'razas', name: 'Razas y Especies' },
+  { id: 'rescate', name: 'Rescate' },
+  { id: 'utilidad', name: 'Servicios y Utilidad' },
+  { id: 'comunidad', name: 'Comunidad' },
+  { id: 'educacion', name: 'Educación' },
+  { id: 'hobbies', name: 'Actividades y Hobbies' },
+  { id: 'duelo', name: 'Duelo y Apoyo' },
   { id: 'otros', name: 'Otros' },
 ];
 

@@ -6,43 +6,52 @@
     <p class="text-lg text-red-500 dark:text-red-400">Evento no encontrado.</p>
   </div>
   <div v-else class="min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-    <!-- Banner -->
-    <div  @click="openMediaModal(event.media,event.mediaType)" class="relative w-full h-64 md:h-96 overflow-hidden">
-      <template v-if="event.mediaType === 'image' && event.media">
-        <img
-          :src="event.media"
-          alt="Banner del grupo"
-          class="w-full h-full object-cover"
-        />
-      </template>
-      <template v-else-if="event.mediaType === 'video' && event.media">
-        <video
-          :src="event.media"
-          class="w-full h-full object-cover"
-          autoplay
-          muted
-          loop
-        ></video>
-      </template>
-      <template v-else>
-        <img
-          :src="defaultEventBanner"
-          alt="Banner por defecto"
-          class="w-full h-full object-cover"
-        />
-      </template>
-      <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
-      <div class="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-          {{ event.title }}
-        </h1>
-      </div>
-       <!-- Fecha de inicio superpuesta -->
-      <div class="absolute bottom-4 left-8 z-20">
-        <div class="w-16 h-16 bg-red-500 text-white flex items-center justify-center rounded-lg font-bold text-2xl shadow-md">
-          {{ formatEventDate(event.startTime).dayBox }}
+    <div>
+      <!-- Banner Eventos -->
+      <div @click="openMediaModal(event.media, event.mediaType)" class="relative w-full h-64 md:h-96 overflow-hidden cursor-pointer shadow-md">
+        <template v-if="event.mediaType === 'image' && event.media">
+          <img
+            :src="event.media"
+            alt="Banner del evento"
+            class="w-full h-full object-cover"
+          />
+        </template>
+        <template v-else-if="event.mediaType === 'video' && event.media">
+          <video
+            :src="event.media"
+            class="w-full h-full object-cover"
+            autoplay
+            muted
+            loop
+          ></video>
+        </template>
+        <template v-else>
+          <img
+            :src="defaultEventBanner"
+            alt="Banner por defecto del evento"
+            class="w-full h-full object-cover"
+          />
+        </template>
+
+        <!-- Overlay para oscurecer la imagen. -->
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-70"></div>
+
+        <!-- Fecha de inicio superpuesta -->
+        <!-- <div class="absolute top-40 left-4 z-30">
+          <div class="w-16 h-16 bg-red-500 text-white flex items-center justify-center rounded-lg font-bold text-2xl shadow-md">
+            {{ formatEventDate(event.startTime).dayBox }}
+          </div>
+          <span class="text-xs mt-1 text-white text-center font-bold block bg-red-700 p-1 rounded-lg">{{ formatEventDate(event.startTime).label.split(' a las ')[0] }}</span>
+        </div> -->
+
+        <!-- Contenedor de la barra inferior para el título del evento. -->
+        <div class="absolute bottom-0 left-0 right-0 bg-primary-md dark:bg-secondary-md bg-opacity-70 p-4 z-20">
+          
+          <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-left">
+            {{ event.title }}
+          </h1>
+          <span class="text-sm mt-1 text-white text-left font-bold bg-primary dark:bg-secondary p-1 rounded-lg">{{ formatEventDate(event.startTime).label.split(' a las ')[0] }}</span>
         </div>
-        <span class="text-xs mt-1 text-white text-center font-bold block bg-red-700 p-1 rounded-lg">{{ formatEventDate(event.startTime).label.split(' a las ')[0] }}</span>
       </div>
     </div>
 
@@ -178,7 +187,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -353,7 +361,7 @@ function formatEventDate(timestamp) {
   const time = date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
   return {
     dayBox: day,
-    label: `${dayOfWeek}, ${day} de ${month} de ${year} a las ${time}`
+    label: `${dayOfWeek} ${day}, de ${month} de ${year} a las ${time}`
   };
 }
 
