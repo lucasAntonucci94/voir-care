@@ -16,13 +16,13 @@
             ></div>
         </div>
         <div class="text-center md:text-left text-gray-800 md:text-white">
-            <h1 class="text-gray-700 md:text-gray-300 dark:text-gray-300 text-xl md:text-2xl font-bold">{{ activeUser?.displayName || activeUser?.email || 'Usuario' }}</h1>
+            <h1 class="text-gray-700 md:text-gray-300 dark:text-gray-300 text-xl md:text-2xl font-bold">{{ activeUser?.displayName || activeUser?.email || 'Usuario' }} <i v-if="activeUser.isSuscribed" class="text-lg fas fa-gem"></i></h1>
             <p class="text-gray-700 md:text-gray-300 dark:text-gray-300 text-sm">{{ connections?.length || 0 }} conexiones</p>
             <div v-if="connections.length > 0" class="mt-2 flex -space-x-2 items-center">
                 <img 
                     v-for="connection in connections?.slice(0, 5)" 
                     :key="connection.idDoc"
-                    :src="connection.avatar"
+                    :src="connection.avatar ?? avatarDefault"
                     alt=""
                     class="inline-block h-8 w-8 rounded-full ring-2 ring-white"
                 />

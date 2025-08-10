@@ -32,7 +32,7 @@
         />
         <div>
           <p class="text-gray-800 dark:text-gray-200 font-semibold text-base">
-            {{ user?.displayName || user?.email || 'Usuario' }}
+            {{ user?.displayName || user?.email || 'Usuario' }}  <i v-if="user?.isSuscribed" class="text-sm fas fa-gem"></i>
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">{{ user?.isAdmin ? 'Administrador' : 'Miembro' }}</p>
         </div>
@@ -107,7 +107,7 @@ const mainNavItems = [
 // Items de navegación "Otros" filtrados reactivamente
 const otherNavItems = computed(() => [
   { to: '/adoption', icon: 'fa-paw', label: 'Adopción' },
-  { to: '/premium', icon: 'fa-gem', label: 'Suscríbete a Voir', hidden: hidePremiumPage?.value ?? false },
+  { to: '/premium', icon: 'fa-gem', label: 'Suscribite a Voir', hidden: hidePremiumPage?.value ?? false },
   { to: '/faqs', icon: 'fa-question', label: 'Preguntas Frecuentes' },
   // { to: '/about', icon: 'fa-info-circle', label: 'Acerca de Voir' },
   // { to: '/contact', icon: 'fa-envelope', label: 'Contacto' },

@@ -51,6 +51,7 @@ const props = defineProps({
   showOwnership: { type: Boolean, default: false },
 });
 const categories = [
+  { id: 'adopcion', name: 'Adopción' },
   { id: 'cuidado', name: 'Cuidado Animal' },
   { id: 'nutricion', name: 'Nutrición y Salud' },
   { id: 'razas', name: 'Razas y Especies' },

@@ -109,8 +109,8 @@ const createPermission = computed(() => {
   if (!user.value?.uid) return false;
   // Si el usuario está suscripto, retorna true.
   if (user.value.isSuscribed) return true;
-  // Si no está suscripto, buscamos el último evento creado.
-  const lastEvent = eventsStore.events?.value?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
+  // Si no está suscripto, buscamos el último evento creado del usuario logueado.
+  const lastEvent = eventsStore.events?.value?.filter(g => g.ownerId === user.value.uid)?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
   // Si no tiene eventos creados, tiene permiso.
   if (!lastEvent) return true;
   // Si tiene un evento, el permiso es TRUE si el evento NO es de este mes.

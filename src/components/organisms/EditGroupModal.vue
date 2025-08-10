@@ -371,6 +371,7 @@ const steps = ref([
 ]);
 
 const categories = ref([
+  { id: 'adopcion', name: 'Adopción' },
   { id: 'cuidado', name: 'Cuidado Animal' },
   { id: 'nutricion', name: 'Nutrición y Salud' },
   { id: 'razas', name: 'Razas y Especies' },

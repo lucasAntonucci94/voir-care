@@ -38,7 +38,7 @@
           </button>
           <router-link
             :to="`/profile/${member.email}`"
-            class="p-2 text-primary dark:text-secondary hover:bg-primary-md dark:hover:bg-secondary-md rounded-lg"
+            class="p-2 text-primary dark:text-secondary hover:text-primary-md dark:hover:text-secondary-md rounded-lg"
             title="Ver perfil"
           >
             <i class="fa-solid fa-arrow-right fa-lg"></i>

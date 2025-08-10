@@ -49,7 +49,7 @@ import ExploreMap from '../components/molecules/ExploreMapOld.vue';
 import { useLocationsStore } from '../stores/locations';
 
 const locationsStore = useLocationsStore();
-const exploreMapRef = ref(null) //que hace esta ref? me permite acceder al componente hijo ExploreMap y llamar a sus métodos desde aquí. Magic :D
+const exploreMapRef = ref(null);
 const loadingLocation = ref(false);
 const flagCentered = ref(false);
 const activeFilters = ref([]);

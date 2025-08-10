@@ -139,8 +139,8 @@ const createPermission = computed(() => {
   if (!user.value?.uid) return false;
   // Si el usuario está suscripto
   if (user.value.isSuscribed) return true;
-  // Si no está suscripto, buscamos el último grupo creado
-  const lastGroup = groupsStore.userGroups?.value?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
+  // Si no está suscripto, buscamos el último grupo creado del usuario logueado
+  const lastGroup = groupsStore.userGroups?.value?.filter(g => g.ownerId === user.value.uid)?.sort((a, b) => b.createdAt?.toDate() - a.createdAt?.toDate())[0];
   // Si no tiene grupos creados, tiene permiso
   if (!lastGroup) return true;
   // Si tiene un grupo, el permiso es TRUE si el grupo NO es de este mes.
